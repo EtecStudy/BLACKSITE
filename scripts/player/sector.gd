@@ -16,9 +16,9 @@ func _ready() -> void:
 func add_player_avatar(peer_id: int, at: Vector3) -> void:
 	if avatars.has(peer_id):
 		return
-	var avatar = AVATAR.instantiate()
+	var avatar := AVATAR.instantiate() as CharacterBody3D
 	avatar.name = "Player_%d" % peer_id
-	avatar.peer_id = peer_id
+	avatar.set("peer_id", peer_id)
 	$Players.add_child(avatar)
 	avatar.global_position = at
 	avatars[peer_id] = avatar
@@ -120,7 +120,7 @@ func _build_map() -> void:
 	# Procedural glTF demo crate, instantiated in the playable map (not yet Blender-generated).
 	var crate_asset := load("res://assets/models/blacksite_crate.glb") as PackedScene
 	if crate_asset:
-		var imported_crate := crate_asset.instantiate()
+		var imported_crate := crate_asset.instantiate() as Node3D
 		imported_crate.position = Vector3(1.4, 0, -2.2)
 		imported_crate.scale = Vector3(0.85, 0.85, 0.85)
 		geo.add_child(imported_crate)

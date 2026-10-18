@@ -8,6 +8,8 @@ const WORLD_SCENE := "res://scenes/maps/sector.tscn"
 var players: Dictionary = {}  # peer id -> {position, yaw, pitch, input, sprint}
 var status := "Offline"
 var _snapshot_clock := 0.0
+var _input_logged: Dictionary = {}
+var _timed_out: Dictionary = {}
 
 
 func _ready() -> void:
@@ -22,13 +24,16 @@ func host(port: int = PORT_DEFAULT) -> Error:
 	var peer := ENetMultiplayerPeer.new()
 	var err := peer.create_server(port, MAX_PLAYERS - 1)
 	if err != OK:
+		push_error("[BLACKSITE][NET] create_server falhou: %s" % error_string(err))
 		_set_status("Falha ao hospedar: %s" % error_string(err))
 		return err
 	multiplayer.multiplayer_peer = peer
 	players.clear()
+	_input_logged.clear()
+	_timed_out.clear()
 	_accept_peer(1)
 	_open_world()
-	_set_status("Servidor aberto na porta UDP %d" % port)
+	_set_status("Servidor aberto na porta UDP %d; maximo %d jogadores" % [port, MAX_PLAYERS])
 	return OK
 
 
@@ -36,10 +41,11 @@ func join(address: String, port: int = PORT_DEFAULT) -> Error:
 	var peer := ENetMultiplayerPeer.new()
 	var err := peer.create_client(address.strip_edges(), port)
 	if err != OK:
+		push_error("[BLACKSITE][NET] create_client falhou: %s" % error_string(err))
 		_set_status("Endereço/porta inválidos: %s" % error_string(err))
 		return err
 	multiplayer.multiplayer_peer = peer
-	_set_status("Conectando a %s:%d…" % [address, port])
+	_set_status("Conectando via ENet UDP porta %d…" % port)
 	return OK
 
 
@@ -48,6 +54,8 @@ func leave() -> void:
 		multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = null
 	players.clear()
+	_input_logged.clear()
+	_timed_out.clear()
 	_set_status("Sessão encerrada")
 	if get_tree().current_scene and get_tree().current_scene.scene_file_path == WORLD_SCENE:
 		get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
@@ -65,6 +73,7 @@ func _on_peer_connected(id: int) -> void:
 		_rpc_add_player.rpc_id(id, int(existing), players[existing].position)
 	_rpc_add_player.rpc(int(id), players[id].position)
 	status = "Jogador %d conectado (%d/%d)" % [id, players.size(), MAX_PLAYERS]
+	print("[BLACKSITE][NET] Peer %d conectado (%d/%d)" % [id, players.size(), MAX_PLAYERS])
 	status_changed.emit(status)
 	roster_changed.emit()
 
@@ -83,6 +92,8 @@ func _accept_peer(id: int) -> void:
 
 func _on_peer_disconnected(id: int) -> void:
 	players.erase(id)
+	_input_logged.erase(id)
+	_timed_out.erase(id)
 	if multiplayer.is_server():
 		_rpc_remove_player.rpc(id)
 	roster_changed.emit()
@@ -95,13 +106,17 @@ func _on_connected() -> void:
 
 
 func _on_connection_failed() -> void:
+	push_warning("[BLACKSITE][NET] Conexao recusada/expirada; confirme host, UDP e firewall")
 	_set_status("Conexão recusada/expirada. Verifique IP, porta UDP e firewall.")
 	multiplayer.multiplayer_peer = null
 
 
 func _on_server_disconnected() -> void:
+	push_warning("[BLACKSITE][NET] Servidor desconectado")
 	_set_status("Servidor desconectado")
 	players.clear()
+	_input_logged.clear()
+	_timed_out.clear()
 	multiplayer.multiplayer_peer = null
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
@@ -122,7 +137,7 @@ func _rpc_add_player(id: int, at: Vector3) -> void:
 	}
 	var world := get_tree().current_scene
 	if world and world.has_method("add_player_avatar"):
-		world.add_player_avatar(id, at)
+		world.call("add_player_avatar", id, at)
 	roster_changed.emit()
 
 
@@ -131,7 +146,7 @@ func _rpc_remove_player(id: int) -> void:
 	players.erase(id)
 	var world := get_tree().current_scene
 	if world and world.has_method("remove_player_avatar"):
-		world.remove_player_avatar(id)
+		world.call("remove_player_avatar", id)
 	roster_changed.emit()
 
 
@@ -160,6 +175,12 @@ func _server_input(id: int, move: Vector2, yaw: float, pitch: float, sprinting: 
 	# Reject non-finite values and clamp client intent; the host owns speed and world position.
 	if not move.is_finite() or not is_finite(yaw) or not is_finite(pitch):
 		return
+	if not _input_logged.has(id):
+		_input_logged[id] = true
+		print("[BLACKSITE][NET] Primeira intencao de movimento validada para peer %d" % id)
+	if _timed_out.has(id):
+		_timed_out.erase(id)
+		print("[BLACKSITE][NET] Intencao de movimento retomada para peer %d" % id)
 	players[id].input = move.limit_length(1.0)
 	players[id].yaw = wrapf(yaw, -PI, PI)
 	players[id].pitch = clampf(pitch, -1.45, 1.45)
@@ -174,16 +195,21 @@ func _physics_process(delta: float) -> void:
 		var p: Dictionary = players[id]
 		# Drop stale intent on packet loss so a disconnected player cannot keep walking.
 		if Time.get_ticks_msec() - int(p.last_input_ms) > 250:
+			if _input_logged.has(id) and not _timed_out.has(id):
+				_timed_out[id] = true
+				push_warning(
+					"[BLACKSITE][NET] Timeout de input (250 ms) para peer %d; movimento zerado" % id
+				)
 			p.input = Vector2.ZERO
 			p.sprint = false
 		var world := get_tree().current_scene
 		if not world or not world.has_method("get_player_avatar"):
 			continue
-		var avatar: CharacterBody3D = world.get_player_avatar(int(id))
+		var avatar := world.call("get_player_avatar", int(id)) as CharacterBody3D
 		if not is_instance_valid(avatar):
 			continue
 		# Host runs the same CharacterBody3D simulation for every peer; clients send intent only.
-		avatar.server_simulate(p.input, p.yaw, p.pitch, p.sprint, delta)
+		avatar.call("server_simulate", p.input, p.yaw, p.pitch, p.sprint, delta)
 		var position: Vector3 = avatar.global_position
 		# Bounded world limits are an additional guard; wall/crate collisions use physics shapes.
 		position.x = clampf(position.x, -28.0, 28.0)
@@ -212,9 +238,10 @@ func _rpc_snapshot(data: Dictionary) -> void:
 			players[id].pitch = data[id][2]
 	var world := get_tree().current_scene
 	if world and world.has_method("apply_snapshot"):
-		world.apply_snapshot(data)
+		world.call("apply_snapshot", data)
 
 
 func _set_status(message: String) -> void:
 	status = message
+	print("[BLACKSITE][NET] " + message)
 	status_changed.emit(message)

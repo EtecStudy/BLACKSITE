@@ -1,37 +1,57 @@
 # Manual runtime validation — two local peers
 
-This procedure is a test plan, **not evidence that a runtime test has passed**. It requires an installed Godot 4.3+ editor/runtime and should be recorded with real logs/screenshots when executed.
+Este roteiro é um plano de teste, **não evidência de que o runtime já foi aprovado**. Requer Godot 4.3+ e deve ser acompanhado de logs/capturas reais.
 
-## Linux/macOS or Godot on PATH
+## Abrir o projeto
 
-1. In a terminal at the repository root, run `godot --path . --position 100,100`. In the menu click **HOSPEDAR PARTIDA** (default UDP 24560).
-2. In another terminal run `godot --path . --position 700,100`. Leave address `127.0.0.1`, UDP `24560`, and click **ENTRAR NA PARTIDA**.
+Na raiz do projeto, execute `INICIAR_BLACKSITE.bat`. Ele abre o editor; aguarde importações e use F5 para iniciar a cena principal. Ou use duas instâncias runtime seguindo os comandos Windows abaixo. A cena principal configurada é `res://scenes/menu/main_menu.tscn`.
 
-## Windows PowerShell
+## Duas instâncias no Windows (PowerShell)
 
-Open two PowerShell windows at the repository directory. Replace the path with the installed Godot **console** executable (4.3 or newer) so output remains visible:
-
-```powershell
-$godot = 'C:\Godot\Godot_v4.3-stable_win64_console.exe'
-& $godot --path . --position 100,100
-```
-
-In the second PowerShell window:
+Abra duas janelas PowerShell no diretório que contém `project.godot`. Em cada janela, obtenha o executável instalado. Se Godot estiver no PATH:
 
 ```powershell
-$godot = 'C:\Godot\Godot_v4.3-stable_win64_console.exe'
-& $godot --path . --position 700,100
+$godot = (Get-Command godot.exe -ErrorAction SilentlyContinue).Source
 ```
 
-First window: click **HOSPEDAR PARTIDA**. Second window: connect to `127.0.0.1`, UDP `24560`.
+Se não estiver no PATH, substitua a string abaixo pelo caminho completo **real** do seu executável Godot console; o projeto não presume pasta de instalação:
 
-## Checks
+```powershell
+$godot = (Resolve-Path 'CAMINHO_REAL\Godot_v4.x-stable_win64_console.exe').Path
+```
 
-3. Confirm both windows enter the same sector and show two peer IDs. Move both players simultaneously with WASD while looking around. The other avatar should move; the local camera should be enabled only for that process's player.
-4. Walk into walls and the visible GLB crate from both host and client; verify neither avatar passes through. Then move the two avatars into one another to check CharacterBody collision. The host simulates movement through `CharacterBody3D.move_and_slide`; client prediction should be corrected to server snapshots on wall impact.
-5. Close the joining client window. Confirm its avatar disappears and the host roster returns to one peer. Reconnect and repeat with host closing the session; verify the remaining client returns to menu with a disconnect status. Confirm both terminal outputs contain no `SCRIPT ERROR` or critical physics/RPC errors.
-6. Capacity check: run additional client processes with unique window positions. Three remote clients should connect (four players including host); the fifth total participant should be rejected/disconnected with a useful status or connection failure. Record actual outcome, engine version, output logs, and any console errors.
+Confira `$godot` e a versão com `& $godot --version`. Repita a atribuição em cada janela PowerShell (as variáveis não são compartilhadas entre janelas).
 
-For separate computers on a LAN, use the host's private IP and allow inbound UDP 24560 on its firewall. Do not call the same-machine test an internet test. Internet operation requires reachable UDP hosting/port forwarding, and may fail behind CGNAT.
+Janela PowerShell 1 — host, mantendo o console visível e salvando saída:
 
-Automated structural checks remain `python3 -m unittest discover -s tests -p 'test_*.py' -v`; they do not replace any step above.
+```powershell
+$project = (Resolve-Path .).Path
+& $godot --path $project --position 100,100 2>&1 | Tee-Object -FilePath .\blacksite-host.log
+```
+
+No menu da primeira instância clique **HOSPEDAR PARTIDA** (UDP `24560`).
+
+Janela PowerShell 2 — cliente:
+
+```powershell
+$project = (Resolve-Path .).Path
+& $godot --path $project --position 700,100 2>&1 | Tee-Object -FilePath .\blacksite-client.log
+```
+
+Na segunda instância deixe IP `127.0.0.1`, porta `24560`, e clique **ENTRAR NA PARTIDA**. Se `--position` não funcionar nessa versão, organize as janelas manualmente. Se preferir a interface do editor para o host, abra o editor na primeira instância e pressione F5; rode o comando cliente no segundo PowerShell.
+
+## Verificações e resultados a registrar
+
+1. A primeira instância hospeda sem erro de bind/porta e entra no setor.
+2. O segundo peer conecta; ambas as janelas mostram dois IDs no roster.
+3. Movimente os dois personagens simultaneamente com WASD e mouse. Confirme que cada câmera/controlador é local e os dois avatares aparecem sincronizados.
+4. Caminhe contra paredes e a caixa GLB; verifique colisões em ambas as instâncias. Depois aproxime os dois avatares para testar colisão entre personagens.
+5. Feche o cliente; o host deve remover o ID e continuar na partida. Reabra o cliente para repetir. Encerre o host e verifique se o cliente retorna ao menu com mensagem de desconexão.
+6. Inspecione `blacksite-host.log` e `blacksite-client.log` por `SCRIPT ERROR`, falhas de RPC e erros críticos de física/import. Preserve as mensagens e passos de reprodução reais.
+7. Para limite da sala, inclua clientes adicionais: esperado um host + três clientes; o quinto jogador total deve ser recusado/desconectado.
+
+Registre versão exata do Godot, passos, saída, capturas de tela reais e resultado individual de cada item. Este teste local **não** valida LAN nem internet. Para LAN, use IP privado do host e permita UDP 24560 no firewall. Internet requer hospedagem UDP alcançável/encaminhamento de porta, e CGNAT pode impedir entrada.
+
+## Linux/macOS (se Godot estiver no PATH)
+
+Em dois terminais no diretório do projeto: `godot --path . --position 100,100` e `godot --path . --position 700,100`; clique hospedar na primeira e conecte `127.0.0.1:24560` na segunda.

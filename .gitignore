@@ -1,3 +1,6 @@
-
 __pycache__/
 *.py[cod]
+.godot/
+export/*.exe
+export/*.pck
+*.log

@@ -4,9 +4,9 @@ Fundação de protótipo cooperativo de terror 3D com Godot 4 e rede ENet. Estad
 
 ## Executar
 
-Abra `project.godot` no Godot 4.3 ou posterior. Hospede no botão correspondente; para testar localmente, abra uma segunda instância e conecte em `127.0.0.1`, UDP `24560`. Controles: WASD, Shift, mouse; Esc libera o cursor; clique recaptura. Use `SAIR` para encerrar.
+No Windows, use `INICIAR_BLACKSITE.bat` para localizar/selecionar Godot 4.3+ e abrir o editor (F5 executa a cena principal); `INICIAR_BLACKSITE.bat game` tenta abrir o jogo diretamente. `VALIDAR_BLACKSITE.bat` roda testes estruturais e, se Godot estiver configurado, uma importação headless; não testa gameplay. Guia completo: `docs/VALIDACAO_WINDOWS.md`. Hospede no botão correspondente; para testar localmente, abra uma segunda instância e conecte em `127.0.0.1`, UDP `24560`. Controles: WASD, Shift, mouse; Esc libera o cursor; clique recaptura. Use `SAIR` para encerrar.
 
-Testes estruturais (requer Python 3): `python3 -m unittest discover -s tests -p 'test_*.py' -v`. O roteiro reproduzível de dois clientes está em `tests/MULTIPLAYER_MANUAL.md` e requer runtime Godot; os testes estruturais não substituem essa execução. A fonte Blender detalhada requer Blender 4.x: `blender -b --python blender/source/generate_props.py` (gera `.blend` e GLB detalhado). O arquivo GLB leve atualmente distribuído foi criado pelo gerador Python padrão, não executado pelo Blender.
+Testes estruturais (requer Python 3): `python3 -m unittest discover -s tests -p 'test_*.py' -v`. Os arquivos `.bat` foram revisados e cobertos por verificações estáticas, mas não foram executados no Windows neste ambiente. O roteiro reproduzível de dois clientes está em `tests/MULTIPLAYER_MANUAL.md` e requer runtime Godot; os testes estruturais não substituem essa execução. O roteiro reproduzível de dois clientes está em `tests/MULTIPLAYER_MANUAL.md` e requer runtime Godot; os testes estruturais não substituem essa execução. A fonte Blender detalhada requer Blender 4.x: `blender -b --python blender/source/generate_props.py` (gera `.blend` e GLB detalhado). O arquivo GLB leve atualmente distribuído foi criado pelo gerador Python padrão, não executado pelo Blender.
 
 ## Rede
 

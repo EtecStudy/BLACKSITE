@@ -1,5 +1,5 @@
 """Offline structural checks; these do not substitute for Godot runtime/network tests."""
-import json, pathlib, struct, unittest
+import json, pathlib, re, struct, unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 class ProjectStructure(unittest.TestCase):
     def test_main_scene_and_autoload_exist(self):
@@ -13,6 +13,8 @@ class ProjectStructure(unittest.TestCase):
             self.assertIn(token,s+avatar)
         self.assertIn('move_and_slide()',avatar)
         self.assertIn('get_remote_sender_id()',s)
+        for marker in ('create_server falhou','create_client falhou','Primeira intencao de movimento','Timeout de input','_timed_out.has(id)'):
+            self.assertIn(marker,s)
         self.assertIn('Camera3D.current = is_local',avatar)
         self.assertIn('current = false',(ROOT/'scenes/player/avatar.tscn').read_text())
     def test_world_collision_and_props(self):
@@ -40,6 +42,26 @@ class ProjectStructure(unittest.TestCase):
             v=[positions[l*3+x]-positions[i*3+x] for x in range(3)]
             cross=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
             self.assertGreater(sum(cross[x]*normals[i*3+x] for x in range(3)),0)
+    def test_all_godot_resource_paths_resolve(self):
+        sources=[ROOT/'project.godot', *ROOT.rglob('*.gd'), *ROOT.rglob('*.tscn')]
+        missing=[]
+        for source in sources:
+            text=source.read_text(encoding='utf-8')
+            for relative in re.findall(r'res://([A-Za-z0-9_./-]+)',text):
+                if not (ROOT/relative).is_file(): missing.append((source.relative_to(ROOT),relative))
+        self.assertEqual(missing,[])
+        project=(ROOT/'project.godot').read_text(encoding='utf-8')
+        self.assertIn('run/main_scene="res://scenes/menu/main_menu.tscn"',project)
+        self.assertIn('PackedStringArray("4.3", "GL Compatibility")',project)
+
+    def test_windows_helpers_are_real_and_guard_paths(self):
+        starter=(ROOT/'INICIAR_BLACKSITE.bat').read_text(encoding='utf-8')
+        validator=(ROOT/'VALIDAR_BLACKSITE.bat').read_text(encoding='utf-8')
+        for token in ('project.godot','GODOT_EXE','--version','--path','4.3'):
+            self.assertIn(token,starter)
+        for token in ('project.godot','main_menu.tscn','python','unittest','NAO EXECUTADO','nao foram testados'):
+            self.assertIn(token.lower(),validator.lower())
+
     def test_blender_source_and_catalog(self):
         self.assertTrue((ROOT/'blender/source/generate_props.py').exists())
         catalog=(ROOT/'docs/ASSET_CATALOG.md').read_text()
