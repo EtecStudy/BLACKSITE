@@ -4,7 +4,7 @@ Este roteiro é um plano de teste, **não evidência de que o runtime já foi ap
 
 ## Abrir o projeto
 
-Na raiz do projeto, execute `INICIAR_BLACKSITE.bat`. Ele abre o editor; aguarde importações e use F5 para iniciar a cena principal. Ou use duas instâncias runtime seguindo os comandos Windows abaixo. A cena principal configurada é `res://scenes/menu/main_menu.tscn`.
+Na raiz do projeto, execute `INICIAR_BLACKSITE.bat`. Ele abre o editor; na primeira execução aguarde o import completo e confirme que a cena principal abre com F5. Depois feche a janela do jogo/editor antes do teste em duas instâncias runtime abaixo (ou use F5 no editor para o host e inicie somente o cliente pelo segundo comando). A cena principal configurada é `res://scenes/menu/main_menu.tscn`. Não pule o primeiro import do editor em um checkout novo.
 
 ## Duas instâncias no Windows (PowerShell)
 
