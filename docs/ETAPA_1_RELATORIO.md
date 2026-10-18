@@ -1,66 +1,57 @@
-# BLACKSITE 0.1 — relatório de preparação e validação
+# BLACKSITE 0.1 — preparação e validação Windows
 
-**Estado:** projeto preparado para validação local no Windows. A Etapa 1 **permanece aberta**: não foi possível executar Godot neste ambiente, nem comprovar runtime multiplayer, colisões visuais, importação Godot do GLB ou build Windows.
+**Status do jogo:** Etapa 1 **não concluída**. O Windows launcher foi criado como PE nativo, mas o jogo ainda não foi executado em Godot, e o launcher não pôde ser executado no Windows deste ambiente Linux.
 
-## Repositório e auditoria
+## Branch, estado e auditoria
 
-- Branch conferida: `arena/6823859e-blacksite`. O workspace local chegou inicialmente ao commit base `4594975` apesar do commit solicitado estar no remoto. Fiz fetch explícito do ramo, comparei todo o conteúdo local preparado contra `origin/arena/6823859e-blacksite` e não havia divergências. Atualizei a branch local para `b9d6344` sem descartar arquivos ou histórico; os commits remotos anteriores permanecem ancestrais.
-- Cena principal de `project.godot`: `res://scenes/menu/main_menu.tscn`.
-- Autoload: `Net` → `res://scripts/networking/net.gd`.
-- As referências `res://` em `project.godot`, `.tscn` e `.gd` agora são verificadas pelo teste `test_all_godot_resource_paths_resolve`.
-- Quatro scripts GDScript existentes foram formatados e verificados com `gdformat`/`gdlint`; lint/parser passou. Isso não substitui a compilação pela Godot 4.3.
-- `scripts/player/sector.gd` carrega `res://assets/models/blacksite_crate.glb` como `PackedScene`, instancia-o na cena jogável e cria seu collider. O GLB existente é o arquivo referenciado, não uma cópia de teste. Validação Khronos anterior reportou zero erros/avisos; isso não prova import/render no Godot.
-- As cenas, scripts, GLB, catálogo e fonte Blender estão no repositório. Não há `.blend`, template de exportação ou executável Windows. O Blender fonte é um script real, não um arquivo `.blend` simulado.
+- Trabalho iniciado na branch `arena/6823859e-blacksite`. Estado remoto conferido: `c7329c2` (descendente de `b6ea196`). A árvore estava limpa.
+- Cena principal: `res://scenes/menu/main_menu.tscn`; autoload `Net`: `res://scripts/networking/net.gd`.
+- O setor realmente carrega `res://assets/models/blacksite_crate.glb`. Testes verificam que as referências `res://` em `project.godot`, `.tscn` e `.gd` existem.
+- Quatro scripts GDScript passam `gdformat`/`gdlint`; isso não é compilação/validação semântica da Godot 4.7.
+- O artefato anterior `prova#D.exe` não foi encontrado no repositório nem em `/home/user`; o método anterior não pôde ser inspecionado.
 
-## Preparação Windows adicionada
+## Inicializador Windows criado
 
-- `INICIAR_BLACKSITE.bat`: verifica `project.godot`, procura `GODOT_EXE`/PATH, solicita caminho real se necessário, valida Godot 4.3+, e abre o editor (ou runtime com argumento `game`).
-- `VALIDAR_BLACKSITE.bat`: confere arquivos essenciais, executa testes Python se Python estiver acessível, executa lint se instalado e tenta importação headless somente se encontrar Godot. Mostra explicitamente etapas não executadas e não afirma aprovação de gameplay/multiplayer.
-- `docs/VALIDACAO_WINDOWS.md`: instruções completas para abrir, validar, exportar e registrar evidências no Windows.
-- `tests/MULTIPLAYER_MANUAL.md`: PowerShell para duas instâncias usando Godot encontrado no PATH ou caminho real escolhido pelo usuário, logs separados, movimento simultâneo, colisões, desconexão e limite.
-- `.gitignore`: cache Godot `.godot/`, logs locais e artefatos de exportação não são adicionados ao Git.
-- `README.md`: aponta para os dois scripts e o guia Windows.
+- `BLACKSITE.exe` na raiz: PE nativo Windows x64, subsystem GUI (sem janela de terminal), compilado de `launcher/windows/blacksite_launcher.c` com Zig 0.13.0, cross-target `x86_64-windows-gnu`. SHA-256: `7fbcc94b5bead48686a56053e0bf5512b51bbdd681a2868689119f763a34b643`.
+- O launcher procura o projeto na própria pasta, verifica `project.godot`, cena principal, script de rede e GLB, e usa exatamente `C:\Users\kimfe\Desktop\GODOT\Godot_v4.7.2-stable_win64.exe`.
+- Inicia o jogo diretamente com `CreateProcessW(..., --path "<pasta do projeto>")`; não abre o editor, não requer PATH nem CMD/PowerShell e deixa a Godot escolher a cena principal configurada no projeto.
+- Ausência da Godot ou de arquivos essenciais produz caixa de erro clara. O launcher não inclui nem finge incluir a engine.
+- PE produzido: 6.144 bytes, arquitetura x86-64, subsistema GUI; imports inspecionados: apenas `KERNEL32.dll` e `USER32.dll` (sem C runtime de terceiros).
+- `BLACKSITE-Windows-Package.zip` contém `BLACKSITE.exe` junto com o projeto-fonte. **Extraia o ZIP inteiro** e mantenha o executável ao lado de `project.godot`, pastas `scenes/`, `scripts/` e `assets/`. A Godot externa precisa estar no caminho absoluto acima.
+- Guia técnico: `docs/BLACKSITE_WINDOWS_LAUNCHER.md`.
 
-Os `.bat` foram revisados e cobertos por verificações **estáticas**, mas não foram executados por `cmd.exe` neste Linux. Assim, sua execução real ainda precisa ser confirmada no Windows.
-
-## Logs de rede
-
-`net.gd` agora produz mensagens pontuais com prefixo `[BLACKSITE][NET]`: falha de criação ENet, host/porta e capacidade, tentativa/resultado de conexão, entrada e saída de peer e primeira intenção de movimento válida. Um timeout de input (250 ms) gera aviso uma única vez até a retomada do input. Não há log de movimento a cada quadro nem registro de credenciais; o endereço/IP não é incluído nas mensagens de status do cliente.
-
-## Testes desta rodada
+## Verificações e limites do inicializador
 
 ### Aprovados (executados)
 
-- `python3 -m unittest discover -s tests -p 'test_*.py' -v`: **7 testes passaram**, incluindo resolução dos caminhos de recurso, cena principal/versão declarada, guardas de multiplayer/câmera, GLB e conteúdo real dos scripts Windows.
-- `gdformat --check` nos quatro scripts GDScript: **4 sem necessidade de reformatação**.
-- `gdlint` nos mesmos scripts: **Success: no problems found**.
-- `git diff --check`: sem erros de whitespace antes do commit.
-- Validação Khronos GLB de rodada anterior: zero erros/avisos; o GLB não foi alterado nesta preparação.
-
-### Reprovados (tentativas anteriores, não repetidas nesta rodada)
-
-- Download da Godot foi bloqueado após redirecionamento a host de artefatos fora dos hosts permitidos.
-- `apt-get update` foi impedido por falta de permissão nos índices do sistema.
-- Alternativa Blender `bpy==4.3.0` não pôde importar por ausência de `libXrender.so.1`.
+- Compilação cross-target Windows x64 concluída com Zig 0.13.0.
+- Cabeçalho PE analisado: `MZ`, assinatura PE, máquina `0x8664` (x64), subsystem `2` (Windows GUI), entrypoint presente.
+- Tabela de imports analisada com `pefile`: somente `KERNEL32.dll` e `USER32.dll`.
+- Strings UTF-16 do caminho da instalação fornecida e argumento `--path` presentes no executável.
+- `python3 -m unittest discover -s tests -p 'test_*.py' -v`: **8 testes aprovados**, incluindo estrutura PE, caminho Godot compilado, subsystem, dependências do launcher, caminhos de recursos e testes anteriores do GLB/rede.
+- `gdformat --check` e `gdlint`: quatro scripts GDScript aprovados.
+- `git diff --check`: sem erros de whitespace.
+- Validação Khronos anterior do GLB: zero erros/avisos; arquivo inalterado.
 
 ### Não executados
 
-- Godot editor/runtime e importação headless: executáveis ausentes. O script Windows de validação ainda precisa testar isso numa máquina com Godot.
-- Cena visual, menu, host/cliente, sincronização, desconexões, colisões de parede/caixa/personagem e ausência de erros críticos no console.
-- Execução efetiva dos `.bat` em Windows/`cmd.exe`.
-- Importação do GLB no Godot, pipeline `.blend`→`.glb`→Godot e geração/teste de `.exe` Windows.
-- LAN ou internet; nenhuma conexão externa foi testada.
+- Executar `BLACKSITE.exe` em Windows 10/11: não há Windows, Wine ou `cmd.exe` neste ambiente Linux. A validação do PE não prova que o launcher inicia com sucesso no computador do usuário.
+- Verificar que o arquivo Godot informado realmente existe na máquina Windows ou que a versão do motor abre o projeto.
+- Godot editor/runtime, carregamento da cena, multiplayer, colisões, renderização e mensagens reais do console.
+- Importar o GLB no Godot, validar visualmente a cena ou construir/exportar um **build do jogo**. O PE criado é apenas inicializador; não é o jogo compilado nem contém Godot.
+- O ZIP foi montado localmente para entrega; o próprio launcher e o pacote completo ainda precisam de clique/teste real no Windows.
 
-## Como validar no Windows
+## Ambiente / dependências externas
 
-1. Repositório completo extraído; Python 3 recomendado; instalar Godot 4.3+.
-2. `INICIAR_BLACKSITE.bat` abre editor. Se Godot não estiver no PATH, informar o caminho completo do executável. F5 inicia a cena principal.
-3. `VALIDAR_BLACKSITE.bat` roda o que estiver disponível. A etapa headless, se houver Godot, é apenas importação/carregamento, não o teste do jogo.
-4. Para multiplayer, seguir `tests/MULTIPLAYER_MANUAL.md`: duas janelas PowerShell, host em UDP 24560 e cliente em `127.0.0.1:24560`; mover ambos simultaneamente, bater em paredes/caixa/avatares, fechar cliente e verificar que o host o remove. Guardar logs reais e a versão Godot.
-5. Build: editor → **Project > Export > Add… > Windows Desktop**, instalar templates da mesma versão, x86_64, exportar para `export/BLACKSITE.exe` e executar no Windows. Nenhum executável foi gerado nesta sessão.
+- Linux x86-64, Python 3.11.2, Zig 0.13.0 instalado temporariamente de PyPI para cross-compilar. Godot e Blender não estão instalados; não foi repetida tentativa de download da Godot.
+- O path da Godot foi configurado no código a partir do caminho explicitamente informado pelo usuário. Se a instalação for movida/renomeada, o launcher mostrará que ela está ausente; nesse caso será necessária nova build com caminho atualizado.
+- Supabase Storage não está disponível nas ferramentas. Bucket `BLACKSITE` não foi consultado ou alterado.
 
-## Assets, preservação e próxima ação
+## Como usar e próxima ação
 
-- O catálogo verificável permanece em `docs/ASSET_CATALOG.md`; assets de terceiros pesquisados não foram baixados nem incorporados. O crate é próprio e gerado por Python simples; o script Blender pode gerar uma versão detalhada quando Blender estiver disponível.
-- Supabase Storage não está exposto nas ferramentas desta sessão. Bucket `BLACKSITE` não foi consultado ou alterado; não houve upload.
-- Próxima ação concreta: no Windows, executar `VALIDAR_BLACKSITE.bat`, abrir pelo `INICIAR_BLACKSITE.bat`, completar os passos de `tests/MULTIPLAYER_MANUAL.md` e enviar os dois logs/erros observados. Só depois corrigir falhas de runtime, validar visualmente o GLB e exportar a build Windows.
+1. Baixe `BLACKSITE-Windows-Package.zip` e extraia todos os arquivos para uma pasta normal.
+2. Confirme que `C:\Users\kimfe\Desktop\GODOT\Godot_v4.7.2-stable_win64.exe` existe. O launcher espera o executável gráfico padrão, não o `*_console.exe` wrapper.
+3. Dê dois cliques em `BLACKSITE.exe`. A Godot deve iniciar o projeto diretamente; se houver arquivo ausente, o launcher exibe uma caixa de erro.
+4. Para validar o jogo, depois que abrir, testar menu, colisões e duas instâncias conforme `tests/MULTIPLAYER_MANUAL.md`; salvar erros/telas reais.
+
+A Etapa 1 só pode avançar após confirmar o duplo clique no Windows, a abertura da cena e os testes de runtime multiplayer/colisões. O inicializador pode ser baixado/testado agora, mas o jogo ainda não foi declarado funcional.

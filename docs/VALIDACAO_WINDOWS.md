@@ -5,6 +5,7 @@
 ## 1. Requisitos
 
 - Windows 10/11 de 64 bits.
+- Para iniciar com dois cliques sem preencher caminhos: extraia `BLACKSITE-Windows-Package.zip` inteiro e abra `BLACKSITE.exe` no diretório extraído. Ele usa a instalação configurada para este usuário em `C:\Users\kimfe\Desktop\GODOT\Godot_v4.7.2-stable_win64.exe`; não inclui a engine. Veja `BLACKSITE_WINDOWS_LAUNCHER.md` para dependências e validação real.
 - Godot **4.3 ou posterior**, versão standard ou console. A variante console é recomendada para recolher logs. O projeto não requer Blender para abrir: o recurso GLB pequeno já está no repositório.
 - Python 3 é recomendado para testes estruturais. No Windows, instale-o com o launcher `py` ou coloque `python.exe` no PATH. Os testes usam somente a biblioteca padrão.
 - Extraia/clone o repositório inteiro; abra a pasta que contém `project.godot`. Não mova apenas o `.exe` ou o GLB.

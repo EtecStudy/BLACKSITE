@@ -62,6 +62,23 @@ class ProjectStructure(unittest.TestCase):
         for token in ('project.godot','main_menu.tscn','python','unittest','NAO EXECUTADO','nao foram testados'):
             self.assertIn(token.lower(),validator.lower())
 
+    def test_windows_launcher_is_gui_pe_for_supplied_godot(self):
+        path=ROOT/'BLACKSITE.exe'
+        data=path.read_bytes()
+        self.assertEqual(data[:2],b'MZ')
+        pe_offset=struct.unpack_from('<I',data,0x3c)[0]
+        self.assertEqual(data[pe_offset:pe_offset+4],b'PE\0\0')
+        self.assertEqual(struct.unpack_from('<H',data,pe_offset+4)[0],0x8664)
+        optional=pe_offset+24
+        self.assertEqual(struct.unpack_from('<H',data,optional+68)[0],2)  # GUI subsystem
+        self.assertIn(b'KERNEL32.dll',data); self.assertIn(b'USER32.dll',data)
+        self.assertNotIn(b'api-ms-win-crt',data)
+        godot_path=r'C:\Users\kimfe\Desktop\GODOT\Godot_v4.7.2-stable_win64.exe'
+        self.assertIn(godot_path.encode('utf-16le'),data)
+        self.assertIn('--path'.encode('utf-16le'),data)
+        for relative in ('project.godot',r'scenes\menu\main_menu.tscn',r'scenes\maps\sector.tscn',r'scenes\player\avatar.tscn',r'scripts\networking\menu.gd',r'scripts\networking\net.gd',r'scripts\player\sector.gd',r'scripts\player\avatar.gd',r'assets\models\blacksite_crate.glb'):
+            self.assertIn(relative.encode('utf-16le'),data)
+
     def test_blender_source_and_catalog(self):
         self.assertTrue((ROOT/'blender/source/generate_props.py').exists())
         catalog=(ROOT/'docs/ASSET_CATALOG.md').read_text()
