@@ -13,7 +13,7 @@ A continuação iniciou em `arena/6823859e-blacksite`, commit `8167bfb`, confirm
 - Blender binário também não encontrado. Alternativa tentada: `bpy==4.3.0` instalado em venv temporário via PyPI; import do módulo falha com `ImportError: libXrender.so.1: cannot open shared object file`. Sem permissão para instalar a dependência de sistema. Portanto **não foi criado `.blend`** nem foi executado o pipeline Blender.
 - GCC/G++ presentes; CMake/Ninja, Snap, Flatpak, Docker/Podman e `xvfb-run` não encontrados.
 - Supabase connector está habilitado, mas suas ferramentas expostas são para projetos, bancos, auth, functions e secrets; não há ferramenta de Storage/buckets. O bucket `BLACKSITE` não foi examinado nem alterado. Nenhum arquivo foi enviado ao Supabase, nenhuma credencial foi criada ou exposta.
-- GitHub permanece conectado; alterações serão commitadas/pushadas somente em `arena/6823859e-blacksite`.
+- Persistência: implementação e documentação desta continuação foram commitadas e enviadas a `origin/arena/6823859e-blacksite` (commit de implementação `2dd2733`; commit original `8167bfb` preservado).
 
 ## Alterações realizadas nesta continuação
 
