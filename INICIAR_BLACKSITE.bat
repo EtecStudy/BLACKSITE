@@ -44,6 +44,8 @@ if not exist "%GODOT_EXE%" (
 set "GODOT_VERSION="
 for /f "delims=" %%V in ('"%GODOT_EXE%" --version 2^>^&1') do if not defined GODOT_VERSION set "GODOT_VERSION=%%V"
 if not defined GODOT_VERSION goto MANUAL_VERSION_CHECK
+echo("%GODOT_VERSION%"| findstr /i /c:"Main executable" >nul
+if not errorlevel 1 goto CONSOLE_TARGET_MISSING
 for /f "tokens=1,2 delims=." %%A in ("%GODOT_VERSION%") do (
     set "GODOT_MAJOR=%%A"
     set "GODOT_MINOR=%%B"
@@ -59,6 +61,15 @@ if %GODOT_MINOR% LSS 3 (
     exit /b 4
 )
 goto START_BLACKSITE
+
+:CONSOLE_TARGET_MISSING
+echo [BLACKSITE] Este console exe e um launcher; o Godot principal que ele requer nao esta ao lado.
+echo Detalhe retornado pelo launcher: "%GODOT_VERSION%"
+echo Baixe tambem o executavel Windows padrao da mesma versao e coloque-o na mesma pasta.
+echo O erro do console normalmente informa o nome exato que esta faltando (ex.: Godot_v4.x-stable_win64.exe).
+echo Depois execute novamente e informe o caminho do console exe.
+pause
+exit /b 3
 
 :MANUAL_VERSION_CHECK
 echo [BLACKSITE] O executavel nao retornou versao no console (pode ser a versao GUI).

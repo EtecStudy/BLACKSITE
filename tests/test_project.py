@@ -57,7 +57,7 @@ class ProjectStructure(unittest.TestCase):
     def test_windows_helpers_are_real_and_guard_paths(self):
         starter=(ROOT/'INICIAR_BLACKSITE.bat').read_text(encoding='utf-8')
         validator=(ROOT/'VALIDAR_BLACKSITE.bat').read_text(encoding='utf-8')
-        for token in ('project.godot','GODOT_EXE','--version','--path','4.3'):
+        for token in ('project.godot','GODOT_EXE','--version','--path','4.3','Main executable'):
             self.assertIn(token,starter)
         for token in ('project.godot','main_menu.tscn','python','unittest','NAO EXECUTADO','nao foram testados'):
             self.assertIn(token.lower(),validator.lower())

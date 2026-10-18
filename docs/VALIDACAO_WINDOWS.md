@@ -11,6 +11,10 @@
 
 ## 2. Abrir o projeto
 
+### Se o console disser `Main executable ... not found`
+
+O arquivo `*_console.exe` que você executou é um launcher de console e procura o executável padrão correspondente ao lado dele. Por exemplo, `Godot_v4.7-stable_win64_console.exe` procura `Godot_v4.7-stable_win64.exe` na mesma pasta. Baixe também o executável Windows padrão da **mesma versão**, coloque-o ao lado do console e rode o iniciador novamente; ou informe ao iniciador o caminho do executável padrão e confirme manualmente a versão se o GUI não mostrar `--version` no console. Não renomeie um arquivo de outra versão.
+
 1. Abra um terminal na raiz do projeto.
 2. Execute `INICIAR_BLACKSITE.bat`.
 3. O script procura `GODOT_EXE`, depois `godot.exe`/`godot_console.exe` no PATH. Se não encontrar, solicita o caminho completo do executável. Pode-se definir `GODOT_EXE` para não receber a pergunta:
