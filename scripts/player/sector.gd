@@ -32,6 +32,10 @@ func remove_player_avatar(peer_id: int) -> void:
 	_refresh_roster()
 
 
+func get_player_avatar(peer_id: int) -> CharacterBody3D:
+	return avatars.get(peer_id) as CharacterBody3D
+
+
 func apply_snapshot(data: Dictionary) -> void:
 	for peer_id in data:
 		var id := int(peer_id)
@@ -75,6 +79,9 @@ func _build_map() -> void:
 	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	e.ambient_light_color = Color("26343b")
 	e.ambient_light_energy = 0.32
+	e.fog_enabled = true
+	e.fog_light_color = Color("29373a")
+	e.fog_density = 0.012
 	e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.environment = e
 	add_child(env)
@@ -90,29 +97,25 @@ func _build_map() -> void:
 	var trim := _mat(Color("657070"))
 	var hazard := _mat(Color("6b362b"))
 	var lamp_mat := _mat(Color("aab8a4"), true)
-	# Five connected rectangular areas: entrance, north/south corridors, three laboratories.
-	_room(geo, Vector3(0, 0, 0), Vector2(10, 10), floor_mat, wall_mat, trim, 3.4)
-	_room(geo, Vector3(0, 0, -11), Vector2(5, 12), floor_mat, wall_mat, trim, 3.4)
-	_room(geo, Vector3(-10, 0, -11), Vector2(14, 8), floor_mat, wall_mat, trim, 3.4)
-	_room(geo, Vector3(0, 0, -23), Vector2(5, 12), floor_mat, wall_mat, trim, 3.4)
-	_room(geo, Vector3(10, 0, -11), Vector2(14, 8), floor_mat, wall_mat, trim, 3.4)
+	# Connected entrance, two corridor modules, two laboratories and one side storage room.
+	_room(geo, Vector3(0, 0, 0), Vector2(10, 10), floor_mat, wall_mat, trim, 3.4, [-1], [-1])
+	_room(geo, Vector3(0, 0, -11), Vector2(5, 12), floor_mat, wall_mat, trim, 3.4, [-1, 1], [-1, 1])
+	_room(geo, Vector3(-9.5, 0, -11), Vector2(14, 8), floor_mat, wall_mat, trim, 3.4, [1])
+	_room(geo, Vector3(0, 0, -23), Vector2(5, 12), floor_mat, wall_mat, trim, 3.4, [], [1])
+	_room(geo, Vector3(9.5, 0, -11), Vector2(14, 8), floor_mat, wall_mat, trim, 3.4, [-1])
 	# Supplemental side room opens from entry via framed threshold.
-	_room(geo, Vector3(-11, 0, 1), Vector2(12, 8), floor_mat, wall_mat, trim, 3.4)
+	_room(geo, Vector3(-11, 0, 0), Vector2(12, 8), floor_mat, wall_mat, trim, 3.4, [1])
 	# Door frames and closed decorative industrial panels leave connecting apertures open.
-	for p in [
-		Vector3(0, 0, -5),
-		Vector3(0, 0, -17),
-		Vector3(-4.5, 0, -11),
-		Vector3(4.5, 0, -11),
-		Vector3(-5, 0, 0)
-	]:
+	for p in [Vector3(0, 0, -5), Vector3(0, 0, -17)]:
 		_door_frame(geo, p, trim, hazard)
+	for p in [Vector3(-2.5, 0, -11), Vector3(2.5, 0, -11), Vector3(-5, 0, 0)]:
+		_door_frame_side(geo, p, trim, hazard)
 	# Storage crates and cabinet forms.
 	for p in [
-		Vector3(3, 0.7, 2), Vector3(-3, 0.65, -13), Vector3(14, 0.8, -11), Vector3(-12, 0.85, -11)
+		Vector3(3, 0.7, 2), Vector3(-6, 0.65, -13), Vector3(14, 0.8, -11), Vector3(-12, 0.85, -11)
 	]:
 		_crate(geo, p, wall_mat, trim)
-	# Imported Blender-origin GLB demonstration asset, instantiated in the playable map.
+	# Procedural glTF demo crate, instantiated in the playable map (not yet Blender-generated).
 	var crate_asset := load("res://assets/models/blacksite_crate.glb") as PackedScene
 	if crate_asset:
 		var imported_crate := crate_asset.instantiate()
@@ -190,15 +193,35 @@ func _room(
 	floor_mat: Material,
 	wall: Material,
 	trim: Material,
-	height: float
+	height: float,
+	open_sides: Array[int] = [],
+	open_ends: Array[int] = []
 ) -> void:
 	_box(parent, center + Vector3(0, -0.18, 0), Vector3(size.x, 0.36, size.y), floor_mat)
 	_box(parent, center + Vector3(0, height + 0.15, 0), Vector3(size.x, 0.3, size.y), wall)
-	_box(parent, center + Vector3(-size.x / 2, height / 2, 0), Vector3(0.35, height, size.y), wall)
-	_box(parent, center + Vector3(size.x / 2, height / 2, 0), Vector3(0.35, height, size.y), wall)
-	# Two end walls, deliberately split around pass-through openings.
+	# Side walls have 2.2 m service-door openings centered on each room's long axis.
+	# Matching openings in neighboring modules form real traversable connections.
+	var side_segment_length := (size.y - 1.8) * 0.5
+	var side_segment_offset := (size.y + 1.8) * 0.25
+	for side in [-1, 1]:
+		var x := center.x + side * size.x / 2
+		if side not in open_sides:
+			_box(parent, Vector3(x, height / 2, center.z), Vector3(0.35, height, size.y), wall)
+			continue
+		for zsign in [-1, 1]:
+			_box(
+				parent,
+				Vector3(x, height / 2, center.z + zsign * side_segment_offset),
+				Vector3(0.35, height, side_segment_length),
+				wall
+			)
+		_box(parent, Vector3(x, height - 0.35, center.z), Vector3(0.35, 0.7, 1.8), wall)
+	# End walls are solid except where a neighboring corridor module is attached.
 	for zsign in [-1, 1]:
 		var z := center.z + zsign * size.y / 2
+		if zsign not in open_ends:
+			_box(parent, Vector3(center.x, height / 2, z), Vector3(size.x, height, 0.35), wall)
+			continue
 		_box(
 			parent,
 			Vector3(center.x - size.x * 0.32, height / 2, z),
@@ -219,6 +242,12 @@ func _door_frame(parent: Node3D, pos: Vector3, metal: Material, warning: Materia
 	_box(parent, pos + Vector3(-0.8, 1.55, 0), Vector3(0.18, 3.1, 0.3), metal)
 	_box(parent, pos + Vector3(0.8, 1.55, 0), Vector3(0.18, 3.1, 0.3), metal)
 	_box(parent, pos + Vector3(0, 3.08, 0), Vector3(1.8, 0.18, 0.3), warning)
+
+
+func _door_frame_side(parent: Node3D, pos: Vector3, metal: Material, warning: Material) -> void:
+	_box(parent, pos + Vector3(0, 1.55, -0.8), Vector3(0.3, 3.1, 0.18), metal)
+	_box(parent, pos + Vector3(0, 1.55, 0.8), Vector3(0.3, 3.1, 0.18), metal)
+	_box(parent, pos + Vector3(0, 3.08, 0), Vector3(0.3, 0.18, 1.8), warning)
 
 
 func _crate(parent: Node3D, pos: Vector3, body: Material, metal: Material) -> void:

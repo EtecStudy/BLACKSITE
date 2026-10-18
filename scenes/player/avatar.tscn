@@ -20,4 +20,4 @@ position = Vector3(0, 1.55, 0)
 [node name="PitchPivot" type="Node3D" parent="YawPivot"]
 
 [node name="Camera3D" type="Camera3D" parent="YawPivot/PitchPivot"]
-current = true
+current = false

@@ -49,7 +49,10 @@ func _physics_process(delta: float) -> void:
 	if is_local:
 		var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 		Net.submit_input(input, $YawPivot.rotation.y, pitch, Input.is_action_pressed("sprint"))
-		# The authoritative server's snapshot controls position; local smoothing keeps input responsive.
+		if multiplayer.is_server():
+			# Net drives this authoritative body later in the same physics frame.
+			return
+		# Client-side prediction is corrected by the host's snapshots.
 		var direction := Vector3(input.x, 0, input.y).rotated(Vector3.UP, $YawPivot.rotation.y)
 		var speed := 6.5 if Input.is_action_pressed("sprint") else 3.8
 		velocity.x = direction.x * speed
@@ -59,9 +62,28 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.y = 0
 		move_and_slide()
+	elif multiplayer.is_server():
+		# Net drives all remote server-side bodies from validated client intent.
+		return
 	else:
 		global_position = global_position.lerp(remote_target, minf(delta * 12.0, 1.0))
 		$YawPivot.rotation.y = lerp_angle($YawPivot.rotation.y, remote_yaw, minf(delta * 12.0, 1.0))
+
+
+func server_simulate(
+	move_input: Vector2, yaw: float, server_pitch: float, sprinting: bool, delta: float
+) -> void:
+	$YawPivot.rotation.y = yaw
+	$YawPivot/PitchPivot.rotation.x = server_pitch
+	var direction := Vector3(move_input.x, 0.0, move_input.y).rotated(Vector3.UP, yaw)
+	var speed := 6.5 if sprinting else 3.8
+	velocity.x = direction.x * speed
+	velocity.z = direction.z * speed
+	if not is_on_floor():
+		velocity.y -= 18.0 * delta
+	else:
+		velocity.y = 0.0
+	move_and_slide()
 
 
 func apply_network_state(pos: Vector3, yaw: float, remote_pitch: float) -> void:

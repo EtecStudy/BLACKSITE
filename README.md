@@ -6,7 +6,7 @@ Fundação de protótipo cooperativo de terror 3D com Godot 4 e rede ENet. Estad
 
 Abra `project.godot` no Godot 4.3 ou posterior. Hospede no botão correspondente; para testar localmente, abra uma segunda instância e conecte em `127.0.0.1`, UDP `24560`. Controles: WASD, Shift, mouse; Esc libera o cursor; clique recaptura. Use `SAIR` para encerrar.
 
-Headless estrutural (requer Python 3): `python3 -m unittest discover -s tests -p 'test_*.py' -v`. A validação de runtime em Godot requer o executável Godot instalado. Execute o script Blender com `blender -b --python blender/source/generate_props.py` para gerar o fonte `.blend` e a exportação completa do asset, com Blender 4.x.
+Testes estruturais (requer Python 3): `python3 -m unittest discover -s tests -p 'test_*.py' -v`. O roteiro reproduzível de dois clientes está em `tests/MULTIPLAYER_MANUAL.md` e requer runtime Godot; os testes estruturais não substituem essa execução. A fonte Blender detalhada requer Blender 4.x: `blender -b --python blender/source/generate_props.py` (gera `.blend` e GLB detalhado). O arquivo GLB leve atualmente distribuído foi criado pelo gerador Python padrão, não executado pelo Blender.
 
 ## Rede
 

@@ -57,6 +57,7 @@ func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	if players.size() >= MAX_PLAYERS:
+		_set_status("Sala cheia: limite de %d jogadores" % MAX_PLAYERS)
 		multiplayer.multiplayer_peer.disconnect_peer(id)
 		return
 	_accept_peer(id)
@@ -148,8 +149,11 @@ func _send_input(move: Vector2, yaw: float, pitch: float, sprinting: bool) -> vo
 func _server_input(id: int, move: Vector2, yaw: float, pitch: float, sprinting: bool) -> void:
 	if not players.has(id):
 		return
+	# Reject non-finite values and clamp client intent; the host owns speed and world position.
+	if not move.is_finite() or not is_finite(yaw) or not is_finite(pitch):
+		return
 	players[id].input = move.limit_length(1.0)
-	players[id].yaw = yaw
+	players[id].yaw = wrapf(yaw, -PI, PI)
 	players[id].pitch = clampf(pitch, -1.45, 1.45)
 	players[id].sprint = sprinting
 
@@ -159,13 +163,20 @@ func _physics_process(delta: float) -> void:
 		return
 	for id in players:
 		var p: Dictionary = players[id]
-		var speed := 6.5 if p.sprint else 3.8
-		var direction := Vector3(p.input.x, 0.0, p.input.y).rotated(Vector3.UP, p.yaw)
-		var target: Vector3 = p.position + direction * speed * delta
-		# Authoritative bounds protect the demo sector. Character collision is resolved by scene capsule.
-		target.x = clampf(target.x, -28.0, 28.0)
-		target.z = clampf(target.z, -28.0, 28.0)
-		p.position = target
+		var world := get_tree().current_scene
+		if not world or not world.has_method("get_player_avatar"):
+			continue
+		var avatar: CharacterBody3D = world.get_player_avatar(int(id))
+		if not is_instance_valid(avatar):
+			continue
+		# Host runs the same CharacterBody3D simulation for every peer; clients send intent only.
+		avatar.server_simulate(p.input, p.yaw, p.pitch, p.sprint, delta)
+		var position: Vector3 = avatar.global_position
+		# Bounded world limits are an additional guard; wall/crate collisions use physics shapes.
+		position.x = clampf(position.x, -28.0, 28.0)
+		position.z = clampf(position.z, -28.0, 28.0)
+		avatar.global_position = position
+		p.position = position
 	_snapshot_clock += delta
 	if _snapshot_clock >= 0.05:
 		_snapshot_clock = 0.0

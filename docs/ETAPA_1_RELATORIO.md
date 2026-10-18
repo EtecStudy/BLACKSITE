@@ -1,104 +1,74 @@
-# BLACKSITE 0.1 — Relatório da Etapa 1
+# BLACKSITE 0.1 — Relatório da Etapa 1 e continuação
 
-**Data da inspeção:** 18/10/2026 (UTC)  
-**Estado:** fundação e arquivos de projeto implementados; critério de conclusão integral **não atingido**, pois o ambiente não contém Godot/Blender e não permite executar a demonstração em runtime.
+**Data:** 18/10/2026
+**Status:** projeto preservado e com correções de arquitetura aplicadas; etapa **não concluída** porque Godot runtime, dois peers, importação visual e build Windows não puderam ser executados.
 
-## Resumo executivo
+## Base verificada e ambiente
 
-Foi criado um projeto Godot 4 organizado com menu de sessão, host/cliente ENet, sala nominal de quatro peers, geração de um pequeno setor industrial, avatar em primeira pessoa, input de movimento enviado ao servidor, snapshots e recursos próprios. Foi feito um GLB mínimo de caixa procedural e criada uma fonte Blender Python para produzir a versão mais detalhada, `.blend` e export GLB quando Blender estiver disponível.
+A continuação iniciou em `arena/6823859e-blacksite`, commit `8167bfb`, confirmado como `HEAD` e `origin` antes de qualquer edição. Estrutura, README, este relatório, catálogo, quatro scripts GDScript, três cenas, GLB, fonte Blender e testes foram inspecionados. O commit anterior foi preservado no histórico.
 
-Foram executados cinco testes Python estruturais e o lint/formatação GDScript via `gdtoolkit`: todos passaram. Esses testes não executam a engine, não verificam o importador GLB da Godot e não demonstram multiplayer. **Não afirmar como validado:** menu em execução, conexões entre peers, movimento em dois clientes, colisão durante jogo, visualização/renderização nem export Windows.
+- Python 3.11.2; memória 3.8 GiB total / 3.6 GiB disponível; disco 21 GiB, 20 GiB disponíveis.
+- Godot não encontrado em `/usr/bin`, `/usr/local/bin`, `/opt`, Snap ou `~/.local/bin`. Tentativa de download oficial 4.4.1 pelo GitHub foi redirecionada a `objects.githubusercontent.com`, bloqueado pela política de hosts, e falhou com `SSL_ERROR_SYSCALL`. Não há Godot instalado.
+- `apt-get update` não pôde ser usado: índices locais não existem e a operação falhou por permissão em `/var/lib/apt/lists/partial`. Templates de exportação não foram encontrados.
+- Blender binário também não encontrado. Alternativa tentada: `bpy==4.3.0` instalado em venv temporário via PyPI; import do módulo falha com `ImportError: libXrender.so.1: cannot open shared object file`. Sem permissão para instalar a dependência de sistema. Portanto **não foi criado `.blend`** nem foi executado o pipeline Blender.
+- GCC/G++ presentes; CMake/Ninja, Snap, Flatpak, Docker/Podman e `xvfb-run` não encontrados.
+- Supabase connector está habilitado, mas suas ferramentas expostas são para projetos, bancos, auth, functions e secrets; não há ferramenta de Storage/buckets. O bucket `BLACKSITE` não foi examinado nem alterado. Nenhum arquivo foi enviado ao Supabase, nenhuma credencial foi criada ou exposta.
+- GitHub permanece conectado; alterações serão commitadas/pushadas somente em `arena/6823859e-blacksite`.
 
-## Inspeção do ambiente e proveniência
+## Alterações realizadas nesta continuação
 
-- Repositório inicial: somente `README.md`, sem prova de conceito anterior nem arquivos de jogo para reaproveitar.
-- Godot/Godot4: não instalados e não encontrados no sistema. Tentativa de obtenção do binário oficial 4.4.1 via GitHub foi redirecionada para `objects.githubusercontent.com`, host fora da lista permitida; conexão falhou. Não há versão efetivamente instalada.
-- Templates de exportação: não encontrados em `~/.local/share/godot/export_templates` nem em configuração local. Sem editor Godot, não foi possível confirmar instalação por outro mecanismo.
-- Blender: não instalado/encontrado. A fonte `blender/source/generate_props.py` existe, porém não foi executada e nenhum arquivo `.blend` foi produzido neste ambiente.
-- Python: 3.11.2. Testes usam somente biblioteca padrão. `gdtoolkit` foi instalado temporariamente em `/tmp/gdcheck` para validar estilo/sintaxe GDScript, não é dependência do produto.
-- Memória observada: 3.8 GiB total, 3.6 GiB disponíveis; armazenamento de `/`: 21 GiB total, 20 GiB disponíveis.
-- GCC e G++ disponíveis; CMake e Ninja não encontrados. Ferramentas de exportação Windows não disponíveis.
-- GitHub CLI autenticado como `EtecStudy` durante a inspeção. O bucket Supabase BLACKSITE não foi listado nem alterado: as ferramentas Supabase expostas nesta sessão não incluem Storage/buckets; não foram criados projetos, buckets ou credenciais.
-- Persistência: commit `0a377f7` enviado com sucesso para `origin/arena/6823859e-blacksite`; arquivos preservados no GitHub, sem criar PR. Checkout local limpo após push.
+1. **Multiplayer e autoridade:** `scripts/networking/net.gd` agora valida vetor e ângulos finitos, normaliza/clampa inputs e recebe somente intenção do cliente. O host dirige os `CharacterBody3D` de todos os peers, usando movimento, gravidade e `move_and_slide()` contra a geometria física do mapa, e então distribui snapshots. Há limite de um host + três clientes, entradas/saídas e erros de conexão existentes preservados. Isso melhora a autoridade de movimento, mas continua sem rate limiting/anti-cheat abrangente e não foi verificado em runtime.
+2. **Avatar/câmera:** `scripts/player/avatar.gd` diferencia predição local de simulação autoritativa no host; os clientes reconciliam posição com snapshots. A câmera começa inativa na cena e só a instância do jogador local a ativa; avatares remotos removem sua câmera.
+3. **Conectividade do cenário:** `scripts/player/sector.gd` divide paredes laterais em torno de aberturas alinhadas entre módulos, além das passagens nas paredes de extremidade. Adicionada névoa sutil à iluminação existente. Colliders seguem em pisos, paredes e objetos; a caixa importada tem collider separado.
+4. **GLB:** `tests/build_glb.py` gera agora o mesmo prop no sistema de coordenadas Y-up do glTF. `assets/models/blacksite_crate.glb` foi regenerado (1.588 bytes, 12 triângulos); o teste estrutural verifica a extensão vertical Y. Isto não equivale a importá-lo no Godot.
+5. **Reprodutibilidade:** adicionados `tests/MULTIPLAYER_MANUAL.md` com roteiro local de dois clientes, paredes, desconexão e limite de quatro players; README e catálogo/report atualizados. O roteiro é plano reproduzível, não teste executado.
 
-## O que foi implementado
+A fonte `blender/source/generate_props.py` existente continua a produzir o modelo detalhado e salvar `.blend`/GLB se executada em Blender real; ela não foi executada porque a alternativa `bpy` requer a biblioteca ausente.
 
-- `project.godot`: projeto Godot 4, cena inicial, autoload da rede, controles WASD/Shift e renderer compatível.
-- `scenes/menu/main_menu.tscn`, `scripts/networking/menu.gd`: menu para hospedar, conectar por IP/porta e encerrar.
-- `scripts/networking/net.gd`: ENet UDP, limite nominal de quatro peers, status de conexão/erro, entrada/saída, estado de jogador, input de movimento recebido pelo host e snapshots de posição/yaw/pitch.
-- `scenes/maps/sector.tscn`, `scripts/player/sector.gd`: construção modular de sala de entrada, corredores e quatro salas laterais/conectadas, paredes/pisos com `StaticBody3D` e caixas de colisão, molduras, luminárias, crates, painel e spawn markers.
-- `scenes/player/avatar.tscn`, `scripts/player/avatar.gd`: capsule, corpo provisório, câmera local, controle mouse, WASD e corrida. Avatares remotos não criam câmera.
-- `assets/models/blacksite_crate.glb`: GLB 2.0 independente, próprio, 12 triângulos e material metálico simples; inclui collider criado na cena. A estrutura do container/JSON e tamanhos foram verificados por teste Python. Ainda não foi importado pela Godot.
-- `blender/source/generate_props.py`: fonte Python `bpy` de caixa industrial com reforços, rebites e três materiais; quando executada no Blender, grava `blender/source/blacksite_crate.blend` e exporta `assets/models/blacksite_crate.glb`. Não executada por falta de Blender.
-- `tests/build_glb.py`, `tests/test_project.py`: geração GLB leve e verificações estruturais reproduzíveis.
-- `docs/ASSET_CATALOG.md`: recursos encontrados, páginas, licença consultada, metadados conhecidos, limitações e decisões. Nenhum asset de terceiros foi baixado ou redistribuído.
+## Assets e licenças
 
-## Pesquisa e decisão de assets
+O catálogo está em `docs/ASSET_CATALOG.md`. Foram consultadas páginas de Kenney Factory Kit e City Kit (Industrial), categoria Industrial da Poly Haven, categoria Concrete do ambientCG e um modelo de armazém low-poly no Sketchfab. Os assets de terceiros não foram baixados nem incorporados. As licenças referem-se às páginas pesquisadas, não a arquivos específicos não inspecionados; detalhes desconhecidos estão marcados. O GLB procedimental é próprio. Nenhum modelo de jogo comercial foi usado.
 
-As páginas consultadas estão listadas em `docs/ASSET_CATALOG.md`. Fontes avaliadas: Kenney Factory Kit e City Kit Industrial (páginas indicam CC0), categoria industrial da Poly Haven (categoria declara CC0), categoria Concrete do ambientCG, e modelo low-poly do Sketchfab de Colin.Greenall (página aponta CC BY; detalhes de asset/licença integral não foram baixados e precisam ser rechecados). Não se inferiu autorização de arquivo específico sem download/inspeção.
+## Testes — resultados desta continuação
 
-Decisão para esta etapa: usar geometria própria procedimental e materiais de cor simples no cenário, sem texturas pesadas nem áudio de terceiros. A modelagem procedural do mapa é direta no GDScript; o prop de caixa possui GLB próprio e fonte de produção Blender. A versão BLEND e a verificação Blender→Godot continuam bloqueadas pela ausência das duas aplicações necessárias.
+### Aprovado (executado)
 
-## Testes e validação observada
+- `python3 -m unittest discover -s tests -p 'test_*.py' -v`: **5/5 aprovados**. Incluem estrutura do projeto, sinais/guardas de autoridade no código, colisões declaradas, container GLB 2.0, JSON/accessors e eixo Y vertical.
+- `/tmp/gdcheck/bin/gdformat --check scripts/networking/menu.gd scripts/networking/net.gd scripts/player/avatar.gd scripts/player/sector.gd`: **4 scripts sem necessidade de reformatação**.
+- `/tmp/gdcheck/bin/gdlint scripts/networking/menu.gd scripts/networking/net.gd scripts/player/avatar.gd scripts/player/sector.gd`: **Success: no problems found**. É análise externa do GDScript, não compilação pelo Godot.
+- Validador oficial Khronos glTF Validator (`gltf-validator` npm 2.0.0-dev.3.10) executado sobre `assets/models/blacksite_crate.glb`: 0 erros, 0 warnings, 0 infos, 0 hints; identifica glTF 2.0, 1 material, 24 vértices, 12 triângulos e uma cena default. Isso comprova validade glTF estrutural, não o importador Godot.
+- `git diff --check`: sem erros de whitespace.
 
-| Verificação | Resultado observado |
-|---|---|
-| `python3 -m unittest discover -s tests -p 'test_*.py' -v` | **Aprovado:** 5 testes estruturais passaram (arquivos e referências básicas, sinais/features de rede presentes no código, intenção de colisão/props declarada, GLB 2.0/JSON/accessor coerentes, catálogo/fonte Blender presentes). Não equivalem a teste de execução. |
-| `gdformat` e `gdlint` nos quatro scripts GDScript | **Aprovado:** scripts formatados; `gdlint` reportou “Success: no problems found”. É lint/parser externo, não compilação da Godot. |
-| `git diff --check` | **Aprovado:** sem whitespace errors no momento da verificação. |
-| Abrir projeto e menu na Godot | **Não executado:** Godot ausente. |
-| Hospedar e encerrar partida pelo menu | **Não executado:** Godot ausente. |
-| Cliente local, dois clientes, LAN ou internet | **Não executado:** Godot ausente; nenhuma afirmação de multiplayer funcional em runtime. |
-| Movimento remoto, câmera local exclusiva e desconexão em runtime | **Não executado:** Godot ausente. |
-| Colisão jogador-parede em runtime | **Não executado:** há colliders no código/cena, mas simulação não foi rodada. Além disso, a posição autoritativa do servidor ainda usa limites de área e integração de input, sem resolução de colisão autoritativa por `CharacterBody3D`; corrigir antes de chamar esta arquitetura de servidor de movimento plenamente autoritativo. |
-| Blender salvar `.blend` e exportar GLB | **Não executado:** Blender ausente. |
-| Importação e validação visual do GLB na Godot | **Não executado:** Godot ausente. |
-| Export Windows e execução no Windows | **Não executado:** engine/templates Windows ausentes; ambiente Linux. |
+### Reprovado (executado e falhou)
 
-## Comandos
+- Import da alternativa Blender `bpy==4.3.0`: reprovado por dependência de sistema não instalada, `libXrender.so.1`; nenhuma modelagem foi alegada como executada com Blender.
+- Obtenção do binário Godot oficial: falhou após redirect para host de artefato não permitido. Não é teste do jogo.
+- Tentativa `apt-get update`: bloqueada por falta de permissão para diretório de índices; nenhum pacote foi instalado por apt.
 
-```sh
-# Abrir e executar (em máquina com Godot 4.3+)
-godot --path .
+### Não executado (limitação objetiva)
 
-# Executar testes Python estruturais
-python3 -m unittest discover -s tests -p 'test_*.py' -v
+- Abrir/rodar projeto, menu, sessão, conexão entre dois ou mais peers, desconexão, sync/câmera, colisão real, renderização e cenas no Godot: sem executável Godot.
+- Importação visual do GLB no Godot e fluxo end-to-end Blender→Godot; salvar `.blend`: dependem de Blender e Godot operacionais.
+- Exportar ou executar build Windows: sem Godot e templates; ambiente Linux. Nenhum `.exe` foi criado.
+- Teste LAN/internet: nenhum servidor foi iniciado. Nenhuma conexão externa foi tentada.
 
-# Gerar GLB mínimo (Python padrão)
-python3 tests/build_glb.py
+## Procedimento manual multiplayer
 
-# Gerar BLEND e export detalhado (requer Blender 4.x)
-blender -b --python blender/source/generate_props.py
+Siga exatamente `tests/MULTIPLAYER_MANUAL.md`. Resumo: em dois terminais, executar `godot --path . --position 100,100` e `godot --path . --position 700,100`; hospedar no primeiro, conectar ao `127.0.0.1:24560` no segundo, verificar roster/movimento/câmera, bater em parede/caixa, fechar cliente e testar o limite (host + 3 clientes). Registrar versão, logs e resultados observados. Para LAN, usar IP privado e liberar UDP 24560 no firewall; teste local não valida internet.
 
-# GDScript lint, quando gdtoolkit está instalado
-gdformat --check scripts/networking/menu.gd scripts/networking/net.gd scripts/player/avatar.gd scripts/player/sector.gd
-gdlint scripts/networking/menu.gd scripts/networking/net.gd scripts/player/avatar.gd scripts/player/sector.gd
-```
+## Executar, conteúdo e export Windows
 
-## Multiplayer e conectividade
+- Projeto: abrir `project.godot` no Godot 4.3+ e executar a cena principal; instruções em `README.md`.
+- Testes estruturais: `python3 -m unittest discover -s tests -p 'test_*.py' -v`.
+- GDScript lint, se `gdtoolkit` instalado: `gdformat --check scripts/networking/menu.gd scripts/networking/net.gd scripts/player/avatar.gd scripts/player/sector.gd` e `gdlint` sobre os mesmos caminhos.
+- GLB mínimo: `python3 tests/build_glb.py`.
+- Pipeline Blender quando Blender 4.x estiver operacional: `blender -b --python blender/source/generate_props.py`; os resultados esperados são `blender/source/blacksite_crate.blend` e `assets/models/blacksite_crate.glb`.
+- Windows: abrir projeto em Windows com Godot 4.3+ e templates da mesma versão; no editor, **Project > Export > Add… > Windows Desktop**, instalar/baixar os templates quando solicitado, selecionar x86_64, definir `export/BLACKSITE.exe` e exportar. Revisar recursos incluídos e iniciar o executável no Windows. Essas etapas ainda precisam ser executadas e comprovadas.
+- Build Windows atual: **não existe**. Arquivo `.blend` atual: **não existe**. Não confundir o GLB do crate com executável.
 
-Porta padrão: UDP 24560. Para LAN, conectar ao IP privado do host e permitir UDP no firewall. Para internet, o host precisa IP público/encaminhamento de porta UDP ou servidor hospedado; CGNAT pode impedir entrada. Não foi implementado relay, autenticação, matchmaking público, criptografia nem anti-cheat. Não foram expostos serviços nem credenciais.
+## Limitações e próxima ação
 
-## Export e arquivos
-
-- Build Windows: **não produzida**. Não havia Godot nem templates; não confundir o GLB com build executável.
-- Projeto fonte: raiz deste repositório; estrutura resumida em `README.md`.
-- GLB gerado: `assets/models/blacksite_crate.glb` (1.588 bytes no momento da geração).
-- Fonte Blender procedural: `blender/source/generate_props.py`.
-- Arquivo `.blend`: **não gerado** neste ambiente.
-- ZIP do projeto: **não gerado**; o GitHub/repositório é o meio de persistência pretendido, evitando incluir `.git` ou caches em um pacote não necessário.
-- Relatório: `docs/ETAPA_1_RELATORIO.md`.
-
-## Limitações e correções obrigatórias antes de ampliar
-
-1. Instalar Godot 4.x e rodar a cena, corrigir quaisquer erros de parser/recursos, testar duas instâncias e capturar evidências reais.
-2. Atualizar a simulação de host para movimentar `CharacterBody3D` autoritativos com colisões, gravidade/estado e validar limites de input/velocidade; o código atual aceita input remoto de movimento/corrida e integra posição numericamente no servidor, mas não tem validação anti-cheat robusta nem colisão física autoritativa.
-3. Validar câmera, sincronização, conexão/recusa, saída, quatro peers e encerramento em engine real.
-4. Instalar Blender, rodar o script, verificar o `.blend` e os materiais/escala; importar GLB no Godot e comparar a orientação/escala visualmente.
-5. Confirmar export templates e fazer export Windows; Windows real ainda requer teste fora deste Linux.
-6. O cenário é protótipo geométrico procedimental, não revisão artística final. Não há criatura, efeitos sonoros, animações ou texturas. A fonte Blender tem um crate mais detalhado, mas a cena atual usa GLB mínimo.
-7. Reavaliar regras/atribuição de cada asset externo individual antes de o integrar; catálogo enumera páginas pesquisadas, não downloads.
-
-## Próxima etapa recomendada
-
-Executar primeiro a validação em Godot/Blender em ambiente com as ferramentas; fechar a autoridade física e replicação com testes automatizados de duas instâncias e colisão; então substituir o GLB mínimo pelo crate detalhado, registrar captura de importação e gerar a primeira build Windows.
+- Embora o código agora simule os corpos no host e contenha colliders físicos, não há prova de que o parser Godot, importadores, sincronização ou colisões estejam funcionando sem engine.
+- A primeira ação necessária é disponibilizar um host de validação com Godot 4.3+ e templates; abrir o projeto, corrigir erros de import/engine e executar o roteiro de dois peers. Depois disso, validar Blender/GLB e build Windows em máquina Windows.
+- Integração Supabase Storage continua indisponível nesta sessão por ausência de ferramentas de buckets; projeto fonte preservado no GitHub.
+- Etapa continua **aberta** até demonstração real de multiplayer de pelo menos dois jogadores com movimentação sincronizada e cenário com colisões, seguida da verificação de assets/build aplicável.
