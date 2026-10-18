@@ -5,7 +5,7 @@
 
 ## Base verificada e ambiente
 
-A continuação iniciou em `arena/6823859e-blacksite`, commit `8167bfb`, confirmado como `HEAD` e `origin` antes de qualquer edição. Estrutura, README, este relatório, catálogo, quatro scripts GDScript, três cenas, GLB, fonte Blender e testes foram inspecionados. O commit anterior foi preservado no histórico.
+A continuação inicial partiu de `arena/6823859e-blacksite`, commit `8167bfb`. Esta rodada de auditoria iniciou em `f66c6db`, verificado como `HEAD` e `origin` antes das alterações desta rodada. Estrutura, README, este relatório, catálogo, scripts GDScript, cenas, GLB, fonte Blender e testes foram inspecionados. Todo o histórico anterior foi preservado.
 
 - Python 3.11.2; memória 3.8 GiB total / 3.6 GiB disponível; disco 21 GiB, 20 GiB disponíveis.
 - Godot não encontrado em `/usr/bin`, `/usr/local/bin`, `/opt`, Snap ou `~/.local/bin`. Tentativa de download oficial 4.4.1 pelo GitHub foi redirecionada a `objects.githubusercontent.com`, bloqueado pela política de hosts, e falhou com `SSL_ERROR_SYSCALL`. Não há Godot instalado.
@@ -19,9 +19,10 @@ A continuação iniciou em `arena/6823859e-blacksite`, commit `8167bfb`, confirm
 
 1. **Multiplayer e autoridade:** `scripts/networking/net.gd` agora valida vetor e ângulos finitos, normaliza/clampa inputs e recebe somente intenção do cliente. O host dirige os `CharacterBody3D` de todos os peers, usando movimento, gravidade e `move_and_slide()` contra a geometria física do mapa, e então distribui snapshots. Há limite de um host + três clientes, entradas/saídas e erros de conexão existentes preservados. Isso melhora a autoridade de movimento, mas continua sem rate limiting/anti-cheat abrangente e não foi verificado em runtime.
 2. **Avatar/câmera:** `scripts/player/avatar.gd` diferencia predição local de simulação autoritativa no host; os clientes reconciliam posição com snapshots. A câmera começa inativa na cena e só a instância do jogador local a ativa; avatares remotos removem sua câmera.
-3. **Conectividade do cenário:** `scripts/player/sector.gd` divide paredes laterais em torno de aberturas alinhadas entre módulos, além das passagens nas paredes de extremidade. Adicionada névoa sutil à iluminação existente. Colliders seguem em pisos, paredes e objetos; a caixa importada tem collider separado.
-4. **GLB:** `tests/build_glb.py` gera agora o mesmo prop no sistema de coordenadas Y-up do glTF. `assets/models/blacksite_crate.glb` foi regenerado (1.588 bytes, 12 triângulos); o teste estrutural verifica a extensão vertical Y. Isto não equivale a importá-lo no Godot.
-5. **Reprodutibilidade:** adicionados `tests/MULTIPLAYER_MANUAL.md` com roteiro local de dois clientes, paredes, desconexão e limite de quatro players; README e catálogo/report atualizados. O roteiro é plano reproduzível, não teste executado.
+3. **Conectividade do cenário:** `scripts/player/sector.gd` divide paredes laterais e extremidades apenas onde há módulos vizinhos, alinhando aberturas entre corredores e salas; as paredes externas permanecem fechadas. Adicionada névoa sutil à iluminação existente. Colliders seguem em pisos, paredes e objetos; a caixa importada tem collider separado.
+4. **Resiliência da rede e UI:** input remoto sem atualização por 250 ms é zerado para impedir que perda de pacotes deixe um jogador andando continuamente. O roster agora monta IDs com `PackedStringArray`, evitando passar um `Array` genérico para `String.join`.
+5. **GLB:** `tests/build_glb.py` gera agora o mesmo prop no sistema de coordenadas Y-up do glTF. `assets/models/blacksite_crate.glb` foi regenerado (1.588 bytes, 12 triângulos); o teste estrutural verifica a extensão vertical Y. Isto não equivale a importá-lo no Godot.
+6. **Reprodutibilidade:** adicionados `tests/MULTIPLAYER_MANUAL.md` com roteiro local e Windows de dois clientes, movimento simultâneo, paredes/props/personagem, desconexão, erros críticos e limite de quatro players; README e catálogo/report atualizados. O roteiro é plano reproduzível, não teste executado.
 
 A fonte `blender/source/generate_props.py` existente continua a produzir o modelo detalhado e salvar `.blend`/GLB se executada em Blender real; ela não foi executada porque a alternativa `bpy` requer a biblioteca ausente.
 

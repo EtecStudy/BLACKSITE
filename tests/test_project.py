@@ -9,10 +9,12 @@ class ProjectStructure(unittest.TestCase):
     def test_multiplayer_features_present(self):
         s=(ROOT/'scripts/networking/net.gd').read_text()
         avatar=(ROOT/'scripts/player/avatar.gd').read_text()
-        for token in ('ENetMultiplayerPeer','MAX_PLAYERS := 4','_rpc_snapshot','_on_peer_disconnected','create_server','create_client','move.is_finite()','server_simulate'):
+        for token in ('ENetMultiplayerPeer','MAX_PLAYERS := 4','_rpc_snapshot','_on_peer_disconnected','create_server','create_client','move.is_finite()','server_simulate','last_input_ms'):
             self.assertIn(token,s+avatar)
         self.assertIn('move_and_slide()',avatar)
         self.assertIn('get_remote_sender_id()',s)
+        self.assertIn('Camera3D.current = is_local',avatar)
+        self.assertIn('current = false',(ROOT/'scenes/player/avatar.tscn').read_text())
     def test_world_collision_and_props(self):
         s=(ROOT/'scripts/player/sector.gd').read_text()
         self.assertIn('StaticBody3D.new()',s); self.assertIn('BoxShape3D.new()',s)

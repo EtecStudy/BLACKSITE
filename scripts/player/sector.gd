@@ -47,9 +47,11 @@ func apply_snapshot(data: Dictionary) -> void:
 
 func _refresh_roster() -> void:
 	if is_instance_valid(status_label):
+		var peer_ids := PackedStringArray()
+		for peer_id in avatars.keys():
+			peer_ids.append(str(peer_id))
 		status_label.text = (
-			"SALA %d / 4  ·  IDs: %s  ·  Esc: menu"
-			% [avatars.size(), ", ".join(Array(avatars.keys()).map(func(v): return str(v)))]
+			"SALA %d / 4  ·  IDs: %s  ·  Esc: menu" % [avatars.size(), ", ".join(peer_ids)]
 		)
 
 

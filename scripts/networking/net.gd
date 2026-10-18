@@ -76,7 +76,8 @@ func _accept_peer(id: int) -> void:
 		"yaw": 0.0,
 		"pitch": 0.0,
 		"input": Vector2.ZERO,
-		"sprint": false
+		"sprint": false,
+		"last_input_ms": Time.get_ticks_msec()
 	}
 
 
@@ -111,7 +112,14 @@ func _open_world() -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _rpc_add_player(id: int, at: Vector3) -> void:
-	players[id] = {"position": at, "yaw": 0.0, "pitch": 0.0, "input": Vector2.ZERO, "sprint": false}
+	players[id] = {
+		"position": at,
+		"yaw": 0.0,
+		"pitch": 0.0,
+		"input": Vector2.ZERO,
+		"sprint": false,
+		"last_input_ms": Time.get_ticks_msec()
+	}
 	var world := get_tree().current_scene
 	if world and world.has_method("add_player_avatar"):
 		world.add_player_avatar(id, at)
@@ -156,6 +164,7 @@ func _server_input(id: int, move: Vector2, yaw: float, pitch: float, sprinting: 
 	players[id].yaw = wrapf(yaw, -PI, PI)
 	players[id].pitch = clampf(pitch, -1.45, 1.45)
 	players[id].sprint = sprinting
+	players[id].last_input_ms = Time.get_ticks_msec()
 
 
 func _physics_process(delta: float) -> void:
@@ -163,6 +172,10 @@ func _physics_process(delta: float) -> void:
 		return
 	for id in players:
 		var p: Dictionary = players[id]
+		# Drop stale intent on packet loss so a disconnected player cannot keep walking.
+		if Time.get_ticks_msec() - int(p.last_input_ms) > 250:
+			p.input = Vector2.ZERO
+			p.sprint = false
 		var world := get_tree().current_scene
 		if not world or not world.has_method("get_player_avatar"):
 			continue
