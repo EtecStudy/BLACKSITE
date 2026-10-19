@@ -46,9 +46,9 @@ sem aplicar o que não foi confirmado.
 ## Testes
 
 O pacote publicado é exatamente o gerado pelo workflow
-[`build.yml`](../.github/workflows/build.yml), que roda testes automatizados no
+[`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml), que roda testes automatizados no
 Linux e no Windows real antes de publicar. Resultados, evidências e limitações
-estão em [`docs/ETAPA-3.md`](ETAPA-3.md).
+estão em [`docs/ETAPA-3.md`](https://github.com/EtecStudy/BLACKSITE/blob/main/docs/ETAPA-3.md).
 
 ## Limitações desta etapa
 
