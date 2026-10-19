@@ -335,9 +335,15 @@ jobs:
           & $env:GODOT --headless --path . --import *>&1 | Tee-Object -FilePath $log
           Write-Host "exit code: $LASTEXITCODE"
           if (-not (Test-Path .godot/imported)) { throw "Pasta .godot/imported não foi criada" }
-          if (-not (Test-Path "assets/themes/black_sight.tres.import") -and
-              -not (Test-Path "assets/themes")) { throw "Tema não encontrado" }
-          "OK import" | Out-File ci-logs/04-import.ok
+          foreach ($required in @(
+            "shared/themes/black_sight.tres",
+            "shared/fonts/cinzel/Cinzel-Regular.ttf",
+            "ui/scenes/title_screen.tscn",
+            "ui/scripts/title_screen.gd"
+          )) {
+            if (-not (Test-Path $required)) { throw "Arquivo esperado ausente: $required" }
+          }
+          "OK import — recursos e módulos presentes" | Out-File ci-logs/04-import.ok
 
       - name: TESTE W2 — teste de fumaça (headless)
         shell: pwsh
