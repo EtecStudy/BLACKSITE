@@ -145,6 +145,7 @@ jobs:
 
       - name: TESTE 6 — inspecionar o pacote .pck exportado
         run: |
+          set -o pipefail
           python3 tools/ci/inspect_pck.py build/windows/BlackSight.pck | tee ci-logs/pck-windows.txt
           python3 tools/ci/inspect_pck.py build/linux/BlackSight.pck | tee ci-logs/pck-linux.txt
 
@@ -153,7 +154,10 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a build/windows/BlackSight.exe | grep -m 5 -E "Black Sight|EtecStudy" || echo "(metadados de versão não localizados por strings)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.1\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
+            echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
+          fi
           sha256sum build/windows/BlackSight.exe build/windows/BlackSight.pck | tee build/windows/SHA256SUMS.txt
           du -h build/windows/*
 
@@ -224,7 +228,7 @@ jobs:
             echo "indisponivel" > ci-logs/wine-status.txt
             exit 0
           fi
-          export WINEPREFIX=/tmp/wineprefix
+          export WINEPREFIX="$HOME/.wineprefix"
           export WINEDEBUG=-all
           export WINEDLLOVERRIDES="mscoree,mshtml="
           Xvfb :99 -screen 0 1280x800x24 -nolisten tcp > /dev/null 2>&1 &

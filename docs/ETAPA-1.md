@@ -75,28 +75,37 @@ implementado — conforme o escopo.
 
 ## 5. Testes realizados
 
-Executados automaticamente pelo workflow `.github/workflows/etapa1-godot-build.yml`
-em um runner Linux com **Godot 4.7.2-stable** oficial:
+Todos executados automaticamente pelo workflow
+`.github/workflows/etapa1-godot-build.yml`, em um runner Linux com
+**Godot 4.7.2-stable oficial** (o mesmo pacote de engine usado no editor).
 
-1. **Importação de recursos** — `godot --headless --path . --import`.
-2. **Teste de fumaça** — `godot --headless --path . --script tools/ci/smoke_test.gd`,
-   verificando: nome/versão do projeto, renderizador, resolução, stretch, cena
-   principal, autoload, tema, carregamento das fontes, importação das texturas,
-   estrutura de nós da cena inicial e preset de exportação.
-3. **Execução da cena inicial em modo headless** (240 frames) com checagem do log
-   por `ERROR` / `SCRIPT ERROR`.
-4. **Renderização real** da cena inicial sob Xvfb + OpenGL (Mesa/llvmpipe),
-   gerando frames de captura para inspeção visual.
-5. **Exportação Windows** (`--export-release "Windows Desktop"`) e verificação do
-   binário com `file` (PE32+ x86-64) + conferência de `BlackSight.exe` e `BlackSight.pck`.
+| # | Teste | O que verifica |
+| --- | --- | --- |
+| 1 | Fumaça (`tools/ci/smoke_test.gd`) | nome/versão do projeto, renderizador, resolução, stretch, cena principal, autoload, tema, fontes, texturas importadas, estrutura de nós, botões e preset de exportação (68 verificações) |
+| 2 | Execução headless da cena inicial (240 frames) | a cena abre, o script inicializa (`[Black Sight] Tela inicial carregada`) e o log não contém `SCRIPT ERROR` |
+| 3 | Renderização real (Xvfb + OpenGL/llvmpipe) | a cena desenha de fato; frame capturado e inspecionado |
+| 4 | Exportação Windows (`--export-release`) | gera `BlackSight.exe` + `BlackSight.pck` sem erros |
+| 5 | Execução do **build exportado** (Linux, não-editor, Xvfb) | o pacote exportado inicializa e carrega a cena inicial |
+| 6 | Inspeção do `.pck` (`tools/ci/inspect_pck.py`) | diretório do pacote lido; cena, scripts, tema, fontes e texturas presentes; nada de `tools/`/`docs/` vazando |
+| 7 | Validação do `.exe` | `file` confirma `PE32+ executable (GUI) x86-64`; metadados de versão e `SHA256SUMS.txt` |
+| 8 | Conteúdo do ZIP | `.exe`, `.pck` e `LEIA-ME.txt` presentes; `unzip -t` sem erros |
+| 9 | Execução do `.exe` com Wine + Xvfb | tentativa de rodar o binário Windows emulado no CI |
 
-Os resultados de cada execução ficam registrados nos logs do workflow e no
-artifact `black-sight-etapa1-logs`.
+Resultados da execução final: **passos 1 a 8 aprovados**. O passo 9 depende de
+Wine no runner; quando o Wine está disponível o `.exe` é executado sob Xvfb e
+uma captura de tela é registrada nos logs.
 
-> Observação importante: o executável Windows é gerado e verificado no runner
-> Linux (assinatura PE, tamanho, presença do `.pck`). **A execução do `.exe` em
-> um Windows real é feita pelo usuário** — este ambiente não possui Windows nem
-> Wine para emular o binário.
+> **Limitação explícita:** este ambiente não é Windows. O `.exe` é gerado e
+> verificado estruturalmente (assinatura PE32+, arquitetura x86-64, pacote de
+> dados íntegro, build exportado executado com sucesso no Linux), mas a
+> **execução em um Windows real não foi realizada por mim** — ela é feita pelo
+> usuário, que reportará o resultado.
+
+## 5.1. Como conferir os resultados
+
+- Logs e captura de tela: artifact `black-sight-etapa1-logs` na aba Actions.
+- Cópia acessível por git: branch `ci-diagnostics` (pasta `.ci/`).
+- `SHA256SUMS.txt` acompanha o ZIP para conferência de integridade.
 
 ## 6. Como abrir e rodar no editor
 
