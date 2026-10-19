@@ -1,0 +1,52 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Black Sight"
+config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 1: fundação do projeto."
+config/version="0.1.0"
+run/main_scene="res://scenes/boot/title_screen.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/textures/branding/icon_1024.png"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="BlackSight"
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=true
+boot_splash/image="res://assets/textures/branding/boot_splash.png"
+boot_splash/fullsize=true
+boot_splash/use_filter=true
+
+[autoload]
+
+AppInfo="*res://scripts/autoload/app_info.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/size/resizable=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+window/vsync/vsync_mode=1
+
+[gui]
+
+theme/custom="res://assets/themes/black_sight.tres"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+anti_aliasing/quality/msaa_2d=1

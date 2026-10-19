@@ -1,0 +1,241 @@
+name: Black Sight · Etapa 1 (importar, testar, exportar)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - arena/aa5e0e47-blacksite
+
+env:
+  GODOT_VERSION: "4.7.2"
+  GODOT_STATUS: "stable"
+  GODOT_DIR: ".godot-ci"
+  LIBGL_ALWAYS_SOFTWARE: "1"
+
+jobs:
+  build:
+    name: Importar, testar e exportar para Windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências (Xvfb, Mesa, zip, imagemagick)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 mesa-utils zip imagemagick
+          mkdir -p ci-logs
+
+      - name: Baixar Godot ${GODOT_VERSION}
+        run: |
+          mkdir -p "$GODOT_DIR"
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64.zip"
+          unzip -q godot.zip -d "$GODOT_DIR"
+          mv "$GODOT_DIR/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64" "$GODOT_DIR/godot"
+          chmod +x "$GODOT_DIR/godot"
+          "$GODOT_DIR/godot" --version | tee ci-logs/godot-version.txt
+
+      - name: Baixar templates de exportação ${GODOT_VERSION}
+        run: |
+          curl -fsSL -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_export_templates.tpz"
+          rm -rf /tmp/godot_templates
+          mkdir -p /tmp/godot_templates
+          unzip -q templates.tpz -d /tmp/godot_templates
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -r /tmp/godot_templates/templates/. "$TEMPLATE_DIR/"
+          ls "$TEMPLATE_DIR" | grep -i windows
+
+      - name: Importar recursos do projeto
+        run: |
+          "$GODOT_DIR/godot" --headless --path . --import 2>&1 | tee ci-logs/import.log
+          test -d .godot/imported
+          echo "recursos importados: $(ls .godot/imported | wc -l)"
+
+      - name: Teste de fumaça (headless)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --script res://tools/ci/smoke_test.gd 2>&1 | tee ci-logs/smoke.log
+
+      - name: Executar a cena inicial (headless, 240 frames)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --quit-after 240 2>&1 | tee ci-logs/run_headless.log
+          echo "--- confirmação de inicialização ---"
+          grep -F "[Black Sight] Tela inicial carregada" ci-logs/run_headless.log
+          echo "--- linhas de erro ---"
+          grep -nE "SCRIPT ERROR|ERROR:" ci-logs/run_headless.log || echo "(nenhum erro registrado)"
+          if grep -q "SCRIPT ERROR" ci-logs/run_headless.log; then
+            echo "::error::Erros de script durante a execução da cena inicial"
+            exit 1
+          fi
+
+      - name: Renderizar a cena inicial (Xvfb + OpenGL/llvmpipe)
+        id: render
+        run: |
+          mkdir -p ci-logs/frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . \
+            --rendering-driver opengl3 \
+            --resolution 1280x720 \
+            --fixed-fps 30 \
+            --write-movie ci-logs/frames/frame.png \
+            --quit-after 90 2>&1 | tee ci-logs/render.log
+          echo "--- frames gerados ---"
+          ls ci-logs/frames | tail -3
+          latest=$(ls ci-logs/frames/*.png | tail -1)
+          cp "$latest" s1_render_frame.png
+          echo "frame capturado: $latest"
+
+      - name: Exportar executável Windows (release)
+        run: |
+          mkdir -p build/windows
+          set +e
+          "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee ci-logs/export.log
+          set -e
+          if [ ! -s build/windows/BlackSight.exe ]; then
+            echo "::warning::Exportação com modificação de recursos falhou; tentando sem ícone embutido (rcedit/wine indisponível)."
+            sed -i 's|application/modify_resources=true|application/modify_resources=false|' export_presets.cfg
+            rm -rf build/windows
+            mkdir -p build/windows
+            "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee -a ci-logs/export.log
+          fi
+          echo "--- conteúdo exportado ---"
+          ls -la build/windows
+          test -s build/windows/BlackSight.exe
+          test -s build/windows/BlackSight.pck
+
+      - name: Verificar binário exportado
+        run: |
+          file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
+          file build/windows/BlackSight.exe | grep -qi "PE32+"
+          sha256sum build/windows/BlackSight.exe build/windows/BlackSight.pck | tee build/windows/SHA256SUMS.txt
+          du -h build/windows/*
+
+      - name: Empacotar para distribuição
+        run: |
+          cat > build/windows/LEIA-ME.txt <<'EOF'
+          BLACK SIGHT — Etapa 1 (Windows x86_64)
+          ======================================
+
+          COMO JOGAR
+          1. Extraia todos os arquivos deste ZIP para a mesma pasta.
+          2. Dê duplo clique em BlackSight.exe.
+             (BlackSight.pck precisa estar na mesma pasta do .exe)
+
+          CONTROLES
+          - F11 .......... alterna entre janela e tela cheia
+          - SAIR DO JOGO . fecha o jogo
+          - Alt+F4 ....... fecha o jogo
+
+          REQUISITOS
+          - Windows 10 ou 11 (64 bits)
+          - Placa de vídeo com suporte a OpenGL 3.3 ou superior
+            (renderizador GL Compatibility; funciona em GPUs integradas)
+
+          OBSERVAÇÃO
+          Esta é a fundação do projeto: a cena inicial ainda não tem jogabilidade.
+          Jogador, mapa, inventário e criaturas entram nas próximas etapas.
+
+          Versão 0.1.0 — Etapa 1
+          EOF
+          cd build/windows
+          zip -9 -r ../../BlackSight-Etapa1-Windows-x86_64.zip \
+            BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
+          cd ../..
+          ls -la BlackSight-Etapa1-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa1-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+
+      - name: Testar o executável exportado com Wine (Xvfb)
+        id: wine
+        continue-on-error: true
+        run: |
+          set -x
+          sudo dpkg --add-architecture i386 || true
+          sudo apt-get update -qq || true
+          sudo apt-get install -y --no-install-recommends wine64 || \
+            sudo apt-get install -y --no-install-recommends wine || \
+            echo "wine indisponível"
+          (wine --version || wine64 --version || echo "sem wine") | tee ci-logs/wine-version.txt
+          export WINEPREFIX=/tmp/wineprefix
+          export WINEDEBUG=-all
+          export WINEDLLOVERRIDES="mscoree,mshtml="
+          wineboot -u > ci-logs/wineboot.log 2>&1 || true
+          cd build/windows
+          set +e
+          timeout 180 xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            wine BlackSight.exe --quit-after 150 > ../../ci-logs/wine_run.log 2>&1
+          wine_exit=$?
+          set -e
+          echo "exit code do jogo via wine: $wine_exit" | tee ../../ci-logs/wine-exit.txt
+          sleep 2
+          if pgrep -f BlackSight.exe > /dev/null; then
+            echo "o jogo ainda está rodando (iniciou com sucesso); capturando tela"
+            xvfb-run -a --server-args="-screen 0 1280x800x24" import -window root ../../ci-logs/wine_screenshot.png || true
+            pkill -f BlackSight.exe || true
+          fi
+          tail -40 ../../ci-logs/wine_run.log
+
+      - name: Publicar artefatos do workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-etapa1-windows
+          path: |
+            BlackSight-Etapa1-Windows-x86_64.zip
+            s1_render_frame.png
+            ci-logs/wine_screenshot.png
+          if-no-files-found: warn
+
+      - name: Publicar logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-etapa1-logs
+          path: ci-logs/
+          if-no-files-found: warn
+
+      - name: Criar release no GitHub
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete v0.1.0-etapa1 --yes --cleanup-tag || true
+          gh release create v0.1.0-etapa1 \
+            "BlackSight-Etapa1-Windows-x86_64.zip" \
+            --title "Black Sight · Etapa 1 — Fundação do projeto (Windows x86_64)" \
+            --notes-file docs/RELEASE_NOTES_ETAPA1.md
+
+      - name: Resumo da execução
+        if: always()
+        run: |
+          {
+            echo "## Black Sight · Etapa 1"
+            echo ""
+            echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
+            echo "- Commit: $GITHUB_SHA"
+            echo ""
+            echo "### Teste de fumaça"
+            echo '```'
+            grep -E "SMOKE TEST|✓|✗" ci-logs/smoke.log 2>/dev/null | tail -50 || true
+            echo '```'
+            echo ""
+            echo "### Execução headless"
+            echo '```'
+            grep -E "Tela inicial carregada|ERROR" ci-logs/run_headless.log 2>/dev/null | head -20 || true
+            echo '```'
+            echo ""
+            echo "### Binário"
+            echo '```'
+            cat ci-logs/binary-check.log 2>/dev/null || true
+            cat ci-logs/wine-exit.txt 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
