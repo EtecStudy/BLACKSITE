@@ -16,15 +16,18 @@ import struct
 import sys
 from pathlib import Path
 
-# Cada item aceita mais de uma forma de exportação (texto ou binário).
-REQUIRED: list[list[str]] = [
-    ["res://project.binary"],
-    ["res://scenes/boot/title_screen.scn", "res://scenes/boot/title_screen.tscn"],
-    ["res://scripts/ui/title_screen.gdc", "res://scripts/ui/title_screen.gd"],
-    ["res://scripts/autoload/app_info.gdc", "res://scripts/autoload/app_info.gd"],
-    ["res://assets/themes/black_sight.res", "res://assets/themes/black_sight.tres"],
-    ["res://assets/fonts/cinzel/Cinzel-Regular.ttf"],
-    ["res://assets/fonts/cinzel/Cinzel-SemiBold.ttf"],
+# Trechos que precisam existir no pacote (cobrem exports texto e binário).
+REQUIRED_FRAGMENTS: list[tuple[str, str]] = [
+    ("project.binary", "configuração do projeto"),
+    ("title_screen.scn", "cena inicial compilada"),
+    ("title_screen.tscn.remap", "remap da cena inicial"),
+    ("title_screen.gd", "script da tela inicial"),
+    ("app_info.gd", "autoload AppInfo"),
+    ("black_sight.", "tema da interface"),
+    ("Cinzel-Regular.ttf", "fonte regular"),
+    ("Cinzel-SemiBold.ttf", "fonte semibold"),
+    ("background.png", "textura de fundo"),
+    ("emblem.png", "emblema"),
 ]
 
 FORBIDDEN_PREFIXES = [
@@ -110,7 +113,11 @@ def main(argv: list[str]) -> int:
     for entry in entries:
         print(f"    {entry}")
 
-    missing = [item[0] for item in REQUIRED if not any(cand in entries for cand in item)]
+    missing = [
+        f"{description} ({fragment})"
+        for fragment, description in REQUIRED_FRAGMENTS
+        if not any(fragment in entry for entry in entries)
+    ]
     forbidden = [entry for entry in entries
                  if any(entry.startswith(prefix) for prefix in FORBIDDEN_PREFIXES)]
 

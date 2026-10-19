@@ -71,7 +71,7 @@ jobs:
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
-          "$GODOT_DIR/godot" --headless --path . --quit-after 240 2>&1 | tee ci-logs/run_headless.log
+          "$GODOT_DIR/godot" --headless --path . --audio-driver Dummy --quit-after 240 2>&1 | tee ci-logs/run_headless.log
           grep -F "[Black Sight] Tela inicial carregada" ci-logs/run_headless.log
           grep -nE "SCRIPT ERROR|ERROR:" ci-logs/run_headless.log || echo "(nenhum erro registrado)"
           if grep -q "SCRIPT ERROR" ci-logs/run_headless.log; then
@@ -86,6 +86,7 @@ jobs:
           xvfb-run -a --server-args="-screen 0 1280x800x24" \
             "$GODOT_DIR/godot" --path . \
             --rendering-driver opengl3 \
+            --audio-driver Dummy \
             --fixed-fps 30 \
             --write-movie ci-logs/frames/frame.png \
             --quit-after 90 2>&1 | tee ci-logs/render.log
@@ -131,11 +132,13 @@ jobs:
         run: |
           cd build/linux
           timeout 120 xvfb-run -a --server-args="-screen 0 1280x800x24" \
-            ./BlackSight.x86_64 --quit-after 180 > ../../ci-logs/exported_run.log 2>&1 || true
+            ./BlackSight.x86_64 --audio-driver Dummy --quit-after 180 > ../../ci-logs/exported_run.log 2>&1 || true
           cd ../..
           cat ci-logs/exported_run.log
           grep -F "[Black Sight] Tela inicial carregada" ci-logs/exported_run.log
-          if grep -qE "SCRIPT ERROR|ERROR:" ci-logs/exported_run.log; then
+          # Erros de áudio do runner headless (ALSA/audio_server) não são erros do jogo.
+          if grep -E "SCRIPT ERROR|ERROR:" ci-logs/exported_run.log \
+              | grep -vE "ALSA|audio_driver|init_output_device|audio_server"; then
             echo "::error::Erros ao executar o build exportado"
             exit 1
           fi
