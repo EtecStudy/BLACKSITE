@@ -296,7 +296,8 @@ func _test_pause() -> void:
 
 func _test_gravity() -> void:
 	print("[10] Gravidade")
-	await _place(Vector3(0, 4.0, 0), 0.0)
+	# 2 m: abaixo do teto (4 m) mesmo com o jogador inteiro (1,8 m de altura).
+	await _place(Vector3(0, 2.0, 0), 0.0)
 	_expect(not _player.is_on_floor(), "jogador começa no ar")
 	for index: int in 120:
 		await get_tree().physics_frame
