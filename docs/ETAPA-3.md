@@ -96,11 +96,101 @@ devolve apenas o seu fragmento de configuração.
 
 ## 4. Testes executados
 
-_(a preencher com os resultados reais da execução do workflow)_
+Workflow [`.github/workflows/build.yml`](../.github/workflows/build.yml),
+execução **39341579671** (commit `1c8cdb9`), Godot **4.7.2-stable official**
+nos dois runners.
+
+| Job | Passos | Resultado |
+| --- | --- | --- |
+| Linux — importar, testar e validar o pacote | 22/22 | aprovado |
+| Windows real — exportar e executar o `.exe` | 18/18 | aprovado |
+
+### 4.1 Teste de fumaça (Linux e Windows)
+
+`SMOKE TEST OK — 158 verificações aprovadas` nos dois sistemas.
+
+Cobre:
+
+- configuração do projeto: nome, versão, renderizador, resolução lógica
+  1920×1080, stretch `canvas_items`/`keep`, cena principal, ícone, boot splash e
+  layout de buses;
+- autoloads `AppInfo`, `GameSettings` e `UiAudio` presentes e registrados;
+- tema, fontes Cinzel e as texturas da identidade;
+- os dois WAV de interface existem e importam;
+- módulos, READMEs, documentação e ausência de código nos módulos preparatórios;
+- cena inicial: todos os nós, JOGAR desabilitado, **CONFIGURAÇÕES** e
+  **SAIR DO JOGO** presentes e conectados;
+- esquema: sensibilidade fora da faixa é limitada; volume 500 → 100; volume
+  negativo → 0; valor inválido → padrão; **modo de janela inválido → janela**
+  (não tela cheia); resolução minúscula → mínimo legível;
+- persistência: `apply()` grava; `load_settings()` relê; **uma nova instância do
+  gerenciador lê o mesmo arquivo** (simula fechar e reabrir); arquivo corrompido
+  cai nos padrões sem falhar; `restore_defaults()` grava os padrões;
+- áudio: os 5 buses existem; 25% aplicado ao bus `SFX`; 0% silencia `Music`;
+  voltar ao padrão reativa;
+- vídeo: resolução absurda limitada ao tamanho da tela; resolução minúscula sobe
+  ao mínimo; lista de resoluções válida; rótulos em português;
+- tela de configurações: instancia, 3 abas, 3 seções, apenas uma visível por vez,
+  troca de aba, 4 sliders no áudio, **APLICAR** grava 33%, **RESTAURAR PADRÕES**
+  volta a 80%, 2 listas no vídeo (resolução e 3 modos de janela).
+
+### 4.2 Fluxo real de interface (Linux e Windows)
+
+`UI FLOW OK — 27 verificações aprovadas` nos dois sistemas. Diferente do teste
+de fumaça, aqui as **cenas trocam de verdade** (menu → configurações → menu).
+
+- tela inicial abre; emblema, título e rodapé com F11 presentes; SAIR conectado;
+- **CONFIGURAÇÕES** abre a tela; 3 abas; CONTROLES por padrão; ÁUDIO com 4 sliders;
+- volume 37% + **APLICAR** → valor em memória e no arquivo;
+- **RESTAURAR PADRÕES** + **APLICAR** → 80% em memória e no arquivo;
+- VÍDEO: resolução + 3 modos; **tela cheia** aplicada e gravada;
+- **VOLTAR** retorna ao menu; reabrir mostra o modo de janela salvo;
+- **F11** alterna (2 → 0) e volta (0 → 2), gravando a preferência.
+
+### 4.3 Build exportado (Linux, sob Xvfb)
+
+- `TESTE 5`: o executável exportado abriu a cena inicial.
+- `TESTE 5b`: o build exportado **criou**
+  `~/.local/share/BlackSight/settings.cfg` com as seções `[meta]`, `[controls]`,
+  `[audio]` e `[video]` — prova de gravação em `user://`, fora da pasta do jogo.
+- `TESTE 6`: `.pck` de **1.376.692 bytes**, formato 4, **58 recursos**,
+  incluindo `default_bus_layout`, `settings_screen`, os 4 scripts de
+  configuração e os 2 WAV importados.
+- `TESTE 3b`: render real da tela de configurações em 1600×900 →
+  [`docs/screenshots/settings_screen.png`](screenshots/settings_screen.png).
+
+### 4.4 Pacote publicado
+
+| Item | Valor |
+| --- | --- |
+| ZIP | `BlackSight-Etapa3-Windows-x86_64.zip` |
+| Tamanho | **40.611.269 bytes** |
+| SHA-256 | `d55afd98a80271808df3c67b2095e88e7fd42b4f1032b3faec3418aad0b72fcf` |
+| `BlackSight.exe` | 109.193.728 bytes |
+| `BlackSight.pck` | 1.376.692 bytes |
+| Release | https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.3.0-etapa3 |
+
+O `digest` do asset no GitHub (`sha256:d55afd98…`) confere com o hash calculado
+no job Windows: **o arquivo publicado é exatamente o que passou nos testes**.
 
 ## 5. Teste no Windows real
 
-_(a preencher com os resultados reais do job Windows)_
+Job `windows` no runner `windows-latest` (máquina Windows real da nuvem),
+18/18 passos.
+
+| Teste | Evidência obtida |
+| --- | --- |
+| W1 — importação | `.godot/imported` criado; 13 arquivos obrigatórios presentes |
+| W2 — fumaça | `SMOKE TEST OK — 158 verificações aprovadas` |
+| W2b — fluxo | `UI FLOW OK — 27 verificações aprovadas` |
+| W3 — cena inicial | `[Black Sight] Tela inicial carregada — v0.3.0 · Godot 4.7.2-stable (official) · gl_compatibility` e `Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true` |
+| W4 — exportação | `BlackSight.exe` e `BlackSight.pck` gerados |
+| W5 — `.exe` exportado | primeira execução: `Arquivo de configurações criado com os valores padrão` |
+| W5b — `%APPDATA%` | `%APPDATA%\BlackSight\settings.cfg` criado pelo `.exe`, com `mouse_sensitivity_x`, `master_volume`, `window_mode` e `vsync` (conteúdo integral no log) |
+| W6 — janela | `vivo_apos_25s=True` · `titulo_janela=Black Sight` |
+| W7 — pacote e metadados | `PACOTE OK` · `ProductName=Black Sight` · `FileDescription=Black Sight — Etapa 3` · `FileVersion=0.3.0.0` |
+
+O `.exe` executado no Windows é o mesmo empacotado no ZIP publicado.
 
 ## 6. Limitações e pendências desta etapa
 
@@ -111,6 +201,14 @@ _(a preencher com os resultados reais do job Windows)_
 - VSync pode ser ignorado por alguns drivers em GL Compatibility.
 - "Janela maximizada" não guarda o tamanho anterior da janela.
 - Não há remapeamento de teclas nesta etapa.
+- Os testes automatizados de fumaça e de fluxo rodam como cena e chamam
+  `quit()` no mesmo frame; ao encerrar, a Godot imprime avisos de objetos
+  liberados tardiamente (`ObjectDB instances were leaked at exit`). São avisos
+  do processo de teste, não do jogo: o `.exe` exportado encerra sem esses
+  avisos e o código de saída dos testes é 0.
+- O teste em Windows foi feito no runner `windows-latest` (Windows Server da
+  nuvem) com execução real do `.exe`; o teste na máquina do usuário é o passo
+  final de aceite.
 
 ## 7. Como verificar manualmente
 

@@ -7,13 +7,15 @@
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
+![Tela de configurações do Black Sight](docs/screenshots/settings_screen.png)
+
 ## Download do jogo (Windows)
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.3.0-etapa3/BlackSight-Etapa3-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa3-Windows-x86_64.zip` (TAMANHO_BYTES bytes)
+Arquivo: `BlackSight-Etapa3-Windows-x86_64.zip` (40.611.269 bytes)
 
-SHA-256 do ZIP: `SHA256_ZIP`
+SHA-256 do ZIP: `d55afd98a80271808df3c67b2095e88e7fd42b4f1032b3faec3418aad0b72fcf`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
