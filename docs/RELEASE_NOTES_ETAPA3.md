@@ -23,6 +23,15 @@ Build Windows x86_64 do Black Sight, com a tela de configurações (controles,
 - **Persistência validada**: valores fora dos limites são corrigidos; arquivo
   corrompido cai nos padrões sem impedir a abertura.
 
+## Pacote
+
+| Item | Valor |
+| --- | --- |
+| Arquivo | `BlackSight-Etapa3-Windows-x86_64.zip` |
+| Tamanho | 40.611.269 bytes |
+| SHA-256 | `d55afd98a80271808df3c67b2095e88e7fd42b4f1032b3faec3418aad0b72fcf` |
+| Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
+
 ## Como usar
 
 1. Extraia o ZIP mantendo `BlackSight.exe` e `BlackSight.pck` na mesma pasta.
