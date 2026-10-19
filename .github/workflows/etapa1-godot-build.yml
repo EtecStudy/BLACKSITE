@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: Importar, testar e exportar para Windows
+    name: Linux — importar, testar e validar o pacote
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -258,9 +258,13 @@ jobs:
           set -e
           sleep 45
           if kill -0 "$game_pid" 2> /dev/null; then
-            echo "processo ativo após 45s — capturando a tela"
+            echo "processo wine ainda ativo após 45s — capturando a tela"
             import -window root ../../ci-logs/wine_screenshot.png || true
-            echo "$(cat ../../ci-logs/wine-status.txt) / janela abriu" > ../../ci-logs/wine-status.txt
+            if grep -qF "[Black Sight] Tela inicial carregada" ../../ci-logs/wine_windowed.log; then
+              echo "ok: .exe carregou a cena inicial via Wine" > ../../ci-logs/wine-status.txt
+            else
+              echo "processo vivo, mas sem confirmação de inicialização (ver screenshot)" > ../../ci-logs/wine-status.txt
+            fi
           else
             echo "processo encerrou antes da captura"
             import -window root ../../ci-logs/wine_screenshot.png || true
@@ -291,17 +295,6 @@ jobs:
           name: black-sight-etapa1-logs
           path: ci-logs/
           if-no-files-found: warn
-
-      - name: Criar release no GitHub
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release delete v0.1.0-etapa1 --yes --cleanup-tag || true
-          gh release create v0.1.0-etapa1 \
-            "BlackSight-Etapa1-Windows-x86_64.zip" \
-            --title "Black Sight · Etapa 1 — Fundação do projeto (Windows x86_64)" \
-            --notes-file docs/RELEASE_NOTES_ETAPA1.md
 
       - name: Publicar diagnóstico no branch ci-diagnostics
         if: always()
@@ -349,3 +342,183 @@ jobs:
             cat ci-logs/wine-exit.txt 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  windows:
+    name: Exportar e testar o .exe em Windows real
+    runs-on: windows-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Baixar Godot ${GODOT_VERSION} (Windows x64)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force -Path godot-ci | Out-Null
+          $url = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-$env:GODOT_STATUS/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe.zip"
+          Invoke-WebRequest -Uri $url -OutFile godot.zip -UseBasicParsing
+          Expand-Archive -Path godot.zip -DestinationPath godot-ci -Force
+          Get-ChildItem godot-ci | Select-Object Name, Length
+          & "godot-ci/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe" --version
+
+      - name: Instalar templates de exportação
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $url = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-$env:GODOT_STATUS/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_export_templates.tpz"
+          Invoke-WebRequest -Uri $url -OutFile templates.zip -UseBasicParsing
+          Expand-Archive -Path templates.zip -DestinationPath templates_extract -Force
+          $dest = Join-Path $env:APPDATA "Godot/export_templates/$($env:GODOT_VERSION).$($env:GODOT_STATUS)"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item -Path "templates_extract/templates/*" -Destination $dest -Recurse -Force
+          Get-ChildItem $dest | Where-Object { $_.Name -like "*windows*" } | Select-Object Name
+
+      - name: Importar recursos do projeto
+        shell: pwsh
+        run: |
+          $godot = "godot-ci/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe"
+          New-Item -ItemType Directory -Force -Path ci-logs | Out-Null
+          & $godot --headless --path . --import 2>&1 | Tee-Object -FilePath ci-logs/import-windows.log
+          if (-not (Test-Path .godot/imported)) { throw "Importação falhou" }
+
+      - name: TESTE W1 — teste de fumaça (headless, Windows)
+        shell: pwsh
+        run: |
+          $godot = "godot-ci/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe"
+          & $godot --headless --path . --script res://tools/ci/smoke_test.gd 2>&1 | Tee-Object -FilePath ci-logs/smoke-windows.log
+          if ($LASTEXITCODE -ne 0) { throw "Teste de fumaça falhou no Windows (exit $LASTEXITCODE)" }
+
+      - name: TESTE W2 — exportar o executável Windows
+        shell: pwsh
+        run: |
+          $godot = "godot-ci/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe"
+          New-Item -ItemType Directory -Force -Path build/windows | Out-Null
+          & $godot --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | Tee-Object -FilePath ci-logs/export-windows.log
+          Get-ChildItem build/windows | Select-Object Name, Length
+          if (-not (Test-Path build/windows/BlackSight.exe)) { throw "BlackSight.exe não foi gerado" }
+          if (-not (Test-Path build/windows/BlackSight.pck)) { throw "BlackSight.pck não foi gerado" }
+
+      - name: TESTE W3 — executar o .exe exportado no Windows (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $log = "ci-logs/run-exe-headless.log"
+          $proc = Start-Process -FilePath "build/windows/BlackSight.console.exe" `
+            -ArgumentList "--headless","--audio-driver","Dummy","--quit-after","240" `
+            -RedirectStandardOutput $log -RedirectStandardError "ci-logs/run-exe-headless.err.log" `
+            -PassThru -NoNewWindow
+          if (-not $proc.WaitForExit(120000)) { $proc.Kill(); throw "O .exe não terminou em 120s" }
+          Get-Content $log
+          if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Tela inicial carregada")) {
+            throw "O .exe não registrou a inicialização da cena inicial"
+          }
+          if (Select-String -Path $log -Pattern "SCRIPT ERROR") { throw "SCRIPT ERROR no .exe" }
+          "OK: o .exe exportado iniciou e carregou a cena inicial no Windows" | Out-File ci-logs/windows-exe-status.txt
+
+      - name: TESTE W4 — abrir o .exe com janela no Windows
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "build/windows/BlackSight.exe" -PassThru
+          Start-Sleep -Seconds 20
+          $alive = -not $proc.HasExited
+          $proc.Refresh()
+          $title = $proc.MainWindowTitle
+          "vivo_apos_20s=$alive" | Out-File ci-logs/windows-window-status.txt
+          "titulo_janela=$title" | Out-File ci-logs/windows-window-status.txt -Append
+          if ($alive) { Stop-Process -Id $proc.Id -Force }
+          Get-Content ci-logs/windows-window-status.txt
+          if (-not $alive) { throw "O .exe encerrou sozinho ao abrir com janela" }
+
+      - name: TESTE W5 — inspecionar o pacote .pck e o binário
+        shell: pwsh
+        run: |
+          python tools/ci/inspect_pck.py build/windows/BlackSight.pck | Tee-Object -FilePath ci-logs/pck-windows-real.txt
+          if ($LASTEXITCODE -ne 0) { throw "Pacote .pck inválido" }
+          Get-Item build/windows/BlackSight.exe | Select-Object Name, Length, VersionInfo | Format-List
+          (Get-Item build/windows/BlackSight.exe).VersionInfo | Out-File ci-logs/exe-versioninfo.txt
+          Get-Content ci-logs/exe-versioninfo.txt | Select-String "ProductName|FileDescription|FileVersion|CompanyName"
+
+      - name: Empacotar para distribuição
+        shell: pwsh
+        run: |
+          $readme = @"
+          BLACK SIGHT — Etapa 1 (Windows x86_64)
+          ======================================
+
+          COMO JOGAR
+          1. Extraia todos os arquivos deste ZIP para a mesma pasta.
+          2. De duplo clique em BlackSight.exe.
+             (BlackSight.pck precisa estar na mesma pasta do .exe)
+
+          CONTROLES
+          - F11 .......... alterna entre janela e tela cheia
+          - SAIR DO JOGO . fecha o jogo
+          - Alt+F4 ....... fecha o jogo
+
+          ARQUIVOS
+          - BlackSight.exe ......... o jogo (use este)
+          - BlackSight.pck ......... dados do jogo (obrigatório)
+          - BlackSight.console.exe . mesma build com console (diagnóstico)
+
+          REQUISITOS
+          - Windows 10 ou 11 (64 bits)
+          - Placa de video com suporte a OpenGL 3.3 ou superior
+            (renderizador GL Compatibility; funciona em GPUs integradas)
+
+          OBSERVACAO
+          Esta e a fundacao do projeto: a cena inicial ainda nao tem jogabilidade.
+          Jogador, mapa, inventario e criaturas entram nas proximas etapas.
+
+          Versao 0.1.0 — Etapa 1
+          "@
+          $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
+          Get-FileHash build/windows/BlackSight.exe -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  BlackSight.exe" } | Out-File build/windows/SHA256SUMS.txt -Encoding ascii
+          Get-FileHash build/windows/BlackSight.pck -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  BlackSight.pck" } | Out-File build/windows/SHA256SUMS.txt -Append -Encoding ascii
+          Get-ChildItem build/windows | Select-Object Name, Length
+          Compress-Archive -Path build/windows/* -DestinationPath BlackSight-Etapa1-Windows-x86_64.zip -Force
+          Get-Item BlackSight-Etapa1-Windows-x86_64.zip | Select-Object Name, Length
+          Get-FileHash BlackSight-Etapa1-Windows-x86_64.zip -Algorithm SHA256 | ForEach-Object { $_.Hash } | Out-File ci-logs/zip-sha256.txt
+          Add-Content -Path build/windows/SHA256SUMS.txt -Value ""
+
+      - name: Publicar artefatos (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-etapa1-windows-real
+          path: |
+            BlackSight-Etapa1-Windows-x86_64.zip
+            ci-logs/windows-exe-status.txt
+            ci-logs/windows-window-status.txt
+          if-no-files-found: warn
+
+      - name: Publicar logs (Windows)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-etapa1-windows-logs
+          path: ci-logs/
+          if-no-files-found: warn
+
+      - name: Criar release no GitHub
+        if: success()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete v0.1.0-etapa1 --yes --cleanup-tag 2>$null
+          gh release create v0.1.0-etapa1 "BlackSight-Etapa1-Windows-x86_64.zip" --title "Black Sight - Etapa 1 - Fundacao do projeto (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA1.md
+
+      - name: Resumo (Windows)
+        if: always()
+        shell: pwsh
+        run: |
+          @"
+          ## Black Sight - Etapa 1 (Windows)
+          - .exe gerado e executado em Windows real (runner windows-latest)
+          - Teste headless: $(Get-Content ci-logs/windows-exe-status.txt -ErrorAction SilentlyContinue)
+          - Janela: $(Get-Content ci-logs/windows-window-status.txt -ErrorAction SilentlyContinue)
+          - SHA256 do ZIP: $(Get-Content ci-logs/zip-sha256.txt -ErrorAction SilentlyContinue)
+          "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
