@@ -125,9 +125,9 @@ etc., pois esses módulos só têm README (excluídos do pacote por `*.md`).
 
 ### Artefato publicado
 
-- `BlackSight-Etapa2-Windows-x86_64.zip` — **40.574.844 bytes**
-- SHA-256 do ZIP: `df662aa4c396cbf1da7cff533fe38f0e01d25a1954a58510dcbd2196de4600a7`
-- Conteúdo: `BlackSight.exe` (109.193.728 B), `BlackSight.pck` (1.330.204 B),
+- `BlackSight-Etapa2-Windows-x86_64.zip` — **40.574.862 bytes**
+- SHA-256 do ZIP: `09007dae33d7a907a0b1631b9d56d96d6b3ee3bbf11b3d9aa6582d99af7e1fcf`
+- Conteúdo: `BlackSight.exe` (109.193.728 B), `BlackSight.pck` (1.330.220 B),
   `LEIA-ME.txt`, `SHA256SUMS.txt`
 
 ### Testes NÃO realizados
