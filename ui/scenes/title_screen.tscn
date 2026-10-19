@@ -146,7 +146,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "A jogabilidade começa na Etapa 2."
+text = "A jogabilidade começa em uma etapa futura."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]

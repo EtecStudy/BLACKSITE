@@ -84,26 +84,51 @@ de execução e reproduzidos abaixo.
 
 | # | Teste | Resultado |
 | --- | --- | --- |
-| 1 | Importação dos recursos (`--headless --import`) | _preencher_ |
-| 2 | Teste de fumaça (config + módulos + cena + preset) | _preencher_ |
-| 3 | Execução da cena inicial em headless (240 frames) | _preencher_ |
-| 4 | Renderização real sob Xvfb + OpenGL | _preencher_ |
-| 5 | Execução do build exportado (não-editor) | _preencher_ |
-| 6 | Inspeção do `.pck` | _preencher_ |
-| 7 | Validação do `.exe` (PE32+, metadados) | _preencher_ |
-| 8 | Integridade do ZIP | _preencher_ |
+| 1 | Importação dos recursos (`--headless --import`) | ✅ |
+| 2 | Teste de fumaça | ✅ **104 verificações aprovadas** |
+| 3 | Execução da cena inicial em headless (240 frames) | ✅ |
+| 4 | Renderização real sob Xvfb + OpenGL | ✅ frame capturado |
+| 5 | Execução do build exportado (não-editor) | ✅ |
+| 6 | Inspeção do `.pck` | ✅ 30 recursos, estrutura dos módulos |
+| 7 | Validação do `.exe` (PE32+, metadados) | ✅ |
+| 8 | Integridade do ZIP | ✅ |
 
 ### Job Windows (`windows-latest`)
 
 | # | Teste | Resultado |
 | --- | --- | --- |
-| W1 | Importar recursos no Windows | _preencher_ |
-| W2 | Teste de fumaça no Windows | _preencher_ |
-| W3 | Cena inicial headless (240 frames) | _preencher_ |
-| W4 | Exportar `BlackSight.exe` + `.pck` | _preencher_ |
-| W5 | Executar o `.exe` exportado | _preencher_ |
-| W6 | Abrir o `.exe` com janela | _preencher_ |
-| W7 | Inspecionar `.pck` + metadados do `.exe` | _preencher_ |
+| W1 | Importar recursos no Windows | ✅ |
+| W2 | Teste de fumaça no Windows | ✅ `SMOKE TEST OK — 104 verificações` |
+| W3 | Cena inicial headless (240 frames) | ✅ `[Black Sight] Tela inicial carregada — v0.2.0` |
+| W4 | Exportar `BlackSight.exe` + `.pck` | ✅ |
+| W5 | **Executar o `.exe` exportado** | ✅ iniciou e carregou a cena inicial |
+| W6 | Abrir o `.exe` com janela | ✅ `vivo_apos_25s=True` / `titulo_janela=Black Sight` |
+| W7 | Inspecionar `.pck` + metadados do `.exe` | ✅ `ProductName=Black Sight`, `FileVersion=0.2.0.0`, `FileDescription=Black Sight — Etapa 2` |
+
+### Evidências da preservação da Etapa 1
+
+O teste de fumaça (104 checagens) confirma, além dos módulos:
+
+- `✓ caminho antigo removido: res://scenes/boot/title_screen.tscn` (e os demais 5);
+- `✓ tela inicial está no módulo ui/` e `✓ script da tela inicial está no módulo ui/`;
+- `✓ tema compartilhado está em shared/` e `✓ autoload AppInfo está em shared/`;
+- `✓ módulo players ainda não tem scripts` (idem para os outros 6 preparatórios);
+- cena inicial instanciada com todos os nós, botão de saída habilitado e
+  **JOGAR** desabilitado;
+- fonte, tema, texturas e preset de exportação intactos.
+
+O `.pck` exportado contém exatamente os arquivos dos módulos:
+`ui/scenes/title_screen.tscn.remap`, `ui/scripts/title_screen.gd(c)`,
+`shared/autoload/app_info.gd(c)`, `shared/themes/black_sight.tres.remap`,
+`shared/fonts/cinzel/*` e `shared/textures/**` — nada de `players/`, `creatures/`
+etc., pois esses módulos só têm README (excluídos do pacote por `*.md`).
+
+### Artefato publicado
+
+- `BlackSight-Etapa2-Windows-x86_64.zip` — **40.574.844 bytes**
+- SHA-256 do ZIP: `df662aa4c396cbf1da7cff533fe38f0e01d25a1954a58510dcbd2196de4600a7`
+- Conteúdo: `BlackSight.exe` (109.193.728 B), `BlackSight.pck` (1.330.204 B),
+  `LEIA-ME.txt`, `SHA256SUMS.txt`
 
 ### Testes NÃO realizados
 
