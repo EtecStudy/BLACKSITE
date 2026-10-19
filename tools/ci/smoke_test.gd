@@ -99,6 +99,9 @@ func _ready() -> void:
 		settings.apply(_original_settings)
 		_remove_test_file()
 
+	# Dá um frame para os nós enfileirados (queue_free) serem liberados antes da saída.
+	await get_tree().process_frame
+
 	print("")
 	if _failures.is_empty():
 		print("SMOKE TEST OK — %d verificações aprovadas" % _checks)

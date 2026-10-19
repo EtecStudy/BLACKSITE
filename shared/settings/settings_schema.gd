@@ -122,10 +122,11 @@ static func sanitize(raw: Variant) -> Dictionary:
 	var video_in: Variant = data.get(SECTION_VIDEO, null)
 	if typeof(video_in) == TYPE_DICTIONARY:
 		var video: Dictionary = result[SECTION_VIDEO]
-		video["window_mode"] = clampi(
-			_to_int(video_in.get("window_mode"), DEFAULT_WINDOW_MODE),
-			WindowMode.WINDOWED, WindowMode.FULLSCREEN
-		)
+		var raw_mode: int = _to_int(video_in.get("window_mode"), DEFAULT_WINDOW_MODE)
+		if raw_mode < WindowMode.WINDOWED or raw_mode > WindowMode.FULLSCREEN:
+			# Modo desconhecido não vira "tela cheia": volta para janela.
+			raw_mode = DEFAULT_WINDOW_MODE
+		video["window_mode"] = raw_mode
 		video["resolution_x"] = clampi(
 			_to_int(video_in.get("resolution_x"), DEFAULT_RESOLUTION_X),
 			MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH
