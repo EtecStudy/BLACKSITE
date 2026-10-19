@@ -374,14 +374,19 @@ jobs:
       - name: Instalar templates de exportação
         shell: pwsh
         run: |
-          $ErrorActionPreference = "Stop"
-          $url = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-$env:GODOT_STATUS/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_export_templates.tpz"
-          Invoke-WebRequest -Uri $url -OutFile templates.zip -UseBasicParsing
-          Expand-Archive -Path templates.zip -DestinationPath templates_extract -Force
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $url = "https://github.com/godotengine/godot/releases/download/$($env:GODOT_VERSION)-$($env:GODOT_STATUS)/Godot_v$($env:GODOT_VERSION)-$($env:GODOT_STATUS)_export_templates.tpz"
+          curl.exe -L --fail --retry 3 --retry-delay 5 -o templates.zip $url 2>&1 | Tee-Object -FilePath ci-logs/templates-download.log
+          Copy-Item templates.zip templates_extract.zip
+          Expand-Archive -Path templates_extract.zip -DestinationPath templates_extract -Force
           $dest = Join-Path $env:APPDATA "Godot/export_templates/$($env:GODOT_VERSION).$($env:GODOT_STATUS)"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          Copy-Item -Path "templates_extract/templates/*" -Destination $dest -Recurse -Force
-          Get-ChildItem $dest | Where-Object { $_.Name -like "*windows*" } | Select-Object Name
+          Get-ChildItem "templates_extract/templates" -Force | ForEach-Object {
+            Copy-Item $_.FullName -Destination $dest -Recurse -Force
+          }
+          Get-ChildItem $dest | Where-Object { $_.Name -like "*windows*" } | Select-Object Name | Tee-Object -FilePath ci-logs/templates-installed.txt
+          if (-not (Test-Path (Join-Path $dest "windows_release_x86_64.exe"))) { throw "Template windows_release_x86_64.exe ausente em $dest" }
 
       - name: Importar recursos do projeto
         shell: pwsh
