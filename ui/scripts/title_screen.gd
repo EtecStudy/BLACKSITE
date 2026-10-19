@@ -3,11 +3,14 @@ extends Control
 ##
 ## Etapa 1: identidade visual, animações, saída e F11.
 ## Etapa 3: botão CONFIGURAÇÕES e F11 integrado às configurações salvas.
+## Etapa 4: botão TESTAR MOVIMENTAÇÃO (cena de teste do controlador FPS).
 ##
 ## Nenhuma mecânica de jogo (jogador, mapa, inventário, criaturas, etc.)
 ## pertence a esta tela.
 
 const SETTINGS_SCENE: String = "res://ui/scenes/settings_screen.tscn"
+## Navegação por caminho: a UI não importa classes de gameplay, apenas troca de cena.
+const MOVEMENT_TEST_SCENE: String = "res://match/scenes/movement_test.tscn"
 
 const FADE_IN_DURATION: float = 1.3
 const FADE_OUT_DURATION: float = 0.55
@@ -18,6 +21,7 @@ const EMBLEM_BREATH_DURATION: float = 3.2
 @onready var _emblem: TextureRect = %Emblem
 @onready var _build_label: Label = %BuildLabel
 @onready var _start_button: Button = %StartButton
+@onready var _test_button: Button = %TestMovementButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
 
@@ -34,6 +38,7 @@ func _ready() -> void:
 		AppInfo.version_label(), AppInfo.engine_label()
 	]
 	_start_button.disabled = true
+	_test_button.pressed.connect(_on_test_movement_pressed)
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	print("[Black Sight] Tela inicial carregada — %s · %s" % [
@@ -61,6 +66,11 @@ func _play_intro() -> void:
 		.set_trans(Tween.TRANS_SINE)
 
 	_quit_button.grab_focus()
+
+
+func _on_test_movement_pressed() -> void:
+	_play_click()
+	get_tree().change_scene_to_file(MOVEMENT_TEST_SCENE)
 
 
 func _on_settings_pressed() -> void:

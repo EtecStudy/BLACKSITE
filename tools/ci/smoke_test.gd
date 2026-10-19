@@ -26,6 +26,7 @@ const EXPECTED_NODES := [
 	"Content/Emblem",
 	"Content/TitleLabel",
 	"Content/Buttons/StartButton",
+	"Content/Buttons/TestMovementButton",
 	"Content/Buttons/SettingsButton",
 	"Content/Buttons/QuitButton",
 	"Content/BuildLabel",
@@ -93,6 +94,7 @@ func _ready() -> void:
 	_check_audio_buses()
 	_check_video_safety()
 	_check_settings_screen()
+	_check_fps_controller()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -282,7 +284,7 @@ func _check_modules() -> void:
 	)
 
 	# Módulos que ainda são apenas estrutura não podem ter código de gameplay.
-	for pending_module: String in ["players", "creatures", "maps", "items", "objectives", "match"]:
+	for pending_module: String in ["creatures", "items", "objectives"]:
 		var files := _list_gdscript_files("res://%s" % pending_module)
 		_expect(
 			files.is_empty(),
@@ -630,5 +632,63 @@ func _check_settings_screen() -> void:
 				quit_button.pressed.get_connections().size() > 0,
 				"botão SAIR DO JOGO continua conectado"
 			)
+		var test_button: Button = title.get_node_or_null(
+			"Content/Buttons/TestMovementButton"
+		) as Button
+		_expect(test_button != null, "botão TESTAR MOVIMENTAÇÃO presente na tela inicial")
+		if test_button != null:
+			_expect(
+				test_button.pressed.get_connections().size() > 0,
+				"botão TESTAR MOVIMENTAÇÃO está conectado"
+			)
 		remove_child(title)
 		title.free()
+
+
+func _check_fps_controller() -> void:
+	print("[13] Controlador FPS e cena de teste")
+	var player_packed: PackedScene = load("res://players/scenes/player.tscn") as PackedScene
+	_expect(player_packed != null, "cena do jogador carrega")
+	if player_packed != null:
+		var player: Node = player_packed.instantiate()
+		_expect(player is CharacterBody3D, "jogador é um CharacterBody3D")
+		_expect(player.get_node_or_null("Collision") != null, "jogador tem forma de colisão")
+		var head := player.get_node_or_null("Head") as Node3D
+		_expect(head != null, "jogador tem nó Head")
+		if head != null:
+			_expect(
+				absf(head.position.y - 1.62) < 0.01,
+				"câmera na altura dos olhos (%.2f m)" % head.position.y
+			)
+		_expect(player.get_node_or_null("Head/Camera") is Camera3D, "câmera 3D presente")
+		player.free()
+
+	_expect(
+		load("res://maps/scenes/test_room.tscn") is PackedScene,
+		"sala de teste carrega (maps/scenes/test_room.tscn)"
+	)
+
+	var movement_packed: PackedScene = load("res://match/scenes/movement_test.tscn") as PackedScene
+	_expect(movement_packed != null, "cena de teste carrega (match/scenes/movement_test.tscn)")
+	if movement_packed != null:
+		var movement: Node = movement_packed.instantiate()
+		_expect(movement.get_node_or_null("Player") != null, "cena de teste contém o jogador")
+		_expect(
+			movement.get_node_or_null("TestRoom/Spawn") != null,
+			"cena de teste tem ponto de nascimento"
+		)
+		_expect(
+			movement.get_node_or_null("Interface/PauseRoot") != null,
+			"cena de teste tem camada de pausa"
+		)
+		movement.free()
+
+	for action: String in [
+		"move_forward", "move_back", "move_left", "move_right", "release_mouse"
+	]:
+		_expect(InputMap.has_action(action), "ação de entrada '%s' configurada" % action)
+
+	_expect(
+		FileAccess.file_exists("res://docs/ETAPA-4.md"),
+		"documentação da Etapa 4 presente (docs/ETAPA-4.md)"
+	)

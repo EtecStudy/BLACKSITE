@@ -259,6 +259,35 @@ class FlowDriver:
 		else:
 			_expect(false, "tela inicial disponível para testar o F11")
 
+		# 10. cena de teste da movimentação (Etapa 4)
+		if title_again != null:
+			var test_button: Button = title_again.get_node_or_null(
+				"Content/Buttons/TestMovementButton"
+			) as Button
+			_expect(test_button != null, "botão TESTAR MOVIMENTAÇÃO presente")
+			if test_button != null:
+				test_button.pressed.emit()
+				var game: Node = await _wait_for_scene("MovementTest", 1200)
+				_expect(game != null, "TESTAR MOVIMENTAÇÃO abre a cena de teste")
+				if game != null:
+					_expect(
+						game.get_node_or_null("Player") != null,
+						"jogador presente na cena de teste"
+					)
+					var camera := game.get_node_or_null("Player/Head/Camera") as Camera3D
+					_expect(
+						camera != null and camera.current,
+						"câmera em primeira pessoa ativa"
+					)
+					var menu_button: Button = game.get_node_or_null(
+						"Interface/PauseRoot/Center/Panel/Margin/Content/MenuButton"
+					) as Button
+					_expect(menu_button != null, "botão VOLTAR AO MENU presente")
+					if menu_button != null:
+						menu_button.pressed.emit()
+						title_again = await _wait_for_scene("TitleScreen", 1200)
+						_expect(title_again != null, "VOLTAR AO MENU retorna à tela inicial")
+
 		_finish()
 
 

@@ -3,8 +3,15 @@
 **Responsabilidade:** mapas, salas e ambientes — geometria, iluminação, pontos
 de spawn, portas e transições de área.
 
-**Estado atual (Etapa 2):** apenas estrutura/documentação. Nenhum mapa jogável,
-nenhuma sala e nenhuma porta foram implementados.
+**Estado atual (Etapa 4):** existe **uma sala de teste** para validar o
+controlador em primeira pessoa. Não é o laboratório definitivo e não tem portas.
+
+| Caminho | O que é |
+| --- | --- |
+| `maps/scenes/test_room.tscn` | Sala 24 × 24 m: piso, paredes, pilares, caixas, luzes e `Spawn` |
+
+A sala contém **apenas geometria e colisão** — nenhum jogador é instanciado
+aqui. Quem monta sala + jogador é `match/scenes/movement_test.tscn`.
 
 ## O que entra aqui
 
@@ -25,7 +32,8 @@ nenhuma sala e nenhuma porta foram implementados.
 
 ## Como será usado nas próximas etapas
 
-1. `map_base.gd` com marcadores de spawn e limites.
+1. `map_base.gd` com marcadores de spawn e limites (a sala de teste já expõe
+   um `Marker3D` chamado `Spawn`).
 2. Salas como cenas separadas, compostas por instanciação.
 3. Portas como nós próprios com sinal de abertura, mediado por `match/`.
 

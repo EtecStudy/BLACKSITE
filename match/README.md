@@ -3,8 +3,14 @@
 **Responsabilidade:** gerenciamento das partidas — estados, fluxo de jogo,
 orquestração entre módulos, início e fim de rodada.
 
-**Estado atual (Etapa 2):** apenas estrutura/documentação. Nenhuma máquina de
-estados de partida e nenhum gerenciador foram implementados.
+**Estado atual (Etapa 4):** existe a **sessão de teste da movimentação**, que
+orquestra a sala (`maps/`) e o jogador (`players/`) e cuida da pausa/volta ao
+menu. Ainda não há máquina de estados de partida.
+
+| Caminho | O que é |
+| --- | --- |
+| `match/scenes/movement_test.tscn` | Sala de teste + jogador + interface de pausa |
+| `match/scripts/movement_test.gd` | Spawn, captura/liberação do mouse, pausa e retorno ao menu |
 
 ## O que entra aqui
 

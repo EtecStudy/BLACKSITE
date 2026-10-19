@@ -141,12 +141,16 @@ Volume em `0%` silencia o bus (`mute`) em vez de aplicar `-inf dB`.
 
 ## 7. Controles
 
-A tela mostra os controles padrão **previstos** para o futuro controlador em
-primeira pessoa (WASD, mouse, Shift, E, F, Esc). Eles são apenas referência:
-**nenhuma movimentação existe nesta etapa**.
+A tela mostra os controles do jogador (WASD, mouse, Shift, E, F, Esc). Na
+Etapa 4, **WASD e mouse já funcionam** na cena de teste; Shift (correr), E
+(interagir), F (lanterna) e Esc (pausa do jogo) entram nas próximas etapas —
+Esc já libera o cursor na cena de teste.
 
-Sensibilidade e inversão do eixo vertical ficam salvas e serão lidas pelo
-controlador do jogador na Etapa 4.
+Sensibilidade horizontal/vertical e inversão do eixo vertical são lidas pelo
+`PlayerController` (`players/scripts/player_controller.gd`) na entrada da cena
+e reaplicadas sempre que o gerenciador emite `applied`. O controlador não lê
+`ConfigFile` e não guarda cópia dos valores: `GameSettings` continua sendo a
+fonte única.
 
 ## 8. Como acrescentar um novo parâmetro
 
@@ -166,7 +170,8 @@ APLICAR).
 
 ## 9. Limitações conhecidas desta etapa
 
-- Sensibilidade e inversão **não movimentam nada** ainda (não há jogador).
+- Não há corrida, agachamento, stamina, pulo nem interação; a sensibilidade e
+  a inversão vertical já afetam a câmera (Etapa 4).
 - Música, ambiente e voz não têm sons; só os buses respondem.
 - VSync depende do driver: em GL Compatibility alguns drivers ignoram a opção.
 - O modo "janela maximizada" não guarda o tamanho anterior da janela.

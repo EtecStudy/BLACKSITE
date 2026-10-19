@@ -86,6 +86,17 @@ jobs:
             exit 1
           fi
 
+      - name: TESTE 1c — controlador FPS e cena de teste (headless)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/movement_test.tscn 2>&1 | tee ci-logs/movement.log
+          grep -F "MOVEMENT TEST OK" ci-logs/movement.log
+          if grep -F "✗" ci-logs/movement.log; then
+            echo "::error::Falhas no teste do controlador em primeira pessoa"
+            exit 1
+          fi
+
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
@@ -128,6 +139,21 @@ jobs:
           cp "$latest" ci-logs/settings_screen.png
           rm -rf ci-logs/settings_frames
           test -s ci-logs/settings_screen.png
+
+      - name: TESTE 3c — renderizar a cena de teste da movimentação (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/movement_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://match/scenes/movement_test.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/movement_frames/frame.png --quit-after 60 \
+            2>&1 | tee ci-logs/render_movement.log
+          latest=$(ls ci-logs/movement_frames/*.png | tail -1)
+          cp "$latest" ci-logs/movement_test.png
+          rm -rf ci-logs/movement_frames
+          test -s ci-logs/movement_test.png
+          echo "frame da cena de teste capturado: $latest"
 
       # ------------------------------------------------------------------
       # 2. Exportações
@@ -196,7 +222,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.3\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.4\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -209,13 +235,23 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 3 (Windows x86_64)
+          BLACK SIGHT — Etapa 4 (Windows x86_64)
           ======================================
 
           COMO JOGAR
           1. Extraia todos os arquivos deste ZIP para a mesma pasta.
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
+
+          JOGAR (ETAPA 4)
+          - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
+          - W A S D ....... andar (relativo à direção da câmera)
+          - Mouse ......... olhar (até 89 graus para cima/baixo)
+          - Esc ........... libera o mouse e abre a pausa
+          - CONTINUAR ..... captura o mouse de novo
+          - VOLTAR AO MENU  volta à tela inicial
+          - O jogador colide com piso, paredes, pilares e caixas.
+          - Ainda não há corrida, agachamento, pulo nem interação.
 
           CONFIGURAÇÕES
           - Clique em CONFIGURAÇÕES na tela inicial.
@@ -227,8 +263,9 @@ jobs:
 
           CONTROLES
           - F11 .......... alterna entre janela e tela cheia
-          - Esc .......... volta ao menu na tela de configurações
-          - SAIR DO JOGO . fecha o jogo
+          - Esc .......... pausa/libera o mouse na cena de teste; volta ao menu
+                           na tela de configurações
+          - SAIR DO JOGO . fecha o jogo (na tela inicial)
           - Alt+F4 ....... fecha o jogo
 
           REQUISITOS
@@ -237,41 +274,43 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVAÇÃO
-          Etapa 3: configurações de controles, áudio e vídeo.
-          Ainda não há jogabilidade (jogador, mapa, inventário, criaturas).
+          Etapa 4: controlador em primeira pessoa e sala 3D de teste.
+          Ainda não há corrida, agachamento, stamina, pulo, inventário,
+          interação, criaturas nem multiplayer.
 
-          Versão 0.3.0 — Etapa 3
+          Versão 0.4.0 — Etapa 4
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa3-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa4-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa3-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa3-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa4-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa4-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa3-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa4-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa4-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa4-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa4-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa4-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa3-windows
+          name: black-sight-etapa4-windows
           path: |
-            BlackSight-Etapa3-Windows-x86_64.zip
+            BlackSight-Etapa4-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
+            ci-logs/movement_test.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa3-logs
+          name: black-sight-etapa4-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -297,7 +336,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 3"
+            echo "## Black Sight · Etapa 4"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -310,6 +349,11 @@ jobs:
             echo "### Fluxo de interface"
             echo '```'
             grep -E "UI FLOW|✓|✗" ci-logs/ui-flow.log 2>/dev/null | tail -40 || true
+            echo '```'
+            echo ""
+            echo "### Controlador FPS"
+            echo '```'
+            grep -E "MOVEMENT|✓|✗" ci-logs/movement.log 2>/dev/null | tail -40 || true
             echo '```'
             echo ""
             echo "### Cena inicial e configurações"
@@ -403,7 +447,13 @@ jobs:
             "audio/assets/sfx/ui_click.wav",
             "ui/scenes/settings_screen.tscn",
             "ui/scripts/settings_screen.gd",
-            "tools/ci/ui_flow_test.tscn"
+            "players/scenes/player.tscn",
+            "players/scripts/player_controller.gd",
+            "maps/scenes/test_room.tscn",
+            "match/scenes/movement_test.tscn",
+            "match/scripts/movement_test.gd",
+            "tools/ci/ui_flow_test.tscn",
+            "tools/ci/movement_test.tscn"
           )) {
             if (-not (Test-Path $required)) { throw "Arquivo esperado ausente: $required" }
           }
@@ -433,6 +483,19 @@ jobs:
           Write-Host "exit code do fluxo de interface: $code"
           if (-not (Select-String -Path $log -SimpleMatch "UI FLOW OK")) {
             throw "Fluxo de interface não passou (exit $code) — ver 05b-ui-flow.log"
+          }
+
+      - name: TESTE W2c — controlador FPS e cena de teste no Windows (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05c-movement.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/movement_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste de movimento: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "MOVEMENT TEST OK")) {
+            throw "Teste do controlador não passou (exit $code) — ver 05c-movement.log"
           }
 
       - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
@@ -537,7 +600,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 3 (Windows x86_64)
+          BLACK SIGHT - Etapa 4 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -550,6 +613,16 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
+          JOGAR (ETAPA 4)
+          - Clique em TESTAR MOVIMENTACAO na tela inicial.
+          - W A S D ....... andar (relativo a direcao da camera)
+          - Mouse ......... olhar (ate 89 graus para cima/baixo)
+          - Esc ........... libera o mouse e abre a pausa
+          - CONTINUAR ..... captura o mouse de novo
+          - VOLTAR AO MENU  volta a tela inicial
+          - O jogador colide com piso, paredes, pilares e caixas.
+          - Ainda nao ha corrida, agachamento, pulo nem interacao.
+
           CONFIGURACOES
           - Clique em CONFIGURACOES na tela inicial.
           - Abas: CONTROLES, AUDIO e VIDEO.
@@ -559,8 +632,9 @@ jobs:
 
           CONTROLES
           - F11 .......... alterna entre janela e tela cheia
-          - Esc .......... volta ao menu na tela de configuracoes
-          - SAIR DO JOGO . fecha o jogo
+          - Esc .......... pausa/libera o mouse na cena de teste; volta ao menu
+                           na tela de configuracoes
+          - SAIR DO JOGO . fecha o jogo (na tela inicial)
           - Alt+F4 ....... fecha o jogo
 
           REQUISITOS
@@ -569,10 +643,11 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVACAO
-          Etapa 3: configuracoes de controles, audio e video.
-          Ainda nao ha jogabilidade (jogador, mapa, inventario, criaturas).
+          Etapa 4: controlador em primeira pessoa e sala 3D de teste.
+          Ainda nao ha corrida, agachamento, stamina, pulo, inventario,
+          interacao, criaturas nem multiplayer.
 
-          Versao 0.3.0 - Etapa 3
+          Versao 0.4.0 - Etapa 4
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -583,7 +658,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa3-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa4-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -600,9 +675,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa3-windows-real
+          name: black-sight-etapa4-windows-real
           path: |
-            BlackSight-Etapa3-Windows-x86_64.zip
+            BlackSight-Etapa4-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -612,9 +687,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.3.0-etapa3 --yes --cleanup-tag 2>$null
+          gh release delete v0.4.0-etapa4 --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.3.0-etapa3 "BlackSight-Etapa3-Windows-x86_64.zip" --title "Black Sight - Etapa 3 - Configuracoes (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA3.md
+          gh release create v0.4.0-etapa4 "BlackSight-Etapa4-Windows-x86_64.zip" --title "Black Sight - Etapa 4 - Jogador em primeira pessoa (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA4.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -639,7 +714,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 3 (Windows real)", "")
+          $summary = @("## Black Sight - Etapa 4 (Windows real)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

@@ -1,6 +1,6 @@
 # Black Sight — Arquitetura do projeto
 
-Documento de referência da organização interna (atualizado na Etapa 3).
+Documento de referência da organização interna (atualizado na Etapa 4).
 Motor: **Godot 4.7.2**, renderizador **GL Compatibility**.
 
 Regra de ouro: **cada pasta de módulo tem uma responsabilidade única**, e as
@@ -14,12 +14,12 @@ dependências apontam sempre em uma direção só.
 BlackSight/
 ├── project.godot              # configuração da engine (nome, cena inicial, tema, autoload)
 ├── export_presets.cfg         # presets de exportação (Windows, Linux)
-├── players/                   # jogadores (estrutura)
+├── players/                   # jogador: controlador FPS + câmera
 ├── creatures/                 # criaturas e IA (estrutura)
-├── maps/                      # mapas, salas e ambientes (estrutura)
+├── maps/                      # mapas e salas — sala de teste 3D
 ├── items/                     # itens, inventário e interação (estrutura)
 ├── objectives/                # objetivos e progressão (estrutura)
-├── match/                     # fluxo e estados da partida (estrutura)
+├── match/                     # orquestração — sessão de teste da movimentação
 ├── ui/                        # menus, HUD — tela inicial e configurações
 ├── audio/                     # buses, sons de interface e (futuro) ambiente/voz
 ├── shared/                    # recursos e sistemas comuns — base de todos
@@ -56,14 +56,14 @@ BlackSight/
 
 | Módulo | Finalidade | Conteúdo real hoje |
 | --- | --- | --- |
-| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos | apenas `README.md` |
+| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos | `scenes/player.tscn`, `scripts/player_controller.gd` |
 | `creatures/` | Criaturas: percepção, máquina de estados, patrulha, perseguição, spawn | apenas `README.md` |
-| `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | apenas `README.md` |
+| `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste) |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
 | `objectives/` | Objetivos, condições de conclusão e progressão | apenas `README.md` |
 | `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scenes/settings_screen.tscn` e scripts |
 | `audio/` | Áudio ambiente, efeitos sonoros e comunicação por voz | `default_bus_layout.tres`, autoload `UiAudio`, `assets/sfx/*.wav` |
-| `match/` | Estados e fluxo da partida; orquestração entre módulos | apenas `README.md` |
+| `match/` | Estados e fluxo da partida; orquestração entre módulos | `scenes/movement_test.tscn`, `scripts/movement_test.gd` |
 | `shared/` | Recursos e sistemas usados por 2+ módulos | autoloads `AppInfo`/`GameSettings`, tema, fontes, texturas, `settings/` |
 
 Cada módulo tem um `README.md` próprio, com regras específicas e sugestões de
@@ -152,15 +152,16 @@ domínio → `match/` → `ui/`.
 
 | Item | Situação |
 | --- | --- |
-| `players/`, `creatures/`, `maps/`, `items/`, `objectives/`, `match/` | **Só documentação.** Nenhum script, cena ou lógica |
+| `creatures/`, `items/`, `objectives/` | **Só documentação.** Nenhum script, cena ou lógica |
 | `shared/autoload/event_bus.gd` | Planejado, **não existe** |
 | Layout de buses de áudio | **Existe** desde a Etapa 3 (`Master`, `Music`, `SFX`, `Ambience`, `Voice`) |
-| Input Map | **Não configurado** (entra na etapa de jogador) |
+| Input Map | **Configurado** na Etapa 4: `move_forward/back/left/right` (WASD) e `release_mouse` (Esc) |
 | Multiplayer / rede | **Não iniciado** |
 | Autoloads | `AppInfo` (Etapa 1), `GameSettings` e `UiAudio` (Etapa 3) |
 
-**Total de código hoje:** 3 autoloads, 2 cenas de interface + 1 cena de teste,
-scripts de configurações em `shared/settings/` e tema global.
+**Total de código hoje:** 3 autoloads, 2 cenas de interface, o jogador
+(`players/`), a sala de teste (`maps/`), a sessão de teste (`match/`), scripts de
+configurações em `shared/settings/` e tema global.
 
 ---
 
@@ -182,6 +183,29 @@ ui/scripts/settings/*  ──►  GameSettings (shared/settings/)  ──►  mo
 - O arquivo fica em `user://settings.cfg` (nunca na pasta de instalação).
 
 Detalhes e receita para adicionar parâmetros: [`CONFIGURACOES.md`](CONFIGURACOES.md).
+
+---
+
+## 6.2 Jogador (Etapa 4)
+
+```
+players/scenes/player.tscn          CharacterBody3D + cápsula + Head + Camera3D
+players/scripts/player_controller.gd  movimento, câmera, gravidade, configurações
+
+match/scenes/movement_test.tscn      orquestra:
+├── maps/scenes/test_room.tscn       geometria + colisão + Spawn
+├── players/scenes/player.tscn       jogador no Spawn
+└── Interface                        pausa (ESC), CONTINUAR, VOLTAR AO MENU
+```
+
+- `players/` continua dependendo só de `shared/`: não conhece a sala.
+- `maps/` expõe geometria e um `Marker3D` de spawn; não conhece o jogador.
+- `match/` é o único que instancia os dois juntos e controla a sessão.
+- A UI da tela inicial apenas troca de cena por caminho; não importa classes de
+  gameplay.
+- A sensibilidade é lida de `GameSettings` e reaplicada no sinal `applied`.
+
+Detalhes da etapa: [`ETAPA-4.md`](ETAPA-4.md).
 
 ---
 
