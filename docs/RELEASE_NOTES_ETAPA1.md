@@ -38,5 +38,17 @@ e `BlackSight.pck`.
 - Renderização real da cena sob Xvfb + OpenGL, com captura de frame.
 - Exportação Windows e validação da assinatura PE32+ x86-64 e do `.pck`.
 
-> O binário é gerado no CI (Linux, Godot oficial). A execução em Windows real é
-> validada pelo usuário.
+## Resultado da validação (Windows real)
+
+Gerado e testado em `windows-latest` com Godot 4.7.2-stable:
+
+- teste de fumaça: 68 verificações aprovadas;
+- `.exe` exportado executado no Windows: carregou a cena inicial;
+- `.exe` aberto com janela: título **Black Sight**, processo estável;
+- metadados do binário: `ProductName=Black Sight`, `FileVersion=0.1.0.0`;
+- `.pck` inspecionado: cena, scripts, tema, fontes e texturas presentes.
+
+SHA-256 do ZIP: `aee6340f93162f89b7e46c8433d9d2f6ff4f5abea2218391da0dec7a6ed64672`
+
+> Pendente: execução no computador do usuário (Windows doméstico, GPU real).
+> O CI roda em Windows Server 2022 com renderização por software.

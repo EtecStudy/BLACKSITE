@@ -76,36 +76,53 @@ implementado — conforme o escopo.
 ## 5. Testes realizados
 
 Todos executados automaticamente pelo workflow
-`.github/workflows/etapa1-godot-build.yml`, em um runner Linux com
-**Godot 4.7.2-stable oficial** (o mesmo pacote de engine usado no editor).
+`.github/workflows/etapa1-godot-build.yml`, com o **Godot 4.7.2-stable oficial**
+(o mesmo binário usado para exportar).
 
-| # | Teste | O que verifica |
+### Job Linux (`ubuntu-latest`)
+
+| # | Teste | Resultado |
 | --- | --- | --- |
-| 1 | Fumaça (`tools/ci/smoke_test.gd`) | nome/versão do projeto, renderizador, resolução, stretch, cena principal, autoload, tema, fontes, texturas importadas, estrutura de nós, botões e preset de exportação (68 verificações) |
-| 2 | Execução headless da cena inicial (240 frames) | a cena abre, o script inicializa (`[Black Sight] Tela inicial carregada`) e o log não contém `SCRIPT ERROR` |
-| 3 | Renderização real (Xvfb + OpenGL/llvmpipe) | a cena desenha de fato; frame capturado e inspecionado |
-| 4 | Exportação Windows (`--export-release`) | gera `BlackSight.exe` + `BlackSight.pck` sem erros |
-| 5 | Execução do **build exportado** (Linux, não-editor, Xvfb) | o pacote exportado inicializa e carrega a cena inicial |
-| 6 | Inspeção do `.pck` (`tools/ci/inspect_pck.py`) | diretório do pacote lido; cena, scripts, tema, fontes e texturas presentes; nada de `tools/`/`docs/` vazando |
-| 7 | Validação do `.exe` | `file` confirma `PE32+ executable (GUI) x86-64`; metadados de versão e `SHA256SUMS.txt` |
-| 8 | Conteúdo do ZIP | `.exe`, `.pck` e `LEIA-ME.txt` presentes; `unzip -t` sem erros |
-| 9 | Execução do `.exe` com Wine | tenta iniciar o binário Windows emulado: primeiro `--headless` (prova que o binário carrega o `.pck` e sobe a cena) e depois com janela sob Xvfb |
+| 1 | Importação dos recursos (`--headless --import`) | ✅ |
+| 2 | Fumaça (`tools/ci/smoke_test.gd`) — 68 verificações | ✅ 68/68 |
+| 3 | Execução da cena inicial em headless (240 frames) | ✅ |
+| 4 | Renderização real sob Xvfb + OpenGL (llvmpipe) | ✅ frame capturado |
+| 5 | Execução do **build exportado** (não-editor) sob Xvfb | ✅ |
+| 6 | Inspeção do `.pck` (diretório do pacote) | ✅ conteúdo correto |
+| 7 | Validação do `.exe` (PE32+ x86-64, metadados) | ✅ |
+| 8 | Conteúdo e integridade do ZIP | ✅ |
 
-Resultados da execução final: **passos 1 a 8 aprovados**. O passo 9 depende do
-Wine do runner; o log `wine-status.txt` registra o resultado real da tentativa
-(sem maquiagem) e a captura `wine_screenshot.png` mostra o que apareceu na tela.
+### Job Windows (`windows-latest`) — validação final
 
-> **Limitação explícita:** este ambiente não é Windows. O `.exe` é gerado e
-> verificado estruturalmente (assinatura PE32+, arquitetura x86-64, pacote de
-> dados íntegro, build exportado executado com sucesso no Linux), mas a
-> **execução em um Windows real não foi realizada por mim** — ela é feita pelo
-> usuário, que reportará o resultado.
+| # | Teste | Resultado real |
+| --- | --- | --- |
+| W1 | Importar recursos no Windows | ✅ |
+| W2 | Teste de fumaça no Windows | ✅ `SMOKE TEST OK — 68 verificações` |
+| W3 | Executar a cena inicial (headless, 240 frames) | ✅ `[Black Sight] Tela inicial carregada` |
+| W4 | Exportar `BlackSight.exe` + `BlackSight.pck` | ✅ |
+| W5 | **Executar o `.exe` exportado** no Windows | ✅ iniciou e carregou a cena inicial |
+| W6 | Abrir o `.exe` com janela | ✅ janela "Black Sight" viva após 25 s |
+| W7 | Inspecionar `.pck` e metadados do `.exe` | ✅ `ProductName=Black Sight`, `FileVersion=0.1.0.0`, `CompanyName=EtecStudy` |
 
-## 5.1. Como conferir os resultados
+Artefato publicado (gerado pelo job Windows):
 
-- Logs e captura de tela: artifact `black-sight-etapa1-logs` na aba Actions.
-- Cópia acessível por git: branch `ci-diagnostics` (pasta `.ci/`).
-- `SHA256SUMS.txt` acompanha o ZIP para conferência de integridade.
+- `BlackSight-Etapa1-Windows-x86_64.zip` — 40.574.790 bytes
+- SHA-256: `aee6340f93162f89b7e46c8433d9d2f6ff4f5abea2218391da0dec7a6ed64672`
+- Conteúdo: `BlackSight.exe` (109.193.728 B), `BlackSight.pck` (1.330.208 B),
+  `LEIA-ME.txt`, `SHA256SUMS.txt`
+
+### Testes que NÃO foram realizados
+
+- **Execução no seu computador** — é exatamente o teste que fica pendente com
+  você. O CI prova que o `.exe` roda em Windows Server 2022 (runner
+  `windows-latest`); GPU, driver e versão do seu Windows só o teste local
+  confirma.
+- **Execução do `.exe` via Wine** — tentada em ciclos anteriores e **removida**:
+  o Wine do container falha no próprio carregamento do Godot
+  (`page fault`), o que não indica problema no jogo. Substituída pelo job
+  Windows real, que é uma validação legítima.
+- **Teste em placa de vídeo dedicada / múltiplos monitores** — o runner usa
+  renderização por software/Mesa.
 
 ## 6. Como abrir e rodar no editor
 

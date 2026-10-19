@@ -4,13 +4,13 @@
 
 > **Status:** Etapa 1 concluída — fundação do projeto (sem jogabilidade ainda).
 
+![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
+
 ## Download do jogo (Windows)
 
-O executável é publicado na aba **Releases** deste repositório:
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.1.0-etapa1/BlackSight-Etapa1-Windows-x86_64.zip**
 
-**https://github.com/EtecStudy/BLACKSITE/releases/latest**
-
-Arquivo: `BlackSight-Etapa1-Windows-x86_64.zip`
+SHA-256: `aee6340f93162f89b7e46c8433d9d2f6ff4f5abea2218391da0dec7a6ed64672`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
@@ -56,8 +56,12 @@ Detalhes completos: [`docs/ETAPA-1.md`](docs/ETAPA-1.md).
 ## Testes
 
 O workflow [`.github/workflows/etapa1-godot-build.yml`](.github/workflows/etapa1-godot-build.yml)
-importa o projeto, roda o teste de fumaça, executa a cena inicial em headless,
-renderiza a cena sob Xvfb/OpenGL e exporta o executável Windows.
+roda em dois runners:
+
+- **Linux**: importa o projeto, roda o teste de fumaça, executa a cena inicial,
+  renderiza sob Xvfb/OpenGL, exporta e inspeciona o pacote.
+- **Windows** (`windows-latest`): gera o `.exe`, executa o `.exe` exportado,
+  abre com janela e valida metadados — é este job que publica a release.
 
 ```bash
 # teste de fumaça local
