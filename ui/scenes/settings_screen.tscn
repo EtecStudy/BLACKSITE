@@ -1,0 +1,208 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://ui/scripts/settings_screen.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/background.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/vignette.png" id="3_vignette"]
+[ext_resource type="Texture2D" path="res://shared/textures/fx/dust.png" id="4_dust"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="5_title_font"]
+
+[sub_resource type="FontVariation" id="FontVariation_title"]
+base_font = ExtResource("5_title_font")
+spacing_glyph = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.031, 0.031, 0.035, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.62, 0.58, 0.51, 0.22)
+
+[node name="SettingsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Dust" type="CPUParticles2D" parent="."]
+position = Vector2(960, 560)
+amount = 60
+lifetime = 16.0
+preprocess = 16.0
+emission_shape = 3
+emission_rect_extents = Vector2(980, 620)
+direction = Vector2(0.15, -1)
+spread = 22.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 13.0
+scale_amount_min = 0.035
+scale_amount_max = 0.11
+color = Color(0.82, 0.79, 0.71, 0.3)
+texture = ExtResource("4_dust")
+
+[node name="Vignette" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_vignette")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 90
+theme_override_constants/margin_top = 54
+theme_override_constants/margin_right = 90
+theme_override_constants/margin_bottom = 44
+
+[node name="Layout" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Header" type="VBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="Margin/Layout/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.87, 0.8, 1)
+theme_override_fonts/font = SubResource("FontVariation_title")
+theme_override_font_sizes/font_size = 46
+text = "CONFIGURAÇÕES"
+
+[node name="HeaderHint" type="Label" parent="Margin/Layout/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.47, 0.42, 1)
+theme_override_font_sizes/font_size = 15
+text = "Ajustes locais do jogo — salvos no seu computador (user://settings.cfg)"
+
+[node name="Body" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 32
+
+[node name="Sidebar" type="VBoxContainer" parent="Margin/Layout/Body"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TabControls" type="Button" parent="Margin/Layout/Body/Sidebar"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+text = "CONTROLES"
+
+[node name="TabAudio" type="Button" parent="Margin/Layout/Body/Sidebar"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "ÁUDIO"
+
+[node name="TabVideo" type="Button" parent="Margin/Layout/Body/Sidebar"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "VÍDEO"
+
+[node name="SidebarSpacer" type="Control" parent="Margin/Layout/Body/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SidebarHint" type="Label" parent="Margin/Layout/Body/Sidebar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.38, 0.34, 1)
+theme_override_font_sizes/font_size = 13
+text = "Esc volta ao menu principal."
+autowrap_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="Margin/Layout/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PanelMargin" type="MarginContainer" parent="Margin/Layout/Body/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 28
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Layout/Body/Panel/PanelMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="SectionHost" type="VBoxContainer" parent="Margin/Layout/Body/Panel/PanelMargin/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Footer" type="HBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StatusLabel" type="Label" parent="Margin/Layout/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.5, 0.47, 0.42, 1)
+theme_override_font_sizes/font_size = 15
+text = "Configurações atuais carregadas."
+vertical_alignment = 1
+
+[node name="DefaultsButton" type="Button" parent="Margin/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "RESTAURAR PADRÕES"
+
+[node name="BackButton" type="Button" parent="Margin/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="ApplyButton" type="Button" parent="Margin/Layout/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "APLICAR"
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

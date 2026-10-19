@@ -3,7 +3,7 @@
 **Responsabilidade:** sistemas e recursos compartilhados entre módulos.
 É o nível mais baixo da arquitetura: **não depende de nenhum outro módulo**.
 
-## Estado atual (Etapa 2): conteúdo real
+## Estado atual (Etapa 3): conteúdo real
 
 | Caminho | O que é |
 | --- | --- |
@@ -13,6 +13,10 @@
 | `shared/textures/branding/` | Emblema, ícone (.ico/.png) e boot splash (Etapa 1) |
 | `shared/textures/ui/` | Fundo e vinheta usados pela tela inicial (Etapa 1) |
 | `shared/textures/fx/` | Sprite de poeira para partículas (Etapa 1) |
+| `shared/settings/settings_schema.gd` | Esquema, padrões e validação das configurações (Etapa 3) |
+| `shared/settings/game_settings.gd` | Autoload `GameSettings` — carrega, aplica e salva `user://settings.cfg` (Etapa 3) |
+| `shared/settings/audio_applier.gd` | Percentual → dB nos buses de áudio (Etapa 3) |
+| `shared/settings/video_applier.gd` | Modo de janela, resolução e VSync com limites de segurança (Etapa 3) |
 
 ## O que pode entrar aqui no futuro
 

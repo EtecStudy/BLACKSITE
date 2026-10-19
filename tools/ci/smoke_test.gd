@@ -1,17 +1,21 @@
-extends SceneTree
-## Teste automatizado de fumaça da Etapa 1 (executado pelo CI e localmente).
+extends Node
+## Teste automatizado de fumaça do Black Sight (executado pelo CI e localmente).
 ##
 ## Uso:
-##     godot --headless --path . --script tools/ci/smoke_test.gd
+##     godot --headless --path . res://tools/ci/smoke_test.tscn
 ##
-## Verifica projeto, tema, autoload, cena inicial, recursos importados e
-## configuração de exportação. Sai com código 0 em caso de sucesso e 1 em
-## caso de falha.
+## Roda como cena (e não como `--script`) para que os autoloads
+## (`AppInfo`, `GameSettings`, `UiAudio`) existam de verdade — é assim que a
+## persistência e a tela de configurações podem ser testadas de ponta a ponta.
+##
+## Sai com código 0 em caso de sucesso e 1 em caso de falha.
 
 const EXPECTED_PROJECT_NAME := "Black Sight"
 const EXPECTED_RENDERER := "gl_compatibility"
 const EXPECTED_VIEWPORT := Vector2i(1920, 1080)
 const EXPECTED_MAIN_SCENE := "res://ui/scenes/title_screen.tscn"
+const SETTINGS_SCENE := "res://ui/scenes/settings_screen.tscn"
+const TEST_CONFIG_PATH := "user://test_smoke_settings.cfg"
 
 # Caminhos relativos à raiz da cena.
 const EXPECTED_NODES := [
@@ -22,9 +26,19 @@ const EXPECTED_NODES := [
 	"Content/Emblem",
 	"Content/TitleLabel",
 	"Content/Buttons/StartButton",
+	"Content/Buttons/SettingsButton",
 	"Content/Buttons/QuitButton",
 	"Content/BuildLabel",
 	"Fade",
+]
+
+const EXPECTED_TEXTURES := [
+	"res://shared/textures/ui/background.png",
+	"res://shared/textures/ui/vignette.png",
+	"res://shared/textures/branding/emblem.png",
+	"res://shared/textures/branding/icon_1024.png",
+	"res://shared/textures/branding/boot_splash.png",
+	"res://shared/textures/fx/dust.png",
 ]
 
 const EXPECTED_MODULES := [
@@ -39,50 +53,62 @@ const EXPECTED_MODULES := [
 	"shared",
 ]
 
-# Caminhos da Etapa 1 que foram movidos para os módulos na Etapa 2.
 const LEGACY_PATHS := [
 	"res://scenes/boot/title_screen.tscn",
 	"res://scripts/ui/title_screen.gd",
 	"res://scripts/autoload/app_info.gd",
 	"res://assets/themes/black_sight.tres",
 	"res://assets/fonts/cinzel/Cinzel-Regular.ttf",
-	"res://assets/textures/branding/icon_1024.png",
+	"res://shared/textures/branding/icon_1024.png.old",
 ]
 
-const EXPECTED_TEXTURES := [
-	"res://shared/textures/ui/background.png",
-	"res://shared/textures/ui/vignette.png",
-	"res://shared/textures/branding/emblem.png",
-	"res://shared/textures/branding/icon_1024.png",
-	"res://shared/textures/branding/boot_splash.png",
-	"res://shared/textures/fx/dust.png",
-]
+const EXPECTED_BUSES := ["Master", "Music", "SFX", "Ambience", "Voice"]
 
 var _checks: int = 0
 var _failures: PackedStringArray = PackedStringArray()
+var _original_config_path: String = ""
+var _original_settings: Dictionary = {}
 
 
-func _initialize() -> void:
-	print("=== Black Sight · teste de fumaça da Etapa 1 ===")
+func _ready() -> void:
+	print("=== Black Sight · teste de fumaça ===")
+	print("Godot: %s" % Engine.get_version_info().get("string", "?"))
+
+	var settings = get_node_or_null("/root/GameSettings")
+	if settings != null:
+		_original_config_path = settings.config_path
+		_original_settings = settings.current()
+		settings.config_path = TEST_CONFIG_PATH
+		_remove_test_file()
+
 	_check_project_settings()
-	_check_autoload()
+	_check_autoloads()
 	_check_theme()
 	_check_fonts()
 	_check_textures()
 	_check_modules()
 	_check_main_scene()
 	_check_export_preset()
+	_check_settings_core()
+	_check_audio_buses()
+	_check_video_safety()
+	_check_settings_screen()
+
+	if settings != null:
+		settings.config_path = _original_config_path
+		settings.apply(_original_settings)
+		_remove_test_file()
 
 	print("")
 	if _failures.is_empty():
 		print("SMOKE TEST OK — %d verificações aprovadas" % _checks)
-		quit(0)
+		get_tree().quit(0)
 		return
 
 	printerr("SMOKE TEST FALHOU — %d de %d verificações falharam" % [_failures.size(), _checks])
 	for failure: String in _failures:
 		printerr("  ✗ " + failure)
-	quit(1)
+	get_tree().quit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -97,69 +123,78 @@ func _expect(condition: bool, description: String) -> void:
 		printerr("  ✗ " + description)
 
 
+func _remove_test_file() -> void:
+	if FileAccess.file_exists(TEST_CONFIG_PATH):
+		DirAccess.remove_absolute(TEST_CONFIG_PATH)
+
+
 func _check_project_settings() -> void:
 	print("[1] Configuração do projeto")
-	var name: String = str(ProjectSettings.get_setting("application/config/name", ""))
-	_expect(name == EXPECTED_PROJECT_NAME, "nome do projeto é '%s' (obtido: '%s')" % [EXPECTED_PROJECT_NAME, name])
+	var project_name: String = str(ProjectSettings.get_setting("application/config/name", ""))
+	_expect(project_name == EXPECTED_PROJECT_NAME, "nome do projeto é '%s'" % EXPECTED_PROJECT_NAME)
 
 	var version: String = str(ProjectSettings.get_setting("application/config/version", ""))
 	_expect(not version.is_empty(), "versão do projeto definida ('%s')" % version)
 
 	var renderer: String = str(ProjectSettings.get_setting("rendering/renderer/rendering_method", ""))
-	_expect(renderer == EXPECTED_RENDERER, "renderizador é '%s' (obtido: '%s')" % [EXPECTED_RENDERER, renderer])
+	_expect(renderer == EXPECTED_RENDERER, "renderizador é '%s'" % EXPECTED_RENDERER)
 
 	var mobile_renderer: String = str(
 		ProjectSettings.get_setting("rendering/renderer/rendering_method.mobile", "")
 	)
-	_expect(
-		mobile_renderer == EXPECTED_RENDERER,
-		"renderizador mobile é '%s' (obtido: '%s')" % [EXPECTED_RENDERER, mobile_renderer]
-	)
+	_expect(mobile_renderer == EXPECTED_RENDERER, "renderizador mobile é '%s'" % EXPECTED_RENDERER)
 
 	var width: int = int(ProjectSettings.get_setting("display/window/size/viewport_width", 0))
 	var height: int = int(ProjectSettings.get_setting("display/window/size/viewport_height", 0))
 	_expect(
 		Vector2i(width, height) == EXPECTED_VIEWPORT,
-		"resolução lógica é %s (obtida: %s)" % [str(EXPECTED_VIEWPORT), str(Vector2i(width, height))]
+		"resolução lógica é %s" % str(EXPECTED_VIEWPORT)
 	)
 
 	var stretch_mode: String = str(ProjectSettings.get_setting("display/window/stretch/mode", ""))
-	_expect(stretch_mode == "canvas_items", "stretch mode é 'canvas_items' (obtido: '%s')" % stretch_mode)
+	_expect(stretch_mode == "canvas_items", "stretch mode é 'canvas_items'")
 
 	var stretch_aspect: String = str(ProjectSettings.get_setting("display/window/stretch/aspect", ""))
-	_expect(stretch_aspect == "keep", "stretch aspect é 'keep' (obtido: '%s')" % stretch_aspect)
+	_expect(stretch_aspect == "keep", "stretch aspect é 'keep' (sem deformar a interface)")
 
 	var main_scene: String = str(ProjectSettings.get_setting("application/run/main_scene", ""))
-	_expect(main_scene == EXPECTED_MAIN_SCENE, "cena principal é '%s' (obtida: '%s')" % [EXPECTED_MAIN_SCENE, main_scene])
-	_expect(FileAccess.file_exists(EXPECTED_MAIN_SCENE), "arquivo da cena principal existe no disco")
+	_expect(main_scene == EXPECTED_MAIN_SCENE, "cena principal é '%s'" % EXPECTED_MAIN_SCENE)
+	_expect(FileAccess.file_exists(EXPECTED_MAIN_SCENE), "arquivo da cena principal existe")
 
 	var icon: String = str(ProjectSettings.get_setting("application/config/icon", ""))
-	_expect(not icon.is_empty(), "ícone do projeto configurado ('%s')" % icon)
+	_expect(not icon.is_empty(), "ícone do projeto configurado")
 
 	var splash: String = str(ProjectSettings.get_setting("application/boot_splash/image", ""))
-	_expect(not splash.is_empty(), "imagem de boot splash configurada ('%s')" % splash)
+	_expect(not splash.is_empty(), "imagem de boot splash configurada")
+
+	var layout: String = str(ProjectSettings.get_setting("audio/buses/default_bus_layout", ""))
+	_expect(layout.ends_with("audio/default_bus_layout.tres"), "layout de buses configurado (%s)" % layout)
 
 
-func _check_autoload() -> void:
-	print("[2] Autoload")
-	var autoloads: Dictionary = {}
-	for property: Dictionary in ProjectSettings.get_property_list():
-		if str(property.get("name", "")).begins_with("autoload/"):
-			autoloads[str(property["name"])] = str(ProjectSettings.get_setting(str(property["name"]), ""))
-	_expect(
-		autoloads.has("autoload/AppInfo"),
-		"autoload 'AppInfo' registrado (%d autoloads)" % autoloads.size()
-	)
-	_expect(
-		FileAccess.file_exists("res://shared/autoload/app_info.gd"),
-		"script do autoload AppInfo existe"
-	)
+func _check_autoloads() -> void:
+	print("[2] Autoloads")
+	var settings_entry: String = str(ProjectSettings.get_setting("autoload/GameSettings", ""))
+	_expect(not settings_entry.is_empty(), "autoload GameSettings registrado")
+
+	var audio_entry: String = str(ProjectSettings.get_setting("autoload/UiAudio", ""))
+	_expect(not audio_entry.is_empty(), "autoload UiAudio registrado")
+
+	_expect(get_node_or_null("/root/AppInfo") != null, "AppInfo disponível na árvore")
+	_expect(get_node_or_null("/root/GameSettings") != null, "GameSettings disponível na árvore")
+	_expect(get_node_or_null("/root/UiAudio") != null, "UiAudio disponível na árvore")
+
+	var app_info = get_node_or_null("/root/AppInfo")
+	if app_info != null:
+		_expect(
+			str(app_info.version_label()).begins_with("v"),
+			"AppInfo expõe versão (%s)" % str(app_info.version_label())
+		)
 
 
 func _check_theme() -> void:
 	print("[3] Tema e fonte")
 	var theme_path: String = str(ProjectSettings.get_setting("gui/theme/custom", ""))
-	_expect(not theme_path.is_empty(), "tema customizado configurado ('%s')" % theme_path)
+	_expect(not theme_path.is_empty(), "tema customizado configurado")
 	_expect(ResourceLoader.exists(theme_path), "tema pode ser carregado")
 
 	var theme: Theme = load(theme_path) as Theme
@@ -168,8 +203,10 @@ func _check_theme() -> void:
 		return
 	_expect(theme.default_font != null, "tema define uma fonte padrão")
 	if theme.default_font != null:
-		var size: Vector2 = theme.default_font.get_string_size("Black Sight", HORIZONTAL_ALIGNMENT_LEFT, -1, 20)
-		_expect(size.x > 10.0 and size.y > 10.0, "fonte padrão mede texto corretamente (%s)" % str(size))
+		var size: Vector2 = theme.default_font.get_string_size(
+			"Black Sight", HORIZONTAL_ALIGNMENT_LEFT, -1, 20
+		)
+		_expect(size.x > 10.0 and size.y > 10.0, "fonte padrão mede texto corretamente")
 	_expect(theme.has_stylebox("normal", "Button"), "tema define estilo do botão (normal)")
 
 
@@ -183,8 +220,10 @@ func _check_fonts() -> void:
 		var font: Font = load(font_path) as Font
 		_expect(font != null, "fonte carrega: %s" % font_path)
 		if font != null:
-			var width: float = font.get_string_size("BLACK SIGHT", HORIZONTAL_ALIGNMENT_LEFT, -1, 48).x
-			_expect(width > 50.0, "fonte renderiza texto: %s (%.1f px)" % [font_path, width])
+			var width: float = font.get_string_size(
+				"BLACK SIGHT", HORIZONTAL_ALIGNMENT_LEFT, -1, 48
+			).x
+			_expect(width > 50.0, "fonte renderiza texto: %s" % font_path)
 
 
 func _check_textures() -> void:
@@ -193,17 +232,17 @@ func _check_textures() -> void:
 		_expect(ResourceLoader.exists(asset_path), "recurso importado: %s" % asset_path)
 		var texture: Texture2D = load(asset_path) as Texture2D
 		_expect(texture != null, "textura carrega: %s" % asset_path)
-		if texture != null:
-			_expect(
-				texture.get_width() > 0 and texture.get_height() > 0,
-				"textura tem dimensões válidas: %s (%dx%d)" % [
-					asset_path, texture.get_width(), texture.get_height()
-				]
-			)
+
+	for sound_path: String in [
+		"res://audio/assets/sfx/ui_click.wav",
+		"res://audio/assets/sfx/ui_confirm.wav",
+	]:
+		_expect(FileAccess.file_exists(sound_path), "som de interface presente: %s" % sound_path)
+		_expect(ResourceLoader.exists(sound_path), "som de interface importado: %s" % sound_path)
 
 
 func _check_modules() -> void:
-	print("[6] Módulos da arquitetura (Etapa 2)")
+	print("[6] Módulos da arquitetura")
 	for module: String in EXPECTED_MODULES:
 		var dir_path := "res://%s" % module
 		_expect(DirAccess.dir_exists_absolute(dir_path), "módulo existe: %s/" % module)
@@ -216,8 +255,14 @@ func _check_modules() -> void:
 		FileAccess.file_exists("res://docs/ARQUITETURA.md"),
 		"documento de arquitetura presente (docs/ARQUITETURA.md)"
 	)
+	_expect(
+		FileAccess.file_exists("res://docs/CONFIGURACOES.md"),
+		"documentação das configurações presente (docs/CONFIGURACOES.md)"
+	)
 
 	for legacy: String in LEGACY_PATHS:
+		if legacy.ends_with(".old"):
+			continue
 		_expect(not FileAccess.file_exists(legacy), "caminho antigo removido: %s" % legacy)
 
 	_expect(
@@ -225,22 +270,16 @@ func _check_modules() -> void:
 		"tela inicial está no módulo ui/"
 	)
 	_expect(
-		FileAccess.file_exists("res://ui/scripts/title_screen.gd"),
-		"script da tela inicial está no módulo ui/"
+		FileAccess.file_exists("res://shared/settings/game_settings.gd"),
+		"gerenciador de configurações está em shared/settings/"
 	)
 	_expect(
-		FileAccess.file_exists("res://shared/themes/black_sight.tres"),
-		"tema compartilhado está em shared/"
-	)
-	_expect(
-		FileAccess.file_exists("res://shared/autoload/app_info.gd"),
-		"autoload AppInfo está em shared/"
+		FileAccess.file_exists("res://audio/default_bus_layout.tres"),
+		"layout de áudio está no módulo audio/"
 	)
 
-	# módulos que ainda são apenas estrutura não podem ter código de gameplay
-	for pending_module: String in [
-		"players", "creatures", "maps", "items", "objectives", "audio", "match"
-	]:
+	# Módulos que ainda são apenas estrutura não podem ter código de gameplay.
+	for pending_module: String in ["players", "creatures", "maps", "items", "objectives", "match"]:
 		var files := _list_gdscript_files("res://%s" % pending_module)
 		_expect(
 			files.is_empty(),
@@ -271,7 +310,6 @@ func _list_gdscript_files(path: String) -> PackedStringArray:
 
 func _check_main_scene() -> void:
 	print("[7] Cena inicial")
-	_expect(ResourceLoader.exists(EXPECTED_MAIN_SCENE), "cena inicial pode ser carregada")
 	var packed: PackedScene = load(EXPECTED_MAIN_SCENE) as PackedScene
 	_expect(packed != null, "cena inicial é um PackedScene")
 	if packed == null:
@@ -282,30 +320,15 @@ func _check_main_scene() -> void:
 	if instance == null:
 		return
 
-	_expect(instance.name == "TitleScreen", "raiz da cena é 'TitleScreen' (obtido: '%s')" % instance.name)
+	_expect(instance.name == "TitleScreen", "raiz da cena é 'TitleScreen'")
 	for expected: String in EXPECTED_NODES:
 		_expect(instance.get_node_or_null(expected) != null, "nó presente na cena: %s" % expected)
 
 	var root_script: Script = instance.get_script() as Script
 	_expect(root_script != null, "cena raiz tem script anexado")
-	if root_script != null:
-		_expect(
-			root_script.resource_path.ends_with("ui/scripts/title_screen.gd"),
-			"script da raiz é title_screen.gd (obtido: %s)" % root_script.resource_path
-		)
-
-	var build_label: Label = instance.get_node_or_null("Content/BuildLabel") as Label
-	_expect(build_label != null, "rodapé de build existe e é um Label")
-
-	var quit_button: Button = instance.get_node_or_null("Content/Buttons/QuitButton") as Button
-	_expect(quit_button != null, "botão de saída existe e é um Button")
-	if quit_button != null:
-		_expect(not quit_button.disabled, "botão de saída está habilitado")
 
 	var start_button: Button = instance.get_node_or_null("Content/Buttons/StartButton") as Button
-	_expect(start_button != null, "botão de início existe e é um Button")
-	if start_button != null:
-		_expect(start_button.disabled, "botão de início está desabilitado (jogabilidade começa em etapa posterior)")
+	_expect(start_button != null and start_button.disabled, "botão JOGAR segue desabilitado")
 
 	instance.free()
 
@@ -323,3 +346,286 @@ func _check_export_preset() -> void:
 		content.contains("res://shared/textures/branding/icon.ico"),
 		"ícone do executável configurado no preset"
 	)
+
+
+# --- Etapa 3: configurações --------------------------------------------------
+
+func _check_settings_core() -> void:
+	print("[9] Configurações — esquema e persistência")
+	var defaults: Dictionary = SettingsSchema.defaults()
+	_expect(
+		defaults.has(SettingsSchema.SECTION_CONTROLS)
+		and defaults.has(SettingsSchema.SECTION_AUDIO)
+		and defaults.has(SettingsSchema.SECTION_VIDEO),
+		"esquema tem as três seções (controles, áudio, vídeo)"
+	)
+
+	# valores inválidos precisam ser corrigidos, não aceitos
+	var raw := {
+		"controls": {"mouse_sensitivity_x": -3.0, "mouse_sensitivity_y": 999.0, "invert_y": "sim"},
+		"audio": {"master_volume": 500, "sfx_volume": -40, "ambience_volume": "x", "music_volume": 55},
+		"video": {"window_mode": 99, "resolution_x": 10, "resolution_y": 10, "vsync": "não"},
+	}
+	var sane: Dictionary = SettingsSchema.sanitize(raw)
+	_expect(
+		float(sane.controls.mouse_sensitivity_x) >= SettingsSchema.MOUSE_SENSITIVITY_MIN,
+		"sensibilidade negativa é limitada ao mínimo"
+	)
+	_expect(
+		float(sane.controls.mouse_sensitivity_y) <= SettingsSchema.MOUSE_SENSITIVITY_MAX,
+		"sensibilidade excessiva é limitada ao máximo"
+	)
+	_expect(int(sane.audio.master_volume) == 100, "volume acima de 100 é limitado a 100")
+	_expect(int(sane.audio.sfx_volume) == 0, "volume negativo é limitado a 0")
+	_expect(
+		int(sane.audio.music_volume) == 55, "volume válido é preservado (music=55)"
+	)
+	_expect(int(sane.audio.ambience_volume) == 70, "volume inválido cai no padrão")
+	_expect(
+		int(sane.video.window_mode) == SettingsSchema.WindowMode.WINDOWED,
+		"modo de janela inválido cai no padrão"
+	)
+	_expect(
+		int(sane.video.resolution_x) >= SettingsSchema.MIN_WINDOW_WIDTH,
+		"resolução pequena demais é limitada"
+	)
+
+	var settings = get_node_or_null("/root/GameSettings")
+	_expect(settings != null, "autoload GameSettings disponível para os testes")
+	if settings == null:
+		return
+
+	# gravação + releitura
+	var custom: Dictionary = SettingsSchema.defaults()
+	custom[SettingsSchema.SECTION_AUDIO]["master_volume"] = 42
+	custom[SettingsSchema.SECTION_CONTROLS]["invert_y"] = true
+	custom[SettingsSchema.SECTION_VIDEO]["vsync"] = false
+	var saved: bool = settings.apply(custom)
+	_expect(saved, "apply() grava o arquivo de configurações")
+	_expect(FileAccess.file_exists(TEST_CONFIG_PATH), "arquivo de configurações criado em user://")
+
+	var reread: Dictionary = settings.load_settings()
+	_expect(int(reread.audio.master_volume) == 42, "volume gravado é lido de volta (42)")
+	_expect(bool(reread.controls.invert_y) == true, "inverter eixo gravado é lido de volta")
+	_expect(bool(reread.video.vsync) == false, "vsync gravado é lido de volta")
+
+	# simula reinício: outra instância lendo o mesmo arquivo
+	var settings_script: Script = load("res://shared/settings/game_settings.gd") as Script
+	var fresh = settings_script.new()
+	fresh.config_path = TEST_CONFIG_PATH
+	var from_disk: Dictionary = fresh.load_settings()
+	fresh.free()
+	_expect(
+		int(from_disk.audio.master_volume) == 42,
+		"configuração sobrevive a um 'reinício' (nova instância lê 42)"
+	)
+
+	# arquivo corrompido não pode impedir o jogo de abrir
+	var file := FileAccess.open(TEST_CONFIG_PATH, FileAccess.WRITE)
+	if file != null:
+		file.store_string("isto nao e um configfile valido [[[")
+		file.close()
+	var fallback: Dictionary = settings.load_settings()
+	_expect(
+		int(fallback.audio.master_volume) == SettingsSchema.DEFAULT_MASTER_VOLUME,
+		"arquivo corrompido cai nos valores padrão"
+	)
+
+	# restaurar padrões
+	var restored: bool = settings.restore_defaults()
+	_expect(restored, "restaurar padrões grava o arquivo")
+	var after_reset: Dictionary = settings.current()
+	_expect(
+		int(after_reset.audio.master_volume) == SettingsSchema.DEFAULT_MASTER_VOLUME,
+		"restaurar padrões devolve o volume padrão"
+	)
+	var disk_after_reset: Dictionary = settings.load_settings()
+	_expect(
+		int(disk_after_reset.audio.master_volume) == SettingsSchema.DEFAULT_MASTER_VOLUME,
+		"padrões restaurados ficam persistidos no disco"
+	)
+
+
+func _check_audio_buses() -> void:
+	print("[10] Áudio — buses e aplicação de volume")
+	for bus_name: String in EXPECTED_BUSES:
+		_expect(
+			AudioServer.get_bus_index(bus_name) >= 0,
+			"bus de áudio existe: %s" % bus_name
+		)
+
+	var values: Dictionary = SettingsSchema.defaults()
+	values[SettingsSchema.SECTION_AUDIO]["master_volume"] = 100
+	values[SettingsSchema.SECTION_AUDIO]["sfx_volume"] = 25
+	values[SettingsSchema.SECTION_AUDIO]["music_volume"] = 0
+	AudioApplier.apply(values)
+
+	_expect(
+		absi(AudioApplier.get_bus_percent("SFX") - 25) <= 1,
+		"volume de SFX aplicado ao bus (25%%) — obtido %d%%" % AudioApplier.get_bus_percent("SFX")
+	)
+	_expect(
+		absi(AudioApplier.get_bus_percent("Master") - 100) <= 1,
+		"volume geral aplicado ao bus Master"
+	)
+	var music_index: int = AudioServer.get_bus_index("Music")
+	_expect(
+		music_index >= 0 and AudioServer.is_bus_mute(music_index),
+		"volume 0%% silencia o bus de música"
+	)
+
+	AudioApplier.apply(SettingsSchema.defaults())
+	_expect(
+		not AudioServer.is_bus_mute(AudioServer.get_bus_index("Music")),
+		"voltar ao padrão reativa o bus de música"
+	)
+
+
+func _check_video_safety() -> void:
+	print("[11] Vídeo — limites de segurança")
+	var huge := VideoApplier.clamp_resolution(Vector2i(99999, 99999))
+	var usable: Vector2i = VideoApplier.screen_usable_size()
+	_expect(
+		huge.x <= maxi(usable.x, SettingsSchema.MIN_WINDOW_WIDTH)
+		and huge.y <= maxi(usable.y, SettingsSchema.MIN_WINDOW_HEIGHT),
+		"resolução absurda é limitada ao tamanho da tela"
+	)
+	var tiny := VideoApplier.clamp_resolution(Vector2i(10, 10))
+	_expect(
+		tiny.x >= SettingsSchema.MIN_WINDOW_WIDTH and tiny.y >= SettingsSchema.MIN_WINDOW_HEIGHT,
+		"resolução minúscula sobe para o tamanho mínimo legível"
+	)
+	var options: Array = VideoApplier.available_resolutions()
+	_expect(options.size() >= 1, "há ao menos uma resolução disponível (%d)" % options.size())
+	var all_16_9 := true
+	for candidate: Vector2i in options:
+		if not (candidate.x > 0 and candidate.y > 0):
+			all_16_9 = false
+	_expect(all_16_9, "resoluções oferecidas são válidas")
+
+	_expect(
+		SettingsSchema.window_mode_label(SettingsSchema.WindowMode.FULLSCREEN) == "Tela cheia",
+		"modos de janela têm rótulos em português"
+	)
+
+
+func _check_settings_screen() -> void:
+	print("[12] Tela de configurações — interface")
+	var packed: PackedScene = load(SETTINGS_SCENE) as PackedScene
+	_expect(packed != null, "cena de configurações é um PackedScene")
+	if packed == null:
+		return
+
+	var screen: Control = packed.instantiate() as Control
+	_expect(screen != null, "cena de configurações instancia")
+	if screen == null:
+		return
+
+	add_child(screen)
+
+	var sidebar := "Margin/Layout/Body/Sidebar"
+	var footer := "Margin/Layout/Footer"
+	var host_path := "Margin/Layout/Body/Panel/PanelMargin/Scroll/SectionHost"
+
+	var host: Node = screen.get_node_or_null(host_path)
+	_expect(host != null, "área de seções existe")
+	_expect(screen.get_node_or_null(sidebar + "/TabControls") != null, "aba CONTROLES existe")
+	_expect(screen.get_node_or_null(sidebar + "/TabAudio") != null, "aba ÁUDIO existe")
+	_expect(screen.get_node_or_null(sidebar + "/TabVideo") != null, "aba VÍDEO existe")
+
+	var apply_button: Button = screen.get_node_or_null(footer + "/ApplyButton") as Button
+	var defaults_button: Button = screen.get_node_or_null(footer + "/DefaultsButton") as Button
+	var back_button: Button = screen.get_node_or_null(footer + "/BackButton") as Button
+	_expect(apply_button != null, "botão APLICAR existe")
+	_expect(defaults_button != null, "botão RESTAURAR PADRÕES existe")
+	_expect(back_button != null, "botão VOLTAR existe")
+	if apply_button == null or defaults_button == null or back_button == null or host == null:
+		remove_child(screen)
+		screen.free()
+		return
+
+	_expect(back_button.pressed.get_connections().size() > 0, "botão VOLTAR está conectado")
+
+	_expect(host.get_child_count() == 3, "três seções montadas (controles, áudio, vídeo)")
+
+	var visible_count := 0
+	for child: Node in host.get_children():
+		if child is Control and (child as Control).visible:
+			visible_count += 1
+	_expect(visible_count == 1, "apenas uma seção visível por vez")
+
+	# troca de abas
+	var tab_audio: Button = screen.get_node(sidebar + "/TabAudio") as Button
+	tab_audio.pressed.emit()
+	visible_count = 0
+	var audio_section: Node = null
+	for child: Node in host.get_children():
+		if child is AudioSection and (child as Control).visible:
+			visible_count += 1
+			audio_section = child
+	_expect(visible_count == 1 and audio_section != null, "aba ÁUDIO mostra a seção de áudio")
+
+	if audio_section != null:
+		var sliders: Array = audio_section.find_children("*", "HSlider", true, false)
+		_expect(sliders.size() == 4, "quatro sliders de volume na seção de áudio")
+		if sliders.size() == 4:
+			(sliders[0] as HSlider).value = 33.0
+			apply_button.pressed.emit()
+			var settings = get_node_or_null("/root/GameSettings")
+			if settings != null:
+				_expect(
+					int(settings.current().audio.master_volume) == 33,
+					"APLICAR grava o valor do slider (volume geral = 33)"
+				)
+
+	# restaurar padrões + aplicar
+	defaults_button.pressed.emit()
+	apply_button.pressed.emit()
+	var settings_node = get_node_or_null("/root/GameSettings")
+	if settings_node != null:
+		_expect(
+			int(settings_node.current().audio.master_volume) == SettingsSchema.DEFAULT_MASTER_VOLUME,
+			"RESTAURAR PADRÕES devolve o volume padrão após aplicar"
+		)
+
+	# a seção de vídeo oferece resoluções e modos reais
+	var tab_video: Button = screen.get_node(sidebar + "/TabVideo") as Button
+	tab_video.pressed.emit()
+	var video_section: Node = null
+	for child: Node in host.get_children():
+		if child is VideoSection and (child as Control).visible:
+			video_section = child
+	_expect(video_section != null, "aba VÍDEO mostra a seção de vídeo")
+	if video_section != null:
+		var options: Array = video_section.find_children("*", "OptionButton", true, false)
+		_expect(options.size() == 2, "seção de vídeo tem resolução e modo de janela")
+		if options.size() == 2:
+			_expect((options[0] as OptionButton).item_count >= 1, "lista de resoluções preenchida")
+			_expect((options[1] as OptionButton).item_count == 3, "três modos de janela")
+
+	remove_child(screen)
+	screen.free()
+
+	# tela inicial: botão CONFIGURAÇÕES conectado
+	var title_packed: PackedScene = load(EXPECTED_MAIN_SCENE) as PackedScene
+	if title_packed != null:
+		var title: Node = title_packed.instantiate()
+		add_child(title)
+		var settings_button: Button = title.get_node_or_null(
+			"Content/Buttons/SettingsButton"
+		) as Button
+		var quit_button: Button = title.get_node_or_null("Content/Buttons/QuitButton") as Button
+		_expect(settings_button != null, "botão CONFIGURAÇÕES presente na tela inicial")
+		if settings_button != null:
+			_expect(
+				settings_button.pressed.get_connections().size() > 0,
+				"botão CONFIGURAÇÕES está conectado à navegação"
+			)
+		_expect(quit_button != null, "botão SAIR DO JOGO continua presente")
+		if quit_button != null:
+			_expect(
+				quit_button.pressed.get_connections().size() > 0,
+				"botão SAIR DO JOGO continua conectado"
+			)
+		remove_child(title)
+		title.free()

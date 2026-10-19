@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 2: arquitetura interna em módulos."
-config/version="0.2.0"
+config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 3: configurações de controles, áudio e vídeo."
+config/version="0.3.0"
 run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://shared/textures/branding/icon_1024.png"
@@ -27,6 +27,12 @@ boot_splash/use_filter=true
 [autoload]
 
 AppInfo="*res://shared/autoload/app_info.gd"
+GameSettings="*res://shared/settings/game_settings.gd"
+UiAudio="*res://audio/scripts/ui_audio.gd"
+
+[audio]
+
+buses/default_bus_layout="res://audio/default_bus_layout.tres"
 
 [display]
 

@@ -1,6 +1,6 @@
 # Black Sight — Arquitetura do projeto
 
-Documento de referência da organização interna (Etapa 2).
+Documento de referência da organização interna (atualizado na Etapa 3).
 Motor: **Godot 4.7.2**, renderizador **GL Compatibility**.
 
 Regra de ouro: **cada pasta de módulo tem uma responsabilidade única**, e as
@@ -20,8 +20,8 @@ BlackSight/
 ├── items/                     # itens, inventário e interação (estrutura)
 ├── objectives/                # objetivos e progressão (estrutura)
 ├── match/                     # fluxo e estados da partida (estrutura)
-├── ui/                        # menus, HUD — contém a tela inicial atual
-├── audio/                     # áudio ambiente, SFX e voz (estrutura)
+├── ui/                        # menus, HUD — tela inicial e configurações
+├── audio/                     # buses, sons de interface e (futuro) ambiente/voz
 ├── shared/                    # recursos e sistemas comuns — base de todos
 ├── tools/                     # scripts de apoio (CI, geração de assets)
 └── docs/                      # documentação
@@ -61,10 +61,10 @@ BlackSight/
 | `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | apenas `README.md` |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
 | `objectives/` | Objetivos, condições de conclusão e progressão | apenas `README.md` |
-| `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scripts/title_screen.gd` |
-| `audio/` | Áudio ambiente, efeitos sonoros e comunicação por voz | apenas `README.md` |
+| `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scenes/settings_screen.tscn` e scripts |
+| `audio/` | Áudio ambiente, efeitos sonoros e comunicação por voz | `default_bus_layout.tres`, autoload `UiAudio`, `assets/sfx/*.wav` |
 | `match/` | Estados e fluxo da partida; orquestração entre módulos | apenas `README.md` |
-| `shared/` | Recursos e sistemas usados por 2+ módulos | autoload `AppInfo`, tema, fontes, texturas |
+| `shared/` | Recursos e sistemas usados por 2+ módulos | autoloads `AppInfo`/`GameSettings`, tema, fontes, texturas, `settings/` |
 
 Cada módulo tem um `README.md` próprio, com regras específicas e sugestões de
 nomes de arquivos para as próximas etapas.
@@ -152,15 +152,36 @@ domínio → `match/` → `ui/`.
 
 | Item | Situação |
 | --- | --- |
-| `players/`, `creatures/`, `maps/`, `items/`, `objectives/`, `audio/`, `match/` | **Só documentação.** Nenhum script, cena ou lógica |
+| `players/`, `creatures/`, `maps/`, `items/`, `objectives/`, `match/` | **Só documentação.** Nenhum script, cena ou lógica |
 | `shared/autoload/event_bus.gd` | Planejado, **não existe** |
-| Layout de buses de áudio | Planejado, **não existe** (projeto usa só `Master`) |
+| Layout de buses de áudio | **Existe** desde a Etapa 3 (`Master`, `Music`, `SFX`, `Ambience`, `Voice`) |
 | Input Map | **Não configurado** (entra na etapa de jogador) |
 | Multiplayer / rede | **Não iniciado** |
-| Autoloads | Apenas `AppInfo` (Etapa 1) |
+| Autoloads | `AppInfo` (Etapa 1), `GameSettings` e `UiAudio` (Etapa 3) |
 
-**Total de código de jogo hoje:** 2 scripts (`app_info.gd`, `title_screen.gd`) +
-1 cena (`title_screen.tscn`) + 1 tema.
+**Total de código hoje:** 3 autoloads, 2 cenas de interface + 1 cena de teste,
+scripts de configurações em `shared/settings/` e tema global.
+
+---
+
+## 6.1 Configurações (Etapa 3)
+
+As configurações seguem a mesma regra de direção única:
+
+```
+ui/scripts/settings/*  ──►  GameSettings (shared/settings/)  ──►  motor
+   (monta a tela)            (valida, salva, aplica)              (AudioServer / DisplayServer)
+                                      │
+                                      ├── AudioApplier
+                                      └── VideoApplier
+```
+
+- A UI nunca lê nem grava `ConfigFile`; só mantém uma cópia de trabalho.
+- `GameSettings` não conhece botões nem cenas.
+- `SettingsSchema` não aplica nada: só descreve padrões, limites e validação.
+- O arquivo fica em `user://settings.cfg` (nunca na pasta de instalação).
+
+Detalhes e receita para adicionar parâmetros: [`CONFIGURACOES.md`](CONFIGURACOES.md).
 
 ---
 

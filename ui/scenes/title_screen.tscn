@@ -128,8 +128,14 @@ custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 focus_mode = 0
 disabled = true
-tooltip_text = "Disponível na Etapa 2"
+tooltip_text = "Disponível em uma etapa futura"
 text = "JOGAR"
+
+[node name="SettingsButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "CONFIGURAÇÕES"
 
 [node name="QuitButton" type="Button" parent="Content/Buttons"]
 unique_name_in_owner = true
@@ -146,7 +152,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "A jogabilidade começa em uma etapa futura."
+text = "Configurações de vídeo, áudio e controles disponíveis. A jogabilidade começa em uma etapa futura."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]
@@ -159,7 +165,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.47, 0.44, 0.39, 1)
 theme_override_font_sizes/font_size = 15
-text = "Black Sight · Etapa 1"
+text = "Black Sight · Etapa 3"
 horizontal_alignment = 1
 
 [node name="Fade" type="ColorRect" parent="."]

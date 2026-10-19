@@ -66,13 +66,27 @@ jobs:
       - name: TESTE 1 — fumaça da configuração e da cena (headless)
         run: |
           set -o pipefail
-          "$GODOT_DIR/godot" --headless --path . --script res://tools/ci/smoke_test.gd 2>&1 | tee ci-logs/smoke.log
+          "$GODOT_DIR/godot" --headless --path . --audio-driver Dummy \
+            res://tools/ci/smoke_test.tscn 2>&1 | tee ci-logs/smoke.log
+          grep -F "SMOKE TEST OK" ci-logs/smoke.log
+
+      - name: TESTE 1b — fluxo real da interface (headless, troca de cenas)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/ui_flow_test.tscn 2>&1 | tee ci-logs/ui-flow.log
+          grep -F "UI FLOW OK" ci-logs/ui-flow.log
+          if grep -F "✗" ci-logs/ui-flow.log; then
+            echo "::error::Falhas no fluxo de interface"
+            exit 1
+          fi
 
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
           "$GODOT_DIR/godot" --headless --path . --audio-driver Dummy --quit-after 240 2>&1 | tee ci-logs/run_headless.log
           grep -F "[Black Sight] Tela inicial carregada" ci-logs/run_headless.log
+          grep -F "[Black Sight] Configurações carregadas" ci-logs/run_headless.log
           grep -nE "SCRIPT ERROR|ERROR:" ci-logs/run_headless.log || echo "(nenhum erro registrado)"
           if grep -q "SCRIPT ERROR" ci-logs/run_headless.log; then
             echo "::error::Erros de script durante a execução da cena inicial"
@@ -95,6 +109,20 @@ jobs:
           rm -rf ci-logs/frames
           test -s ci-logs/render_frame.png
           echo "frame capturado: $latest"
+
+      - name: TESTE 3b — renderizar a tela de configurações (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/settings_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://ui/scenes/settings_screen.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/settings_frames/frame.png --quit-after 75 \
+            2>&1 | tee ci-logs/render_settings.log
+          latest=$(ls ci-logs/settings_frames/*.png | tail -1)
+          cp "$latest" ci-logs/settings_screen.png
+          rm -rf ci-logs/settings_frames
+          test -s ci-logs/settings_screen.png
 
       # ------------------------------------------------------------------
       # 2. Exportações
@@ -130,6 +158,7 @@ jobs:
       # ------------------------------------------------------------------
       - name: TESTE 5 — executar o BUILD EXPORTADO (não-editor) sob Xvfb
         run: |
+          rm -rf "$HOME/.local/share/BlackSight"
           cd build/linux
           timeout 120 xvfb-run -a --server-args="-screen 0 1280x800x24" \
             ./BlackSight.x86_64 --audio-driver Dummy --quit-after 180 > ../../ci-logs/exported_run.log 2>&1 || true
@@ -143,6 +172,14 @@ jobs:
             exit 1
           fi
 
+      - name: TESTE 5b — configurações criadas pelo build exportado (user://)
+        run: |
+          CFG="$HOME/.local/share/BlackSight/settings.cfg"
+          test -f "$CFG"
+          cat "$CFG" | tee ci-logs/exported-settings.cfg
+          grep -q "master_volume" ci-logs/exported-settings.cfg
+          grep -q "mouse_sensitivity_x" ci-logs/exported-settings.cfg
+
       - name: TESTE 6 — inspecionar o pacote .pck exportado
         run: |
           set -o pipefail
@@ -154,7 +191,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.1\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.3\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -167,7 +204,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 2 (Windows x86_64)
+          BLACK SIGHT — Etapa 3 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -175,8 +212,17 @@ jobs:
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
 
+          CONFIGURAÇÕES
+          - Clique em CONFIGURAÇÕES na tela inicial.
+          - Abas: CONTROLES, ÁUDIO e VÍDEO.
+          - APLICAR grava os valores; RESTAURAR PADRÕES volta ao original;
+            VOLTAR (ou Esc) retorna ao menu sem aplicar o que não foi confirmado.
+          - O arquivo fica em %APPDATA%\BlackSight\settings.cfg
+            (nunca dentro da pasta do jogo).
+
           CONTROLES
           - F11 .......... alterna entre janela e tela cheia
+          - Esc .......... volta ao menu na tela de configurações
           - SAIR DO JOGO . fecha o jogo
           - Alt+F4 ....... fecha o jogo
 
@@ -186,41 +232,41 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVAÇÃO
-          Esta é a fundação do projeto: a cena inicial ainda não tem jogabilidade.
-          Jogador, mapa, inventário e criaturas entram nas próximas etapas.
+          Etapa 3: configurações de controles, áudio e vídeo.
+          Ainda não há jogabilidade (jogador, mapa, inventário, criaturas).
 
-          Versão 0.2.0 — Etapa 2
+          Versão 0.3.0 — Etapa 3
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa2-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa3-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa2-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa2-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa3-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa3-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa2-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa3-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa3-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa2-windows
+          name: black-sight-etapa3-windows
           path: |
-            BlackSight-Etapa2-Windows-x86_64.zip
+            BlackSight-Etapa3-Windows-x86_64.zip
             ci-logs/render_frame.png
-            ci-logs/wine_screenshot.png
+            ci-logs/settings_screen.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa2-logs
+          name: black-sight-etapa3-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -237,7 +283,6 @@ jobs:
           mkdir -p .ci
           rm -rf .ci/*
           cp -r ci-logs .ci/ci-logs 2>/dev/null || true
-          cp ci-logs/wine_screenshot.png .ci/ 2>/dev/null || true
           cp build/windows/SHA256SUMS.txt .ci/ 2>/dev/null || true
           git add -f .ci
           git commit -m "ci: diagnóstico da execução ${GITHUB_RUN_ID} (${GITHUB_RUN_ATTEMPT})" || true
@@ -247,7 +292,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 1"
+            echo "## Black Sight · Etapa 3"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -257,10 +302,15 @@ jobs:
             grep -E "SMOKE TEST|✗" ci-logs/smoke.log 2>/dev/null | tail -20 || true
             echo '```'
             echo ""
-            echo "### Cena inicial"
+            echo "### Fluxo de interface"
             echo '```'
-            grep -E "Tela inicial carregada|ERROR" ci-logs/run_headless.log 2>/dev/null | head -10 || true
-            grep -E "Tela inicial carregada|ERROR" ci-logs/exported_run.log 2>/dev/null | head -10 || true
+            grep -E "UI FLOW|✓|✗" ci-logs/ui-flow.log 2>/dev/null | tail -40 || true
+            echo '```'
+            echo ""
+            echo "### Cena inicial e configurações"
+            echo '```'
+            grep -E "Tela inicial carregada|Configurações carregadas|ERROR" ci-logs/run_headless.log 2>/dev/null | head -10 || true
+            grep -E "Tela inicial carregada|Configurações carregadas|ERROR" ci-logs/exported_run.log 2>/dev/null | head -10 || true
             echo '```'
             echo ""
             echo "### Binário"
@@ -339,7 +389,16 @@ jobs:
             "shared/themes/black_sight.tres",
             "shared/fonts/cinzel/Cinzel-Regular.ttf",
             "ui/scenes/title_screen.tscn",
-            "ui/scripts/title_screen.gd"
+            "ui/scripts/title_screen.gd",
+            "shared/settings/settings_schema.gd",
+            "shared/settings/game_settings.gd",
+            "shared/settings/audio_applier.gd",
+            "shared/settings/video_applier.gd",
+            "audio/default_bus_layout.tres",
+            "audio/assets/sfx/ui_click.wav",
+            "ui/scenes/settings_screen.tscn",
+            "ui/scripts/settings_screen.gd",
+            "tools/ci/ui_flow_test.tscn"
           )) {
             if (-not (Test-Path $required)) { throw "Arquivo esperado ausente: $required" }
           }
@@ -351,11 +410,24 @@ jobs:
           $ErrorActionPreference = "Continue"
           $PSNativeCommandUseErrorActionPreference = $false
           $log = "ci-logs/05-smoke.log"
-          & $env:GODOT --headless --path . --script res://tools/ci/smoke_test.gd *>&1 | Tee-Object -FilePath $log
+          & $env:GODOT --headless --path . --audio-driver Dummy res://tools/ci/smoke_test.tscn *>&1 | Tee-Object -FilePath $log
           $code = $LASTEXITCODE
           Write-Host "exit code do teste de fumaça: $code"
           if (-not (Select-String -Path $log -SimpleMatch "SMOKE TEST OK")) {
             throw "Teste de fumaça não passou (exit $code) — ver 05-smoke.log"
+          }
+
+      - name: TESTE W2b — fluxo real da interface no Windows (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05b-ui-flow.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/ui_flow_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do fluxo de interface: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "UI FLOW OK")) {
+            throw "Fluxo de interface não passou (exit $code) — ver 05b-ui-flow.log"
           }
 
       - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
@@ -368,6 +440,9 @@ jobs:
           Write-Host "exit code: $LASTEXITCODE"
           if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Tela inicial carregada")) {
             throw "A cena inicial não inicializou no Windows"
+          }
+          if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Configurações carregadas")) {
+            throw "O autoload GameSettings não inicializou no Windows"
           }
           if (Select-String -Path $log -Pattern "SCRIPT ERROR") { throw "SCRIPT ERROR durante a execução" }
 
@@ -391,6 +466,7 @@ jobs:
           $PSNativeCommandUseErrorActionPreference = $false
           $log = "ci-logs/08-exe-headless.log"
           $errLog = "ci-logs/08-exe-headless.err.log"
+          Remove-Item -Recurse -Force (Join-Path $env:APPDATA "BlackSight") -ErrorAction SilentlyContinue
           $exe = Join-Path $PWD "build/windows/BlackSight.console.exe"
           if (-not (Test-Path $exe)) { $exe = Join-Path $PWD "build/windows/BlackSight.exe" }
           Write-Host "Executando: $exe"
@@ -408,6 +484,17 @@ jobs:
           }
           if (Select-String -Path $log -Pattern "SCRIPT ERROR" -ErrorAction SilentlyContinue) { throw "SCRIPT ERROR no .exe" }
           "OK: .exe exportado iniciou e carregou a cena inicial no Windows" | Out-File ci-logs/08-exe-headless.ok
+
+      - name: TESTE W5b — configurações criadas pelo .exe em %APPDATA%
+        shell: pwsh
+        run: |
+          $cfg = Join-Path $env:APPDATA "BlackSight/settings.cfg"
+          if (-not (Test-Path $cfg)) { throw "O .exe não criou $cfg (user://settings.cfg)" }
+          Get-Content $cfg | Tee-Object -FilePath ci-logs/08b-settings-cfg.log
+          foreach ($key in @("mouse_sensitivity_x","master_volume","window_mode","vsync")) {
+            if (-not (Select-String -Path $cfg -SimpleMatch $key)) { throw "Configuração ausente no arquivo: $key" }
+          }
+          "OK: user://settings.cfg criado pelo .exe exportado" | Out-File ci-logs/08b-settings-cfg.ok
 
       - name: TESTE W6 — abrir o .exe com janela
         shell: pwsh
@@ -445,7 +532,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 2 (Windows x86_64)
+          BLACK SIGHT - Etapa 3 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -458,8 +545,16 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
+          CONFIGURACOES
+          - Clique em CONFIGURACOES na tela inicial.
+          - Abas: CONTROLES, AUDIO e VIDEO.
+          - APLICAR grava; RESTAURAR PADROES volta ao original;
+            VOLTAR (ou Esc) retorna ao menu sem aplicar o que nao foi confirmado.
+          - Arquivo: %APPDATA%\BlackSight\settings.cfg (fora da pasta do jogo).
+
           CONTROLES
           - F11 .......... alterna entre janela e tela cheia
+          - Esc .......... volta ao menu na tela de configuracoes
           - SAIR DO JOGO . fecha o jogo
           - Alt+F4 ....... fecha o jogo
 
@@ -469,10 +564,10 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVACAO
-          Etapa 2: arquitetura interna organizada em modulos.
-          A cena inicial e a mesma da Etapa 1 (sem jogabilidade ainda).
+          Etapa 3: configuracoes de controles, audio e video.
+          Ainda nao ha jogabilidade (jogador, mapa, inventario, criaturas).
 
-          Versao 0.2.0 - Etapa 2
+          Versao 0.3.0 - Etapa 3
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -483,7 +578,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa2-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa3-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -500,9 +595,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa2-windows-real
+          name: black-sight-etapa3-windows-real
           path: |
-            BlackSight-Etapa2-Windows-x86_64.zip
+            BlackSight-Etapa3-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -512,9 +607,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.2.0-etapa2 --yes --cleanup-tag 2>$null
+          gh release delete v0.3.0-etapa3 --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.2.0-etapa2 "BlackSight-Etapa2-Windows-x86_64.zip" --title "Black Sight - Etapa 2 - Arquitetura interna (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA2.md
+          gh release create v0.3.0-etapa3 "BlackSight-Etapa3-Windows-x86_64.zip" --title "Black Sight - Etapa 3 - Configuracoes (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA3.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -539,7 +634,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 1 (Windows real)", "")
+          $summary = @("## Black Sight - Etapa 3 (Windows real)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }
