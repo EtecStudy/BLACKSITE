@@ -6,6 +6,11 @@ on:
     branches:
       - main
       - arena/aa5e0e47-blacksite
+    # Mudanças só de documentação não geram novo build/release:
+    # o ZIP publicado continua sendo exatamente o que foi testado.
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
 
 env:
   GODOT_VERSION: "4.7.2"

@@ -8,11 +8,12 @@ extends VBoxContainer
 
 signal values_changed
 
-const TITLE_COLOR := Color(0.72, 0.68, 0.6, 1.0)
-const TITLE_SIZE := 15
-const HINT_COLOR := Color(0.46, 0.43, 0.38, 1.0)
-const HINT_SIZE := 14
-const KEY_COLOR := Color(0.86, 0.83, 0.76, 1.0)
+const TITLE_COLOR := Color(0.8, 0.76, 0.68, 1.0)
+const TITLE_SIZE := 18
+const HINT_COLOR := Color(0.56, 0.53, 0.47, 1.0)
+const HINT_SIZE := 15
+const BODY_SIZE := 17
+const KEY_COLOR := Color(0.92, 0.89, 0.82, 1.0)
 
 
 func _init() -> void:
@@ -72,6 +73,7 @@ func add_slider_row(title: String, min_value: float, max_value: float, step: flo
 
 	var label := Label.new()
 	label.text = title
+	label.add_theme_font_size_override("font_size", BODY_SIZE)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(label)
 
@@ -85,6 +87,7 @@ func add_slider_row(title: String, min_value: float, max_value: float, step: flo
 	line.add_child(slider)
 
 	var value_label := Label.new()
+	value_label.add_theme_font_size_override("font_size", BODY_SIZE)
 	value_label.custom_minimum_size = Vector2(88, 0)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value_label.text = str(formatter.call(slider.value))
@@ -108,6 +111,7 @@ func add_check_row(title: String, pressed: bool, hint: String = "") -> CheckButt
 
 	var check := CheckButton.new()
 	check.text = title
+	check.add_theme_font_size_override("font_size", BODY_SIZE)
 	check.button_pressed = pressed
 	row.add_child(check)
 
@@ -129,10 +133,12 @@ func add_option_row(title: String, options: Array, selected_index: int,
 
 	var label := Label.new()
 	label.text = title
+	label.add_theme_font_size_override("font_size", BODY_SIZE)
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(label)
 
 	var option := OptionButton.new()
+	option.add_theme_font_size_override("font_size", BODY_SIZE)
 	option.custom_minimum_size = Vector2(300, 0)
 	for index: int in options.size():
 		option.add_item(str(options[index]), index)
@@ -155,12 +161,14 @@ func add_key_hint_row(key_text: String, description: String) -> void:
 
 	var key_label := Label.new()
 	key_label.text = key_text
+	key_label.add_theme_font_size_override("font_size", BODY_SIZE)
 	key_label.custom_minimum_size = Vector2(120, 0)
 	key_label.add_theme_color_override("font_color", KEY_COLOR)
 	line.add_child(key_label)
 
 	var description_label := Label.new()
 	description_label.text = description
+	description_label.add_theme_font_size_override("font_size", BODY_SIZE)
 	description_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(description_label)
 
