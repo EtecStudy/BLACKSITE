@@ -206,54 +206,73 @@ jobs:
           unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
           unzip -t BlackSight-Etapa1-Windows-x86_64.zip | tail -2
 
-      - name: TESTE 9 — tentar executar o .exe com Wine (Xvfb)
+      - name: TESTE 9 — executar o .exe com Wine
         id: wine
         continue-on-error: true
         run: |
-          failed=""
           for pkg in wine64 wine wine-stable; do
             echo "--- tentando instalar: $pkg ---"
             if sudo apt-get install -y --no-install-recommends "$pkg" >> ci-logs/wine-install.log 2>&1; then
               if command -v wine > /dev/null 2>&1 || command -v wine64 > /dev/null 2>&1; then
                 echo "$pkg instalado" | tee -a ci-logs/wine-install.log
-                failed=""
                 break
               fi
             fi
-            failed="$pkg falhou"
           done
           (wine --version || wine64 --version || echo "sem wine") | tee ci-logs/wine-version.txt
           if ! command -v wine > /dev/null 2>&1; then
-            echo "::warning::Wine não disponível neste runner — o .exe não pôde ser executado aqui."
+            echo "::warning::Wine indisponível neste runner — o .exe não pôde ser executado aqui."
             echo "indisponivel" > ci-logs/wine-status.txt
             exit 0
           fi
+
           export WINEPREFIX="$HOME/.wineprefix"
           export WINEDEBUG=-all
           export WINEDLLOVERRIDES="mscoree,mshtml="
+          wineboot -u > ci-logs/wineboot.log 2>&1 || true
+
+          cd build/windows
+          echo "=== tentativa A: modo headless (sem GPU) ==="
+          set +e
+          timeout 300 wine BlackSight.exe --headless --audio-driver Dummy --quit-after 120 \
+            > ../../ci-logs/wine_headless.log 2>&1
+          headless_exit=$?
+          set -e
+          echo "exit headless: $headless_exit" | tee ../../ci-logs/wine-headless-exit.txt
+          cat ../../ci-logs/wine_headless.log || true
+          if grep -qF "[Black Sight] Tela inicial carregada" ../../ci-logs/wine_headless.log; then
+            echo "OK: o .exe iniciou e carregou a cena inicial via Wine (headless)" | tee ../../ci-logs/wine-status.txt
+          else
+            echo "headless-falhou" > ../../ci-logs/wine-status.txt
+          fi
+
+          echo "=== tentativa B: janela + OpenGL (Xvfb) ==="
           Xvfb :99 -screen 0 1280x800x24 -nolisten tcp > /dev/null 2>&1 &
+          xvfb_pid=$!
           sleep 2
           export DISPLAY=:99
-          wineboot -u > ci-logs/wineboot.log 2>&1 || true
-          cd build/windows
-          ( wine BlackSight.exe --quit-after 300 > ../../ci-logs/wine_run.log 2>&1 ; echo $? > /tmp/wine_exit ) &
+          set +e
+          ( timeout 120 wine BlackSight.exe --rendering-driver opengl3 --audio-driver Dummy \
+              > ../../ci-logs/wine_windowed.log 2>&1 ; echo $? > /tmp/wine_exit ) &
           game_pid=$!
-          sleep 30
+          set -e
+          sleep 45
           if kill -0 "$game_pid" 2> /dev/null; then
-            echo "processo do jogo ativo após 30s — capturando a tela"
+            echo "processo ativo após 45s — capturando a tela"
             import -window root ../../ci-logs/wine_screenshot.png || true
-            echo "executando" > ../../ci-logs/wine-status.txt
+            echo "$(cat ../../ci-logs/wine-status.txt) / janela abriu" > ../../ci-logs/wine-status.txt
           else
-            echo "processo do jogo terminou antes da captura"
-            echo "encerrou" > ../../ci-logs/wine-status.txt
+            echo "processo encerrou antes da captura"
+            import -window root ../../ci-logs/wine_screenshot.png || true
           fi
-          for i in $(seq 1 60); do
+          for i in $(seq 1 40); do
             kill -0 "$game_pid" 2> /dev/null || break
             sleep 2
           done
           kill "$game_pid" 2> /dev/null || true
-          echo "exit code do jogo via wine: $(cat /tmp/wine_exit 2>/dev/null || echo 'n/d')" | tee ci-logs/wine-exit.txt
-          cat ../../ci-logs/wine_run.log || true
+          kill "$xvfb_pid" 2> /dev/null || true
+          echo "exit janela: $(cat /tmp/wine_exit 2>/dev/null || echo 'n/d')" | tee -a ci-logs/wine-headless-exit.txt
+          tail -30 ../../ci-logs/wine_windowed.log || true
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4

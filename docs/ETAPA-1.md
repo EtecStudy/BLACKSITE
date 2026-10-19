@@ -89,11 +89,11 @@ Todos executados automaticamente pelo workflow
 | 6 | Inspeção do `.pck` (`tools/ci/inspect_pck.py`) | diretório do pacote lido; cena, scripts, tema, fontes e texturas presentes; nada de `tools/`/`docs/` vazando |
 | 7 | Validação do `.exe` | `file` confirma `PE32+ executable (GUI) x86-64`; metadados de versão e `SHA256SUMS.txt` |
 | 8 | Conteúdo do ZIP | `.exe`, `.pck` e `LEIA-ME.txt` presentes; `unzip -t` sem erros |
-| 9 | Execução do `.exe` com Wine + Xvfb | tentativa de rodar o binário Windows emulado no CI |
+| 9 | Execução do `.exe` com Wine | tenta iniciar o binário Windows emulado: primeiro `--headless` (prova que o binário carrega o `.pck` e sobe a cena) e depois com janela sob Xvfb |
 
-Resultados da execução final: **passos 1 a 8 aprovados**. O passo 9 depende de
-Wine no runner; quando o Wine está disponível o `.exe` é executado sob Xvfb e
-uma captura de tela é registrada nos logs.
+Resultados da execução final: **passos 1 a 8 aprovados**. O passo 9 depende do
+Wine do runner; o log `wine-status.txt` registra o resultado real da tentativa
+(sem maquiagem) e a captura `wine_screenshot.png` mostra o que apareceu na tela.
 
 > **Limitação explícita:** este ambiente não é Windows. O `.exe` é gerado e
 > verificado estruturalmente (assinatura PE32+, arquitetura x86-64, pacote de
