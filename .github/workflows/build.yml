@@ -1,4 +1,4 @@
-name: Black Sight · Etapa 1 (importar, testar, exportar)
+name: Black Sight · build (importar, testar, exportar)
 
 on:
   workflow_dispatch:
@@ -167,7 +167,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 1 (Windows x86_64)
+          BLACK SIGHT — Etapa 2 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -189,29 +189,29 @@ jobs:
           Esta é a fundação do projeto: a cena inicial ainda não tem jogabilidade.
           Jogador, mapa, inventário e criaturas entram nas próximas etapas.
 
-          Versão 0.1.0 — Etapa 1
+          Versão 0.2.0 — Etapa 2
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa1-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa2-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa1-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa1-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa2-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa2-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa1-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa2-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa2-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa1-windows
+          name: black-sight-etapa2-windows
           path: |
-            BlackSight-Etapa1-Windows-x86_64.zip
+            BlackSight-Etapa2-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/wine_screenshot.png
           if-no-files-found: warn
@@ -220,7 +220,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa1-logs
+          name: black-sight-etapa2-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -439,7 +439,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 1 (Windows x86_64)
+          BLACK SIGHT - Etapa 2 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -463,9 +463,10 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVACAO
-          Esta e a fundacao do projeto: a cena inicial ainda nao tem jogabilidade.
+          Etapa 2: arquitetura interna organizada em modulos.
+          A cena inicial e a mesma da Etapa 1 (sem jogabilidade ainda).
 
-          Versao 0.1.0 - Etapa 1
+          Versao 0.2.0 - Etapa 2
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -476,7 +477,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa1-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa2-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -493,9 +494,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa1-windows-real
+          name: black-sight-etapa2-windows-real
           path: |
-            BlackSight-Etapa1-Windows-x86_64.zip
+            BlackSight-Etapa2-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -505,9 +506,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.1.0-etapa1 --yes --cleanup-tag 2>$null
+          gh release delete v0.2.0-etapa2 --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.1.0-etapa1 "BlackSight-Etapa1-Windows-x86_64.zip" --title "Black Sight - Etapa 1 - Fundacao do projeto (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA1.md
+          gh release create v0.2.0-etapa2 "BlackSight-Etapa2-Windows-x86_64.zip" --title "Black Sight - Etapa 2 - Arquitetura interna (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA2.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)

@@ -11,22 +11,22 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 1: fundação do projeto."
-config/version="0.1.0"
-run/main_scene="res://scenes/boot/title_screen.tscn"
+config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 2: arquitetura interna em módulos."
+config/version="0.2.0"
+run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://assets/textures/branding/icon_1024.png"
+config/icon="res://shared/textures/branding/icon_1024.png"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="BlackSight"
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=true
-boot_splash/image="res://assets/textures/branding/boot_splash.png"
+boot_splash/image="res://shared/textures/branding/boot_splash.png"
 boot_splash/fullsize=true
 boot_splash/use_filter=true
 
 [autoload]
 
-AppInfo="*res://scripts/autoload/app_info.gd"
+AppInfo="*res://shared/autoload/app_info.gd"
 
 [display]
 
@@ -41,7 +41,7 @@ window/vsync/vsync_mode=1
 
 [gui]
 
-theme/custom="res://assets/themes/black_sight.tres"
+theme/custom="res://shared/themes/black_sight.tres"
 
 [rendering]
 

@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=7 format=3]
 
-[ext_resource type="FontFile" path="res://assets/fonts/cinzel/Cinzel-Regular.ttf" id="1_regular"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-Regular.ttf" id="1_regular"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 content_margin_left = 26.0

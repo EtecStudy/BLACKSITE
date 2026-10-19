@@ -32,33 +32,36 @@ reavaliada quando as etapas de iluminação/terror 3D forem definidas.
 
 ## 3. Estrutura de pastas
 
+> **Atualizado na Etapa 2:** os arquivos abaixo foram movidos para os módulos
+> (`ui/`, `shared/`) sem alteração de conteúdo. A estrutura vigente está em
+> [`docs/ARQUITETURA.md`](ARQUITETURA.md).
+
 ```
 .
-├── project.godot                 # configuração da engine (nome, resolução, renderer, autoload)
-├── export_presets.cfg            # preset "Windows Desktop"
-├── assets/
-│   ├── fonts/cinzel/             # Cinzel (SIL OFL 1.1) + licença
-│   ├── themes/black_sight.tres   # tema global da UI
-│   └── textures/
-│       ├── branding/             # emblema, ícone (.ico/.png), boot splash
-│       ├── fx/                   # sprite de poeira
-│       └── ui/                   # fundo e vinheta
-├── scenes/boot/title_screen.tscn # cena inicial
-├── scripts/
-│   ├── autoload/app_info.gd      # metadados globais (nome/versão/engine)
-│   └── ui/title_screen.gd        # comportamento da tela inicial
+├── project.godot                      # configuração da engine
+├── export_presets.cfg                 # presets de exportação (Windows, Linux)
+├── ui/                                # MÓDULO de interface
+│   ├── scenes/title_screen.tscn       # cena inicial (Etapa 1: scenes/boot/)
+│   └── scripts/title_screen.gd        # comportamento da tela inicial (Etapa 1: scripts/ui/)
+├── shared/                            # MÓDULO de recursos compartilhados
+│   ├── autoload/app_info.gd           # metadados globais (Etapa 1: scripts/autoload/)
+│   ├── themes/black_sight.tres        # tema global (Etapa 1: assets/themes/)
+│   ├── fonts/cinzel/                  # Cinzel + SIL OFL 1.1 (Etapa 1: assets/fonts/)
+│   └── textures/{branding,ui,fx}/     # emblema, ícone, splash, fundo, vinheta, poeira
 ├── tools/
-│   ├── generate_brand_assets.py  # gerador dos assets de marca (Pillow)
-│   └── ci/smoke_test.gd          # teste automatizado de fumaça
+│   ├── generate_brand_assets.py       # gerador dos assets de marca (Pillow)
+│   └── ci/{smoke_test.gd,inspect_pck.py}
 ├── docs/
-│   ├── ETAPA-1.md                # este documento
-│   └── RELEASE_NOTES_ETAPA1.md   # notas da release
-└── .github/workflows/etapa1-godot-build.yml  # importar → testar → exportar → release
+│   ├── ETAPA-1.md                     # este documento
+│   ├── ETAPA-2.md                     # relatório da Etapa 2
+│   ├── ARQUITETURA.md                 # arquitetura vigente
+│   └── RELEASE_NOTES_ETAPA1.md        # notas da release da Etapa 1
+└── .github/workflows/build.yml        # importar → testar → exportar → release
 ```
 
-As pastas `scenes/`, `scripts/` e `assets/` estão prontas para receber os
-conteúdos das próximas etapas (ex.: `scenes/levels/`, `scripts/player/`,
-`assets/audio/`), **sem que nada disso seja implementado agora**.
+Na Etapa 2 foram criados ainda os módulos `players/`, `creatures/`, `maps/`,
+`items/`, `objectives/`, `audio/` e `match/` — cada um apenas com documentação
+nesta fase.
 
 ## 4. O que a cena inicial faz
 

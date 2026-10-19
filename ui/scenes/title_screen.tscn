@@ -1,12 +1,12 @@
 [gd_scene load_steps=10 format=3]
 
-[ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/textures/ui/background.png" id="2_background"]
-[ext_resource type="Texture2D" path="res://assets/textures/ui/vignette.png" id="3_vignette"]
-[ext_resource type="Texture2D" path="res://assets/textures/branding/emblem.png" id="4_emblem"]
-[ext_resource type="Texture2D" path="res://assets/textures/fx/dust.png" id="5_dust"]
-[ext_resource type="FontFile" path="res://assets/fonts/cinzel/Cinzel-SemiBold.ttf" id="6_title_font"]
-[ext_resource type="FontFile" path="res://assets/fonts/cinzel/Cinzel-Regular.ttf" id="7_subtitle_font"]
+[ext_resource type="Script" path="res://ui/scripts/title_screen.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/background.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/vignette.png" id="3_vignette"]
+[ext_resource type="Texture2D" path="res://shared/textures/branding/emblem.png" id="4_emblem"]
+[ext_resource type="Texture2D" path="res://shared/textures/fx/dust.png" id="5_dust"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="6_title_font"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-Regular.ttf" id="7_subtitle_font"]
 
 [sub_resource type="FontVariation" id="FontVariation_title"]
 base_font = ExtResource("6_title_font")

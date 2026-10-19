@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Gera os assets visuais de marca da Etapa 1 do Black Sight.
+"""Gera os assets visuais de marca do Black Sight (modulo shared).
 
 Todos os arquivos gerados sao placeholders originais (sem material de terceiros),
 criados proceduralmente para a fundacao do projeto:
 
-    assets/textures/ui/background.png   - fundo escuro com brilho radial e grao
-    assets/textures/ui/vignette.png     - vinheta preta com alpha (overlay de UI)
-    assets/textures/fx/dust.png         - sprite suave para as particulas de poeira
-    assets/textures/branding/icon_1024.png
-    assets/textures/branding/boot_splash.png
-    assets/textures/branding/icon.ico   - icone do executavel Windows
+    shared/textures/ui/background.png      - fundo escuro com brilho radial e grao
+    shared/textures/ui/vignette.png        - vinheta preta com alpha (overlay de UI)
+    shared/textures/fx/dust.png            - sprite suave para as particulas de poeira
+    shared/textures/branding/emblem.png    - emblema (olho) da tela inicial
+    shared/textures/branding/icon_1024.png
+    shared/textures/branding/boot_splash.png
+    shared/textures/branding/icon.ico      - icone do executavel Windows
 
 Requisitos: Python 3.10+ e Pillow (pip install pillow).
 
@@ -26,13 +27,13 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-FONT_DIR = ROOT / "assets" / "fonts" / "cinzel"
+FONT_DIR = ROOT / "shared" / "fonts" / "cinzel"
 FONT_SEMIBOLD = FONT_DIR / "Cinzel-SemiBold.ttf"
 FONT_REGULAR = FONT_DIR / "Cinzel-Regular.ttf"
 
-UI_DIR = ROOT / "assets" / "textures" / "ui"
-FX_DIR = ROOT / "assets" / "textures" / "fx"
-BRAND_DIR = ROOT / "assets" / "textures" / "branding"
+UI_DIR = ROOT / "shared" / "textures" / "ui"
+FX_DIR = ROOT / "shared" / "textures" / "fx"
+BRAND_DIR = ROOT / "shared" / "textures" / "branding"
 
 SUPERSAMPLE = 2
 
@@ -121,7 +122,7 @@ def make_background() -> None:
 
     base = add_grain(base, sigma=2.0, seed=11)
     base.convert("RGB").save(UI_DIR / "background.png", optimize=True)
-    print(f"  assets/textures/ui/background.png ({width}x{height})")
+    print(f"  shared/textures/ui/background.png ({width}x{height})")
 
 
 def make_vignette() -> None:
@@ -139,7 +140,7 @@ def make_vignette() -> None:
             pixels[x, y] = (0, 0, 0, round(248 * t))
     layer = layer.resize((width, height), Image.BICUBIC)
     layer.save(UI_DIR / "vignette.png", optimize=True)
-    print(f"  assets/textures/ui/vignette.png ({width}x{height})")
+    print(f"  shared/textures/ui/vignette.png ({width}x{height})")
 
 
 def make_dust() -> None:
@@ -156,7 +157,7 @@ def make_dust() -> None:
             pixels[x, y] = (255, 250, 240, round(255 * a))
     layer = layer.filter(ImageFilter.GaussianBlur(0.6))
     layer.save(FX_DIR / "dust.png", optimize=True)
-    print(f"  assets/textures/fx/dust.png ({size}x{size})")
+    print(f"  shared/textures/fx/dust.png ({size}x{size})")
 
 
 def draw_eye_emblem(img: Image.Image, draw: ImageDraw.ImageDraw, cx: float, cy: float,
@@ -207,7 +208,7 @@ def make_emblem() -> None:
                     line=26, glow=True)
     img = img.resize((size, size), Image.LANCZOS)
     img.save(BRAND_DIR / "emblem.png", optimize=True)
-    print("  assets/textures/branding/emblem.png")
+    print("  shared/textures/branding/emblem.png")
 
 
 def make_icon() -> None:
@@ -238,8 +239,8 @@ def make_icon() -> None:
     icon = img.copy()
     icon.save(BRAND_DIR / "icon.ico", sizes=[(256, 256), (128, 128), (64, 64),
                                              (48, 48), (32, 32), (16, 16)])
-    print("  assets/textures/branding/icon_1024.png")
-    print("  assets/textures/branding/icon.ico")
+    print("  shared/textures/branding/icon_1024.png")
+    print("  shared/textures/branding/icon.ico")
 
 
 def make_boot_splash() -> None:
@@ -260,7 +261,7 @@ def make_boot_splash() -> None:
                  width / 2, height * 0.74, 9, (*DIM_BONE, 210))
 
     img.convert("RGB").save(BRAND_DIR / "boot_splash.png", optimize=True)
-    print("  assets/textures/branding/boot_splash.png")
+    print("  shared/textures/branding/boot_splash.png")
 
 
 def main() -> None:

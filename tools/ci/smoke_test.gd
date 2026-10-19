@@ -11,7 +11,7 @@ extends SceneTree
 const EXPECTED_PROJECT_NAME := "Black Sight"
 const EXPECTED_RENDERER := "gl_compatibility"
 const EXPECTED_VIEWPORT := Vector2i(1920, 1080)
-const EXPECTED_MAIN_SCENE := "res://scenes/boot/title_screen.tscn"
+const EXPECTED_MAIN_SCENE := "res://ui/scenes/title_screen.tscn"
 
 # Caminhos relativos à raiz da cena.
 const EXPECTED_NODES := [
@@ -27,13 +27,35 @@ const EXPECTED_NODES := [
 	"Fade",
 ]
 
-const EXPECTED_TEXTURES := [
-	"res://assets/textures/ui/background.png",
-	"res://assets/textures/ui/vignette.png",
-	"res://assets/textures/branding/emblem.png",
+const EXPECTED_MODULES := [
+	"players",
+	"creatures",
+	"maps",
+	"items",
+	"objectives",
+	"ui",
+	"audio",
+	"match",
+	"shared",
+]
+
+# Caminhos da Etapa 1 que foram movidos para os módulos na Etapa 2.
+const LEGACY_PATHS := [
+	"res://scenes/boot/title_screen.tscn",
+	"res://scripts/ui/title_screen.gd",
+	"res://scripts/autoload/app_info.gd",
+	"res://assets/themes/black_sight.tres",
+	"res://assets/fonts/cinzel/Cinzel-Regular.ttf",
 	"res://assets/textures/branding/icon_1024.png",
-	"res://assets/textures/branding/boot_splash.png",
-	"res://assets/textures/fx/dust.png",
+]
+
+const EXPECTED_TEXTURES := [
+	"res://shared/textures/ui/background.png",
+	"res://shared/textures/ui/vignette.png",
+	"res://shared/textures/branding/emblem.png",
+	"res://shared/textures/branding/icon_1024.png",
+	"res://shared/textures/branding/boot_splash.png",
+	"res://shared/textures/fx/dust.png",
 ]
 
 var _checks: int = 0
@@ -47,6 +69,7 @@ func _initialize() -> void:
 	_check_theme()
 	_check_fonts()
 	_check_textures()
+	_check_modules()
 	_check_main_scene()
 	_check_export_preset()
 
@@ -128,7 +151,7 @@ func _check_autoload() -> void:
 		"autoload 'AppInfo' registrado (%d autoloads)" % autoloads.size()
 	)
 	_expect(
-		FileAccess.file_exists("res://scripts/autoload/app_info.gd"),
+		FileAccess.file_exists("res://shared/autoload/app_info.gd"),
 		"script do autoload AppInfo existe"
 	)
 
@@ -153,8 +176,8 @@ func _check_theme() -> void:
 func _check_fonts() -> void:
 	print("[4] Arquivos de fonte")
 	for font_path: String in [
-		"res://assets/fonts/cinzel/Cinzel-Regular.ttf",
-		"res://assets/fonts/cinzel/Cinzel-SemiBold.ttf",
+		"res://shared/fonts/cinzel/Cinzel-Regular.ttf",
+		"res://shared/fonts/cinzel/Cinzel-SemiBold.ttf",
 	]:
 		_expect(FileAccess.file_exists(font_path), "fonte presente: %s" % font_path)
 		var font: Font = load(font_path) as Font
@@ -179,8 +202,75 @@ func _check_textures() -> void:
 			)
 
 
+func _check_modules() -> void:
+	print("[6] Módulos da arquitetura (Etapa 2)")
+	for module: String in EXPECTED_MODULES:
+		var dir_path := "res://%s" % module
+		_expect(DirAccess.dir_exists_absolute(dir_path), "módulo existe: %s/" % module)
+		_expect(
+			FileAccess.file_exists("%s/README.md" % dir_path),
+			"módulo documentado: %s/README.md" % module
+		)
+
+	_expect(
+		FileAccess.file_exists("res://docs/ARQUITETURA.md"),
+		"documento de arquitetura presente (docs/ARQUITETURA.md)"
+	)
+
+	for legacy: String in LEGACY_PATHS:
+		_expect(not FileAccess.file_exists(legacy), "caminho antigo removido: %s" % legacy)
+
+	_expect(
+		FileAccess.file_exists("res://ui/scenes/title_screen.tscn"),
+		"tela inicial está no módulo ui/"
+	)
+	_expect(
+		FileAccess.file_exists("res://ui/scripts/title_screen.gd"),
+		"script da tela inicial está no módulo ui/"
+	)
+	_expect(
+		FileAccess.file_exists("res://shared/themes/black_sight.tres"),
+		"tema compartilhado está em shared/"
+	)
+	_expect(
+		FileAccess.file_exists("res://shared/autoload/app_info.gd"),
+		"autoload AppInfo está em shared/"
+	)
+
+	# módulos que ainda são apenas estrutura não podem ter código de gameplay
+	for pending_module: String in [
+		"players", "creatures", "maps", "items", "objectives", "audio", "match"
+	]:
+		var files := _list_gdscript_files("res://%s" % pending_module)
+		_expect(
+			files.is_empty(),
+			"módulo %s ainda não tem scripts (estrutura preparatória)" % pending_module
+		)
+
+
+func _list_gdscript_files(path: String) -> PackedStringArray:
+	var found := PackedStringArray()
+	var dir := DirAccess.open(path)
+	if dir == null:
+		return found
+	dir.list_dir_begin()
+	var entry := dir.get_next()
+	while entry != "":
+		if entry.begins_with("."):
+			entry = dir.get_next()
+			continue
+		var full := path.path_join(entry)
+		if dir.current_is_dir():
+			found.append_array(_list_gdscript_files(full))
+		elif entry.ends_with(".gd"):
+			found.append(full)
+		entry = dir.get_next()
+	dir.list_dir_end()
+	return found
+
+
 func _check_main_scene() -> void:
-	print("[6] Cena inicial")
+	print("[7] Cena inicial")
 	_expect(ResourceLoader.exists(EXPECTED_MAIN_SCENE), "cena inicial pode ser carregada")
 	var packed: PackedScene = load(EXPECTED_MAIN_SCENE) as PackedScene
 	_expect(packed != null, "cena inicial é um PackedScene")
@@ -200,7 +290,7 @@ func _check_main_scene() -> void:
 	_expect(root_script != null, "cena raiz tem script anexado")
 	if root_script != null:
 		_expect(
-			root_script.resource_path.ends_with("scripts/ui/title_screen.gd"),
+			root_script.resource_path.ends_with("ui/scripts/title_screen.gd"),
 			"script da raiz é title_screen.gd (obtido: %s)" % root_script.resource_path
 		)
 
@@ -215,13 +305,13 @@ func _check_main_scene() -> void:
 	var start_button: Button = instance.get_node_or_null("Content/Buttons/StartButton") as Button
 	_expect(start_button != null, "botão de início existe e é um Button")
 	if start_button != null:
-		_expect(start_button.disabled, "botão de início está desabilitado (jogabilidade é Etapa 2)")
+		_expect(start_button.disabled, "botão de início está desabilitado (jogabilidade começa em etapa posterior)")
 
 	instance.free()
 
 
 func _check_export_preset() -> void:
-	print("[7] Preset de exportação")
+	print("[8] Preset de exportação")
 	var preset_path := "res://export_presets.cfg"
 	_expect(FileAccess.file_exists(preset_path), "export_presets.cfg existe")
 	if not FileAccess.file_exists(preset_path):
@@ -230,6 +320,6 @@ func _check_export_preset() -> void:
 	_expect(content.contains('name="Windows Desktop"'), "preset 'Windows Desktop' presente")
 	_expect(content.contains('platform="Windows Desktop"'), "plataforma Windows Desktop configurada")
 	_expect(
-		content.contains("res://assets/textures/branding/icon.ico"),
+		content.contains("res://shared/textures/branding/icon.ico"),
 		"ícone do executável configurado no preset"
 	)
