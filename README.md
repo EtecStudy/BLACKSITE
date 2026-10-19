@@ -8,9 +8,11 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/latest**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.2.0-etapa2/BlackSight-Etapa2-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa2-Windows-x86_64.zip`
+Arquivo: `BlackSight-Etapa2-Windows-x86_64.zip` (40.574.862 bytes)
+
+SHA-256 do ZIP: `09007dae33d7a907a0b1631b9d56d96d6b3ee3bbf11b3d9aa6582d99af7e1fcf`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.

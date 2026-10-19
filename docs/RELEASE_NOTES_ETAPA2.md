@@ -31,6 +31,9 @@ Requisitos: Windows 10/11 64 bits, GPU com OpenGL 3.3 ou superior.
 `SHA256SUMS.txt` (dentro do ZIP) traz os hashes de `BlackSight.exe` e
 `BlackSight.pck`.
 
+SHA-256 do próprio ZIP:
+`09007dae33d7a907a0b1631b9d56d96d6b3ee3bbf11b3d9aa6582d99af7e1fcf`
+
 ## Testes executados na geração deste pacote
 
 - Importação de recursos (`--import`) no Linux e no Windows.
