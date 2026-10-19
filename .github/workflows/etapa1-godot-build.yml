@@ -214,6 +214,25 @@ jobs:
             --title "Black Sight · Etapa 1 — Fundação do projeto (Windows x86_64)" \
             --notes-file docs/RELEASE_NOTES_ETAPA1.md
 
+      - name: Publicar diagnóstico no branch ci-diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          # Canal de diagnóstico: publica os logs/frames num branch temporário
+          # (artefatos de Actions não são acessíveis pelo ambiente de desenvolvimento).
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-diagnostics
+          git rm -rf --cached . > /dev/null 2>&1 || true
+          mkdir -p .ci && rm -rf .ci/* || true
+          cp -r ci-logs .ci/ci-logs 2>/dev/null || true
+          cp s1_render_frame.png .ci/ 2>/dev/null || true
+          cp build/windows/SHA256SUMS.txt .ci/ 2>/dev/null || true
+          cp ci-logs/wine_screenshot.png .ci/ 2>/dev/null || true
+          git add -f .ci
+          git commit -m "ci: diagnóstico da execução ${GITHUB_RUN_ID} (${GITHUB_RUN_ATTEMPT})" || true
+          git push -f origin ci-diagnostics
+
       - name: Resumo da execução
         if: always()
         run: |

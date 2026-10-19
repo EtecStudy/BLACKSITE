@@ -13,18 +13,19 @@ const EXPECTED_RENDERER := "gl_compatibility"
 const EXPECTED_VIEWPORT := Vector2i(1920, 1080)
 const EXPECTED_MAIN_SCENE := "res://scenes/boot/title_screen.tscn"
 
+# Caminhos relativos à raiz da cena (".").
 const EXPECTED_NODES := [
-	"TitleScreen",
-	"TitleScreen/Background",
-	"TitleScreen/Dust",
-	"TitleScreen/Vignette",
-	"TitleScreen/Content",
-	"TitleScreen/Content/Emblem",
-	"TitleScreen/Content/TitleLabel",
-	"TitleScreen/Content/Buttons/StartButton",
-	"TitleScreen/Content/Buttons/QuitButton",
-	"TitleScreen/Content/BuildLabel",
-	"TitleScreen/Fade",
+	".",
+	"Background",
+	"Dust",
+	"Vignette",
+	"Content",
+	"Content/Emblem",
+	"Content/TitleLabel",
+	"Content/Buttons/StartButton",
+	"Content/Buttons/QuitButton",
+	"Content/BuildLabel",
+	"Fade",
 ]
 
 const EXPECTED_TEXTURES := [
@@ -191,6 +192,8 @@ func _check_main_scene() -> void:
 	var node_paths: Array[String] = []
 	for index: int in state.get_node_count():
 		node_paths.append(str(state.get_node_path(index)))
+	print("      nós na cena: %s" % ", ".join(node_paths))
+	_expect(state.get_node_name(0) == "TitleScreen", "raiz da cena é 'TitleScreen'")
 	for expected: String in EXPECTED_NODES:
 		_expect(node_paths.has(expected), "nó presente na cena: %s" % expected)
 
