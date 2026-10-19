@@ -358,12 +358,18 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs | Out-Null
           New-Item -ItemType Directory -Force -Path godot-ci | Out-Null
-          $url = "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-$env:GODOT_STATUS/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe.zip"
-          Invoke-WebRequest -Uri $url -OutFile godot.zip -UseBasicParsing
+          $url = "https://github.com/godotengine/godot/releases/download/$($env:GODOT_VERSION)-$($env:GODOT_STATUS)/Godot_v$($env:GODOT_VERSION)-$($env:GODOT_STATUS)_win64.exe.zip"
+          Write-Host "Baixando: $url"
+          curl.exe -L --fail --retry 3 --retry-delay 5 -o godot.zip $url 2>&1 | Tee-Object -FilePath ci-logs/godot-download.log
+          Get-Item godot.zip | Format-List Name, Length | Tee-Object -FilePath ci-logs/godot-download.log -Append
           Expand-Archive -Path godot.zip -DestinationPath godot-ci -Force
-          Get-ChildItem godot-ci | Select-Object Name, Length
-          & "godot-ci/Godot_v$env:GODOT_VERSION-$env:GODOT_STATUS_win64.exe" --version
+          $godot = (Get-ChildItem godot-ci -Filter "*win64.exe" | Select-Object -First 1).FullName
+          Write-Host "Executável: $godot"
+          & $godot --version 2>&1 | Tee-Object -FilePath ci-logs/godot-version-windows.txt
+          Write-Host "exit code do --version: $LASTEXITCODE"
 
       - name: Instalar templates de exportação
         shell: pwsh
@@ -510,6 +516,24 @@ jobs:
         run: |
           gh release delete v0.1.0-etapa1 --yes --cleanup-tag 2>$null
           gh release create v0.1.0-etapa1 "BlackSight-Etapa1-Windows-x86_64.zip" --title "Black Sight - Etapa 1 - Fundacao do projeto (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA1.md
+
+      - name: Publicar diagnóstico Windows (branch ci-windows)
+        if: always()
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-windows
+          git rm -rf --cached . 2>$null | Out-Null
+          New-Item -ItemType Directory -Force -Path .ci | Out-Null
+          if (Test-Path ci-logs) { Copy-Item ci-logs -Destination .ci/ci-logs -Recurse -Force }
+          Get-ChildItem build/windows -ErrorAction SilentlyContinue | ForEach-Object {
+            "$($_.Name) $($_.Length)" | Out-File -Append .ci/ci-logs/windows-build-files.txt
+          }
+          git add -f .ci
+          git commit -m "ci: diagnostico windows $($env:GITHUB_RUN_ID)" 2>$null
+          git push -f origin ci-windows
 
       - name: Resumo (Windows)
         if: always()
