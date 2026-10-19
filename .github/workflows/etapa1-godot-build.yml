@@ -94,6 +94,8 @@ jobs:
           ls ci-logs/frames | tail -3
           latest=$(ls ci-logs/frames/*.png | tail -1)
           cp "$latest" s1_render_frame.png
+          cp "$latest" ci-logs/render_frame.png
+          rm -rf ci-logs/frames
           echo "frame capturado: $latest"
 
       - name: Exportar executável Windows (release)
@@ -159,31 +161,43 @@ jobs:
         id: wine
         continue-on-error: true
         run: |
-          set -x
           sudo dpkg --add-architecture i386 || true
           sudo apt-get update -qq || true
-          sudo apt-get install -y --no-install-recommends wine64 || \
-            sudo apt-get install -y --no-install-recommends wine || \
-            echo "wine indisponível"
+          (sudo apt-get install -y --no-install-recommends wine64 || \
+           sudo apt-get install -y --no-install-recommends wine || \
+           echo "wine indisponível") 2>&1 | tail -5
           (wine --version || wine64 --version || echo "sem wine") | tee ci-logs/wine-version.txt
+          if ! command -v wine > /dev/null 2>&1; then
+            echo "::warning::Wine não disponível; teste do .exe não pôde ser executado neste runner."
+            exit 0
+          fi
           export WINEPREFIX=/tmp/wineprefix
           export WINEDEBUG=-all
           export WINEDLLOVERRIDES="mscoree,mshtml="
+          Xvfb :99 -screen 0 1280x800x24 -nolisten tcp > /dev/null 2>&1 &
+          sleep 2
+          export DISPLAY=:99
           wineboot -u > ci-logs/wineboot.log 2>&1 || true
           cd build/windows
-          set +e
-          timeout 180 xvfb-run -a --server-args="-screen 0 1280x800x24" \
-            wine BlackSight.exe --quit-after 150 > ../../ci-logs/wine_run.log 2>&1
-          wine_exit=$?
-          set -e
-          echo "exit code do jogo via wine: $wine_exit" | tee ../../ci-logs/wine-exit.txt
-          sleep 2
-          if pgrep -f BlackSight.exe > /dev/null; then
-            echo "o jogo ainda está rodando (iniciou com sucesso); capturando tela"
-            xvfb-run -a --server-args="-screen 0 1280x800x24" import -window root ../../ci-logs/wine_screenshot.png || true
-            pkill -f BlackSight.exe || true
+          ( wine BlackSight.exe --quit-after 300 > ../../ci-logs/wine_run.log 2>&1 ; echo $? > /tmp/wine_exit ) &
+          game_pid=$!
+          sleep 30
+          if kill -0 "$game_pid" 2> /dev/null; then
+            echo "processo do jogo ativo após 30s — capturando a tela"
+            import -window root ../../ci-logs/wine_screenshot.png || true
+            echo "alive" > ../../ci-logs/wine-alive.txt
+          else
+            echo "processo do jogo terminou antes da captura"
+            echo "exited" > ../../ci-logs/wine-alive.txt
           fi
-          tail -40 ../../ci-logs/wine_run.log
+          for i in $(seq 1 45); do
+            kill -0 "$game_pid" 2> /dev/null || break
+            sleep 2
+          done
+          kill "$game_pid" 2> /dev/null || true
+          echo "exit code do jogo via wine: $(cat /tmp/wine_exit 2>/dev/null || echo 'n/d')" | tee ci-logs/wine-exit.txt
+          tail -30 ci-logs/wine_run.log || true
+          ls -la ci-logs/wine_screenshot.png 2>/dev/null || true
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4

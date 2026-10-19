@@ -13,9 +13,8 @@ const EXPECTED_RENDERER := "gl_compatibility"
 const EXPECTED_VIEWPORT := Vector2i(1920, 1080)
 const EXPECTED_MAIN_SCENE := "res://scenes/boot/title_screen.tscn"
 
-# Caminhos relativos à raiz da cena (".").
+# Caminhos relativos à raiz da cena.
 const EXPECTED_NODES := [
-	".",
 	"Background",
 	"Dust",
 	"Vignette",
@@ -188,22 +187,37 @@ func _check_main_scene() -> void:
 	if packed == null:
 		return
 
-	var state: SceneState = packed.get_state()
-	var node_paths: Array[String] = []
-	for index: int in state.get_node_count():
-		node_paths.append(str(state.get_node_path(index)))
-	print("      nós na cena: %s" % ", ".join(node_paths))
-	_expect(state.get_node_name(0) == "TitleScreen", "raiz da cena é 'TitleScreen'")
-	for expected: String in EXPECTED_NODES:
-		_expect(node_paths.has(expected), "nó presente na cena: %s" % expected)
+	var instance: Node = packed.instantiate()
+	_expect(instance != null, "cena inicial pode ser instanciada")
+	if instance == null:
+		return
 
-	var root_script: Script = state.get_node_script(0) as Script
+	_expect(instance.name == "TitleScreen", "raiz da cena é 'TitleScreen' (obtido: '%s')" % instance.name)
+	for expected: String in EXPECTED_NODES:
+		_expect(instance.get_node_or_null(expected) != null, "nó presente na cena: %s" % expected)
+
+	var root_script: Script = instance.get_script() as Script
 	_expect(root_script != null, "cena raiz tem script anexado")
 	if root_script != null:
 		_expect(
 			root_script.resource_path.ends_with("scripts/ui/title_screen.gd"),
 			"script da raiz é title_screen.gd (obtido: %s)" % root_script.resource_path
 		)
+
+	var build_label: Label = instance.get_node_or_null("Content/BuildLabel") as Label
+	_expect(build_label != null, "rodapé de build existe e é um Label")
+
+	var quit_button: Button = instance.get_node_or_null("Content/Buttons/QuitButton") as Button
+	_expect(quit_button != null, "botão de saída existe e é um Button")
+	if quit_button != null:
+		_expect(not quit_button.disabled, "botão de saída está habilitado")
+
+	var start_button: Button = instance.get_node_or_null("Content/Buttons/StartButton") as Button
+	_expect(start_button != null, "botão de início existe e é um Button")
+	if start_button != null:
+		_expect(start_button.disabled, "botão de início está desabilitado (jogabilidade é Etapa 2)")
+
+	instance.free()
 
 
 func _check_export_preset() -> void:
