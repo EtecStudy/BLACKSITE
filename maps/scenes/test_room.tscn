@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=26 format=3]
 
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
 albedo_color = Color(0.16, 0.17, 0.18, 1)
@@ -30,12 +30,34 @@ emission_enabled = true
 emission = Color(0.08, 0.22, 0.35, 1)
 emission_energy_multiplier = 1.2
 
+[sub_resource type="StandardMaterial3D" id="Mat_ceiling"]
+albedo_color = Color(0.19, 0.2, 0.215, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_strip"]
+shading_mode = 0
+albedo_color = Color(0.96, 0.95, 0.9, 1)
+emission_enabled = true
+emission = Color(0.95, 0.93, 0.85, 1)
+emission_energy_multiplier = 2.4
+
 [sub_resource type="BoxMesh" id="Mesh_floor"]
 material = SubResource("Mat_floor")
 size = Vector3(24, 0.5, 24)
 
 [sub_resource type="BoxShape3D" id="Shape_floor"]
 size = Vector3(24, 0.5, 24)
+
+[sub_resource type="BoxMesh" id="Mesh_ceiling"]
+material = SubResource("Mat_ceiling")
+size = Vector3(24, 0.5, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_ceiling"]
+size = Vector3(24, 0.5, 24)
+
+[sub_resource type="BoxMesh" id="Mesh_strip"]
+material = SubResource("Mat_strip")
+size = Vector3(6, 0.06, 1.2)
 
 [sub_resource type="BoxMesh" id="Mesh_wall_long"]
 material = SubResource("Mat_wall")
@@ -80,7 +102,7 @@ background_mode = 1
 background_color = Color(0.012, 0.014, 0.018, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.38, 0.41, 0.46, 1)
-ambient_light_energy = 0.55
+ambient_light_energy = 0.62
 tonemap_mode = 2
 
 [node name="TestRoom" type="Node3D"]
@@ -96,6 +118,23 @@ mesh = SubResource("Mesh_floor")
 
 [node name="Collision" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("Shape_floor")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.25, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("Mesh_ceiling")
+
+[node name="Collision" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("Shape_ceiling")
+
+[node name="CeilingStripWest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3.96, 0)
+mesh = SubResource("Mesh_strip")
+
+[node name="CeilingStripEast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 3.96, 0)
+mesh = SubResource("Mesh_strip")
 
 [node name="NorthWall" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -12)
