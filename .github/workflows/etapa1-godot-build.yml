@@ -52,7 +52,7 @@ jobs:
           TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}"
           mkdir -p "$TEMPLATE_DIR"
           cp -r /tmp/godot_templates/templates/. "$TEMPLATE_DIR/"
-          ls "$TEMPLATE_DIR" | grep -i windows
+          ls "$TEMPLATE_DIR" | grep -Ei "windows|linux" | tee ci-logs/templates.txt
 
       - name: Importar recursos do projeto
         run: |
@@ -60,69 +60,103 @@ jobs:
           test -d .godot/imported
           echo "recursos importados: $(ls .godot/imported | wc -l)"
 
-      - name: Teste de fumaça (headless)
+      # ------------------------------------------------------------------
+      # 1. Testes do projeto no editor/headless
+      # ------------------------------------------------------------------
+      - name: TESTE 1 — fumaça da configuração e da cena (headless)
         run: |
           set -o pipefail
           "$GODOT_DIR/godot" --headless --path . --script res://tools/ci/smoke_test.gd 2>&1 | tee ci-logs/smoke.log
 
-      - name: Executar a cena inicial (headless, 240 frames)
+      - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
           "$GODOT_DIR/godot" --headless --path . --quit-after 240 2>&1 | tee ci-logs/run_headless.log
-          echo "--- confirmação de inicialização ---"
           grep -F "[Black Sight] Tela inicial carregada" ci-logs/run_headless.log
-          echo "--- linhas de erro ---"
           grep -nE "SCRIPT ERROR|ERROR:" ci-logs/run_headless.log || echo "(nenhum erro registrado)"
           if grep -q "SCRIPT ERROR" ci-logs/run_headless.log; then
             echo "::error::Erros de script durante a execução da cena inicial"
             exit 1
           fi
 
-      - name: Renderizar a cena inicial (Xvfb + OpenGL/llvmpipe)
-        id: render
+      - name: TESTE 3 — renderizar a cena inicial (Xvfb + OpenGL/llvmpipe)
         run: |
           mkdir -p ci-logs/frames
           set -o pipefail
           xvfb-run -a --server-args="-screen 0 1280x800x24" \
             "$GODOT_DIR/godot" --path . \
             --rendering-driver opengl3 \
-            --resolution 1280x720 \
             --fixed-fps 30 \
             --write-movie ci-logs/frames/frame.png \
             --quit-after 90 2>&1 | tee ci-logs/render.log
-          echo "--- frames gerados ---"
-          ls ci-logs/frames | tail -3
           latest=$(ls ci-logs/frames/*.png | tail -1)
-          cp "$latest" s1_render_frame.png
           cp "$latest" ci-logs/render_frame.png
           rm -rf ci-logs/frames
+          test -s ci-logs/render_frame.png
           echo "frame capturado: $latest"
 
-      - name: Exportar executável Windows (release)
+      # ------------------------------------------------------------------
+      # 2. Exportações
+      # ------------------------------------------------------------------
+      - name: TESTE 4 — exportar executável Windows (release)
         run: |
           mkdir -p build/windows
           set +e
-          "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee ci-logs/export.log
+          "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee ci-logs/export_windows.log
           set -e
           if [ ! -s build/windows/BlackSight.exe ]; then
-            echo "::warning::Exportação com modificação de recursos falhou; tentando sem ícone embutido (rcedit/wine indisponível)."
+            echo "::warning::Exportação com modificação de recursos falhou; tentando sem metadados embutidos."
             sed -i 's|application/modify_resources=true|application/modify_resources=false|' export_presets.cfg
             rm -rf build/windows
             mkdir -p build/windows
-            "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee -a ci-logs/export.log
+            "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee -a ci-logs/export_windows.log
           fi
-          echo "--- conteúdo exportado ---"
           ls -la build/windows
           test -s build/windows/BlackSight.exe
           test -s build/windows/BlackSight.pck
 
-      - name: Verificar binário exportado
+      - name: Exportar build Linux (para executar o pacote exportado)
+        run: |
+          mkdir -p build/linux
+          "$GODOT_DIR/godot" --headless --path . --export-release "Linux" "build/linux/BlackSight.x86_64" 2>&1 | tee ci-logs/export_linux.log
+          chmod +x build/linux/BlackSight.x86_64
+          ls -la build/linux
+          test -s build/linux/BlackSight.x86_64
+          test -s build/linux/BlackSight.pck
+
+      # ------------------------------------------------------------------
+      # 3. Verificações dos binários
+      # ------------------------------------------------------------------
+      - name: TESTE 5 — executar o BUILD EXPORTADO (não-editor) sob Xvfb
+        run: |
+          cd build/linux
+          timeout 120 xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            ./BlackSight.x86_64 --quit-after 180 > ../../ci-logs/exported_run.log 2>&1 || true
+          cd ../..
+          cat ci-logs/exported_run.log
+          grep -F "[Black Sight] Tela inicial carregada" ci-logs/exported_run.log
+          if grep -qE "SCRIPT ERROR|ERROR:" ci-logs/exported_run.log; then
+            echo "::error::Erros ao executar o build exportado"
+            exit 1
+          fi
+
+      - name: TESTE 6 — inspecionar o pacote .pck exportado
+        run: |
+          python3 tools/ci/inspect_pck.py build/windows/BlackSight.pck | tee ci-logs/pck-windows.txt
+          python3 tools/ci/inspect_pck.py build/linux/BlackSight.pck | tee ci-logs/pck-linux.txt
+
+      - name: TESTE 7 — validar o binário Windows (.exe)
         run: |
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
+          file build/windows/BlackSight.exe | grep -qi "x86-64"
+          (strings -a build/windows/BlackSight.exe | grep -m 5 -E "Black Sight|EtecStudy" || echo "(metadados de versão não localizados por strings)") | tee ci-logs/exe-strings.txt
           sha256sum build/windows/BlackSight.exe build/windows/BlackSight.pck | tee build/windows/SHA256SUMS.txt
           du -h build/windows/*
 
+      # ------------------------------------------------------------------
+      # 4. Empacotamento e distribuição
+      # ------------------------------------------------------------------
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
@@ -157,18 +191,34 @@ jobs:
           ls -la BlackSight-Etapa1-Windows-x86_64.zip
           sha256sum BlackSight-Etapa1-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
-      - name: Testar o executável exportado com Wine (Xvfb)
+      - name: TESTE 8 — listar o conteúdo do ZIP
+        run: |
+          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa1-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa1-Windows-x86_64.zip | tail -2
+
+      - name: TESTE 9 — tentar executar o .exe com Wine (Xvfb)
         id: wine
         continue-on-error: true
         run: |
-          sudo dpkg --add-architecture i386 || true
-          sudo apt-get update -qq || true
-          (sudo apt-get install -y --no-install-recommends wine64 || \
-           sudo apt-get install -y --no-install-recommends wine || \
-           echo "wine indisponível") 2>&1 | tail -5
+          failed=""
+          for pkg in wine64 wine wine-stable; do
+            echo "--- tentando instalar: $pkg ---"
+            if sudo apt-get install -y --no-install-recommends "$pkg" >> ci-logs/wine-install.log 2>&1; then
+              if command -v wine > /dev/null 2>&1 || command -v wine64 > /dev/null 2>&1; then
+                echo "$pkg instalado" | tee -a ci-logs/wine-install.log
+                failed=""
+                break
+              fi
+            fi
+            failed="$pkg falhou"
+          done
           (wine --version || wine64 --version || echo "sem wine") | tee ci-logs/wine-version.txt
           if ! command -v wine > /dev/null 2>&1; then
-            echo "::warning::Wine não disponível; teste do .exe não pôde ser executado neste runner."
+            echo "::warning::Wine não disponível neste runner — o .exe não pôde ser executado aqui."
+            echo "indisponivel" > ci-logs/wine-status.txt
             exit 0
           fi
           export WINEPREFIX=/tmp/wineprefix
@@ -185,19 +235,18 @@ jobs:
           if kill -0 "$game_pid" 2> /dev/null; then
             echo "processo do jogo ativo após 30s — capturando a tela"
             import -window root ../../ci-logs/wine_screenshot.png || true
-            echo "alive" > ../../ci-logs/wine-alive.txt
+            echo "executando" > ../../ci-logs/wine-status.txt
           else
             echo "processo do jogo terminou antes da captura"
-            echo "exited" > ../../ci-logs/wine-alive.txt
+            echo "encerrou" > ../../ci-logs/wine-status.txt
           fi
-          for i in $(seq 1 45); do
+          for i in $(seq 1 60); do
             kill -0 "$game_pid" 2> /dev/null || break
             sleep 2
           done
           kill "$game_pid" 2> /dev/null || true
           echo "exit code do jogo via wine: $(cat /tmp/wine_exit 2>/dev/null || echo 'n/d')" | tee ci-logs/wine-exit.txt
-          tail -30 ci-logs/wine_run.log || true
-          ls -la ci-logs/wine_screenshot.png 2>/dev/null || true
+          cat ../../ci-logs/wine_run.log || true
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
@@ -205,7 +254,7 @@ jobs:
           name: black-sight-etapa1-windows
           path: |
             BlackSight-Etapa1-Windows-x86_64.zip
-            s1_render_frame.png
+            ci-logs/render_frame.png
             ci-logs/wine_screenshot.png
           if-no-files-found: warn
 
@@ -232,17 +281,17 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          # Canal de diagnóstico: publica os logs/frames num branch temporário
-          # (artefatos de Actions não são acessíveis pelo ambiente de desenvolvimento).
+          # Canal de diagnóstico: publica logs/frames num branch temporário
+          # (os artefatos de Actions não são acessíveis pelo ambiente de desenvolvimento).
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout --orphan ci-diagnostics
           git rm -rf --cached . > /dev/null 2>&1 || true
-          mkdir -p .ci && rm -rf .ci/* || true
+          mkdir -p .ci
+          rm -rf .ci/*
           cp -r ci-logs .ci/ci-logs 2>/dev/null || true
-          cp s1_render_frame.png .ci/ 2>/dev/null || true
-          cp build/windows/SHA256SUMS.txt .ci/ 2>/dev/null || true
           cp ci-logs/wine_screenshot.png .ci/ 2>/dev/null || true
+          cp build/windows/SHA256SUMS.txt .ci/ 2>/dev/null || true
           git add -f .ci
           git commit -m "ci: diagnóstico da execução ${GITHUB_RUN_ID} (${GITHUB_RUN_ATTEMPT})" || true
           git push -f origin ci-diagnostics
@@ -258,17 +307,19 @@ jobs:
             echo ""
             echo "### Teste de fumaça"
             echo '```'
-            grep -E "SMOKE TEST|✓|✗" ci-logs/smoke.log 2>/dev/null | tail -50 || true
+            grep -E "SMOKE TEST|✗" ci-logs/smoke.log 2>/dev/null | tail -20 || true
             echo '```'
             echo ""
-            echo "### Execução headless"
+            echo "### Cena inicial"
             echo '```'
-            grep -E "Tela inicial carregada|ERROR" ci-logs/run_headless.log 2>/dev/null | head -20 || true
+            grep -E "Tela inicial carregada|ERROR" ci-logs/run_headless.log 2>/dev/null | head -10 || true
+            grep -E "Tela inicial carregada|ERROR" ci-logs/exported_run.log 2>/dev/null | head -10 || true
             echo '```'
             echo ""
             echo "### Binário"
             echo '```'
             cat ci-logs/binary-check.log 2>/dev/null || true
+            cat ci-logs/wine-version.txt 2>/dev/null || true
             cat ci-logs/wine-exit.txt 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
