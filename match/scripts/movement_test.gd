@@ -60,6 +60,9 @@ func pause_session() -> void:
 	_paused = true
 	_pause_root.visible = true
 	_player.movement_enabled = false
+	# Para na hora: sem deslize residual enquanto o menu está aberto.
+	_player.velocity.x = 0.0
+	_player.velocity.z = 0.0
 	_capture_mouse(false)
 	_continue_button.grab_focus()
 
