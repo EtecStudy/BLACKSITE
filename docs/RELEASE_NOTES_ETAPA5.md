@@ -25,8 +25,8 @@ menu de pausa, sem sair da partida.
 | Item | Valor |
 | --- | --- |
 | Arquivo | `BlackSight-Etapa5-Windows-x86_64.zip` |
-| Tamanho | 40.630.112 bytes (≈ 38,7 MiB) |
-| SHA-256 | `f394ba303133a834fcdae32885cac6d5de8cae88fed32a14c3f48f1248d32b5c` |
+| Tamanho | 40.630.076 bytes (≈ 38,7 MiB) |
+| SHA-256 | `4ebc60d966a14edee54036f3f2c24dfb845a6224d1b381c191b8b6c68228308e` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
 
 ## Como testar
@@ -45,7 +45,7 @@ menu de pausa, sem sair da partida.
 A release é gerada pelo workflow
 [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blacksite/.github/workflows/build.yml),
 que rodou, na execução
-[39348984567](https://github.com/EtecStudy/BLACKSITE/actions/runs/39348984567),
+[39349449302](https://github.com/EtecStudy/BLACKSITE/actions/runs/39349449302),
 195 verificações de fumaça, 40 de fluxo da interface e **122 do controlador**
 (estados, velocidades, câmera do agachamento, obstáculo acima e pausa com
 configurações) — no Linux e no Windows real — antes de publicar.

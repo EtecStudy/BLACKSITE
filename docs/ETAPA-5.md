@@ -137,8 +137,8 @@ Implementação:
 ## 8. Testes executados
 
 Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml),
-execução **[39348984567](https://github.com/EtecStudy/BLACKSITE/actions/runs/39348984567)**
-(commit `c849a04`), jobs Linux `118388408283` e Windows `118388408618` — ambos
+execução **[39349449302](https://github.com/EtecStudy/BLACKSITE/actions/runs/39349449302)**
+(commit `bf5829a`), jobs Linux `118389914171` e Windows `118389914266` — ambos
 **verdes**.
 
 ### 8.1 Automatizados (executados de verdade)
@@ -183,15 +183,15 @@ usuário rodando o `.exe` publicado.
 | --- | --- |
 | Tag | `v0.5.0-etapa5` |
 | Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.5.0-etapa5/BlackSight-Etapa5-Windows-x86_64.zip> |
-| Tamanho do ZIP | **40.630.112 bytes** (≈ 38,7 MiB) |
-| SHA-256 do ZIP | `f394ba303133a834fcdae32885cac6d5de8cae88fed32a14c3f48f1248d32b5c` |
+| Tamanho do ZIP | **40.630.076 bytes** (≈ 38,7 MiB) |
+| SHA-256 do ZIP | `4ebc60d966a14edee54036f3f2c24dfb845a6224d1b381c191b8b6c68228308e` |
 | `BlackSight.exe` | 109.193.728 bytes |
-| `BlackSight.pck` | 1.411.332 bytes |
+| `BlackSight.pck` | 1.411.380 bytes |
 | `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.048 / 164 bytes |
 
 ### 8.5 Teste no Windows real
 
-Job `windows-latest` `118388408618`, tudo verde: 195/195 (fumaça), 40/40
+Job `windows-latest` `118389914266`, tudo verde: 195/195 (fumaça), 40/40
 (fluxo), 122/122 (controlador); `.exe` executado *headless* carregou a tela
 inicial `v0.5.0`; `%APPDATA%\BlackSight\settings.cfg` foi criado com
 `mouse_sensitivity_x`, `master_volume`, `window_mode` e `vsync`; `.exe` aberto
