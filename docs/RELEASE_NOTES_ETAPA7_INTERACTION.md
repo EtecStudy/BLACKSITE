@@ -65,7 +65,7 @@ Run `39478005585` (`ce95812`), aprovado no Linux e no Windows:
 
 - Fumaça: **251/251**
 - Fluxo de interface: **50/50**
-- Controlador FPS / interação: **363/363** (grupo `[22]` com 63 verificações)
+- Controlador FPS / interação: **363/363** (grupo `[22]` com 61 verificações)
 - `.exe`: `FileVersion 0.7.0.0`, executa headless e com janela (vivo após 25 s)
 - `.pck`: formato 4, 90 recursos
 

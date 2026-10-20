@@ -271,7 +271,7 @@ Execução **39478005585** (`ce95812`), concluída com sucesso nos dois jobs.
 | --- | --- |
 | Fumaça (Linux) | **251/251** |
 | Fluxo de interface (Linux) | **50/50** |
-| Controlador FPS (Linux) | **363/363** (inclui o grupo `[22]`, 63 verificações) |
+| Controlador FPS (Linux) | **363/363** (inclui o grupo `[22]`, 61 verificações) |
 | Fumaça / UI / movimento (Windows) | **251 / 50 / 363**, todos aprovados |
 | Versão interna | `v0.7.0 · Godot 4.7.2-stable (official) · gl_compatibility` |
 | `FileVersion` / `FileDescription` | `0.7.0.0` / `Black Sight — Etapa 7` (`ProductName=Black Sight`) |
