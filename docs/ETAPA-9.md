@@ -275,12 +275,17 @@ mesma suíte: o arquivo passou de 505 para **586** verificações, e todas passa
 | Fumaça (Linux) | `SMOKE TEST OK — 348 verificações aprovadas` |
 | Fluxo de interface (Linux) | `UI FLOW OK — 53 verificações aprovadas` |
 | Controlador FPS + inventário + drop (Linux) | `MOVEMENT TEST OK — 586 verificações aprovadas` |
-| Fumaça / UI / movimento (Windows) | W2, W2b e W2c verdes (contagens a preencher) |
-| Captura renderizada do drop | `DROP VISUAL OK`; `drop_hud.png` 1600×900 |
+| Fumaça / UI / movimento (Windows) | W2, W2b e W2c verdes — 348 / 53 / 586 verificações |
+| Captura renderizada do drop | `DROP VISUAL OK`; `drop_hud.png` 1600×900 ([`screenshots/drop_item.png`](screenshots/drop_item.png)) |
 | Versão interna e `FileVersion` | `0.9.0` / `0.9.0.0` (`project.godot`, `export_presets.cfg`) |
-| `.pck` (formato/recursos) | Godot 4.7.2, formato 4, 114 recursos embutidos, 1,4 MB |
-| ZIP publicado | `BlackSight-Etapa9-Drop-Windows-x86_64.zip` — 40.681.651 bytes |
-| SHA-256 do ZIP | `8114e939604acb9bcba91a60207f3f6a343953aab584ad121a3662e5d80e1e44` |
+| `.pck` (formato/recursos) | gerado pelo Godot 4.7.2, formato 4, ~1,4 MB (inspeção em `ci-logs/pck-windows.txt`) |
+| ZIP publicado | `BlackSight-Etapa9-Drop-Windows-x86_64.zip` — 40.681.666 bytes (≈ 38,8 MiB) |
+| SHA-256 do ZIP | `af21de8891167ef72393012a9da77de6c42e9e4e2b715abb4a2c129fe48c5900` |
+
+O tamanho e o SHA-256 são os do asset da release `v0.9.0-etapa9-drop`,
+conferidos na API do GitHub (`digest` do arquivo). O ZIP é gerado de novo a cada
+build do workflow — por isso a própria release publica, no fim das notas, o
+tamanho e o hash do arquivo que ela distribui.
 
 ## 14. Limitações desta etapa
 
