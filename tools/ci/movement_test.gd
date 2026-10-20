@@ -1538,6 +1538,13 @@ func _test_interaction() -> void:
 	if _scene.is_paused():
 		_scene.resume_session()
 	await _set_crouch_mode("hold")
+	# Estado neutro: em pé e com stamina cheia (parada, sem recuperação
+	# escondida) para comparar o valor antes/depois de interagir.
+	if _player.is_crouched():
+		await _tap_crouch()
+		await _frames(10)
+	_player.set_stamina(_player.max_stamina)
+	await _wait_recovery_delay()
 
 	var detector: InteractionDetector = _player.get_interaction_detector()
 	_expect(detector != null, "detector de interação existe na câmera do jogador")
