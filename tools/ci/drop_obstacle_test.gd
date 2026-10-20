@@ -126,8 +126,8 @@ func _test_open_floor() -> void:
 	var item: WorldItem = await _drop_ok("chão aberto")
 	if item == null:
 		return
-	var base: Vector3 = item.global_position
-	_expect(base.y < 0.15, "chão aberto: assenta no piso (y=%.3f)" % base.y)
+	var base: Vector3 = _item_base(item)
+	_expect(base.y < 0.15, "chão aberto: corpo assenta no piso (y=%.3f)" % base.y)
 	await _check_safe(item, "chão aberto")
 	await _check_settled(item, base, "chão aberto")
 	await _check_collect(item, "chão aberto")
@@ -140,7 +140,7 @@ func _test_on_crate() -> void:
 	var item: WorldItem = await _drop_ok("sobre a caixa")
 	if item == null:
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	_expect(base.y > 0.9, "sobre a caixa: item fica no topo (y=%.3f)" % base.y)
 	_expect(absf(base.x - CRATE1.x) < 0.45, "sobre a caixa: centralizado em X (%.3f)" % base.x)
 	await _check_safe(item, "sobre a caixa")
@@ -155,7 +155,7 @@ func _test_beside_crate() -> void:
 	var item: WorldItem = await _drop_ok("ao lado da caixa")
 	if item == null:
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	_expect(base.y < 0.15, "ao lado da caixa: fica no piso (y=%.3f)" % base.y)
 	_expect(base.z < CRATE1.z - 0.5, "ao lado da caixa: fora da caixa (z=%.3f)" % base.z)
 	await _check_safe(item, "ao lado da caixa")
@@ -170,7 +170,7 @@ func _test_beside_pillar() -> void:
 	var item: WorldItem = await _drop_ok("ao lado do pilar")
 	if item == null:
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	_expect(base.y < 0.15, "ao lado do pilar: fica no piso (y=%.3f)" % base.y)
 	_expect(base.z > PILLAR1.z + 0.4, "ao lado do pilar: fora do pilar (z=%.3f)" % base.z)
 	await _check_safe(item, "ao lado do pilar")
@@ -185,7 +185,7 @@ func _test_beside_wall() -> void:
 	var item: WorldItem = await _drop_ok("ao lado da parede")
 	if item == null:
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	_expect(base.y < 0.15, "ao lado da parede: fica no piso (y=%.3f)" % base.y)
 	_expect(base.x > WEST_WALL_FACE_X + 0.2, "ao lado da parede: fora da parede (x=%.3f)" % base.x)
 	await _check_safe(item, "ao lado da parede")
@@ -347,13 +347,13 @@ func _drop_rejected(label: String) -> void:
 func _check_safe(item: WorldItem, label: String) -> void:
 	if item == null or not is_instance_valid(item):
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	var size: Vector3 = item.get_footprint()
-	var ratio: float = _support_ratio(base, size)
+	var ratio: float = _support_ratio(base, size, item)
 	_expect(ratio >= 0.999, "%s: pegada inteiramente apoiada (%.0f%%)" % [label, ratio * 100.0])
 	var overlaps: int = _overlaps_at(item, base, size)
 	_expect(overlaps == 0, "%s: não nasce dentro de nada (%d colisões)" % [label, overlaps])
-	var floor_y: float = _floor_at(base)
+	var floor_y: float = _floor_at(base, item)
 	_expect(base.y > floor_y - 0.03, "%s: não afunda (base %.3f, piso %.3f)" % [label, base.y, floor_y])
 
 
@@ -362,7 +362,7 @@ func _check_settled(item: WorldItem, base_before: Vector3, label: String) -> voi
 	_expect(is_instance_valid(item) and not item.is_queued_for_deletion(), "%s: objeto continua no mundo" % label)
 	if not is_instance_valid(item):
 		return
-	var base: Vector3 = item.global_position
+	var base: Vector3 = _item_base(item)
 	_expect(base.distance_to(base_before) < SETTLE_DRIFT, "%s: fica onde foi solto (%.3f m)" % [label, base.distance_to(base_before)])
 	_expect(base.y > base_before.y - 0.05, "%s: não afunda ao assentar" % label)
 	_expect(_overlaps_at(item, base, item.get_footprint()) == 0, "%s: continua fora de tudo ao assentar" % label)
@@ -371,11 +371,10 @@ func _check_settled(item: WorldItem, base_before: Vector3, label: String) -> voi
 func _check_collect(item: WorldItem, label: String) -> void:
 	if item == null or not is_instance_valid(item):
 		return
-	await _look_at_item(item)
-	var focused: Node = _player.get_interaction_detector().get_current_interactable()
-	_expect(focused == item, "%s: item é detectado pelo olhar" % label)
-	if focused != item:
+	if not await _stand_near(item):
+		_expect(false, "%s: item é detectado pelo olhar" % label)
 		return
+	_expect(true, "%s: item é detectado pelo olhar" % label)
 	var world_before: int = _world_items().size()
 	var used_before: int = _inventory.get_used_slot_count()
 	await _tap("interact")
@@ -386,8 +385,17 @@ func _check_collect(item: WorldItem, label: String) -> void:
 
 # --- Medições independentes do SpaceProbe -----------------------------------
 
+## Base física do item: origem do `RigidBody3D` (a raiz do nó não se move com a
+## física — quem assenta é o corpo filho). A origem do corpo é a base da caixa.
+func _item_base(item: WorldItem) -> Vector3:
+	if item == null or not is_instance_valid(item):
+		return Vector3.ZERO
+	var body: Node3D = item.get_node_or_null("Body") as Node3D
+	return body.global_position if body != null else item.global_position
+
 ## Fração da pegada (grade 3x3) que repousa na mesma superfície da base.
-func _support_ratio(base: Vector3, size: Vector3) -> float:
+## O próprio item fica fora dos raios (senão mediríamos o topo dele).
+func _support_ratio(base: Vector3, size: Vector3, item: WorldItem) -> float:
 	var space: PhysicsDirectSpaceState3D = _space()
 	if space == null:
 		return 0.0
@@ -404,7 +412,7 @@ func _support_ratio(base: Vector3, size: Vector3) -> float:
 			var px: float = base.x - half_x + 2.0 * half_x * tx
 			var pz: float = base.z - half_z + 2.0 * half_z * tz
 			total += 1
-			var hit: Dictionary = _ray(space, Vector3(px, from_y, pz), Vector3(px, to_y, pz))
+			var hit: Dictionary = _ray(space, Vector3(px, from_y, pz), Vector3(px, to_y, pz), item)
 			if hit.is_empty():
 				continue
 			if absf((hit["position"] as Vector3).y - base.y) > SUPPORT_TOLERANCE:
@@ -443,19 +451,19 @@ func _exclude_for(item: WorldItem) -> Array[RID]:
 	return exclude
 
 
-## Altura da superfície logo abaixo da base do item.
-func _floor_at(base: Vector3) -> float:
+## Altura da superfície logo abaixo da base do item (sem contar o próprio item).
+func _floor_at(base: Vector3, item: WorldItem) -> float:
 	var space: PhysicsDirectSpaceState3D = _space()
 	if space == null:
 		return -INF
-	var hit: Dictionary = _ray(space, base + Vector3(0, 0.5, 0), base + Vector3(0, -0.6, 0))
+	var hit: Dictionary = _ray(space, base + Vector3(0, 0.5, 0), base + Vector3(0, -0.6, 0), item)
 	if hit.is_empty():
 		return -INF
 	return (hit["position"] as Vector3).y
 
 
-func _ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3) -> Dictionary:
-	var params := PhysicsRayQueryParameters3D.create(from, to, 1, _exclude_for(null))
+func _ray(space: PhysicsDirectSpaceState3D, from: Vector3, to: Vector3, item: WorldItem = null) -> Dictionary:
+	var params := PhysicsRayQueryParameters3D.create(from, to, 1, _exclude_for(item))
 	params.collide_with_areas = false
 	params.collide_with_bodies = true
 	params.hit_from_inside = false
@@ -482,6 +490,46 @@ func _place(position: Vector3, yaw: float) -> void:
 	_player.global_position = position
 	_player.set_look(yaw, 0.0)
 	await _frames(12)
+
+
+## Fica a 1,5 m do item (tentando as quatro direções) até o detector focá-lo.
+## Necessário porque os testes soltam vários itens e o jogador muda de lugar
+## entre um drop e outro.
+func _stand_near(item: WorldItem) -> bool:
+	var base: Vector3 = _item_base(item)
+	var offsets: Array[Vector3] = [
+		Vector3(0.0, 0.0, 1.5),
+		Vector3(0.0, 0.0, -1.5),
+		Vector3(1.5, 0.0, 0.0),
+		Vector3(-1.5, 0.0, 0.0),
+	]
+	for offset: Vector3 in offsets:
+		var spot := Vector3(base.x + offset.x, 0.05, base.z + offset.z)
+		if not _player_fits(spot):
+			continue
+		await _place(spot, 0.0)
+		await _look_at_item(item)
+		if _player.get_interaction_detector().get_current_interactable() == item:
+			return true
+	return false
+
+
+## A cápsula do jogador cabe nesse ponto (sem contar o item e ele mesmo)?
+func _player_fits(spot: Vector3) -> bool:
+	var space: PhysicsDirectSpaceState3D = _space()
+	if space == null:
+		return false
+	var shape := CapsuleShape3D.new()
+	shape.radius = 0.35
+	shape.height = 1.8
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = shape
+	query.transform = Transform3D(Basis.IDENTITY, spot + Vector3(0.0, 0.9, 0.0))
+	query.collision_mask = 1
+	query.exclude = _exclude_for(null)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	return space.intersect_shape(query, 1).is_empty()
 
 
 func _look_at_item(item: WorldItem) -> void:

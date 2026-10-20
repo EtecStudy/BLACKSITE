@@ -88,7 +88,8 @@ func drop_selected_item() -> bool:
 		drop_distance
 	)
 	if not bool(spot.get("valid", false)):
-		push_warning("ItemDropper: sem posição segura (%s)" % str(spot.get("reason", "")))
+		# Recusa normal de jogo (não é erro): só registra o motivo para depuração.
+		print("[Black Sight] Drop cancelado: sem posição segura (%s)" % str(spot.get("reason", "")))
 		_discard_world_item(world_item)
 		drop_blocked.emit(REASON_NO_SPACE)
 		return false
