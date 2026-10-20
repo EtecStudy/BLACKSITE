@@ -35,8 +35,8 @@ anteriores intactos.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa9-Drop-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | 40.681.651 bytes ≈ 38,8 MiB |
-| SHA-256 | `8114e939604acb9bcba91a60207f3f6a343953aab584ad121a3662e5d80e1e44` |
+| Tamanho | gerado no build — seção **Pacote verificado neste build** |
+| SHA-256 | gerado no build — seção **Pacote verificado neste build** |
 | Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.0-etapa9-drop/BlackSight-Etapa9-Drop-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.8.0: é uma compilação nova.

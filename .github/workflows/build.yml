@@ -847,6 +847,41 @@ jobs:
             ci-logs/
           if-no-files-found: warn
 
+      - name: Resumo dos testes e do pacote (Windows)
+        if: success()
+        shell: pwsh
+        run: |
+          # As notas da release carregam as contagens reais do Windows e o
+          # tamanho/SHA-256 do ZIP que está sendo publicado: os números do
+          # arquivo de notas vêm de um build anterior e não podem ser copiados.
+          $bt = [char]96
+          $rows = @(
+            @{ Nome = "Fumaça (smoke_test.gd)"; Log = "ci-logs/05-smoke.log" },
+            @{ Nome = "Fluxo de interface (ui_flow_test.gd)"; Log = "ci-logs/05b-ui-flow.log" },
+            @{ Nome = "Controlador FPS + inventário + drop (movement_test.gd)"; Log = "ci-logs/05c-movement.log" }
+          )
+          $linhas = @("", "## Testes automatizados (Windows)", "", "| Suíte | Resultado |", "| --- | --- |")
+          foreach ($r in $rows) {
+            $texto = Get-Content $r.Log -Encoding utf8 -Raw
+            $m = [regex]::Match($texto, "(\d+) verifica..es aprovadas")
+            if ($m.Success) {
+              $linhas += "| $($r.Nome) | $($m.Groups[1].Value) verificações aprovadas |"
+            } else {
+              $linhas += "| $($r.Nome) | sem linha de resumo no log |"
+              Write-Host "::warning::sem linha de resumo em $($r.Log)"
+            }
+          }
+          $zip = "BlackSight-Etapa9-Drop-Windows-x86_64.zip"
+          $info = Get-Item $zip
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          $linhas += @("", "## Pacote verificado neste build", "", "| Item | Valor |", "| --- | --- |")
+          $linhas += "| Arquivo | $bt$zip$bt |"
+          $linhas += "| Tamanho | $($info.Length) bytes |"
+          $linhas += "| SHA-256 | $bt$hash$bt |"
+          $linhas += ""
+          $linhas | Out-File -FilePath ci-logs/release-summary.md -Encoding utf8
+          Get-Content ci-logs/release-summary.md
+
       - name: Criar release no GitHub
         if: success()
         shell: pwsh
@@ -855,7 +890,11 @@ jobs:
         run: |
           gh release delete v0.9.0-etapa9-drop --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.9.0-etapa9-drop "BlackSight-Etapa9-Drop-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 9 - Soltar itens no ambiente 3D (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA9_DROP.md
+          $notas = (Get-Content docs/RELEASE_NOTES_ETAPA9_DROP.md -Encoding utf8 -Raw).TrimEnd()
+          $extra = Get-Content ci-logs/release-summary.md -Encoding utf8 -Raw
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          ($notas + "`n" + $extra) | Out-File -FilePath build/release-notes.md -Encoding utf8
+          gh release create v0.9.0-etapa9-drop "BlackSight-Etapa9-Drop-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 9 - Soltar itens no ambiente 3D (Windows x86_64)" --notes-file build/release-notes.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
