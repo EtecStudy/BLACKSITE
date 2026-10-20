@@ -16,9 +16,9 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.5.0-etapa5/BlackSight-Etapa5-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa5-Windows-x86_64.zip` (TAMANHO_BYTES bytes)
+Arquivo: `BlackSight-Etapa5-Windows-x86_64.zip` (40.630.112 bytes ≈ 38,7 MiB)
 
-SHA-256 do ZIP: `SHA256_ZIP`
+SHA-256 do ZIP: `f394ba303133a834fcdae32885cac6d5de8cae88fed32a14c3f48f1248d32b5c`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.

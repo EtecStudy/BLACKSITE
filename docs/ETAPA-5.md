@@ -134,9 +134,68 @@ Implementação:
 | `shared/autoload/app_info.gd`, `export_presets.cfg` | versão 0.5.0 / Etapa 5 |
 | `README.md`, `docs/ARQUITETURA.md`, `docs/CONFIGURACOES.md`, READMEs | documentação |
 
-## 8. Testes
+## 8. Testes executados
 
-_a preencher com os resultados reais da execução do workflow_
+Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml),
+execução **[39348984567](https://github.com/EtecStudy/BLACKSITE/actions/runs/39348984567)**
+(commit `c849a04`), jobs Linux `118388408283` e Windows `118388408618` — ambos
+**verdes**.
+
+### 8.1 Automatizados (executados de verdade)
+
+| Teste | O que cobre | Linux | Windows |
+| --- | --- | --- | --- |
+| `tools/ci/smoke_test.tscn` | Configuração, cenas, módulos, Input Map, estados, velocidades, menu de pausa | **195/195** | **195/195** |
+| `tools/ci/ui_flow_test.tscn` | Menu → configurações → F11 → TESTAR MOVIMENTAÇÃO → pausa → CONFIGURAÇÕES → pausa → CONTINUAR → menu | **40/40** | **40/40** |
+| `tools/ci/movement_test.tscn` | Controlador FPS e estados — 16 grupos | **122/122** | **122/122** |
+
+Grupos **novos** do teste do controlador (os grupos 1–11 da Etapa 4 continuam
+passando, incluindo colisões, gravidade, tremor e sensibilidade):
+
+| Grupo | Resultado |
+| --- | --- |
+| `[12]` Estados de movimento | PARADO → ANDANDO → CORRENDO → soltar Shift → ANDANDO → AGACHADO (Ctrl + Shift continua agachado) → soltar Ctrl → ANDANDO/PARADO |
+| `[13]` Velocidades | corrida 5,60 > caminhada 3,20 > agachado 1,60 m/s; 2,78 m vs 1,59 m vs 0,79 m em 30 frames; diagonal correndo normalizada |
+| `[14]` Câmera ao agachar | desce de 1,62 m para 1,02 m e volta; sem teletransporte (máx. 0,109 m/frame); sem deslocamento horizontal; limite vertical mantido |
+| `[15]` Agachar sob obstáculo | jogador permanece AGACHADO ao soltar Ctrl sob uma caixa e levanta quando ela é removida |
+| `[16]` Pausa com configurações | CONTINUAR/CONFIGURAÇÕES/VOLTAR presentes; CONFIGURAÇÕES abre a mesma tela embutida; WASD bloqueado; posição e estado (AGACHADO) preservados; sensibilidade aplicada; VOLTAR retorna à pausa; CONTINUAR retoma |
+
+### 8.2 Verificações estáticas e de empacotamento
+
+| Verificação | Resultado |
+| --- | --- |
+| Sintaxe de todos os `.gd` (`gdparse`) | OK |
+| Estrutura de todas as `.tscn` | OK |
+| Execução *headless* da cena inicial (editor e build exportado Linux) | `v0.5.0`, sem `SCRIPT ERROR` |
+| Render sob Xvfb/OpenGL (título, configurações, cena de teste) | 3 frames válidos |
+| Inspeção do `.pck` | formato 4, **68 recursos**; jogador, sala e cena de teste presentes; `tools/` e `docs/` fora do pacote |
+| Binário Windows | PE32+ x86-64, `FileVersion=0.5.0.0`, `FileDescription=Black Sight — Etapa 5` |
+
+### 8.3 Manuais
+
+Não foram executados por uma pessoa: o teste humano (sensação de corrida e
+agachamento, ESC/recaptura, configurações na pausa) é o próximo passo, com o
+usuário rodando o `.exe` publicado.
+
+### 8.4 Release publicada
+
+| Item | Valor |
+| --- | --- |
+| Tag | `v0.5.0-etapa5` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.5.0-etapa5/BlackSight-Etapa5-Windows-x86_64.zip> |
+| Tamanho do ZIP | **40.630.112 bytes** (≈ 38,7 MiB) |
+| SHA-256 do ZIP | `f394ba303133a834fcdae32885cac6d5de8cae88fed32a14c3f48f1248d32b5c` |
+| `BlackSight.exe` | 109.193.728 bytes |
+| `BlackSight.pck` | 1.411.332 bytes |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.048 / 164 bytes |
+
+### 8.5 Teste no Windows real
+
+Job `windows-latest` `118388408618`, tudo verde: 195/195 (fumaça), 40/40
+(fluxo), 122/122 (controlador); `.exe` executado *headless* carregou a tela
+inicial `v0.5.0`; `%APPDATA%\BlackSight\settings.cfg` foi criado com
+`mouse_sensitivity_x`, `master_volume`, `window_mode` e `vsync`; `.exe` aberto
+com janela ficou vivo por 25 s com o título “Black Sight”.
 
 ## 9. Limitações desta etapa
 
