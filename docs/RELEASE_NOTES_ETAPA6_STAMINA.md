@@ -30,8 +30,9 @@ CONFIGURAÇÕES.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa6-Stamina-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | *(preenchido após o build)* |
-| SHA-256 | *(preenchido após o build)* |
+| Tamanho | **40.640.419 bytes** (≈ 38,8 MiB) |
+| SHA-256 | `31c4fabc402c515ed0c161be47930ea4155b8d226d16a148cb822020735d2ce9` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.2-etapa6-stamina/BlackSight-Etapa6-Stamina-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.6.1 (HUD) e o da v0.6.0: é uma compilação nova.
 
@@ -55,11 +56,19 @@ A release é gerada pelo workflow
 [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
 no Linux e no Windows real, antes de publicar.
 
-| Suíte | O que cobre |
+Na execução
+[39470695026](https://github.com/EtecStudy/BLACKSITE/actions/runs/39470695026),
+Linux e Windows real passaram antes de publicar:
+
+| Suíte | Resultado |
 | --- | --- |
-| Fumaça | configuração, cenas, stamina (incl. atraso), persistência, controles |
-| Fluxo de interface | menu → configurações → F11 → partida → pausa → configurações → menu |
-| Controlador | Etapas 4–6.2: movimento, câmera, colisões, agachamento, stamina, HUD, atraso de recuperação e pausa |
+| Fumaça | **242/242** |
+| Fluxo de interface | **49/49** |
+| Controlador (Etapas 4–6.2 + grupo `[21]` com os nove cenários) | **302/302** |
+
+O `.exe` publicado tem `FileVersion=0.6.2.0` e `FileDescription=Black Sight —
+Etapa 6.2`; o `.pck` contém 78 recursos e o `settings.cfg` existente foi
+preservado (`crouch_mode="toggle"`).
 
 Resultados, evidências e limitações:
 [`docs/ETAPA-6.md`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/docs/ETAPA-6.md)

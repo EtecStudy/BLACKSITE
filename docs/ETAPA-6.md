@@ -423,11 +423,29 @@ exatamente a nova regra aprovada.
 
 | Item | Valor |
 | --- | --- |
-| Execução | *(preenchido após o build)* |
-| SMOKE / UI FLOW / MOVEMENT | *(preenchido após o build)* |
+Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
+execução **[39470695026](https://github.com/EtecStudy/BLACKSITE/actions/runs/39470695026)**
+(commit `115a29b`): jobs Linux e Windows **verdes**.
+
+| Teste | Linux | Windows real |
+| --- | --- | --- |
+| `smoke_test.tscn` | **242/242** | **242/242** |
+| `ui_flow_test.tscn` | **49/49** | **49/49** |
+| `movement_test.tscn` (grupos `[1]`–`[21]`) | **302/302** | **302/302** |
+
+| Item | Valor |
+| --- | --- |
 | Release | `v0.6.2-etapa6-stamina` |
-| ZIP | `BlackSight-Etapa6-Stamina-Windows-x86_64.zip` |
-| Tamanho / SHA-256 | *(preenchido após o build)* |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.2-etapa6-stamina/BlackSight-Etapa6-Stamina-Windows-x86_64.zip> |
+| ZIP | `BlackSight-Etapa6-Stamina-Windows-x86_64.zip`, **40.640.419 bytes** (≈ 38,8 MiB) |
+| SHA-256 do ZIP | `31c4fabc402c515ed0c161be47930ea4155b8d226d16a148cb822020735d2ce9` |
+| `BlackSight.exe` | 109.193.728 bytes, `FileVersion=0.6.2.0`, `FileDescription=Black Sight — Etapa 6.2` |
+| `BlackSight.pck` | 1.426.988 bytes, **78 recursos** |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.987 / 164 bytes |
+| Execução do `.exe` no Windows | vivo por 25 s, título “Black Sight”; `settings.cfg` preservado com `crouch_mode="toggle"` |
+
+O ZIP do Linux (artefato interno do job, SHA-256 `581df589…`) é compilado
+separadamente e **não** é o publicado; o link acima serve o ZIP do job Windows.
 
 ### 11.5 Limitações
 
@@ -438,6 +456,9 @@ exatamente a nova regra aprovada.
   o `.exe` no Windows é o passo seguinte e não foi feito por mim.
 
 ## 12. Como testar manualmente
+
+> Roteiro atualizado para a correção 6.2. O teste com uma pessoa ainda **não**
+> foi executado; é o passo seguinte.
 
 1. Abra `BlackSight.exe` → **TESTAR MOVIMENTAÇÃO**.
 2. Corra com **SHIFT** até a stamina zerar e **continue segurando SHIFT**: a

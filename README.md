@@ -18,11 +18,11 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.1-etapa6-hud/BlackSight-Etapa6-HUD-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.2-etapa6-stamina/BlackSight-Etapa6-Stamina-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa6-HUD-Windows-x86_64.zip` (40.640.092 bytes ≈ 38,8 MiB)
+Arquivo: `BlackSight-Etapa6-Stamina-Windows-x86_64.zip` (40.640.419 bytes ≈ 38,8 MiB)
 
-SHA-256 do ZIP: `01c02d75766ca159d90f7be5e6735fcc8726e877fd4fbca602427e75961e1ef8`
+SHA-256 do ZIP: `31c4fabc402c515ed0c161be47930ea4155b8d226d16a148cb822020735d2ce9`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
