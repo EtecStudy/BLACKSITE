@@ -729,10 +729,16 @@ func _test_stamina() -> void:
 	_expect(_player.get_stamina() > 0.0, "corrida curta não esgota a stamina")
 
 	# Recuperação andando — só depois do atraso de 1 s (Etapa 6.2).
+	# O atraso é aguardado parado para o jogador não terminar contra a parede.
 	Input.action_release("move_sprint")
 	await _frames(4)
 	_expect_state(PlayerController.MovementState.WALKING, "soltar SHIFT → ANDANDO")
+	Input.action_release("move_forward")
+	await _frames(2)
 	await _wait_recovery_delay()
+	Input.action_press("move_forward")
+	await _frames(6)
+	_expect_state(PlayerController.MovementState.WALKING, "voltou a ANDAR")
 	_player.set_stamina(40.0)
 	var walk_start: float = _player.get_stamina()
 	await _frames(60)
@@ -742,7 +748,10 @@ func _test_stamina() -> void:
 		"1 s andando recupera ~%.0f (%.1f)" % [_player.stamina_recovery_rate, walk_gain]
 	)
 
-	# Recuperação agachado (e nenhum consumo).
+	# Recuperação agachado (e nenhum consumo) — de volta ao centro da sala.
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_expect(not _player.is_crouched(), "em pé antes do teste agachado")
+	Input.action_press("move_forward")
 	Input.action_press("move_crouch")
 	await _frames(8)
 	_expect_state(PlayerController.MovementState.CROUCHING, "CTRL andando → AGACHADO")
@@ -772,7 +781,13 @@ func _test_stamina() -> void:
 	)
 
 	# Esgotamento: RUNNING → WALKING, bloqueio e retorno após o limiar.
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_expect(
+		not _player.is_crouched(),
+		"em pé antes do esgotamento (%s)" % _player.global_position
+	)
 	_player.set_stamina(3.0)
+	_player.set_sprint_allowed(true)
 	Input.action_press("move_forward")
 	Input.action_press("move_sprint")
 	var zero_seen: bool = false
@@ -1445,10 +1460,12 @@ func _test_recovery_delay() -> void:
 	_expect(_player.is_crouched(), "[8] ALTERNAR agacha")
 	_expect_state(PlayerController.MovementState.CROUCHING, "[8] estado AGACHADO")
 	Input.action_press("move_forward")
+	await _frames(6)
+	var crouched_value: float = _player.get_stamina()
 	Input.action_press("move_sprint")
 	await _frames(30)
 	_expect(
-		is_equal_approx(_player.get_stamina(), 50.0),
+		is_equal_approx(_player.get_stamina(), crouched_value),
 		"[8] agachado não consome e SHIFT não recupera (%.1f)" % _player.get_stamina()
 	)
 	Input.action_release("move_sprint")
