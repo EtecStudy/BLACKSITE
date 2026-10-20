@@ -35,8 +35,8 @@ anteriores intactos.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa9-Drop-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | a preencher |
-| SHA-256 | a preencher |
+| Tamanho | 40.681.651 bytes ≈ 38,8 MiB |
+| SHA-256 | `8114e939604acb9bcba91a60207f3f6a343953aab584ad121a3662e5d80e1e44` |
 | Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.0-etapa9-drop/BlackSight-Etapa9-Drop-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.8.0: é uma compilação nova.
@@ -59,6 +59,19 @@ Este ZIP **substitui** o da v0.8.0: é uma compilação nova.
 10. Confira a regressão: WASD, mouse, SHIFT (stamina com atraso de 1 s), CTRL
     (ALTERNAR/SEGURAR), F11, ESC, VOLTAR AO MENU, SAIR DO JOGO e
     **CONFIGURAÇÕES → CONTROLES** com 9 linhas.
+
+## Testes automatizados
+
+| Suíte | Resultado |
+| --- | --- |
+| Fumaça (`smoke_test.gd`) | 348 verificações aprovadas |
+| Fluxo de interface (`ui_flow_test.gd`) | 53 verificações aprovadas |
+| Controlador FPS + inventário + drop (`movement_test.gd`) | 586 verificações aprovadas |
+| Renderização do drop sob Xvfb/OpenGL | `DROP VISUAL OK` — `drop_hud.png` |
+
+Os três jobs do workflow passaram (Linux e Windows): importação, exportação do
+`.exe`, execução do build exportado, inspeção do `.pck` e publicação do pacote.
+**Este teste automatizado não substitui o teste manual do usuário.**
 
 ## Requisitos
 

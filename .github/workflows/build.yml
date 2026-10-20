@@ -256,7 +256,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.8\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.9\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi

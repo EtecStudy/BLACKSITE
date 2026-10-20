@@ -17,6 +17,8 @@
 
 ![Inventário de três slots na HUD, com o slot 3 selecionado](docs/screenshots/inventory_hud.png)
 
+![Item solto no chão com o nome e o prompt de coleta](docs/screenshots/drop_item.png)
+
 ## Download do jogo (Windows)
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.0-etapa9-drop/BlackSight-Etapa9-Drop-Windows-x86_64.zip**

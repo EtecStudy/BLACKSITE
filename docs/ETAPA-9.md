@@ -263,24 +263,24 @@ G, espera assentar, mira o objeto e imprime `DROP VISUAL OK`. O frame vai para
 
 ### 12.5 Regressão
 
-As 505 verificações anteriores (movimento, câmera, colisões, gravidade,
-stamina, atraso de 1 s, limiar 20, agachamento ALTERNAR/SEGURAR, HUD de stamina,
-inventário, coleta, seleção, R, interação 2,5 m, parede, pausa, F11) continuam
-rodando na mesma suíte.
+As checagens da Etapa 8 (movimento, câmera, colisões, gravidade, stamina, atraso
+de 1 s, limiar 20, agachamento ALTERNAR/SEGURAR, HUD de stamina, inventário,
+coleta, seleção, R, interação 2,5 m, parede, pausa, F11) continuam rodando na
+mesma suíte: o arquivo passou de 505 para **586** verificações, e todas passam.
 
 ## 13. Resultados
 
 | Verificação | Resultado |
 | --- | --- |
-| Fumaça (Linux) | a preencher |
-| Fluxo de interface (Linux) | a preencher |
-| Controlador FPS + inventário + drop (Linux) | a preencher |
-| Fumaça / UI / movimento (Windows) | a preencher |
-| Captura renderizada do drop | a preencher |
-| Versão interna e `FileVersion` | a preencher |
-| `.pck` (formato/recursos) | a preencher |
-| ZIP publicado | a preencher |
-| SHA-256 do ZIP | a preencher |
+| Fumaça (Linux) | `SMOKE TEST OK — 348 verificações aprovadas` |
+| Fluxo de interface (Linux) | `UI FLOW OK — 53 verificações aprovadas` |
+| Controlador FPS + inventário + drop (Linux) | `MOVEMENT TEST OK — 586 verificações aprovadas` |
+| Fumaça / UI / movimento (Windows) | W2, W2b e W2c verdes (contagens a preencher) |
+| Captura renderizada do drop | `DROP VISUAL OK`; `drop_hud.png` 1600×900 |
+| Versão interna e `FileVersion` | `0.9.0` / `0.9.0.0` (`project.godot`, `export_presets.cfg`) |
+| `.pck` (formato/recursos) | Godot 4.7.2, formato 4, 114 recursos embutidos, 1,4 MB |
+| ZIP publicado | `BlackSight-Etapa9-Drop-Windows-x86_64.zip` — 40.681.651 bytes |
+| SHA-256 do ZIP | `8114e939604acb9bcba91a60207f3f6a343953aab584ad121a3662e5d80e1e44` |
 
 ## 14. Limitações desta etapa
 
