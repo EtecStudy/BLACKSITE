@@ -120,7 +120,7 @@ Não existe tecla, ação, estado, força ou campo de pulo:
 | `shared/settings/settings_schema.gd` | `crouch_mode`, `normalize_crouch_mode()`, `crouch_mode_label()` |
 | `ui/scripts/settings/controls_section.gd` | lista real de controles e opção de modo de agachamento |
 | `ui/scripts/settings/settings_section.gd` | `add_key_hint_row()` devolve o rótulo (texto dinâmico) |
-| `ui/scripts/settings_screen.gd` | `get_section()` para consulta/teste das abas |
+| `ui/scripts/settings_screen.gd` | `get_section()` para consulta/teste das abas; correção do nome único da dica lateral (`%SidebarHint`) |
 | `tools/ci/movement_test.gd` | grupos 17–19 (stamina, ALTERNAR, pausa com stamina) |
 | `tools/ci/smoke_test.gd` | grupo 15 (stamina, persistência e lista real) |
 | `tools/ci/ui_flow_test.gd` | modo de agachamento na pausa da partida |
@@ -130,7 +130,68 @@ Não existe tecla, ação, estado, força ou campo de pulo:
 
 ## 8. Testes executados
 
-<!-- RESULTADOS -->
+Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
+execução **[39351765584](https://github.com/EtecStudy/BLACKSITE/actions/runs/39351765584)**
+(commit `703f6fd`), jobs Linux `118397362027` e Windows `118397362234` — ambos
+**verdes**.
+
+### 8.1 Automatizados (executados de verdade)
+
+| Teste | O que cobre | Linux | Windows |
+| --- | --- | --- | --- |
+| `tools/ci/smoke_test.tscn` | Configuração, cenas, módulos, Input Map, stamina, persistência do modo e lista real de controles | **238/238** | **238/238** |
+| `tools/ci/ui_flow_test.tscn` | Menu → configurações → F11 → TESTAR MOVIMENTAÇÃO → pausa → CONTROLES → modo de agachamento → APLICAR → VOLTAR → CONTINUAR → menu | **49/49** | **49/49** |
+| `tools/ci/movement_test.tscn` | Controlador FPS, estados e stamina — 19 grupos | **205/205** | **205/205** |
+
+Grupos **novos** do teste do controlador (os grupos 1–16 das Etapas 4–5
+continuam passando, incluindo WASD, diagonal, câmera, sensibilidade, inversão,
+gravidade, colisões, estados, velocidades, agachamento e pausa):
+
+| Grupo | Resultado |
+| --- | --- |
+| `[17]` Stamina | máxima 100, consumo 20/s, recuperação 15/s e limiar 20 confirmados; 1 s correndo consome 20,0 e 1 s andando/agachado/parado recupera 15,0; ao esgotar, `RUNNING` → `WALKING` no mesmo frame e `set_stamina` nunca sai de 0..100 |
+| `[18]` Modo ALTERNAR | um toque agacha (câmera 1,02 m), agachado + SHIFT continua AGACHADO e não consome stamina, soltar CTRL não levanta, obstáculo impede levantar e libera ao sair, segundo toque levanta; SEGURAR continua funcionando |
+| `[19]` Pausa + stamina + modo em partida | pausa não consome nem recupera (70,0 → 70,0), posição/yaw/pitch/estado preservados; CONTROLES → ALTERNAR → APLICAR muda o controlador e mantém a stamina; VOLTAR e CONTINUAR preservam tudo; agachar na partida interrompe a corrida e recupera; levantar com SHIFT volta a CORRER |
+
+### 8.2 Verificações estáticas e de empacotamento
+
+| Verificação | Resultado |
+| --- | --- |
+| Sintaxe de todos os `.gd` (`gdparse`) | OK |
+| Estrutura de todas as `.tscn` | OK |
+| `build.yml` (`yaml.safe_load`) | OK |
+| Execução *headless* da cena inicial (editor e build exportado Linux) | `v0.6.0`, sem `SCRIPT ERROR` |
+| Render sob Xvfb/OpenGL (título, configurações, cena de teste) | 3 frames válidos |
+| Inspeção do `.pck` | formato 4, **68 recursos**; jogador, sala e cena de teste presentes; `tools/` e `docs/` fora do pacote |
+| Binário Windows | PE32+ x86-64, `FileVersion=0.6.0.0`, `FileDescription=Black Sight — Etapa 6` |
+| `settings.cfg` criado pelo `.exe` | contém `crouch_mode="toggle"`, além das chaves das etapas anteriores |
+
+### 8.3 Manuais
+
+Não foram executados por uma pessoa: o teste humano (sensação de corrida até
+esgotar, retorno da corrida, alternância do agachamento e troca de modo durante
+a partida) é o próximo passo, com o usuário rodando o `.exe` publicado.
+
+### 8.4 Release publicada
+
+| Item | Valor |
+| --- | --- |
+| Tag | `v0.6.0-etapa6` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.0-etapa6/BlackSight-Etapa6-Windows-x86_64.zip> |
+| Tamanho do ZIP | **40.634.172 bytes** (≈ 38,7 MiB) |
+| SHA-256 do ZIP | `12ef1e50932bf310aaabefa62b776985eb04578cc9dad9803c164a193a37d79d` |
+| `BlackSight.exe` | 109.193.728 bytes |
+| `BlackSight.pck` | 1.415.316 bytes |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.281 / 190 bytes |
+
+### 8.5 Teste no Windows real
+
+Job `windows-latest` `118397362234`, tudo verde: 238/238 (fumaça), 49/49
+(fluxo) e 205/205 (controlador); o `.exe` executado *headless* carregou a tela
+inicial `v0.6.0`; `%APPDATA%\BlackSight\settings.cfg` foi criado com
+`mouse_sensitivity_x`, `crouch_mode`, `master_volume`, `window_mode` e `vsync`;
+o `.exe` aberto com janela ficou vivo por 25 s com o título “Black Sight”.
+
 
 ## 9. Limitações desta etapa
 

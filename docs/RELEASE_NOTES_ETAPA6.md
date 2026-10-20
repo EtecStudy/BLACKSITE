@@ -29,7 +29,9 @@ real de controles na tela de configurações.
 | Arquivo | `BlackSight-Etapa6-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
 
-<!-- NUMEROS_DO_PACOTE -->
+| Tamanho | 40.634.172 bytes (≈ 38,7 MiB) |
+| SHA-256 | `12ef1e50932bf310aaabefa62b776985eb04578cc9dad9803c164a193a37d79d` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.0-etapa6/BlackSight-Etapa6-Windows-x86_64.zip> |
 
 ## Como testar
 
@@ -51,7 +53,12 @@ A release é gerada pelo workflow
 [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
 no Linux e no Windows real, antes de publicar.
 
-<!-- RESULTADOS_DOS_TESTES -->
+Na execução
+[39351765584](https://github.com/EtecStudy/BLACKSITE/actions/runs/39351765584),
+os dois jobs passaram: **238** verificações de fumaça, **49** de fluxo da
+interface e **205** do controlador (stamina, modos de agachamento e pausa) — no
+Linux e no Windows real — antes de publicar. Resultados, evidências e
+limitações: [`docs/ETAPA-6.md`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/docs/ETAPA-6.md).
 
 ## Limitações desta etapa
 

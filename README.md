@@ -17,9 +17,9 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.0-etapa6/BlackSight-Etapa6-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa6-Windows-x86_64.zip` (TAMANHO_ZIP)
+Arquivo: `BlackSight-Etapa6-Windows-x86_64.zip` (40.634.172 bytes ≈ 38,7 MiB)
 
-SHA-256 do ZIP: `SHA256_ZIP`
+SHA-256 do ZIP: `12ef1e50932bf310aaabefa62b776985eb04578cc9dad9803c164a193a37d79d`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
