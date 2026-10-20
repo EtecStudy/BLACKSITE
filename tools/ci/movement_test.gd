@@ -38,6 +38,9 @@ const WATCHDOG_MS := 60000
 var _last_progress_ms: int = 0
 var _last_step: String = "início"
 var _finished: bool = false
+## Marca que o grupo [24] chegou à última verificação (um erro de runtime no
+## meio de uma coroutine encerraria o grupo sem falhar nada).
+var _drop_completed: bool = false
 var _original_path: String = ""
 var _original_values: Dictionary = {}
 
@@ -88,6 +91,7 @@ func _ready() -> void:
 	await _test_interaction()
 	await _test_inventory()
 	await _test_drop()
+	_expect(_drop_completed, "grupo [24] executado até o fim")
 
 	_finish()
 
@@ -2497,7 +2501,7 @@ func _test_drop() -> void:
 	)
 	var world_before_pickup: int = _world_items().size()
 	await _tap_action("interact")
-	_expect(last_item.is_queued_for_deletion() or not is_instance_valid(last_item),
+	_expect(not is_instance_valid(last_item) or last_item.is_queued_for_deletion(),
 		"objeto do mundo desaparece depois da coleta")
 	_expect(_world_items().size() == world_before_pickup - 1, "um item a menos no mundo")
 	_expect(inventory.get_used_slot_count() == 1, "item voltou ao inventário")
@@ -2531,7 +2535,7 @@ func _test_drop() -> void:
 	_expect(selected_for_remove == inventory.get_selected_slot(), "R não muda a seleção")
 	await _look_at_world_item(target)
 	await _tap_action("interact")
-	_expect(target.is_queued_for_deletion() or not is_instance_valid(target),
+	_expect(not is_instance_valid(target) or target.is_queued_for_deletion(),
 		"nova tentativa recolhe depois de abrir espaço")
 	_expect(inventory.get_used_slot_count() == 3, "inventário volta a ficar cheio")
 	_expect(_world_items().size() == world_before_full - 1, "sem coleta duplicada")
@@ -2616,6 +2620,7 @@ func _test_drop() -> void:
 	await _frames(4)
 	_expect(_world_items().is_empty(), "mundo sem itens soltos ao final")
 	_expect(load(WORLD_ITEM_SCENE) != null, "cena do item continua carregando após os testes")
+	_drop_completed = true
 
 
 ## Itens soltos atualmente na cena (grupo `world_items`).

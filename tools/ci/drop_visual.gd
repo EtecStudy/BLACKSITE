@@ -103,10 +103,12 @@ func _ready() -> void:
 	get_tree().quit(0)
 
 
-func _find_dropped(scene: Node) -> Node:
-	for child: Node in scene.get_children():
-		if child is WorldItem:
-			return child
+## O item é adicionado à cena atual (a raiz deste roteiro), não ao nó da cena
+## de teste — por isso a busca usa o grupo, como o resto do projeto.
+func _find_dropped(_scene: Node) -> Node:
+	for node: Node in get_tree().get_nodes_in_group(WorldItem.WORLD_GROUP):
+		if node is WorldItem and is_instance_valid(node):
+			return node
 	return null
 
 
