@@ -61,7 +61,7 @@ BlackSight/
 | `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste) |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
 | `objectives/` | Objetivos, condições de conclusão e progressão | apenas `README.md` |
-| `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scenes/settings_screen.tscn` e scripts |
+| `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scenes/settings_screen.tscn`, `scenes/hud/player_hud.tscn` |
 | `audio/` | Áudio ambiente, efeitos sonoros e comunicação por voz | `default_bus_layout.tres`, autoload `UiAudio`, `assets/sfx/*.wav` |
 | `match/` | Estados e fluxo da partida; orquestração entre módulos | `scenes/movement_test.tscn`, `scripts/movement_test.gd` |
 | `shared/` | Recursos e sistemas usados por 2+ módulos | autoloads `AppInfo`/`GameSettings`, tema, fontes, texturas, `settings/` |
@@ -195,7 +195,9 @@ players/scripts/player_controller.gd  movimento, câmera, gravidade, configuraç
 match/scenes/movement_test.tscn      orquestra:
 ├── maps/scenes/test_room.tscn       geometria + colisão + Spawn
 ├── players/scenes/player.tscn       jogador no Spawn
-├── Interface                        pausa (ESC): CONTINUAR / CONFIGURAÇÕES / MENU
+├── Interface
+│   ├── ui/scenes/hud/player_hud.tscn  barra de stamina (inferior esquerdo)
+│   └── pausa (ESC): CONTINUAR / CONFIGURAÇÕES / MENU
 └── SettingsLayer                    ui/scenes/settings_screen.tscn em modo embutido
 ```
 
@@ -218,8 +220,9 @@ IDLE ◄─► WALKING ◄─► RUNNING
   em `RUNNING`, recuperação de 15/s nos demais estados e retorno da corrida em
   20. O gancho `set_sprint_allowed()` da Etapa 5 continua sendo o único caminho
   para bloquear/liberar a corrida.
-- HUDs futuros escutam `state_changed` e `stamina_changed`; nenhuma regra de
-  gameplay mora em `ui/`.
+- A HUD (`ui/scenes/hud/`) escuta `stamina_changed` e lê `get_stamina()` /
+  `get_max_stamina()` por `bind_player(Node)` — sem importar `players/` e sem
+  guardar stamina própria. Nenhuma regra de gameplay mora em `ui/`.
 - A tela de configurações é **a mesma** nos dois fluxos: sozinha (menu inicial)
   ou embutida na pausa (`set_embedded(true)`), emitindo `back_requested` em vez
   de trocar de cena. Nenhum estado da partida é perdido.

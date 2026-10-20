@@ -3,9 +3,10 @@
 **Responsabilidade:** interfaces, menus e HUD — tela inicial, menus, pausa e
 HUD em jogo.
 
-**Estado atual (Etapa 6):** tela inicial da Etapa 1 preservada integralmente
+**Estado atual (Etapa 6.1):** tela inicial da Etapa 1 preservada integralmente
 (mesma cena, mesmas animações, mesmo comportamento) + tela de configurações com
-abas de controles, áudio e vídeo, usada também por cima da partida pausada.
+abas de controles, áudio e vídeo, usada também por cima da partida pausada +
+**HUD de stamina** (`ui/scenes/hud/`), desenhada com controles nativos.
 
 | Caminho | O que é |
 | --- | --- |
@@ -17,6 +18,11 @@ abas de controles, áudio e vídeo, usada também por cima da partida pausada.
 | `ui/scripts/settings/controls_section.gd` | Sensibilidade, inverter eixo, **modo de agachamento** e lista real de controles (texto do Ctrl dinâmico) |
 | `ui/scripts/settings/audio_section.gd` | Volumes de geral, efeitos, ambiente e música |
 | `ui/scripts/settings/video_section.gd` | Resolução, modo de janela e VSync |
+| `ui/scenes/hud/player_hud.tscn` | HUD da partida: canto inferior esquerdo, pilha pronta para novos componentes |
+| `ui/scenes/hud/stamina_bar.tscn` | Rótulo, valor e trilho da stamina |
+| `ui/scripts/hud/player_hud.gd` | `bind_player()`: escuta `stamina_changed`, sem importar `players/` |
+| `ui/scripts/hud/stamina_bar.gd` | Recebe `set_values(current, maximum)` e repassa ao desenho |
+| `ui/scripts/hud/stamina_fill.gd` | Desenho nativo do trilho, preenchimento, limiar e alerta |
 
 A tela de configurações não lê nem grava arquivos: ela conversa com o autoload
 `GameSettings` (`shared/settings/`), que é o único dono da persistência.
@@ -25,7 +31,7 @@ A tela de configurações não lê nem grava arquivos: ela conversa com o autolo
 
 | Tipo | Local | Exemplos |
 | --- | --- | --- |
-| Cenas | `ui/scenes/` | `title_screen.tscn`, `settings_screen.tscn` (existem), `pause_menu.tscn`, `hud.tscn` |
+| Cenas | `ui/scenes/` | `title_screen.tscn`, `settings_screen.tscn`, `hud/player_hud.tscn` (existem) |
 | Scripts | `ui/scripts/` | `title_screen.gd`, `settings_screen.gd`, `settings/` |
 | Assets próprios | `ui/assets/` | texturas exclusivas de HUD/menu |
 
@@ -44,7 +50,8 @@ A tela de configurações não lê nem grava arquivos: ela conversa com o autolo
 
 ## Como será usado nas próximas etapas
 
-1. HUD de inventário/objetivos consome sinais de `items/` e `objectives/`.
+1. HUD de inventário/objetivos entra no `Stack` de `player_hud.tscn` e consome
+   sinais de `items/` e `objectives/`.
 2. Menu de pausa escuta `match/` para saber se pode pausar.
 3. Todo texto visível passa pelo tema global em `shared/themes/`.
 

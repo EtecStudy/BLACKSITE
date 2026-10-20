@@ -3,9 +3,9 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 6 concluída — stamina na corrida, modos de agachamento
-> (ALTERNAR/SEGURAR) e lista real de controles, com configurações acessíveis
-> durante a partida.
+> **Status:** Etapa 6 concluída e corrigida em 6.1 — stamina na corrida com
+> **HUD no canto inferior esquerdo**, modos de agachamento (ALTERNAR/SEGURAR) e
+> lista real de controles, com configurações acessíveis durante a partida.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -13,13 +13,15 @@
 
 ![Sala de teste do controlador FPS](docs/screenshots/movement_test.png)
 
+![HUD de stamina na sala de teste](docs/screenshots/hud_stamina.png)
+
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.0-etapa6/BlackSight-Etapa6-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.1-etapa6-hud/BlackSight-Etapa6-HUD-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa6-Windows-x86_64.zip` (40.634.172 bytes ≈ 38,7 MiB)
+Arquivo: `BlackSight-Etapa6-HUD-Windows-x86_64.zip` (40.640.092 bytes ≈ 38,8 MiB)
 
-SHA-256 do ZIP: `12ef1e50932bf310aaabefa62b776985eb04578cc9dad9803c164a193a37d79d`
+SHA-256 do ZIP: `01c02d75766ca159d90f7be5e6735fcc8726e877fd4fbca602427e75961e1ef8`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
@@ -64,11 +66,15 @@ controles que existem de verdade — sem interação, lanterna, pulo ou inventá
   100), recupera 15/s parado/andando/agachado, para ao esgotar e volta a partir
   de 20. O modo de agachamento (**ALTERNAR** padrão ou **SEGURAR**) fica em
   `settings.cfg` e vale na hora, inclusive durante a partida.
+- **HUD de stamina** (correção 6.1): barra discreta no canto inferior esquerdo,
+  com rótulo, porcentagem e desenho nativo, ligada ao sinal `stamina_changed`.
+  Não captura mouse nem foco e permanece estável na pausa e nas configurações.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
 
 Ainda **não** existe: pulo, inventário, interação, criaturas, multiplayer,
-voz e o mapa definitivo. Também não há HUD de stamina nesta etapa.
+voz e o mapa definitivo. A HUD mostra apenas a stamina; vida, objetivos e
+inventário vêm nas próximas etapas.
 Ver [`docs/ETAPA-6.md`](docs/ETAPA-6.md).
 
 ## Arquitetura

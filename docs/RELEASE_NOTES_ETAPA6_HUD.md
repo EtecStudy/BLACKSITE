@@ -32,8 +32,9 @@ configuração foi alterado nesta correção.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa6-HUD-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | *(preenchido após o build)* |
-| SHA-256 | *(preenchido após o build)* |
+| Tamanho | **40.640.092 bytes** (≈ 38,8 MiB) |
+| SHA-256 | `01c02d75766ca159d90f7be5e6735fcc8726e877fd4fbca602427e75961e1ef8` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.1-etapa6-hud/BlackSight-Etapa6-HUD-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.6.0 (`BlackSight-Etapa6-Windows-x86_64.zip`): é
 uma compilação nova, com a HUD integrada.
@@ -60,11 +61,18 @@ A release é gerada pelo workflow
 [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
 no Linux e no Windows real, antes de publicar.
 
-| Suíte | O que cobre |
+Na execução
+[39355579474](https://github.com/EtecStudy/BLACKSITE/actions/runs/39355579474),
+Linux e Windows real passaram antes de publicar:
+
+| Suíte | Resultado |
 | --- | --- |
-| Fumaça | configuração, cenas, stamina, persistência, lista real de controles |
-| Fluxo de interface | menu → configurações → F11 → partida → pausa → configurações → menu |
-| Controlador | Etapas 4–6 + grupo novo **[20] HUD** (42 verificações) |
+| Fumaça | **238/238** |
+| Fluxo de interface | **49/49** |
+| Controlador (Etapas 4–6 + grupo `[20]` HUD com 42 verificações) | **247/247** |
+
+O `.exe` publicado tem `FileVersion=0.6.1.0`, o `.pck` contém 78 recursos
+(incluindo as cenas da HUD) e o `settings.cfg` existente foi preservado.
 
 Resultados, evidências e limitações:
 [`docs/ETAPA-6.md`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/docs/ETAPA-6.md)
@@ -78,5 +86,6 @@ Resultados, evidências e limitações:
 - O agachamento continua sem animação de corpo e a sala de teste segue sendo uma
   área de primitivas.
 - Sem pulo, interação, inventário, criaturas, combate ou multiplayer.
-- A conferência visual automatizada usa os frames renderizados no CI
-  (Xvfb/OpenGL); o teste em Windows real com uma pessoa é o próximo passo.
+- A conferência visual automatizada usa um frame renderizado no CI
+  (Xvfb/OpenGL), com a HUD cheia; os demais estados foram verificados por teste
+  automatizado. O teste em Windows real com uma pessoa é o próximo passo.

@@ -3,15 +3,16 @@
 **Responsabilidade:** gerenciamento das partidas — estados, fluxo de jogo,
 orquestração entre módulos, início e fim de rodada.
 
-**Estado atual (Etapa 6):** existe a **sessão de teste da movimentação**, que
+**Estado atual (Etapa 6.1):** existe a **sessão de teste da movimentação**, que
 orquestra a sala (`maps/`) e o jogador (`players/`), cuida da pausa, abre a
-tela de configurações por cima da partida e volta ao menu. Ainda não há
-máquina de estados de partida.
+tela de configurações por cima da partida e volta ao menu. A HUD
+(`ui/scenes/hud/player_hud.tscn`) é instanciada aqui e ligada ao jogador por
+sinal. Ainda não há máquina de estados de partida.
 
 | Caminho | O que é |
 | --- | --- |
-| `match/scenes/movement_test.tscn` | Sala de teste + jogador + interface de pausa |
-| `match/scripts/movement_test.gd` | Spawn, mouse, pausa, CONFIGURAÇÕES sobrepostas e retorno ao menu |
+| `match/scenes/movement_test.tscn` | Sala de teste + jogador + HUD + interface de pausa |
+| `match/scripts/movement_test.gd` | Spawn, mouse, pausa, CONFIGURAÇÕES sobrepostas, HUD ligada ao jogador e retorno ao menu |
 
 Fluxo de pausa (Etapas 5–6):
 

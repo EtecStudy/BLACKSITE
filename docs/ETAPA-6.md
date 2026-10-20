@@ -287,22 +287,47 @@ configurações e modo de agachamento).
 
 ### 10.5 Resultado
 
+Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blocksite/.github/workflows/build.yml),
+execução **[39355579474](https://github.com/EtecStudy/BLACKSITE/actions/runs/39355579474)**
+(commit `66b71c2`): jobs Linux e Windows **verdes**.
+
+| Teste | Linux | Windows real |
+| --- | --- | --- |
+| `smoke_test.tscn` | **238/238** | **238/238** |
+| `ui_flow_test.tscn` | **49/49** | **49/49** |
+| `movement_test.tscn` (19 grupos antigos + `[20]` HUD) | **247/247** | **247/247** |
+
 | Item | Valor |
 | --- | --- |
-| Execução | *(preenchido após o build)* |
-| SMOKE / UI FLOW / MOVEMENT | *(preenchido após o build)* |
 | Release | `v0.6.1-etapa6-hud` |
-| ZIP | `BlackSight-Etapa6-HUD-Windows-x86_64.zip` |
-| Tamanho / SHA-256 | *(preenchido após o build)* |
-| Inspeção visual | *(preenchido após o build)* |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.1-etapa6-hud/BlackSight-Etapa6-HUD-Windows-x86_64.zip> |
+| ZIP | `BlackSight-Etapa6-HUD-Windows-x86_64.zip`, **40.640.092 bytes** (≈ 38,8 MiB) |
+| SHA-256 do ZIP | `01c02d75766ca159d90f7be5e6735fcc8726e877fd4fbca602427e75961e1ef8` |
+| `BlackSight.exe` | 109.193.728 bytes, `FileVersion=0.6.1.0`, `FileDescription=Black Sight — Etapa 6.1` |
+| `BlackSight.pck` | 1.426.572 bytes, **78 recursos**, incluindo `player_hud` e `stamina_bar` |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.698 / 164 bytes |
+| Execução do `.exe` no Windows | vivo por 25 s, título “Black Sight”; `settings.cfg` preservado com `crouch_mode="toggle"` |
 
-### 10.6 Limitações
+### 10.6 Inspeção visual
+
+O frame renderizado pelo CI (`TESTE 3c`, Xvfb + OpenGL, 1600×900) mostra a HUD
+já integrada à cena real da partida: painel no canto inferior esquerdo, rótulo
+`STAMINA`, valor `100%`, trilho com preenchimento cheio e marcador do limiar de
+20%, sem cortes e sem cobrir a visão central. O frame foi arquivado em
+[`docs/screenshots/hud_stamina.png`](screenshots/hud_stamina.png).
+
+O que a inspeção **não** cobre: um frame com a barra parcialmente vazia (o
+render para em 2 s, com stamina cheia) e um frame dedicado da pausa sobre a HUD.
+Esses estados foram verificados nos testes automatizados (valores e
+estabilidade), não visualmente.
+
+### 10.7 Limitações
 
 - A HUD não tem animação de transição: o valor é atualizado no mesmo frame do
   sinal, o que garante que nunca mostre um valor diferente do real.
-- A verificação visual foi feita pelos frames renderizados no CI
-  (Xvfb/OpenGL); o teste em Windows real com uma pessoa continua sendo o passo
-  seguinte.
+- A verificação visual automatizada cobre um frame da cena real (HUD cheia); o
+  restante da conferência visual depende do teste humano no Windows.
+- O teste em Windows real com uma pessoa continua sendo o próximo passo.
 - O modo de agachamento é global (não por perfil/tecla).
 - Ainda não há pulo, interação, inventário, criaturas nem combate.
 
