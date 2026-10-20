@@ -16,9 +16,9 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.4.0-etapa4/BlackSight-Etapa4-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa4-Windows-x86_64.zip` (TAMANHO_BYTES bytes)
+Arquivo: `BlackSight-Etapa4-Windows-x86_64.zip` (40.624.846 bytes ≈ 38,7 MiB)
 
-SHA-256 do ZIP: `SHA256_ZIP`
+SHA-256 do ZIP: `da042476c11bffe8563cd3c73c883add77bbf3f53281b3f4ac900b0e134e0a66`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.

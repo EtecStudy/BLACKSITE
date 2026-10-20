@@ -45,8 +45,9 @@ interação, criaturas, multiplayer e voz.
 ### 2.3 Cena de teste 3D
 
 - `maps/scenes/test_room.tscn`: sala de **24 × 24 m**, piso com colisão, quatro
-  paredes, quatro pilares, caixas empilhadas, painéis de sinalização e
-  iluminação por `OmniLight3D` + ambiente.
+  paredes, teto com colisão, quatro pilares, caixas empilhadas, painéis de
+  sinalização, duas luminárias de teto e iluminação por `OmniLight3D` +
+  ambiente.
 - Ponto de nascimento (`Marker3D`, `Spawn`) no centro-sul da sala, voltado para
   o interior.
 - Visual de laboratório simples, com primitivas e materiais lisos — sem arte
@@ -106,11 +107,84 @@ quando o arquivo não existe, está inválido ou o jogo roda sem configurações
 
 ## 5. Testes executados
 
-_(a preencher com os resultados reais da execução do workflow)_
+Workflow [`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml),
+execução **[39344854993](https://github.com/EtecStudy/BLACKSITE/actions/runs/39344854993)**
+(commit `ead68d7`), jobs Linux `118374897869` e Windows `118374898045` — ambos
+**verdes**.
+
+### 5.1 Automatizados (executados de verdade)
+
+| Teste | O que cobre | Linux | Windows |
+| --- | --- | --- | --- |
+| `tools/ci/smoke_test.tscn` | Configuração, tela inicial, tema, fontes, sons, módulos, Input Map, jogador, sala e cena de teste | **175/175** | **175/175** |
+| `tools/ci/ui_flow_test.tscn` | Navegação real: menu → CONFIGURAÇÕES → abas → aplicar/restaurar → F11 → **TESTAR MOVIMENTAÇÃO** → câmera ativa → **VOLTAR AO MENU** | **33/33** | **33/33** |
+| `tools/ci/movement_test.tscn` | Controlador FPS — 11 grupos (abaixo) | **63/63** | **63/63** |
+
+Grupos do teste do controlador (`movement_test.gd`):
+
+1. **Input Map** — as 4 ações de movimento existem e apontam para W/S/A/D
+   (físicas) + `release_mouse`.
+2. **Cena de teste** — cena carrega, jogador é `CharacterBody3D`, sala e camada
+   de pausa existem, botão VOLTAR AO MENU está conectado.
+3. **Nascimento e piso** — nasce sobre o `Spawn`, assenta no chão, cabeça a
+   1,62 m, câmera ativa, 90 frames com variação vertical < 0,02 m (sem tremor).
+4. **Direções** — W → −Z, S → +Z, A → −X, D → +X, sem desvio lateral.
+5. **Diagonal** — deslocamento diagonal igual ao reto (tolerância 6 %).
+6. **Movimento relativo** — com a visão girada 90°, W anda em −X.
+7. **Parado** — nenhum deslocamento espontâneo em 60 frames (< 0,01 m).
+8. **Câmera e configurações** — sentido do yaw/pitch, sensibilidade 1× e 2×,
+   limite de ±89°, inversão vertical, leitura via `GameSettings` e restauração
+   dos padrões.
+9. **Pausa** — `pause_session` mostra a camada, bloqueia WASD (< 0,05 m) e
+   `resume_session` devolve o controle.
+10. **Gravidade** — queda de 2 m até o piso, sem atravessar.
+11. **Colisões** — parede norte (z ≈ −11,39), caixa (z ≈ 2,85), canto sudeste
+    (11,40; 11,40) e estabilidade encostado (variação 0,001 m).
+
+### 5.2 Verificações estáticas e de empacotamento
+
+| Verificação | Resultado |
+| --- | --- |
+| Sintaxe de todos os `.gd` (`gdparse`) | OK |
+| Estrutura das cenas `.tscn` (referências, sub-recursos, pais) | OK |
+| Execução *headless* da cena inicial (editor e build exportado Linux) | tela inicial e configurações carregadas, sem `SCRIPT ERROR` |
+| Render sob Xvfb/OpenGL (título, configurações, cena de teste) | 3 frames válidos — `docs/screenshots/movement_test.png` |
+| Inspeção do `.pck` | formato 4, **68 recursos**; `player.scn`, `test_room.scn`, `movement_test.scn` e `player_controller.gdc` presentes; `tools/` e `docs/` fora do pacote |
+| Binário Windows | PE32+ x86-64, metadados `0.4.0.0` / “Black Sight” / “EtecStudy” |
+
+### 5.3 Manuais
+
+Não foram executados por uma pessoa nesta etapa. O teste humano (mouse real,
+sensação de sensibilidade, ESC/recaptura e retorno ao menu) depende de o usuário
+baixar o ZIP e rodar o `.exe` — é o próximo passo desta entrega.
 
 ## 6. Teste no Windows real
 
-_(a preencher com os resultados reais do job Windows)_
+Job **windows-latest** `118374898045`, tudo verde:
+
+| Verificação | Resultado |
+| --- | --- |
+| Importação + fumaça + fluxo de interface + controlador no Windows | 175/175, 33/33 e 63/63 |
+| `.exe` exportado executado *headless* | carregou a tela inicial, sem `SCRIPT ERROR` |
+| `user://settings.cfg` criado pelo `.exe` | `%APPDATA%\BlackSight\settings.cfg` com `mouse_sensitivity_x`, `master_volume`, `window_mode`, `vsync` |
+| `.exe` aberto com janela | vivo após 25 s, título “Black Sight” |
+| Metadados do `.exe` | `ProductName=Black Sight`, `FileDescription=Black Sight — Etapa 4`, `FileVersion=0.4.0.0`, `CompanyName=EtecStudy` |
+| ZIP conferido | 4 arquivos; tamanho e SHA-256 publicados |
+
+## 6.1 Release publicada
+
+| Item | Valor |
+| --- | --- |
+| Tag | `v0.4.0-etapa4` |
+| Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.4.0-etapa4/BlackSight-Etapa4-Windows-x86_64.zip> |
+| Tamanho do ZIP | **40.624.846 bytes** (≈ 38,7 MiB) |
+| SHA-256 do ZIP | `da042476c11bffe8563cd3c73c883add77bbf3f53281b3f4ac900b0e134e0a66` |
+| `BlackSight.exe` | 109.193.728 bytes |
+| `BlackSight.pck` | 1.405.204 bytes |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 1.758 / 164 bytes |
+
+O `SHA256SUMS.txt` dentro do ZIP repete o hash do `.exe` e do `.pck`, para
+conferência local.
 
 ## 7. Limitações e pendências desta etapa
 

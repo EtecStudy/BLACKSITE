@@ -23,8 +23,8 @@ gravidade e colisão em uma sala 3D de teste.
 | Item | Valor |
 | --- | --- |
 | Arquivo | `BlackSight-Etapa4-Windows-x86_64.zip` |
-| Tamanho | TAMANHO_BYTES bytes |
-| SHA-256 | `SHA256_ZIP` |
+| Tamanho | 40.624.846 bytes (≈ 38,7 MiB) |
+| SHA-256 | `da042476c11bffe8563cd3c73c883add77bbf3f53281b3f4ac900b0e134e0a66` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
 
 ## Como testar
@@ -41,10 +41,19 @@ gravidade e colisão em uma sala 3D de teste.
 ## Testes
 
 O pacote publicado é exatamente o gerado pelo workflow
-[`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml),
-que roda testes automatizados de movimento, câmera, física e navegação no Linux
-e no Windows real antes de publicar. Resultados, evidências e limitações estão
-em [`docs/ETAPA-4.md`](https://github.com/EtecStudy/BLACKSITE/blob/main/docs/ETAPA-4.md).
+[`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml).
+Antes de publicar, a execução
+[39344854993](https://github.com/EtecStudy/BLACKSITE/actions/runs/39344854993)
+rodou no Linux e no Windows real:
+
+- 175 verificações de configuração/cenas (`SMOKE TEST OK`);
+- 33 verificações de navegação da interface (`UI FLOW OK`);
+- 63 verificações do controlador FPS (`MOVEMENT TEST OK`), incluindo WASD,
+  diagonais, câmera, limites verticais, sensibilidade, pausa, gravidade e
+  colisões.
+
+Evidências, detalhes e limitações:
+[`docs/ETAPA-4.md`](https://github.com/EtecStudy/BLACKSITE/blob/main/docs/ETAPA-4.md).
 
 ## Limitações desta etapa
 
