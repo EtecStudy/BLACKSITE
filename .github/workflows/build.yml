@@ -155,6 +155,22 @@ jobs:
           test -s ci-logs/movement_test.png
           echo "frame da cena de teste capturado: $latest"
 
+      - name: TESTE 3d — inventário na cena real (Xvfb + OpenGL, captura de frame)
+        run: |
+          mkdir -p ci-logs/inventory_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://tools/ci/inventory_visual.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/inventory_frames/frame.png --quit-after 240 \
+            2>&1 | tee ci-logs/render_inventory.log
+          grep -F "INVENTORY VISUAL OK" ci-logs/render_inventory.log
+          latest=$(ls ci-logs/inventory_frames/*.png | tail -1)
+          cp "$latest" ci-logs/inventory_hud.png
+          rm -rf ci-logs/inventory_frames
+          test -s ci-logs/inventory_hud.png
+          echo "frame do inventário capturado: $latest"
+
       # ------------------------------------------------------------------
       # 2. Exportações
       # ------------------------------------------------------------------
@@ -223,7 +239,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.7\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.8\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -236,7 +252,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 7 (Windows x86_64 · Interação)
+          BLACK SIGHT — Etapa 8 (Windows x86_64 · Inventário)
           ======================================
 
           COMO JOGAR
@@ -244,14 +260,17 @@ jobs:
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
 
-          JOGAR (ETAPA 7)
+          JOGAR (ETAPA 8)
           - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
           - W A S D ....... andar (relativo à direção da câmera)
           - SHIFT ......... correr (consome stamina)
           - CTRL .......... agachar
                             ALTERNAR (padrão): um toque agacha, outro levanta
                             SEGURAR: mantenha CTRL pressionado
-          - E ............. interagir (quando a indicação [E] Interagir aparece)
+          - E ............. interagir / pegar o item na mira
+          - 1 2 3 ......... selecionar o slot do inventário
+          - R ............. remover o item do slot selecionado
+                            (tecla provisória desta etapa, só para testar)
           - Mouse ......... olhar (até 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
@@ -259,14 +278,27 @@ jobs:
           - VOLTAR AO MENU  volta à tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
 
+          INVENTÁRIO
+          - Três slots fixos, no canto inferior direito da tela.
+          - Olhe para um dos quatro itens de teste (ITEM A, B, C e D) e
+            pressione E: o item some do cenário e aparece no primeiro slot
+            livre; o slot ocupado mostra o nome do item.
+          - 1, 2 e 3 escolhem o slot — inclusive um slot vazio. O slot
+            selecionado fica com fundo e borda mais claros.
+          - R remove o item do slot selecionado (só para validar a remoção).
+          - Com os três slots ocupados, tentar pegar o quarto item não troca
+            nada: aparece "INVENTÁRIO CHEIO" por instantes e o item continua
+            no lugar.
+          - Durante a pausa o inventário não muda: E não pega, 1/2/3 não
+            selecionam e R não remove.
+
           INTERAÇÃO
-          - Olhe para um objeto interativo (o Painel de Teste, à frente do
-            ponto de partida) e a indicação [E] Interagir aparece no rodapé.
+          - Olhe para um objeto interativo (o Painel de Teste) e a indicação
+            [E] Interagir aparece no rodapé.
           - Alcance máximo de 2,5 m, medido do centro da câmera.
           - Paredes e caixas bloqueiam: sem linha de visão não há interação.
           - A indicação some ao olhar para outro lugar, ao se afastar ou ao
             abrir a pausa. Pressione E para acionar o objeto.
-          - No painel de teste aparece "INTERAÇÃO EXECUTADA" por instantes.
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
@@ -283,7 +315,8 @@ jobs:
           - Clique em CONFIGURAÇÕES na tela inicial ou use ESC durante o jogo.
           - É a mesma tela e o mesmo arquivo nos dois caminhos.
           - Abas: CONTROLES, ÁUDIO e VÍDEO.
-          - Em CONTROLES: sensibilidade, inversão do eixo Y e MODO DE AGACHAMENTO.
+          - Em CONTROLES: sensibilidade, inversão do eixo Y, MODO DE AGACHAMENTO
+            e a lista real de controles (agora com E e 1 2 3).
           - APLICAR grava os valores; RESTAURAR PADRÕES volta ao original;
             VOLTAR (ou Esc) retorna ao menu sem aplicar o que não foi confirmado.
           - O arquivo fica em %APPDATA%\BlackSight\settings.cfg
@@ -308,44 +341,48 @@ jobs:
           stamina em tempo real, integrada à cena da partida.
           Correção 6.2: recuperação com atraso de 1 s depois da corrida e
           bloqueada enquanto SHIFT estiver pressionado.
-          Etapa 7: sistema genérico de interação por olhar (raycast da câmera,
-          2,5 m, linha de visão), indicação discreta [E] Interagir e um painel
-          de teste. Stamina e controles anteriores seguem iguais.
-          Ainda não há pulo, inventário, portas, itens, criaturas nem multiplayer.
+          Etapa 7: interação por olhar (raycast da câmera, 2,5 m, linha de
+          visão) com a indicação [E] Interagir e um painel de teste.
+          Etapa 8: inventário de três slots, coleta por interação, seleção
+          com 1/2/3, remoção provisória com R e aviso de inventário cheio.
+          Stamina e controles anteriores seguem iguais.
+          Ainda não há pulo, uso/descarte de item, portas, criaturas,
+          multiplayer nem mapa definitivo.
 
-          Versão 0.7.0 — Etapa 7 (interação)
+          Versão 0.8.0 — Etapa 8 (inventário de três slots)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa7-Interaction-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa8-Inventory-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa7-Interaction-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa8-Inventory-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa8-Inventory-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa8-Inventory-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa8-Inventory-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa8-Inventory-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa8-Inventory-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa8-Inventory-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa7-windows
+          name: black-sight-etapa8-windows
           path: |
-            BlackSight-Etapa7-Interaction-Windows-x86_64.zip
+            BlackSight-Etapa8-Inventory-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
+            ci-logs/inventory_hud.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa7-logs
+          name: black-sight-etapa8-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -371,7 +408,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 7"
+            echo "## Black Sight · Etapa 8"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -629,13 +666,14 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
+          if ($info.FileVersion -notlike "0.8.0*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 7 (Windows x86_64 - Interacao)
+          BLACK SIGHT - Etapa 8 (Windows x86_64 - Inventario)
           ======================================
 
           COMO JOGAR
@@ -648,14 +686,17 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
-          JOGAR (ETAPA 7)
+          JOGAR (ETAPA 8)
           - Clique em TESTAR MOVIMENTACAO na tela inicial.
           - W A S D ....... andar (relativo a direcao da camera)
           - SHIFT ......... correr (consome stamina)
           - CTRL .......... agachar
                             ALTERNAR (padrao): um toque agacha, outro levanta
                             SEGURAR: mantenha CTRL pressionado
-          - E ............. interagir (quando aparece [E] Interagir)
+          - E ............. interagir / pegar o item na mira
+          - 1 2 3 ......... selecionar o slot do inventario
+          - R ............. remover o item do slot selecionado
+                            (tecla provisoria desta etapa, so para testar)
           - Mouse ......... olhar (ate 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
@@ -663,14 +704,27 @@ jobs:
           - VOLTAR AO MENU  volta a tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
 
+          INVENTARIO
+          - Tres slots fixos, no canto inferior direito da tela.
+          - Olhe para um dos quatro itens de teste (ITEM A, B, C e D) e
+            pressione E: o item some do cenario e aparece no primeiro slot
+            livre; o slot ocupado mostra o nome do item.
+          - 1, 2 e 3 escolhem o slot - inclusive um slot vazio. O slot
+            selecionado fica com fundo e borda mais claros.
+          - R remove o item do slot selecionado (so para validar a remocao).
+          - Com os tres slots ocupados, tentar pegar o quarto item nao troca
+            nada: aparece "INVENTARIO CHEIO" por instantes e o item continua
+            no lugar.
+          - Durante a pausa o inventario nao muda: E nao pega, 1/2/3 nao
+            selecionam e R nao remove.
+
           INTERACAO
-          - Olhe para um objeto interativo (o Painel de Teste, a frente do
-            ponto de partida) e a indicacao [E] Interagir aparece no rodape.
+          - Olhe para um objeto interativo (o Painel de Teste) e a indicacao
+            [E] Interagir aparece no rodape.
           - Alcance maximo de 2,5 m, medido do centro da camera.
           - Paredes e caixas bloqueiam: sem linha de visao nao ha interacao.
           - A indicacao some ao olhar para outro lugar, ao se afastar ou ao
             abrir a pausa. Pressione E para acionar o objeto.
-          - No painel de teste aparece "INTERACAO EXECUTADA" por instantes.
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
@@ -687,7 +741,8 @@ jobs:
           - Clique em CONFIGURACOES na tela inicial ou use ESC durante o jogo.
           - E a mesma tela e o mesmo arquivo nos dois caminhos.
           - Abas: CONTROLES, AUDIO e VIDEO.
-          - Em CONTROLES: sensibilidade, inversao do eixo Y e MODO DE AGACHAMENTO.
+          - Em CONTROLES: sensibilidade, inversao do eixo Y, MODO DE AGACHAMENTO
+            e a lista real de controles (agora com E e 1 2 3).
           - APLICAR grava; RESTAURAR PADROES volta ao original;
             VOLTAR (ou Esc) retorna ao menu sem aplicar o que nao foi confirmado.
           - Arquivo: %APPDATA%\BlackSight\settings.cfg (fora da pasta do jogo).
@@ -711,12 +766,15 @@ jobs:
           stamina em tempo real, integrada a cena da partida.
           Correcao 6.2: recuperacao com atraso de 1 s depois da corrida e
           bloqueada enquanto SHIFT estiver pressionado.
-          Etapa 7: sistema generico de interacao por olhar (raycast da camera,
-          2,5 m, linha de visao), indicacao discreta [E] Interagir e um painel
-          de teste. Stamina e controles anteriores seguem iguais.
-          Ainda nao ha pulo, inventario, portas, itens, criaturas nem multiplayer.
+          Etapa 7: interacao por olhar (raycast da camera, 2,5 m, linha de
+          visao) com a indicacao [E] Interagir e um painel de teste.
+          Etapa 8: inventario de tres slots, coleta por interacao, selecao
+          com 1/2/3, remocao provisoria com R e aviso de inventario cheio.
+          Stamina e controles anteriores seguem iguais.
+          Ainda nao ha pulo, uso/descarte de item, portas, criaturas,
+          multiplayer nem mapa definitivo.
 
-          Versao 0.7.0 - Etapa 7 (interacao)
+          Versao 0.8.0 - Etapa 8 (inventario de tres slots)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -727,7 +785,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa7-Interaction-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa8-Inventory-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -744,9 +802,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa7-windows-real
+          name: black-sight-etapa8-windows-real
           path: |
-            BlackSight-Etapa7-Interaction-Windows-x86_64.zip
+            BlackSight-Etapa8-Inventory-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -756,9 +814,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.7.0-etapa7-interaction --yes --cleanup-tag 2>$null
+          gh release delete v0.8.0-etapa8-inventory --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.7.0-etapa7-interaction "BlackSight-Etapa7-Interaction-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 7 - Sistema de interação (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA7_INTERACTION.md
+          gh release create v0.8.0-etapa8-inventory "BlackSight-Etapa8-Inventory-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 8 - Inventário de três slots (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA8_INVENTORY.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -783,7 +841,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 7 (Windows real · Interacao)", "")
+          $summary = @("## Black Sight - Etapa 8 (Windows real · Inventario)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

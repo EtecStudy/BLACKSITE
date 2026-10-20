@@ -1,17 +1,20 @@
 # Módulo `items/`
 
-**Responsabilidade:** itens, inventário e interação com objetos — definição de
-itens, coleta, empilhamento, uso e objetos interativos do cenário.
+**Responsabilidade:** itens e objetos interativos do cenário — definição de
+itens, coleta, empilhamento, uso e objetos do mundo.
 
-**Estado atual (Etapa 2):** apenas estrutura/documentação. Nenhum item,
-inventário ou sistema de coleta foi implementado.
+**Estado atual (Etapa 8):** existe o **item de teste pegável**
+(`InventoryTestItem`), que usa o `Interactable` da Etapa 7 e guarda o item no
+inventário do jogador. O inventário em si vive em `players/scripts/inventory/`
+(é estado do jogador) e o tipo de item (`ItemDefinition`) em `shared/items/`.
+Nada de uso, pilha, peso, drop ou crafting.
 
 ## O que entra aqui
 
 | Tipo | Local | Exemplos |
 | --- | --- | --- |
-| Cenas | `items/scenes/` | `pickup.tscn`, `interactable_base.tscn` |
-| Scripts | `items/scripts/` | `item_definition.gd` (Resource), `inventory.gd`, `pickup.gd` |
+| Cenas | `items/scenes/` | `inventory_test_item.tscn` |
+| Scripts | `items/scripts/` | `inventory_test_item.gd` |
 | Recursos | `items/resources/` | `item_*.tres` (pilha, ícone, descrição) |
 | Assets próprios | `items/assets/` | ícones de inventário, modelos de item |
 
@@ -26,9 +29,9 @@ inventário ou sistema de coleta foi implementado.
 
 ## Como será usado nas próximas etapas
 
-1. Criar `ItemDefinition` (Resource) com campos `id`, `nome`, `icone`, `pilha`.
-2. `Inventory` como nó reutilizável com sinais.
-3. `pickup.tscn` usando área de detecção + `interactable_base`.
+1. ~~`ItemDefinition` com `id` e nome~~ (feito na Etapa 8).
+2. ~~Inventário com sinais~~ (feito em `players/scripts/inventory/`).
+3. Tipos definitivos de item (`.tres`) e uso/descarte — próximas etapas.
 
 ## Dependências
 

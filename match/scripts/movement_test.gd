@@ -12,7 +12,9 @@ extends Node3D
 ## - ligar a HUD (`ui/scenes/hud/player_hud.tscn`) ao jogador, que apenas
 ##   escuta `stamina_changed` — a HUD não conhece regras de movimentação;
 ## - ligar a indicação de interação (Etapa 7) ao `InteractionDetector` do
-##   jogador e suspender a detecção durante a pausa/configurações.
+##   jogador e suspender a detecção durante a pausa/configurações;
+## - ligar a HUD do inventário (Etapa 8) ao `Inventory` do jogador e suspender
+##   as teclas 1/2/3/R durante a pausa/configurações.
 ##
 ## Nenhuma regra de movimentação mora aqui: ela está em `PlayerController`.
 ## Nenhum valor de configuração é lido aqui: o jogador lê `GameSettings`.
@@ -48,6 +50,8 @@ func _ready() -> void:
 		_hud.bind_player(_player)
 		# Etapa 7: a HUD mostra a indicação de interação; a ligação é por sinal.
 		_hud.bind_interaction(_player.get_interaction_detector())
+		# Etapa 8: os três slots da HUD escutam o inventário do jogador.
+		_hud.bind_inventory(_player.get_inventory())
 	_place_player_at_spawn()
 	_capture_mouse(true)
 	_fade_hint_later()
@@ -70,6 +74,7 @@ func pause_session() -> void:
 	_pause_root.visible = true
 	_player.movement_enabled = false
 	_set_interaction_enabled(false)
+	_set_inventory_input_enabled(false)
 	# Para na hora: sem deslize residual enquanto o menu está aberto.
 	_player.velocity.x = 0.0
 	_player.velocity.z = 0.0
@@ -85,6 +90,7 @@ func resume_session() -> void:
 	_pause_root.visible = false
 	_player.movement_enabled = true
 	_set_interaction_enabled(true)
+	_set_inventory_input_enabled(true)
 	_capture_mouse(true)
 
 
@@ -94,6 +100,14 @@ func _set_interaction_enabled(value: bool) -> void:
 	var detector: InteractionDetector = _player.get_interaction_detector()
 	if detector != null:
 		detector.set_detection_enabled(value)
+
+
+## Liga/desliga as teclas do inventário (Etapa 8). Na pausa nada é
+## selecionado, removido ou coletado.
+func _set_inventory_input_enabled(value: bool) -> void:
+	var inventory_input: InventoryInput = _player.get_inventory_input()
+	if inventory_input != null:
+		inventory_input.set_input_enabled(value)
 
 
 ## Abre a tela de configurações existente por cima da partida pausada.
@@ -150,9 +164,15 @@ func is_paused() -> bool:
 	return _paused
 
 
-## HUD da partida (barra de stamina). Exposta para os testes de integração.
+## HUD da partida (barra de stamina + slots do inventário). Exposta para os
+## testes de integração.
 func get_hud() -> PlayerHud:
 	return _hud
+
+
+## Inventário do jogador (Etapa 8). Exposto para os testes de integração.
+func get_inventory() -> Inventory:
+	return _player.get_inventory()
 
 
 func _unhandled_input(event: InputEvent) -> void:

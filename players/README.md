@@ -3,14 +3,19 @@
 **Responsabilidade:** tudo que pertence ao(s) jogador(es) — controlador em
 primeira pessoa, câmera, entrada de input, "lanterna"/visão, atributos e estados.
 
-**Estado atual (Etapa 6):** controlador FPS com estados de movimento
-(parado, andando, correndo e agachado), **stamina** na corrida e
-**agachamento configurável** (ALTERNAR ou SEGURAR).
+**Estado atual (Etapa 8):** controlador FPS com estados de movimento
+(parado, andando, correndo e agachado), **stamina** na corrida,
+**agachamento configurável** (ALTERNAR ou SEGURAR), **detector de interação**
+(Etapa 7) e **inventário de três slots** (Etapa 8).
 
 | Caminho | O que é |
 | --- | --- |
 | `players/scenes/player.tscn` | `CharacterBody3D` + cápsula + `Head` + `Camera3D` |
 | `players/scripts/player_controller.gd` | Movimento, estados, câmera, gravidade e leitura das configurações |
+| `players/scripts/interaction/interaction_detector.gd` | Raycast da câmera, foco e ação `interact` (Etapa 7) |
+| `players/scripts/inventory/inventory.gd` | Inventário de 3 slots, API e sinais (Etapa 8) |
+| `players/scripts/inventory/inventory_slot.gd` | Slot individual (um item) |
+| `players/scripts/inventory/inventory_input.gd` | Teclas 1/2/3 e R pelo InputMap |
 
 ## O que está implementado
 
@@ -67,15 +72,28 @@ enum MovementState { IDLE, WALKING, RUNNING, CROUCHING }
   `applied`. ALTERNAR é o padrão; SEGURAR mantém o comportamento antigo.
 - `_can_stand()` vale nos dois modos.
 
+## Inventário (Etapa 8)
+
+- `Inventory` é um nó de **dados** filho do jogador: três slots
+  (`SLOT_COUNT = 3`), primeiro slot livre, remoção, substituição, seleção e
+  consulta do item selecionado. Não desenha, não lê teclado e não processa por
+  frame.
+- `InventoryInput` lê `inventory_slot_1..3` e `inventory_remove` (R, provisória)
+  do **InputMap**, com borda própria. Na pausa (`movement_enabled == false` ou
+  `set_input_enabled(false)`) nada muda.
+- O controlador só expõe `get_inventory()` e `get_inventory_input()`.
+- A HUD escuta sinais; o módulo continua dependendo apenas de `shared/`.
+
 ## O que ainda **não** existe
 
-Pulo, interação, lanterna, dano, animações de corpo, som de passos e HUD.
+Pulo, uso/descarte de item, peso, pilha, equipamentos, lanterna, dano,
+animações de corpo e som de passos.
 Os pontos de extensão naturais:
 
 | Próxima etapa | Onde mexer |
 | --- | --- |
 | HUD de stamina | escutar `stamina_changed` em `ui/` e usar `get_stamina_ratio()` |
-| Interação | raycast na `Camera3D` + sinal para `match/` |
+| Uso de item | `Inventory.get_selected_item()` + uma ação `use_item` |
 | Lanterna | `SpotLight3D` filho da câmera |
 | Animações | novo nó de malha filho do corpo (a câmera não muda) |
 

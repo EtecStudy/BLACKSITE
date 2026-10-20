@@ -5,8 +5,10 @@ extends CharacterBody3D
 ## Escopo atual: **andar** (WASD), **correr** (Shift), **agachar** (Ctrl),
 ## **stamina**, **olhar** com o mouse, **gravidade** e **colisão**.
 ## Pulo não existe. A interação (Etapa 7) vive em
-## `players/scripts/interaction/interaction_detector.gd`, um componente da cena
-## do jogador — o controlador apenas o expõe.
+## `players/scripts/interaction/interaction_detector.gd` e o inventário
+## (Etapa 8) em `players/scripts/inventory/` — componentes da cena do jogador.
+## O controlador apenas os expõe; nenhuma regra de interação ou de inventário
+## mora aqui.
 ##
 ## Estados (`MovementState`):
 ##   IDLE      — parado (sem direção pressionada);
@@ -490,6 +492,18 @@ func set_sprint_allowed(value: bool) -> void:
 ## interação mora aqui.
 func get_interaction_detector() -> InteractionDetector:
 	return _interaction_detector
+
+
+## Inventário do jogador (Etapa 8). Os três slots e a API ficam em
+## `Inventory`; o controlador não guarda itens.
+func get_inventory() -> Inventory:
+	return get_node_or_null("Inventory") as Inventory
+
+
+## Entrada do inventário (teclas 1/2/3 e R provisória). A sessão desliga
+## durante a pausa, do mesmo jeito que faz com o detector de interação.
+func get_inventory_input() -> InventoryInput:
+	return get_node_or_null("InventoryInput") as InventoryInput
 
 
 func get_sensitivity() -> Vector2:

@@ -1,5 +1,5 @@
 extends Node
-## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 7).
+## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 8).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
@@ -10,9 +10,11 @@ extends Node
 ## física, colisões, menu de pausa com configurações, integração com as
 ## configurações da Etapa 3, stamina (consumo, atraso de recuperação e
 ## exaustão), a HUD da Etapa 6.1, os dois modos de agachamento (SEGURAR e
-## ALTERNAR, este último o padrão do jogo) e o sistema de interação da Etapa 7
-## (raycast, distância, linha de visão, indicação, pausa). As entradas são
-## simuladas com `Input.action_press`, que é o mesmo caminho usado pelo teclado.
+## ALTERNAR, este último o padrão do jogo), o sistema de interação da Etapa 7
+## (raycast, distância, linha de visão, indicação, pausa) e o inventário de três
+## slots da Etapa 8 (API, coleta, seleção, remoção, substituição, inventário
+## cheio e pausa). As entradas são simuladas com `Input.action_press`, que é o
+## mesmo caminho usado pelo teclado.
 ##
 ## Sai com 0 em caso de sucesso e 1 em caso de falha.
 
@@ -76,6 +78,7 @@ func _ready() -> void:
 	await _test_hud()
 	await _test_recovery_delay()
 	await _test_interaction()
+	await _test_inventory()
 
 	_finish()
 
@@ -1835,6 +1838,453 @@ func _test_interaction() -> void:
 	await _frames(4)
 	_player.set_stamina(_player.max_stamina)
 	await _frames(2)
+
+# --- Inventário (Etapa 8) ---------------------------------------------------
+
+const INVENTORY_TEST_ITEM_SCENE := "res://items/scenes/inventory_test_item.tscn"
+const ITEM_PITCH := -0.34
+
+## De onde olhar para cada item de teste (mesmo x, 1,6 m ao sul do item).
+const ITEM_VIEWS := {
+	"TestItemA": Vector3(-1.7, 0.05, 7.7),
+	"TestItemB": Vector3(-3.1, 0.05, 6.9),
+	"TestItemC": Vector3(-4.2, 0.05, 5.9),
+	"TestItemD": Vector3(-1.3, 0.05, 5.5),
+}
+
+
+func _test_inventory() -> void:
+	print("[23] Inventário (Etapa 8)")
+	if _scene.is_settings_open():
+		_scene.close_settings()
+	if _scene.is_paused():
+		_scene.resume_session()
+	await _set_crouch_mode("hold")
+	if _player.is_crouched():
+		await _tap_crouch()
+		await _frames(10)
+
+	# --- Ações do InputMap --------------------------------------------------
+	var expected_actions := {
+		"inventory_slot_1": KEY_1,
+		"inventory_slot_2": KEY_2,
+		"inventory_slot_3": KEY_3,
+		"inventory_remove": KEY_R,
+	}
+	for action: String in expected_actions:
+		_expect(InputMap.has_action(action), "ação '%s' existe" % action)
+		var found: bool = false
+		for event: InputEvent in InputMap.action_get_events(action):
+			var key := event as InputEventKey
+			if key == null:
+				continue
+			var code: int = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+			if code == expected_actions[action]:
+				found = true
+		_expect(
+			found,
+			"ação '%s' usa %s" % [action, OS.get_keycode_string(expected_actions[action])]
+		)
+	_expect(
+		InventoryInput.ACTION_SELECT_SLOTS.size() == Inventory.SLOT_COUNT,
+		"uma ação de seleção por slot (%d)" % InventoryInput.ACTION_SELECT_SLOTS.size()
+	)
+	var inventory_source: String = FileAccess.get_file_as_string(
+		"res://players/scripts/inventory/inventory_input.gd"
+	)
+	_expect(
+		not inventory_source.contains("is_key_pressed") and not inventory_source.contains("KEY_1"),
+		"entrada do inventário usa o InputMap (nenhuma tecla codificada)"
+	)
+
+	# --- API do inventário (isolado da cena) --------------------------------
+	_expect(Inventory.SLOT_COUNT == 3, "inventário tem exatamente 3 slots (constante)")
+	var inventory: Inventory = Inventory.new()
+	add_child(inventory)
+	await _frames(2)
+	_expect(inventory.get_slot_count() == 3, "três slots criados (%d)" % inventory.get_slot_count())
+	_expect(inventory.get_selected_slot() == 0, "slot 1 selecionado ao começar")
+	_expect(inventory.get_selected_item() == null, "slot selecionado começa vazio")
+	_expect(inventory.has_free_slot(), "inventário começa com slot livre")
+	_expect(inventory.get_used_slot_count() == 0, "inventário começa vazio")
+	_expect(not inventory.is_processing(), "inventário não processa nada por frame")
+
+	var counts := {"added": 0, "removed": 0, "replaced": 0, "rejected": 0, "changed": 0}
+	inventory.item_added.connect(func(_i: int, _it: ItemDefinition) -> void: counts.added += 1)
+	inventory.item_removed.connect(func(_i: int, _it: ItemDefinition) -> void: counts.removed += 1)
+	inventory.item_replaced.connect(
+		func(_i: int, _p: ItemDefinition, _c: ItemDefinition) -> void: counts.replaced += 1
+	)
+	inventory.item_rejected.connect(func(_it: ItemDefinition) -> void: counts.rejected += 1)
+	inventory.inventory_changed.connect(func() -> void: counts.changed += 1)
+
+	var item_a := ItemDefinition.new(&"item_a", "ITEM A")
+	var item_b := ItemDefinition.new(&"item_b", "ITEM B")
+	var item_c := ItemDefinition.new(&"item_c", "ITEM C")
+	var item_d := ItemDefinition.new(&"item_d", "ITEM D")
+	_expect(item_a.get_display_name() == "ITEM A", "item tem nome de exibição")
+	_expect(item_a.is_valid() and not ItemDefinition.new().is_valid(), "item sem id é inválido")
+	_expect(not inventory.add_item(null), "item nulo é recusado")
+
+	_expect(inventory.add_item(item_a), "adiciona o item A")
+	_expect(inventory.get_item(0) == item_a, "A vai para o primeiro slot")
+	_expect(inventory.find_first_free_slot() == 1, "primeiro slot livre passa a ser o 2")
+	_expect(inventory.add_item(item_b), "adiciona o item B")
+	_expect(inventory.get_item(1) == item_b, "B vai para o segundo slot")
+	_expect(inventory.add_item(item_c), "adiciona o item C")
+	_expect(inventory.get_item(2) == item_c, "C vai para o terceiro slot")
+	_expect(not inventory.has_free_slot(), "sem slot livre com os três ocupados")
+	_expect(counts.added == 3 and counts.changed == 3, "sinais de adição emitidos (%d)" % counts.added)
+
+	var before_full: Array = [inventory.get_item(0), inventory.get_item(1), inventory.get_item(2)]
+	_expect(not inventory.add_item(item_d), "inventário cheio recusa o item D")
+	_expect(counts.rejected == 1, "sinal item_rejected emitido")
+	_expect(
+		inventory.get_item(0) == before_full[0]
+			and inventory.get_item(1) == before_full[1]
+			and inventory.get_item(2) == before_full[2],
+		"inventário cheio não altera nem substitui nenhum item"
+	)
+
+	_expect(inventory.select_slot(1), "seleciona o slot 2")
+	_expect(inventory.get_selected_slot() == 1, "slot 2 é o selecionado")
+	_expect(inventory.get_selected_item() == item_b, "item selecionado é o B")
+	_expect(not inventory.select_slot(3), "índice fora da faixa é recusado")
+	_expect(not inventory.select_slot(-1), "índice negativo é recusado")
+	_expect(inventory.get_selected_slot() == 1, "seleção inválida não muda o slot")
+
+	_expect(inventory.remove_item(1), "remove o item do slot 2")
+	_expect(inventory.is_slot_empty(1), "slot removido fica vazio")
+	_expect(inventory.get_item(1) == null, "slot removido devolve null")
+	_expect(not inventory.remove_item(1), "remover slot já vazio devolve false")
+	_expect(inventory.get_used_slot_count() == 2, "dois slots ocupados após a remoção")
+	_expect(counts.removed == 1, "sinal item_removed emitido")
+	_expect(inventory.select_slot(1), "seleciona um slot vazio")
+	_expect(inventory.get_selected_item() == null, "slot vazio selecionado devolve null")
+
+	_expect(inventory.replace_item(0, item_d), "substitui o item do slot 1")
+	_expect(inventory.get_item(0) == item_d, "slot 1 passa a ter o item D")
+	var still_has_a: bool = false
+	for index: int in inventory.get_slot_count():
+		if inventory.get_item(index) == item_a:
+			still_has_a = true
+	_expect(not still_has_a, "item substituído não fica em outro slot")
+	_expect(not inventory.replace_item(0, null), "substituir por null é recusado")
+	_expect(inventory.get_item(0) == item_d, "slot preservado após substituição inválida")
+	_expect(counts.replaced == 1, "sinal item_replaced emitido")
+
+	var slot_one: InventorySlot = inventory.get_slot(0)
+	_expect(slot_one != null and slot_one.get_item() == item_d, "get_slot() expõe o slot")
+	_expect(slot_one.get_display_name() == "ITEM D", "slot informa o nome do item")
+	inventory.clear()
+	_expect(inventory.get_used_slot_count() == 0, "clear() esvazia todos os slots")
+	remove_child(inventory)
+	inventory.free()
+
+	# --- Objetos de teste na cena ------------------------------------------
+	var hud: PlayerHud = _scene.get_hud()
+	var player_inventory: Inventory = _player.get_inventory()
+	_expect(player_inventory != null, "jogador tem inventário")
+	_expect(
+		hud != null and hud.get_inventory_bar() != null,
+		"HUD tem a barra de slots"
+	)
+	_expect(hud != null and hud.is_inventory_bound(), "HUD ligada ao inventário")
+	var bar: InventoryBar = hud.get_inventory_bar() if hud != null else null
+	var prompt: InteractionPrompt = hud.get_interaction_prompt() if hud != null else null
+	if player_inventory == null or bar == null or prompt == null:
+		return
+
+	_expect(bar.get_slot_count() == 3, "HUD desenha exatamente 3 slots (%d)" % bar.get_slot_count())
+	_expect(
+		bar.get_number_text(0) == "1" and bar.get_number_text(1) == "2" and bar.get_number_text(2) == "3",
+		"slots numerados 1, 2 e 3"
+	)
+	_expect(bar.get_slot_text(0) == "VAZIO", "slot vazio mostra VAZIO")
+	_expect(bar.is_slot_selected(0), "slot 1 começa selecionado")
+
+	var item_scene: PackedScene = load(INVENTORY_TEST_ITEM_SCENE) as PackedScene
+	_expect(item_scene != null, "cena do item de teste carrega")
+	var items := {
+		"TestItemA": _scene.get_node_or_null("TestItemA") as InventoryTestItem,
+		"TestItemB": _scene.get_node_or_null("TestItemB") as InventoryTestItem,
+		"TestItemC": _scene.get_node_or_null("TestItemC") as InventoryTestItem,
+		"TestItemD": _scene.get_node_or_null("TestItemD") as InventoryTestItem,
+	}
+	for item_name: String in items:
+		var test_item: InventoryTestItem = items[item_name]
+		_expect(test_item != null, "%s presente na cena" % item_name)
+		if test_item != null:
+			_expect(test_item.get_item() != null, "%s tem definição de item" % item_name)
+			_expect(not test_item.is_collected(), "%s começa disponível" % item_name)
+			_expect(
+				test_item.interaction_text == "Pegar",
+				"%s pede [E] Pegar" % item_name
+			)
+
+	# --- Posição da HUD -----------------------------------------------------
+	var viewport: Vector2 = hud.get_viewport_rect().size
+	var bar_rect: Rect2 = bar.get_global_rect()
+	_expect(
+		bar_rect.position.x > viewport.x * 0.5,
+		"slots no canto inferior direito (x=%.0f de %.0f)" % [bar_rect.position.x, viewport.x]
+	)
+	_expect(bar_rect.position.y > viewport.y * 0.6, "slots na parte inferior da tela")
+	_expect(
+		bar_rect.end.x <= viewport.x and bar_rect.end.y <= viewport.y,
+		"slots dentro da tela"
+	)
+	var stamina_rect: Rect2 = hud.get_stamina_bar().get_global_rect()
+	_expect(
+		bar_rect.position.x >= stamina_rect.end.x,
+		"slots não se sobrepõem à stamina (%.0f ≥ %.0f)" % [bar_rect.position.x, stamina_rect.end.x]
+	)
+	var prompt_rect: Rect2 = prompt.get_panel_rect()
+	_expect(
+		not bar_rect.intersects(prompt_rect),
+		"slots não se sobrepõem à indicação de interação"
+	)
+
+	# --- Coleta do item A ---------------------------------------------------
+	await _place(ITEM_VIEWS["TestItemA"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	var item_a_node: InventoryTestItem = items["TestItemA"]
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == item_a_node,
+		"item A é detectado pelo olhar"
+	)
+	_expect(prompt.visible and prompt.get_prompt_text() == "Pegar", "indicação mostra Pegar")
+
+	var stamina_before: float = _player.get_stamina()
+	await _tap_action("interact")
+	_expect(item_a_node.is_collected(), "E coleta o item A")
+	_expect(not item_a_node.visible, "item coletado desaparece da cena")
+	_expect(player_inventory.get_item(0) == item_a_node.get_item(), "item A vai para o slot 1")
+	_expect(
+		bar.get_slot_text(0) == "ITEM A",
+		"slot 1 mostra ITEM A (%s)" % bar.get_slot_text(0)
+	)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == null,
+		"item coletado deixa de ser foco"
+	)
+	_expect(not prompt.visible, "indicação some depois da coleta")
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before),
+		"coletar não altera a stamina (%.1f)" % _player.get_stamina()
+	)
+	await _tap_action("interact")
+	_expect(player_inventory.get_used_slot_count() == 1, "E de novo não duplica o item")
+
+	# --- Demais itens -------------------------------------------------------
+	await _place(ITEM_VIEWS["TestItemB"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	await _tap_action("interact")
+	_expect(items["TestItemB"].is_collected(), "coleta o item B")
+	_expect(player_inventory.get_item(1) != null, "item B vai para o slot 2")
+
+	await _place(ITEM_VIEWS["TestItemC"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	await _tap_action("interact")
+	_expect(items["TestItemC"].is_collected(), "coleta o item C")
+	_expect(player_inventory.get_item(2) != null, "item C vai para o slot 3")
+	_expect(not player_inventory.has_free_slot(), "os três slots ficam ocupados")
+	_expect(
+		bar.get_slot_text(2) == "ITEM C",
+		"slot 3 mostra ITEM C (%s)" % bar.get_slot_text(2)
+	)
+
+	# --- Alcance e linha de visão (o item D ainda está livre) --------------
+	var item_d_node: InventoryTestItem = items["TestItemD"]
+	await _place(Vector3(-1.3, 0.05, 6.6), 0.0)
+	_player.set_look(0.0, -0.2)
+	await _frames(8)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == null,
+		"item fora do alcance não é detectado"
+	)
+
+	var wall := StaticBody3D.new()
+	wall.name = "TestInventoryWall"
+	var wall_collision := CollisionShape3D.new()
+	var wall_shape := BoxShape3D.new()
+	wall_shape.size = Vector3(2.0, 2.0, 0.2)
+	wall_collision.shape = wall_shape
+	wall.add_child(wall_collision)
+	_scene.add_child(wall)
+	wall.global_position = Vector3(-1.3, 1.4, 4.9)
+	await _place(ITEM_VIEWS["TestItemD"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == null,
+		"parede bloqueia a coleta"
+	)
+	wall.queue_free()
+	await _frames(6)
+
+	# --- Inventário cheio ---------------------------------------------------
+	await _place(ITEM_VIEWS["TestItemD"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == item_d_node,
+		"item D é detectado mesmo com o inventário cheio"
+	)
+	await _tap_action("interact")
+	_expect(not item_d_node.is_collected(), "item D não é coletado com o inventário cheio")
+	_expect(item_d_node.visible, "item D continua na cena")
+	_expect(item_d_node.get_attempts() == 1, "a tentativa foi registrada")
+	_expect(player_inventory.get_used_slot_count() == 3, "os três itens continuam guardados")
+	_expect(hud.is_full_message_visible(), "HUD avisa INVENTÁRIO CHEIO")
+	_expect(
+		hud.get_full_message_text() == "INVENTÁRIO CHEIO",
+		"texto do aviso: %s" % hud.get_full_message_text()
+	)
+	_expect(
+		bar.get_slot_text(0) == "ITEM A" and bar.get_slot_text(1) == "ITEM B",
+		"itens existentes continuam visíveis na HUD"
+	)
+	_expect(not player_inventory.has_free_slot(), "inventário continua cheio")
+
+	# --- Seleção ------------------------------------------------------------
+	await _tap_action("inventory_slot_2")
+	_expect(player_inventory.get_selected_slot() == 1, "tecla 2 seleciona o slot 2")
+	_expect(bar.is_slot_selected(1), "HUD realça o slot 2")
+	_expect(
+		bar.get_slot_panel(1).get_theme_stylebox("panel") != bar.get_slot_panel(0).get_theme_stylebox("panel"),
+		"slot selecionado tem estilo próprio"
+	)
+	await _tap_action("inventory_slot_3")
+	_expect(player_inventory.get_selected_slot() == 2, "tecla 3 seleciona o slot 3")
+	await _tap_action("inventory_slot_1")
+	_expect(player_inventory.get_selected_slot() == 0, "tecla 1 volta ao slot 1")
+	_expect(
+		player_inventory.get_selected_item() != null
+			and player_inventory.get_selected_item() == player_inventory.get_item(0),
+		"get_selected_item() acompanha a seleção"
+	)
+	_expect(bar.get_selected_index() == 0, "barra acompanha a seleção")
+	await _frames(150)
+	_expect(not hud.is_full_message_visible(), "aviso de inventário cheio desaparece sozinho")
+
+	# --- Pausa (ainda com o item D na mira) --------------------------------
+	await _place(ITEM_VIEWS["TestItemD"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == item_d_node,
+		"item D em foco antes da pausa"
+	)
+	var used_before_pause: int = player_inventory.get_used_slot_count()
+	var selected_before_pause: int = player_inventory.get_selected_slot()
+
+	_scene.pause_session()
+	await _frames(6)
+	await _tap_action("inventory_slot_3")
+	_expect(
+		player_inventory.get_selected_slot() == selected_before_pause,
+		"teclas 1/2/3 não mudam a seleção na pausa"
+	)
+	await _tap_action("inventory_remove")
+	_expect(
+		player_inventory.get_used_slot_count() == used_before_pause,
+		"R não remove item na pausa"
+	)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == item_d_node,
+		"foco preservado na pausa"
+	)
+	await _tap_action("interact")
+	_expect(item_d_node.get_attempts() == 1, "E não coleta durante a pausa")
+	_expect(not item_d_node.is_collected(), "item D continua na cena após a pausa")
+
+	_scene.open_settings()
+	await _frames(6)
+	await _tap_action("inventory_slot_2")
+	_expect(
+		player_inventory.get_selected_slot() == selected_before_pause,
+		"configurações também bloqueiam a seleção"
+	)
+	_scene.close_settings()
+	await _frames(4)
+	_scene.resume_session()
+	await _frames(8)
+	await _tap_action("inventory_slot_2")
+	_expect(player_inventory.get_selected_slot() == 1, "seleção volta a funcionar após CONTINUAR")
+
+	# --- Remoção (R provisória) --------------------------------------------
+	_expect(player_inventory.is_slot_empty(1) == false, "slot 2 ocupado antes da remoção")
+	await _tap_action("inventory_remove")
+	_expect(player_inventory.is_slot_empty(1), "R remove o item do slot selecionado")
+	_expect(bar.get_slot_text(1) == "VAZIO", "slot removido volta a VAZIO na HUD")
+	_expect(
+		player_inventory.get_selected_slot() == 1,
+		"remoção não muda a seleção (slot vazio continua selecionado)"
+	)
+	await _tap_action("inventory_remove")
+	_expect(player_inventory.get_used_slot_count() == 2, "R em slot vazio não remove nada")
+
+	# --- Substituição -------------------------------------------------------
+	var replacement := ItemDefinition.new(&"item_d", "ITEM D")
+	_expect(player_inventory.replace_item(0, replacement), "substitui o item do slot 1")
+	_expect(
+		bar.get_slot_text(0) == "ITEM D",
+		"slot 1 mostra o item substituto (%s)" % bar.get_slot_text(0)
+	)
+	_expect(player_inventory.get_used_slot_count() == 2, "substituição não muda a quantidade")
+
+	# --- Coleta do item D depois de liberar um slot ------------------------
+	await _place(ITEM_VIEWS["TestItemD"], 0.0)
+	_player.set_look(0.0, ITEM_PITCH)
+	await _frames(8)
+	await _tap_action("interact")
+	_expect(item_d_node.is_collected(), "item D é coletado com slot livre")
+	_expect(player_inventory.get_used_slot_count() == 3, "slot livre recebeu o item D")
+	_expect(
+		bar.get_slot_text(1) == "ITEM D",
+		"slot 2 mostra o item D (%s)" % bar.get_slot_text(1)
+	)
+	_expect(
+		bar.is_slot_selected(1),
+		"slot preenchido continua selecionado"
+	)
+
+	# --- Regressão de HUD e movimento --------------------------------------
+	_expect(
+		absf(hud.get_stamina_bar().get_ratio() - _player.get_stamina_ratio()) < 0.001,
+		"HUD de stamina continua coerente"
+	)
+	var move_from: Vector3 = _player.global_position
+	Input.action_press("move_forward")
+	await _frames(20)
+	Input.action_release("move_forward")
+	await _frames(4)
+	_expect(
+		_player.global_position.distance_to(move_from) > 0.3,
+		"movimento continua funcionando"
+	)
+
+	# --- Estado final limpo -------------------------------------------------
+	player_inventory.clear()
+	await _frames(3)
+	_expect(bar.get_slot_text(0) == "VAZIO", "HUD volta a VAZIO ao limpar")
+	Input.action_release("inventory_remove")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_look(0.0, 0.0)
+	_player.set_stamina(_player.max_stamina)
+	await _frames(4)
+
+
+## Pressiona e solta uma ação em dois frames (borda lida pelo componente).
+func _tap_action(action: String) -> void:
+	Input.action_press(action)
+	await _frames(2)
+	Input.action_release(action)
+	await _frames(3)
 
 
 # --- Utilidades -------------------------------------------------------------

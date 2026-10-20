@@ -324,7 +324,7 @@ class FlowDriver:
 			return false
 		_expect(not pause_root.visible, "configurações escondem o menu de pausa")
 
-		# Etapas 6–7: modo de agachamento e lista real (agora com E — Interagir).
+		# Etapas 6–8: modo de agachamento e lista real (E e 1 2 3).
 		var controls: ControlsSection = screen.get_section("controls") as ControlsSection
 		_expect(controls != null, "seção CONTROLES disponível na partida")
 		if controls != null:
@@ -334,8 +334,9 @@ class FlowDriver:
 			for row: Array in rows:
 				keys.append(str(row[0]))
 				labels += "%s %s " % [str(row[0]), str(row[1])]
-			_expect(keys.size() == 7, "lista real de controles durante a partida (%d)" % keys.size())
+			_expect(keys.size() == 8, "lista real de controles durante a partida (%d)" % keys.size())
 			_expect(keys.has("E"), "lista inclui E — Interagir (Etapa 7)")
+			_expect(keys.has("1 2 3"), "lista inclui 1 2 3 — Selecionar slot (Etapa 8)")
 			_expect(
 				labels.to_lower().contains("interagir")
 					and not labels.to_lower().contains("lanterna")

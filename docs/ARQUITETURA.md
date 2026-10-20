@@ -56,7 +56,7 @@ BlackSight/
 
 | Módulo | Finalidade | Conteúdo real hoje |
 | --- | --- | --- |
-| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos e detecção de interação | `scenes/player.tscn`, `scripts/player_controller.gd`, `scripts/interaction/interaction_detector.gd` |
+| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos, detecção de interação e inventário | `scenes/player.tscn`, `scripts/player_controller.gd`, `scripts/interaction/`, `scripts/inventory/` |
 | `creatures/` | Criaturas: percepção, máquina de estados, patrulha, perseguição, spawn | apenas `README.md` |
 | `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste) |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
@@ -259,8 +259,40 @@ match/scripts/movement_test.gd            liga HUD ↔ detector; suspende na pau
   via `match/`), a indicação é escondida, `interact` não roda e o foco é
   preservado para a retomada.
 
+## 6.4 Inventário (Etapa 8)
+
+```
+shared/items/item_definition.gd            ItemDefinition (Resource: id + display_name)
+
+players/scenes/player.tscn
+├── Inventory                              Inventory (3 slots, API, sinais)
+│   └── InventorySlot × 3                  item + estado de cada slot
+└── InventoryInput                         teclas 1/2/3 e R (InputMap)
+
+items/scenes/inventory_test_item.tscn      InventoryTestItem extends Interactable
+
+ui/scenes/hud/inventory_bar.tscn           InventoryBar (3 slots + realce)
+ui/scenes/hud/player_hud.tscn              barra + aviso "INVENTÁRIO CHEIO"
+
+match/scripts/movement_test.gd             liga HUD ↔ inventário; pausa a entrada
+```
+
+- O inventário é **dado**: não desenha, não lê teclado e não processa por frame.
+  `ui/` observa os sinais `inventory_changed`, `selection_changed` e
+  `item_rejected`.
+- A entrada (`InvInput`) lê o **InputMap** (`inventory_slot_1..3`,
+  `inventory_remove`) com borda própria; nenhuma tecla é codificada.
+- O item pegável (`items/`) pede o inventário ao ator por contrato
+  (`actor.get_inventory()`) e só esconde a si mesmo quando o `add_item()`
+  devolve sucesso — `items/` não importa `players/`.
+- `ItemDefinition` vive em `shared/` porque é o tipo comum entre `players/`,
+  `items/` e `ui/`, do mesmo jeito que `Interactable`.
+- A pausa desliga `InteractionDetector` e `InventoryInput`; seleção, remoção e
+  coleta ficam bloqueadas e o estado é preservado.
+
 Detalhes: [`ETAPA-4.md`](ETAPA-4.md), [`ETAPA-5.md`](ETAPA-5.md),
-[`ETAPA-6.md`](ETAPA-6.md) e [`ETAPA-7.md`](ETAPA-7.md).
+[`ETAPA-6.md`](ETAPA-6.md), [`ETAPA-7.md`](ETAPA-7.md) e
+[`ETAPA-8.md`](ETAPA-8.md).
 
 ---
 

@@ -97,6 +97,7 @@ func _ready() -> void:
 	_check_fps_controller()
 	_check_movement_states()
 	_check_stage6()
+	_check_stage8()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -893,9 +894,9 @@ func _check_stage6() -> void:
 		keys.append(str(row[0]))
 		joined += "%s %s " % [str(row[0]), str(row[1])]
 	var lowered: String = joined.to_lower()
-	_expect(rows.size() == 7, "lista tem exatamente sete controles (%d)" % rows.size())
+	_expect(rows.size() == 8, "lista tem exatamente oito controles (%d)" % rows.size())
 	_expect(
-		keys == ["W A S D", "Shift", "Ctrl", "E", "Mouse", "Esc", "F11"],
+		keys == ["W A S D", "Shift", "Ctrl", "E", "1 2 3", "Mouse", "Esc", "F11"],
 		"teclas reais na ordem esperada: %s" % str(keys)
 	)
 	_expect(lowered.contains("mover"), "WASD descreve mover")
@@ -904,10 +905,13 @@ func _check_stage6() -> void:
 	_expect(lowered.contains("pausar"), "Esc descreve pausar")
 	_expect(lowered.contains("tela cheia"), "F11 descreve tela cheia")
 	_expect(lowered.contains("interagir"), "E descreve interagir (Etapa 7)")
+	_expect(lowered.contains("slot"), "1 2 3 descreve selecionar slot (Etapa 8)")
 	_expect(not lowered.contains("lanterna"), "não lista F/Lanterna")
 	_expect(not lowered.contains("pular") and not lowered.contains("pulo"), "não lista pulo")
-	_expect(not lowered.contains("inventário") and not lowered.contains("inventario"),
-		"não lista inventário")
+	_expect(not lowered.contains("usar item") and not lowered.contains("equipar"),
+		"não lista uso nem equipamento de item")
+	_expect(not lowered.contains(" dropar") and not lowered.contains("descarte"),
+		"não lista descarte de item")
 	_expect(not lowered.contains("ataque"), "não lista ataque")
 	_expect(keys.has("E") and not keys.has("F"), "lista E (implementada) e não F")
 	_expect(not keys.has("Space") and not lowered.contains("espaço"), "não lista a barra de espaço")
@@ -934,4 +938,154 @@ func _check_stage6() -> void:
 	_expect(
 		FileAccess.file_exists("res://docs/ETAPA-7.md"),
 		"documentação da Etapa 7 presente (docs/ETAPA-7.md)"
+	)
+
+
+func _check_stage8() -> void:
+	print("[16] Inventário de três slots (Etapa 8)")
+
+	# --- Versão -------------------------------------------------------------
+	_expect(
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.8.0",
+		"versão do projeto é 0.8.0"
+	)
+	var app_info = get_node_or_null("/root/AppInfo")
+	if app_info != null:
+		_expect(
+			str(app_info.stage_label()).contains("Etapa 8"),
+			"AppInfo anuncia a Etapa 8 (%s)" % str(app_info.stage_label())
+		)
+
+	# --- InputMap -----------------------------------------------------------
+	var expected_actions := {
+		"inventory_slot_1": KEY_1,
+		"inventory_slot_2": KEY_2,
+		"inventory_slot_3": KEY_3,
+		"inventory_remove": KEY_R,
+	}
+	for action: String in expected_actions:
+		_expect(InputMap.has_action(action), "ação '%s' configurada" % action)
+		var found: bool = false
+		for event: InputEvent in InputMap.action_get_events(action):
+			var key := event as InputEventKey
+			if key == null:
+				continue
+			var code: int = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+			if code == expected_actions[action]:
+				found = true
+		_expect(
+			found,
+			"ação '%s' usa %s" % [action, OS.get_keycode_string(expected_actions[action])]
+		)
+	_expect(not InputMap.has_action("inventory_drop"), "não existe ação de drop nesta etapa")
+
+	# --- Arquivos -----------------------------------------------------------
+	for path: String in [
+		"res://shared/items/item_definition.gd",
+		"res://players/scripts/inventory/inventory.gd",
+		"res://players/scripts/inventory/inventory_slot.gd",
+		"res://players/scripts/inventory/inventory_input.gd",
+		"res://items/scripts/inventory_test_item.gd",
+		"res://items/scenes/inventory_test_item.tscn",
+		"res://ui/scripts/hud/inventory_bar.gd",
+		"res://ui/scenes/hud/inventory_bar.tscn",
+		"res://docs/ETAPA-8.md",
+	]:
+		_expect(FileAccess.file_exists(path), "arquivo da Etapa 8 presente (%s)" % path)
+
+	var item_packed: PackedScene = load("res://items/scenes/inventory_test_item.tscn") as PackedScene
+	_expect(item_packed != null, "cena do item de teste carrega")
+	var bar_packed: PackedScene = load("res://ui/scenes/hud/inventory_bar.tscn") as PackedScene
+	_expect(bar_packed != null, "cena da barra de slots carrega")
+
+	# --- Inventário isolado -------------------------------------------------
+	_expect(Inventory.SLOT_COUNT == 3, "Inventory.SLOT_COUNT = 3")
+	var inventory: Inventory = Inventory.new()
+	add_child(inventory)
+	_expect(inventory.get_slot_count() == 3, "inventário começa com três slots")
+	_expect(inventory.get_used_slot_count() == 0, "inventário começa vazio")
+	_expect(inventory.get_selected_slot() == 0, "slot 1 selecionado por padrão")
+
+	var first := ItemDefinition.new(&"smoke_a", "ITEM A")
+	var second := ItemDefinition.new(&"smoke_b", "ITEM B")
+	var third := ItemDefinition.new(&"smoke_c", "ITEM C")
+	var fourth := ItemDefinition.new(&"smoke_d", "ITEM D")
+	_expect(inventory.add_item(first), "adiciona item no inventário")
+	_expect(inventory.add_item(second) and inventory.add_item(third), "adiciona até encher")
+	_expect(not inventory.has_free_slot(), "inventário cheio após três itens")
+	_expect(not inventory.add_item(fourth), "inventário cheio recusa o quarto item")
+	_expect(inventory.get_item(0) == first, "item recusado não substitui o primeiro")
+	_expect(inventory.select_slot(2), "seleciona o slot 3")
+	_expect(inventory.get_selected_item() == third, "item selecionado é o do slot 3")
+	_expect(inventory.remove_item(1), "remove o item do slot 2")
+	_expect(inventory.is_slot_empty(1), "slot fica vazio depois da remoção")
+	_expect(inventory.replace_item(0, fourth), "substitui o item do slot 1")
+	_expect(inventory.get_item(0) == fourth, "slot 1 recebe o substituto")
+	_expect(inventory.add_item(second), "slot livre volta a aceitar item")
+	remove_child(inventory)
+	inventory.free()
+
+	# --- Cena do jogador ----------------------------------------------------
+	var player_packed: PackedScene = load("res://players/scenes/player.tscn") as PackedScene
+	if player_packed != null:
+		var player: Node = player_packed.instantiate()
+		_expect(
+			player.get_node_or_null("Inventory") is Inventory,
+			"cena do jogador tem o nó Inventory"
+		)
+		_expect(
+			player.get_node_or_null("InventoryInput") != null,
+			"cena do jogador tem a entrada do inventário"
+		)
+		_expect(player.get_inventory() != null, "controlador expõe get_inventory()")
+		_expect(player.get_inventory_input() != null, "controlador expõe get_inventory_input()")
+		player.free()
+
+	# --- HUD ----------------------------------------------------------------
+	var hud_packed: PackedScene = load("res://ui/scenes/hud/player_hud.tscn") as PackedScene
+	_expect(hud_packed != null, "HUD carrega com a barra de slots")
+	if hud_packed != null:
+		var hud: PlayerHud = hud_packed.instantiate() as PlayerHud
+		add_child(hud)
+		var bar: InventoryBar = hud.get_inventory_bar()
+		_expect(bar != null, "HUD expõe a barra de slots")
+		if bar != null:
+			_expect(bar.get_slot_count() == 3, "HUD desenha 3 slots")
+			_expect(bar.get_slot_text(0) == "VAZIO", "slot começa VAZIO")
+			_expect(
+				hud.get_node_or_null("InventoryArea/Column/FullMessage") != null,
+				"HUD tem o aviso de inventário cheio"
+			)
+			var probe: Inventory = Inventory.new()
+			add_child(probe)
+			probe.add_item(ItemDefinition.new(&"smoke_hud", "ITEM HUD"))
+			hud.bind_inventory(probe)
+			_expect(
+				bar.get_slot_text(0) == "ITEM HUD",
+				"HUD mostra o item do slot 1 (%s)" % bar.get_slot_text(0)
+			)
+			probe.select_slot(1)
+			_expect(bar.is_slot_selected(1), "HUD acompanha a seleção")
+			probe.add_item(ItemDefinition.new(&"smoke_hud_2", "ITEM 2"))
+			probe.add_item(ItemDefinition.new(&"smoke_hud_3", "ITEM 3"))
+			probe.add_item(ItemDefinition.new(&"smoke_hud_4", "ITEM 4"))
+			_expect(hud.is_full_message_visible(), "HUD avisa quando o inventário enche")
+			remove_child(probe)
+			probe.free()
+		remove_child(hud)
+		hud.free()
+
+	# --- Cena de teste ------------------------------------------------------
+	var movement_packed: PackedScene = load("res://match/scenes/movement_test.tscn") as PackedScene
+	if movement_packed != null:
+		var movement: Node = movement_packed.instantiate()
+		for item_name: String in ["TestItemA", "TestItemB", "TestItemC", "TestItemD"]:
+			var test_item: Node = movement.get_node_or_null(item_name)
+			_expect(test_item is InventoryTestItem, "%s na cena de teste" % item_name)
+		movement.free()
+
+	_expect(
+		not FileAccess.get_file_as_string("res://players/scripts/inventory/inventory.gd")
+			.contains("is_key_pressed"),
+		"inventário não lê teclas diretamente"
 	)

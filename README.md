@@ -3,10 +3,10 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 7 concluída — **sistema genérico de interação** por olhar
-> (raycast da câmera, alcance de 2,5 m, linha de visão) com a indicação
-> `[E] Interagir` e um objeto de teste. Stamina, agachamento, HUD e controles
-> anteriores continuam exatamente como na v0.6.2.
+> **Status:** Etapa 8 concluída — **inventário de três slots** com coleta por
+> interação, seleção com 1/2/3, remoção provisória com R, substituição e aviso de
+> inventário cheio. Movimento, stamina, interação, HUD e configurações continuam
+> como na v0.7.0.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -18,16 +18,15 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.7.0-etapa7-interaction/BlackSight-Etapa7-Interaction-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.8.0-etapa8-inventory/BlackSight-Etapa8-Inventory-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa7-Interaction-Windows-x86_64.zip` (40.653.078 bytes ≈ 38,8 MiB)
-
-SHA-256 do ZIP: `3cdac8c7d64008235694996c145dbe734bb0e7aabc499f1f9b24a8e203f25878`
+Arquivo: `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` (tamanho e SHA-256 após a publicação)
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
-3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D e olhe para o
-   **Painel de Teste** à frente: a indicação `[E] Interagir` aparece no rodapé.
+3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
+   **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar e use **1**, **2**
+   e **3** para escolher o slot.
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 
@@ -38,7 +37,9 @@ Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compat
 | `W` `A` `S` `D` | Andar (relativo à direção da câmera) |
 | `Shift` | Correr (consome stamina; nunca agachado). Segurar Shift também bloqueia a recuperação |
 | `Ctrl` | Agachar — **ALTERNAR** (padrão): um toque agacha, outro levanta; **SEGURAR**: mantenha pressionado |
-| `E` | Interagir com o objeto sob a mira (aparece `[E] Interagir` no rodapé) |
+| `E` | Interagir com o objeto sob a mira (aparece `[E] Interagir`) ou pegar o item (`[E] Pegar`) |
+| `1` `2` `3` | Selecionar o slot do inventário (inclusive slot vazio) |
+| `R` | **Provisória:** remover o item do slot selecionado (só para validar a Etapa 8) |
 | Mouse | Olhar (limite de ±89° na vertical) |
 | `Esc` | Liberar o mouse / abrir a pausa |
 | `F11` | Alternar janela ↔ tela cheia |
@@ -50,8 +51,9 @@ Na pausa da cena de teste: **CONTINUAR** (ou `Esc`) captura o mouse de novo,
 
 A sensibilidade do mouse, a inversão vertical e o **modo de agachamento** são
 os configurados em **CONFIGURAÇÕES → CONTROLES**. A lista mostrada ali é a dos
-controles que existem de verdade — inclui `E — Interagir` e continua sem
-lanterna, pulo, inventário ou ataque.
+controles que existem de verdade — inclui `E — Interagir` e `1 2 3 — Selecionar
+slot` e continua sem lanterna, pulo, uso/descarte de item ou ataque. (A tecla
+`R` não é listada: é provisória desta etapa.)
 
 ## O que existe hoje
 
@@ -84,13 +86,22 @@ lanterna, pulo, inventário ou ataque.
   `shared/interaction/interactable.gd`; o detector, na câmera do jogador.
 - **Painel de Teste de Interação** na sala de teste, que mostra
   **INTERAÇÃO EXECUTADA** ao ser acionado.
+- **Inventário de três slots** (Etapa 8): `Inventory` guarda os itens (primeiro
+  slot livre, remoção, substituição e seleção) e emite sinais — a HUD nunca
+  consulta por frame. A barra fica no canto inferior direito, com número, nome do
+  item/`VAZIO` e realce no slot selecionado. **E** coleta, **1/2/3** selecionam,
+  **R** remove (provisória) e, com o inventário cheio, o item novo não entra e a
+  HUD avisa **INVENTÁRIO CHEIO**. O item genérico (`ItemDefinition`, em
+  `shared/items/`) tem apenas **id** e **nome**.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
 
-Ainda **não** existe: pulo, inventário, portas, itens coletáveis, criaturas,
-multiplayer, voz e o mapa definitivo. A HUD mostra apenas a stamina e a
-indicação de interação; vida, objetivos e inventário vêm nas próximas etapas.
-Ver [`docs/ETAPA-7.md`](docs/ETAPA-7.md) e [`docs/ETAPA-6.md`](docs/ETAPA-6.md).
+Ainda **não** existe: pulo, uso/descarte de item, pilha, peso, equipamentos,
+portas, chaves, objetivos, criaturas, multiplayer, voz e o mapa definitivo. A HUD
+mostra a stamina, a indicação de interação e os três slots; vida, objetivos e
+telas de inventário completas vêm nas próximas etapas.
+Ver [`docs/ETAPA-8.md`](docs/ETAPA-8.md), [`docs/ETAPA-7.md`](docs/ETAPA-7.md) e
+[`docs/ETAPA-6.md`](docs/ETAPA-6.md).
 
 ## Arquitetura
 
@@ -98,15 +109,15 @@ O projeto é dividido em módulos por responsabilidade. Detalhes completos em
 [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ```
-players/       jogador: player.tscn + player_controller.gd + detector de interação
+players/       jogador: controlador, detector de interação e inventário (3 slots)
 creatures/     criaturas e IA (estrutura)
 maps/          mapas e salas — test_room.tscn
-items/         itens e inventário (estrutura; interação vive em shared/)
+items/         itens pegáveis (InventoryTestItem) e futuros itens do jogo
 objectives/    objetivos e progressão (estrutura)
 match/         orquestração — movement_test (sala + jogador + pausa)
 ui/            menus e HUD — tela inicial e configurações
 audio/         buses de áudio e sons da interface
-shared/        recursos, tema, configurações, autoloads e o contrato Interactable
+shared/        recursos, tema, configurações, autoloads, Interactable e ItemDefinition
 ```
 
 Cada módulo tem seu próprio `README.md` com a responsabilidade, o que entra nele

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://match/scripts/movement_test.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://maps/scenes/test_room.tscn" id="2_room"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://ui/scenes/hud/player_hud.tscn" id="4_hud"]
 [ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="5_title_font"]
 [ext_resource type="PackedScene" path="res://maps/scenes/interaction_test_panel.tscn" id="6_panel"]
+[ext_resource type="PackedScene" path="res://items/scenes/inventory_test_item.tscn" id="7_item"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause"]
 bg_color = Color(0.031, 0.031, 0.035, 0.82)
@@ -30,6 +31,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 8)
 [node name="InteractionPanel" parent="." instance=ExtResource("6_panel")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0, 6.2)
 
+[node name="TestItemA" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 0, 6.1)
+item_id = &"item_a"
+item_name = "ITEM A"
+
+[node name="TestItemB" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0, 5.3)
+item_id = &"item_b"
+item_name = "ITEM B"
+
+[node name="TestItemC" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 4.3)
+item_id = &"item_c"
+item_name = "ITEM C"
+
+[node name="TestItemD" parent="." instance=ExtResource("7_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0, 3.9)
+item_id = &"item_d"
+item_name = "ITEM D"
+
 [node name="Interface" type="CanvasLayer" parent="."]
 
 [node name="HintLabel" type="Label" parent="Interface"]
@@ -40,7 +61,7 @@ offset_right = 1200.0
 offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 0.9)
 theme_override_font_sizes/font_size = 15
-text = "WASD MOVER · SHIFT CORRER · CTRL AGACHAR · E INTERAGIR · MOUSE OLHAR · ESC PAUSA"
+text = "WASD MOVER · SHIFT CORRER · CTRL AGACHAR · E INTERAGIR · 1 2 3 SLOTS · R REMOVER · MOUSE OLHAR · ESC PAUSA"
 
 [node name="PlayerHud" parent="Interface" instance=ExtResource("4_hud")]
 unique_name_in_owner = true
@@ -114,7 +135,7 @@ color = Color(0.62, 0.58, 0.51, 0.18)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 0.9)
 theme_override_font_sizes/font_size = 14
-text = "WASD mover · SHIFT correr · CTRL agachar · E interagir · ESC capturar novamente"
+text = "WASD mover · SHIFT correr · CTRL agachar · E pegar · 1 2 3 slots · R remover · ESC capturar novamente"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]

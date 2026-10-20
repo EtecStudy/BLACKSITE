@@ -3,10 +3,11 @@
 **Responsabilidade:** interfaces, menus e HUD — tela inicial, menus, pausa e
 HUD em jogo.
 
-**Estado atual (Etapa 6.1):** tela inicial da Etapa 1 preservada integralmente
+**Estado atual (Etapa 8):** tela inicial da Etapa 1 preservada integralmente
 (mesma cena, mesmas animações, mesmo comportamento) + tela de configurações com
 abas de controles, áudio e vídeo, usada também por cima da partida pausada +
-**HUD de stamina** (`ui/scenes/hud/`), desenhada com controles nativos.
+**HUD de stamina**, **indicação `[E] Interagir`** e **barra do inventário de três
+slots** (`ui/scenes/hud/`), desenhadas com controles nativos.
 
 | Caminho | O que é |
 | --- | --- |
@@ -23,6 +24,11 @@ abas de controles, áudio e vídeo, usada também por cima da partida pausada +
 | `ui/scripts/hud/player_hud.gd` | `bind_player()`: escuta `stamina_changed`, sem importar `players/` |
 | `ui/scripts/hud/stamina_bar.gd` | Recebe `set_values(current, maximum)` e repassa ao desenho |
 | `ui/scripts/hud/stamina_fill.gd` | Desenho nativo do trilho, preenchimento, limiar e alerta |
+| `ui/scenes/hud/interaction_prompt.tscn` | Indicação `[E] Interagir` no rodapé (Etapa 7) |
+| `ui/scripts/hud/interaction_prompt.gd` | Texto vem do objeto; tecla vem do InputMap |
+| `ui/scenes/hud/inventory_bar.tscn` | Três slots com número, item/`VAZIO` e realce (Etapa 8) |
+| `ui/scripts/hud/inventory_bar.gd` | Só desenha: recebe `set_slot()` / `set_selected()` |
+| `ui/scripts/hud/player_hud.gd` | `bind_player()`, `bind_interaction()` e `bind_inventory()` — sempre por sinal |
 
 A tela de configurações não lê nem grava arquivos: ela conversa com o autoload
 `GameSettings` (`shared/settings/`), que é o único dono da persistência.
