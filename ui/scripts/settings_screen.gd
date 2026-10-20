@@ -1,5 +1,6 @@
+class_name SettingsScreen
 extends Control
-## Tela de configurações (Etapa 3).
+## Tela de configurações (Etapa 3 → Etapa 5).
 ##
 ## Orquestra as seções (Controles, Áudio, Vídeo) e o ciclo de vida dos valores:
 ## - mantém uma **cópia de trabalho** (`_staged`) separada do que está salvo;
@@ -8,6 +9,15 @@ extends Control
 ## - VOLTAR descarta o que não foi aplicado, inclusive a pré-visualização.
 ##
 ## A persistência e a aplicação real ficam no autoload `GameSettings`.
+##
+## A mesma tela serve dois fluxos (Etapa 5):
+## - **sozinha** na árvore (tela inicial → CONFIGURAÇÕES): VOLTAR/Esc retornam
+##   à tela inicial trocando de cena;
+## - **embutida** (`set_embedded(true)`) por cima de uma partida pausada:
+##   VOLTAR/Esc apenas emitem `back_requested`, sem trocar de cena — o
+##   `match/` decide o que fazer (voltar ao menu de pausa).
+
+signal back_requested
 
 const TITLE_SCENE: String = "res://ui/scenes/title_screen.tscn"
 const FADE_IN_DURATION: float = 0.45
@@ -25,6 +35,7 @@ const STATUS_COLOR_OK := Color(0.62, 0.72, 0.6, 1.0)
 @onready var _apply_button: Button = %ApplyButton
 @onready var _defaults_button: Button = %DefaultsButton
 @onready var _back_button: Button = %BackButton
+@onready var _back_hint: Label = %BackHint
 @onready var _tab_buttons: Array = [%TabControls, %TabAudio, %TabVideo]
 
 var _settings
@@ -33,6 +44,17 @@ var _staged: Dictionary = {}
 var _sections: Dictionary = {}
 var _active_tab: String = "controls"
 var _leaving: bool = false
+var _embedded: bool = false
+
+
+## Define o modo embutido **antes** de entrar na árvore. Embutida, a tela não
+## troca de cena ao voltar: emite `back_requested`.
+func set_embedded(value: bool) -> void:
+	_embedded = value
+
+
+func is_embedded() -> bool:
+	return _embedded
 
 
 func _ready() -> void:
@@ -43,6 +65,8 @@ func _ready() -> void:
 		_settings.current() if _settings != null else SettingsSchema.defaults()
 	)
 
+	if _embedded and _back_hint != null:
+		_back_hint.text = "Esc volta à pausa."
 	_build_sections()
 	_connect_buttons()
 	_select_tab("controls")
@@ -169,6 +193,11 @@ func _on_back_pressed() -> void:
 	if _settings != null:
 		# Descarta pré-visualizações não aplicadas.
 		_settings.preview_audio(_settings.current())
+
+	if _embedded:
+		# Volta ao menu de pausa; quem instanciou decide o que fazer.
+		back_requested.emit()
+		return
 
 	var tween: Tween = create_tween()
 	tween.tween_property(_fade, "color:a", 1.0, FADE_OUT_DURATION)

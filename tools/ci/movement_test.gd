@@ -1,12 +1,13 @@
 extends Node
-## Teste automatizado do controlador FPS e da cena de teste (Etapa 4).
+## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 5).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
 ##         res://tools/ci/movement_test.tscn
 ##
 ## O teste instancia a **cena real** (`match/scenes/movement_test.tscn`) e
-## verifica movimento, câmera, física, colisões e integração com as
+## verifica movimento, estados (parado/andando/correndo/agachado), câmera,
+## física, colisões, menu de pausa com configurações e integração com as
 ## configurações da Etapa 3. As entradas são simuladas com `Input.action_press`,
 ## que é o mesmo caminho usado pelo teclado.
 ##
@@ -15,7 +16,10 @@ extends Node
 const MOVEMENT_SCENE := "res://match/scenes/movement_test.tscn"
 const TEST_CONFIG := "user://test_movement_settings.cfg"
 
-const MOVE_ACTIONS := ["move_forward", "move_back", "move_left", "move_right"]
+const MOVE_ACTIONS := [
+	"move_forward", "move_back", "move_left", "move_right",
+	"move_sprint", "move_crouch",
+]
 
 var _scene: Node
 var _player
@@ -52,6 +56,11 @@ func _ready() -> void:
 	await _test_pause()
 	await _test_gravity()
 	await _test_collisions()
+	await _test_states()
+	await _test_speeds()
+	await _test_crouch_camera()
+	await _test_crouch_ceiling()
+	await _test_pause_settings()
 
 	_finish()
 
@@ -79,6 +88,20 @@ func _check_input_map() -> void:
 				found = true
 		_expect(found, "ação '%s' vinculada a %s" % [
 			action, OS.get_keycode_string(expected[action])
+		])
+	var extra := {
+		"move_sprint": KEY_SHIFT,
+		"move_crouch": KEY_CTRL,
+	}
+	for action: String in extra:
+		_expect(InputMap.has_action(action), "ação '%s' existe" % action)
+		var found_extra: bool = false
+		for event: InputEvent in InputMap.action_get_events(action):
+			var key := event as InputEventKey
+			if key != null and key.physical_keycode == extra[action]:
+				found_extra = true
+		_expect(found_extra, "ação '%s' vinculada a %s" % [
+			action, OS.get_keycode_string(extra[action])
 		])
 	_expect(InputMap.has_action("release_mouse"), "ação 'release_mouse' existe (Escape)")
 
@@ -348,6 +371,310 @@ func _test_collisions() -> void:
 		await get_tree().physics_frame
 		max_deviation = maxf(max_deviation, absf(_player.global_position.y - y0))
 	_expect(max_deviation < 0.02, "estável encostado na parede (máx. %.3f m)" % max_deviation)
+
+
+# --- Estados (Etapa 5) ------------------------------------------------------
+
+func _expect_state(expected: int, description: String) -> void:
+	_expect(
+		int(_player.get_state()) == expected,
+		"%s (estado: %s)" % [description, _player.get_state_name()]
+	)
+
+
+func _test_states() -> void:
+	print("[12] Estados de movimento")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_expect_state(PlayerController.MovementState.IDLE, "sem entrada → PARADO")
+
+	Input.action_press("move_forward")
+	await _frames(6)
+	_expect_state(PlayerController.MovementState.WALKING, "W → ANDANDO")
+
+	Input.action_press("move_sprint")
+	await _frames(8)
+	_expect_state(PlayerController.MovementState.RUNNING, "W + SHIFT → CORRENDO")
+
+	Input.action_press("move_crouch")
+	await _frames(8)
+	_expect_state(PlayerController.MovementState.CROUCHING, "CTRL durante corrida → AGACHADO (prioridade)")
+	_expect(_player.is_crouched(), "cápsula fica agachada")
+
+	Input.action_release("move_sprint")
+	await _frames(4)
+	_expect_state(PlayerController.MovementState.CROUCHING, "soltar SHIFT não levanta o agachamento")
+
+	Input.action_release("move_crouch")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.WALKING, "soltar CTRL andando → ANDANDO")
+	_expect(not _player.is_crouched(), "cápsula volta à altura normal")
+
+	Input.action_release("move_forward")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.IDLE, "soltar W → PARADO")
+
+	# corrida → parado; corrida → caminhada
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.RUNNING, "correndo de novo")
+	Input.action_release("move_forward")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.IDLE, "parar durante a corrida → PARADO")
+	Input.action_release("move_sprint")
+
+	# agachar parado → soltar sem direção → parado
+	Input.action_press("move_crouch")
+	await _frames(8)
+	_expect_state(PlayerController.MovementState.CROUCHING, "CTRL parado → AGACHADO")
+	Input.action_release("move_crouch")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.IDLE, "soltar CTRL sem direção → PARADO")
+
+
+func _test_speeds() -> void:
+	print("[13] Velocidades")
+	_expect(
+		_player.run_speed > _player.walk_speed * 1.2,
+		"corrida claramente maior que caminhada (%.2f m/s vs %.2f m/s)" % [
+			_player.run_speed, _player.walk_speed
+		]
+	)
+	_expect(
+		_player.crouch_speed < _player.walk_speed * 0.8,
+		"agachado claramente menor que caminhada (%.2f m/s vs %.2f m/s)" % [
+			_player.crouch_speed, _player.walk_speed
+		]
+	)
+	_expect(
+		is_equal_approx(
+			_player.speed_for_state(PlayerController.MovementState.IDLE), 0.0
+		),
+		"parado tem velocidade 0"
+	)
+	_expect(
+		is_equal_approx(
+			_player.speed_for_state(PlayerController.MovementState.WALKING),
+			_player.walk_speed
+		),
+		"velocidade de caminhada vem de walk_speed"
+	)
+
+	var walk: Vector3 = await _measure(Vector3(0, 0.05, 0), 0.0, ["move_forward"], 30)
+	var run: Vector3 = await _measure(
+		Vector3(0, 0.05, 0), 0.0, ["move_forward", "move_sprint"], 30
+	)
+	var crouch: Vector3 = await _measure(
+		Vector3(0, 0.05, 0), 0.0, ["move_forward", "move_crouch"], 30
+	)
+	var walk_distance: float = Vector2(walk.x, walk.z).length()
+	var run_distance: float = Vector2(run.x, run.z).length()
+	var crouch_distance: float = Vector2(crouch.x, crouch.z).length()
+	_expect(run_distance > walk_distance * 1.25, "corrida percorre mais que caminhada (%.2f m vs %.2f m)" % [run_distance, walk_distance])
+	_expect(crouch_distance < walk_distance * 0.8, "agachado percorre menos que caminhada (%.2f m vs %.2f m)" % [crouch_distance, walk_distance])
+
+	# diagonal normalizada também correndo
+	var run_diagonal: Vector3 = await _measure(
+		Vector3(0, 0.05, 0), 0.0, ["move_forward", "move_right", "move_sprint"], 30
+	)
+	var run_diagonal_distance: float = Vector2(run_diagonal.x, run_diagonal.z).length()
+	_expect(
+		absf(run_diagonal_distance - run_distance) <= run_distance * 0.06,
+		"diagonal correndo não é mais rápida (%.2f m vs %.2f m)" % [
+			run_diagonal_distance, run_distance
+		]
+	)
+
+
+func _test_crouch_camera() -> void:
+	print("[14] Câmera ao agachar")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	await _frames(20)
+	var origin: Vector3 = _player.global_position
+	var standing_eye: float = _player.get_eye_height()
+	_expect(
+		absf(standing_eye - 1.62) < 0.05,
+		"câmera em pé na altura dos olhos (%.2f m)" % standing_eye
+	)
+
+	Input.action_press("move_crouch")
+	var previous: float = _player.get_eye_height()
+	var max_step: float = 0.0
+	for index: int in 45:
+		await get_tree().physics_frame
+		var current: float = _player.get_eye_height()
+		max_step = maxf(max_step, absf(current - previous))
+		previous = current
+
+	_expect(
+		_player.get_eye_height() < 1.15,
+		"câmera desce ao agachar (%.2f m)" % _player.get_eye_height()
+	)
+	_expect(
+		absf(_player.get_eye_height() - _player.crouched_eye_height) < 0.05,
+		"câmera chega à altura agachada (%.2f m)" % _player.crouched_eye_height
+	)
+	_expect(max_step < 0.15, "descida suave, sem teletransporte (máx. %.3f m/frame)" % max_step)
+	var flat := Vector2(
+		_player.global_position.x - origin.x,
+		_player.global_position.z - origin.z
+	)
+	_expect(flat.length() < 0.02, "agachar não desloca o jogador (%.3f m)" % flat.length())
+
+	# o pitch continua válido durante o agachamento
+	_player.set_look(0.0, 0.0)
+	_player.apply_look(Vector2(0.0, 300.0))
+	_expect(
+		absf(_player.get_pitch()) <= deg_to_rad(89.0) + 0.001,
+		"limite vertical continua valendo agachado"
+	)
+	_player.set_look(0.0, 0.0)
+
+	Input.action_release("move_crouch")
+	var max_step_up: float = 0.0
+	previous = _player.get_eye_height()
+	for index: int in 45:
+		await get_tree().physics_frame
+		var current: float = _player.get_eye_height()
+		max_step_up = maxf(max_step_up, absf(current - previous))
+		previous = current
+	_expect(
+		absf(_player.get_eye_height() - standing_eye) < 0.05,
+		"câmera volta à altura normal (%.2f m)" % _player.get_eye_height()
+	)
+	_expect(max_step_up < 0.15, "subida suave, sem teletransporte (máx. %.3f m/frame)" % max_step_up)
+
+
+func _test_crouch_ceiling() -> void:
+	print("[15] Agachar sob obstáculo")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	Input.action_press("move_crouch")
+	await _frames(10)
+	_expect(_player.is_crouched(), "agacha antes do obstáculo")
+
+	var blocker := StaticBody3D.new()
+	blocker.name = "TestCeiling"
+	var collision := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(2.0, 0.3, 2.0)
+	collision.shape = box
+	blocker.add_child(collision)
+	_scene.add_child(blocker)
+	blocker.global_position = _player.global_position + Vector3(0.0, 1.4, 0.0)
+	await _frames(3)
+
+	Input.action_release("move_crouch")
+	await _frames(20)
+	_expect(_player.is_crouched(), "não levanta com obstáculo acima")
+	_expect_state(PlayerController.MovementState.CROUCHING, "estado continua AGACHADO sob o obstáculo")
+
+	blocker.queue_free()
+	await _frames(15)
+	_expect(not _player.is_crouched(), "levanta quando o espaço fica livre")
+	_expect_state(PlayerController.MovementState.IDLE, "volta a PARADO depois de levantar")
+
+
+func _test_pause_settings() -> void:
+	print("[16] Pausa com configurações")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	Input.action_press("move_crouch")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.CROUCHING, "agachado antes da pausa")
+	var position_before: Vector3 = _player.global_position
+
+	_scene.pause_session()
+	await _frames(3)
+	_expect(_scene.is_paused(), "pausa ativa")
+
+	var content := "Interface/PauseRoot/Center/Panel/Margin/Content/"
+	_expect(
+		_scene.get_node_or_null(content + "ContinueButton") != null,
+		"menu de pausa tem CONTINUAR"
+	)
+	var settings_button: Button = _scene.get_node_or_null(
+		content + "SettingsButton"
+	) as Button
+	_expect(settings_button != null, "menu de pausa tem CONFIGURAÇÕES")
+	_expect(
+		_scene.get_node_or_null(content + "MenuButton") != null,
+		"menu de pausa tem VOLTAR AO MENU"
+	)
+	if settings_button == null:
+		Input.action_release("move_crouch")
+		return
+
+	settings_button.pressed.emit()
+	await _frames(6)
+	_expect(_scene.is_settings_open(), "CONFIGURAÇÕES abre por cima da partida")
+	var screen: SettingsScreen = _scene.get_node_or_null(
+		"SettingsLayer/SettingsScreen"
+	) as SettingsScreen
+	_expect(screen != null, "usa a mesma tela de configurações da Etapa 3")
+	if screen != null:
+		_expect(screen.is_embedded(), "tela aberta em modo embutido (sem trocar de cena)")
+	_expect(not _player.movement_enabled, "jogador continua parado com as configurações abertas")
+	_expect(not _scene.get_node("Interface/PauseRoot").visible, "menu de pausa fica oculto")
+
+	var before_move: Vector3 = _player.global_position
+	Input.action_press("move_forward")
+	await _frames(30)
+	Input.action_release("move_forward")
+	var moved := Vector2(
+		_player.global_position.x - before_move.x,
+		_player.global_position.z - before_move.z
+	).length()
+	_expect(moved < 0.05, "WASD não move com configurações abertas (%.3f m)" % moved)
+
+	# As configurações continuam sendo as mesmas: alterar a sensibilidade pelo
+	# autoload chega ao controlador sem reiniciar a partida.
+	var doubled: Dictionary = SettingsSchema.defaults()
+	doubled[SettingsSchema.SECTION_CONTROLS]["mouse_sensitivity_x"] = 2.0
+	_settings.apply(doubled)
+	await _frames(2)
+	_expect(
+		absf(_player.get_sensitivity().x - 2.0) < 0.001,
+		"alteração de sensibilidade chega ao controlador"
+	)
+
+	var back_button: Button = null
+	if screen != null:
+		back_button = screen.get_node_or_null("%BackButton") as Button
+	_expect(back_button != null, "configurações têm VOLTAR")
+	if back_button != null:
+		back_button.pressed.emit()
+		await _frames(6)
+	_expect(not _scene.is_settings_open(), "VOLTAR fecha as configurações")
+	_expect(_scene.is_paused(), "VOLTAR leva de volta ao menu de pausa")
+	_expect(_scene.get_node("Interface/PauseRoot").visible, "menu de pausa reaparece")
+	_expect(
+		_player.global_position.distance_to(position_before) < 0.02,
+		"posição do jogador preservada"
+	)
+	_expect_state(PlayerController.MovementState.CROUCHING, "estado do jogador preservado (AGACHADO)")
+
+	var continue_button: Button = _scene.get_node_or_null(
+		content + "ContinueButton"
+	) as Button
+	if continue_button != null:
+		continue_button.pressed.emit()
+		await _frames(3)
+	_expect(not _scene.is_paused(), "CONTINUAR retoma a partida")
+	_expect(_player.movement_enabled, "jogador habilitado de novo")
+
+	Input.action_release("move_crouch")
+	await _frames(12)
+	_expect(not _player.is_crouched(), "levanta ao continuar com o espaço livre")
+
+	Input.action_press("move_forward")
+	await _frames(20)
+	Input.action_release("move_forward")
+	_expect(
+		_player.global_position.distance_to(position_before) > 0.3,
+		"movimento volta a funcionar depois de CONTINUAR"
+	)
+
+	# Restaura os padrões para os testes seguintes.
+	_settings.apply(SettingsSchema.defaults())
 
 
 # --- Utilidades -------------------------------------------------------------

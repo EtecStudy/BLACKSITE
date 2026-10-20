@@ -1,6 +1,6 @@
 # Black Sight — Arquitetura do projeto
 
-Documento de referência da organização interna (atualizado na Etapa 4).
+Documento de referência da organização interna (atualizado na Etapa 5).
 Motor: **Godot 4.7.2**, renderizador **GL Compatibility**.
 
 Regra de ouro: **cada pasta de módulo tem uma responsabilidade única**, e as
@@ -155,7 +155,7 @@ domínio → `match/` → `ui/`.
 | `creatures/`, `items/`, `objectives/` | **Só documentação.** Nenhum script, cena ou lógica |
 | `shared/autoload/event_bus.gd` | Planejado, **não existe** |
 | Layout de buses de áudio | **Existe** desde a Etapa 3 (`Master`, `Music`, `SFX`, `Ambience`, `Voice`) |
-| Input Map | **Configurado** na Etapa 4: `move_forward/back/left/right` (WASD) e `release_mouse` (Esc) |
+| Input Map | `move_forward/back/left/right` (WASD), `move_sprint` (Shift), `move_crouch` (Ctrl) e `release_mouse` (Esc) |
 | Multiplayer / rede | **Não iniciado** |
 | Autoloads | `AppInfo` (Etapa 1), `GameSettings` e `UiAudio` (Etapa 3) |
 
@@ -186,7 +186,7 @@ Detalhes e receita para adicionar parâmetros: [`CONFIGURACOES.md`](CONFIGURACOE
 
 ---
 
-## 6.2 Jogador (Etapa 4)
+## 6.2 Jogador e estados de movimento (Etapas 4–5)
 
 ```
 players/scenes/player.tscn          CharacterBody3D + cápsula + Head + Camera3D
@@ -195,7 +195,16 @@ players/scripts/player_controller.gd  movimento, câmera, gravidade, configuraç
 match/scenes/movement_test.tscn      orquestra:
 ├── maps/scenes/test_room.tscn       geometria + colisão + Spawn
 ├── players/scenes/player.tscn       jogador no Spawn
-└── Interface                        pausa (ESC), CONTINUAR, VOLTAR AO MENU
+├── Interface                        pausa (ESC): CONTINUAR / CONFIGURAÇÕES / MENU
+└── SettingsLayer                    ui/scenes/settings_screen.tscn em modo embutido
+```
+
+Estados (`players/scripts/player_controller.gd`):
+
+```
+IDLE ◄─► WALKING ◄─► RUNNING
+  ▲          ▲
+  └──────── CROUCHING ◄── Ctrl tem prioridade sobre Shift
 ```
 
 - `players/` continua dependendo só de `shared/`: não conhece a sala.
@@ -204,8 +213,11 @@ match/scenes/movement_test.tscn      orquestra:
 - A UI da tela inicial apenas troca de cena por caminho; não importa classes de
   gameplay.
 - A sensibilidade é lida de `GameSettings` e reaplicada no sinal `applied`.
+- A tela de configurações é **a mesma** nos dois fluxos: sozinha (menu inicial)
+  ou embutida na pausa (`set_embedded(true)`), emitindo `back_requested` em vez
+  de trocar de cena. Nenhum estado da partida é perdido.
 
-Detalhes da etapa: [`ETAPA-4.md`](ETAPA-4.md).
+Detalhes: [`ETAPA-4.md`](ETAPA-4.md) e [`ETAPA-5.md`](ETAPA-5.md).
 
 ---
 

@@ -3,14 +3,26 @@
 **Responsabilidade:** gerenciamento das partidas — estados, fluxo de jogo,
 orquestração entre módulos, início e fim de rodada.
 
-**Estado atual (Etapa 4):** existe a **sessão de teste da movimentação**, que
-orquestra a sala (`maps/`) e o jogador (`players/`) e cuida da pausa/volta ao
-menu. Ainda não há máquina de estados de partida.
+**Estado atual (Etapa 5):** existe a **sessão de teste da movimentação**, que
+orquestra a sala (`maps/`) e o jogador (`players/`), cuida da pausa, abre a
+tela de configurações por cima da partida e volta ao menu. Ainda não há
+máquina de estados de partida.
 
 | Caminho | O que é |
 | --- | --- |
 | `match/scenes/movement_test.tscn` | Sala de teste + jogador + interface de pausa |
-| `match/scripts/movement_test.gd` | Spawn, captura/liberação do mouse, pausa e retorno ao menu |
+| `match/scripts/movement_test.gd` | Spawn, mouse, pausa, CONFIGURAÇÕES sobrepostas e retorno ao menu |
+
+Fluxo de pausa (Etapa 5):
+
+```
+JOGO —ESC→ PAUSA —CONFIGURAÇÕES→ tela de configurações (mesma cena, modo embutido)
+     ←VOLTAR/ESC— PAUSA —CONTINUAR→ JOGO
+```
+
+A partida **não** é recriada: posição, orientação e estado de movimento do
+jogador são preservados. O `match/` é o único que conhece `players/`, `maps/`
+e `ui/` ao mesmo tempo.
 
 ## O que entra aqui
 

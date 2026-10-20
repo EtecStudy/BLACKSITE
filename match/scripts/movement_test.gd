@@ -1,17 +1,20 @@
 extends Node3D
-## Sessão de teste da movimentação (Etapa 4).
+## Sessão de teste da movimentação (Etapa 4 → Etapa 5).
 ##
 ## Responsabilidades — apenas **orquestração** de `match/`:
 ## - montar a cena de teste (`maps/scenes/test_room.tscn`) com o jogador
 ##   (`players/scenes/player.tscn`) no ponto de nascimento;
 ## - capturar o mouse ao entrar e liberar no Escape;
-## - oferecer **CONTINUAR** e **VOLTAR AO MENU** (ninguém fica preso na cena);
+## - oferecer **CONTINUAR**, **CONFIGURAÇÕES** e **VOLTAR AO MENU**;
+## - abrir a tela de configurações existente (`ui/`) como sobreposição, sem
+##   trocar de cena, para não perder a posição/estado do jogador;
 ## - manter F11 (tela cheia) funcionando, como nas telas anteriores.
 ##
 ## Nenhuma regra de movimentação mora aqui: ela está em `PlayerController`.
 ## Nenhum valor de configuração é lido aqui: o jogador lê `GameSettings`.
 
 const TITLE_SCENE: String = "res://ui/scenes/title_screen.tscn"
+const SETTINGS_SCENE: String = "res://ui/scenes/settings_screen.tscn"
 const HINT_DURATION: float = 7.0
 const SPAWN_OFFSET := Vector3(0.0, 0.05, 0.0)
 
@@ -20,10 +23,13 @@ const SPAWN_OFFSET := Vector3(0.0, 0.05, 0.0)
 @onready var _pause_root: Control = %PauseRoot
 @onready var _hint_label: Label = %HintLabel
 @onready var _continue_button: Button = %ContinueButton
+@onready var _settings_button: Button = %SettingsButton
 @onready var _menu_button: Button = %MenuButton
+@onready var _settings_layer: CanvasLayer = $SettingsLayer
 
 var _paused: bool = false
 var _leaving: bool = false
+var _settings_screen: SettingsScreen = null
 var _settings
 
 
@@ -31,6 +37,7 @@ func _ready() -> void:
 	_settings = get_node_or_null("/root/GameSettings")
 	_pause_root.visible = false
 	_continue_button.pressed.connect(resume_session)
+	_settings_button.pressed.connect(open_settings)
 	_menu_button.pressed.connect(return_to_menu)
 	_place_player_at_spawn()
 	_capture_mouse(true)
@@ -59,12 +66,53 @@ func pause_session() -> void:
 
 ## Fecha a pausa e captura o mouse novamente.
 func resume_session() -> void:
-	if not _paused or _leaving:
+	if not _paused or _leaving or _settings_screen != null:
 		return
 	_paused = false
 	_pause_root.visible = false
 	_player.movement_enabled = true
 	_capture_mouse(true)
+
+
+## Abre a tela de configurações existente por cima da partida pausada.
+## Não troca de cena, não recria o jogador e não perde posição/estado.
+func open_settings() -> void:
+	if _settings_screen != null or _leaving:
+		return
+	if not _paused:
+		pause_session()
+	var packed: PackedScene = load(SETTINGS_SCENE) as PackedScene
+	if packed == null:
+		push_error("Não foi possível carregar %s" % SETTINGS_SCENE)
+		return
+	var screen: SettingsScreen = packed.instantiate() as SettingsScreen
+	if screen == null:
+		return
+	screen.set_embedded(true)
+	screen.back_requested.connect(close_settings)
+	_settings_layer.add_child(screen)
+	_settings_screen = screen
+	_pause_root.visible = false
+	_capture_mouse(false)
+	print("[Black Sight] Configurações abertas durante a pausa")
+
+
+## Fecha as configurações e devolve o controle ao menu de pausa.
+func close_settings() -> void:
+	if _settings_screen == null:
+		return
+	var screen: SettingsScreen = _settings_screen
+	_settings_screen = null
+	screen.queue_free()
+	if not _leaving:
+		_pause_root.visible = true
+		_continue_button.grab_focus()
+		_capture_mouse(false)
+	print("[Black Sight] Configurações fechadas — de volta à pausa")
+
+
+func is_settings_open() -> bool:
+	return _settings_screen != null
 
 
 ## Volta ao menu inicial (sempre com o cursor visível).
@@ -81,6 +129,10 @@ func is_paused() -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Com as configurações abertas, o Esc/F11 pertencem à tela de configurações.
+	if _settings_screen != null:
+		return
+
 	var key_event := event as InputEventKey
 	if key_event == null or not key_event.pressed or key_event.echo:
 		return
@@ -111,6 +163,8 @@ func _capture_mouse(captured: bool) -> void:
 	Input.mouse_mode = (
 		Input.MOUSE_MODE_CAPTURED if captured else Input.MOUSE_MODE_VISIBLE
 	)
+	if captured and _player != null:
+		_player.reset_look_input()
 
 
 func _fade_hint_later() -> void:

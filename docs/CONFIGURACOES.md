@@ -141,10 +141,13 @@ Volume em `0%` silencia o bus (`mute`) em vez de aplicar `-inf dB`.
 
 ## 7. Controles
 
-A tela mostra os controles do jogador (WASD, mouse, Shift, E, F, Esc). Na
-Etapa 4, **WASD e mouse já funcionam** na cena de teste; Shift (correr), E
-(interagir), F (lanterna) e Esc (pausa do jogo) entram nas próximas etapas —
-Esc já libera o cursor na cena de teste.
+A tela mostra os controles do jogador (WASD, mouse, Shift, Ctrl, E, F, Esc).
+Na Etapa 5 já funcionam **WASD, mouse, Shift (correr), Ctrl (agachar) e Esc
+(pausa)**; E (interagir) e F (lanterna) entram nas próximas etapas.
+
+As configurações também podem ser abertas **durante a partida**:
+`ESC → CONFIGURAÇÕES`. É a mesma tela e o mesmo arquivo; `VOLTAR`/Esc
+retornam ao menu de pausa e só `CONTINUAR` volta ao jogo.
 
 Sensibilidade horizontal/vertical e inversão do eixo vertical são lidas pelo
 `PlayerController` (`players/scripts/player_controller.gd`) na entrada da cena
@@ -170,8 +173,8 @@ APLICAR).
 
 ## 9. Limitações conhecidas desta etapa
 
-- Não há corrida, agachamento, stamina, pulo nem interação; a sensibilidade e
-  a inversão vertical já afetam a câmera (Etapa 4).
+- Corrida e agachamento existem, mas **não há stamina** (Etapa 6), pulo nem
+  interação; a sensibilidade e a inversão vertical já afetam a câmera.
 - Música, ambiente e voz não têm sons; só os buses respondem.
 - VSync depende do driver: em GL Compatibility alguns drivers ignoram a opção.
 - O modo "janela maximizada" não guarda o tamanho anterior da janela.

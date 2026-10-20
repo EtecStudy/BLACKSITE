@@ -259,7 +259,7 @@ class FlowDriver:
 		else:
 			_expect(false, "tela inicial disponível para testar o F11")
 
-		# 10. cena de teste da movimentação (Etapa 4)
+		# 10. cena de teste da movimentação (Etapas 4–5)
 		if title_again != null:
 			var test_button: Button = title_again.get_node_or_null(
 				"Content/Buttons/TestMovementButton"
@@ -279,16 +279,72 @@ class FlowDriver:
 						camera != null and camera.current,
 						"câmera em primeira pessoa ativa"
 					)
+					# Etapa 5: pausa → CONFIGURAÇÕES → voltar à pausa → CONTINUAR.
+					var pause_flow_ok: bool = await _exercise_pause_menu(game)
+					_expect(pause_flow_ok, "fluxo de pausa com configurações funciona")
 					var menu_button: Button = game.get_node_or_null(
 						"Interface/PauseRoot/Center/Panel/Margin/Content/MenuButton"
 					) as Button
 					_expect(menu_button != null, "botão VOLTAR AO MENU presente")
 					if menu_button != null:
+						game.pause_session()
+						await _frames(3)
 						menu_button.pressed.emit()
 						title_again = await _wait_for_scene("TitleScreen", 1200)
 						_expect(title_again != null, "VOLTAR AO MENU retorna à tela inicial")
 
 		_finish()
+
+
+	# --- Pausa + configurações (Etapa 5) ------------------------------------
+
+	func _exercise_pause_menu(game: Node) -> bool:
+		var content := "Interface/PauseRoot/Center/Panel/Margin/Content/"
+		game.pause_session()
+		await _frames(3)
+		var pause_root: Control = game.get_node_or_null("Interface/PauseRoot") as Control
+		if pause_root == null or not pause_root.visible:
+			_expect(false, "menu de pausa abre")
+			return false
+
+		var settings_button: Button = game.get_node_or_null(
+			content + "SettingsButton"
+		) as Button
+		_expect(settings_button != null, "menu de pausa tem CONFIGURAÇÕES")
+		if settings_button == null:
+			return false
+
+		settings_button.pressed.emit()
+		await _frames(6)
+		var screen: SettingsScreen = game.get_node_or_null(
+			"SettingsLayer/SettingsScreen"
+		) as SettingsScreen
+		_expect(screen != null, "CONFIGURAÇÕES abre durante a partida (mesma tela)")
+		if screen == null:
+			return false
+		_expect(not pause_root.visible, "configurações escondem o menu de pausa")
+
+		var back_button: Button = screen.get_node_or_null("%BackButton") as Button
+		_expect(back_button != null, "configurações têm VOLTAR")
+		if back_button == null:
+			return false
+		back_button.pressed.emit()
+		await _frames(6)
+		var back_to_pause: bool = (
+			not game.is_settings_open() and game.is_paused() and pause_root.visible
+		)
+		_expect(back_to_pause, "VOLTAR nas configurações retorna ao menu de pausa")
+
+		var continue_button: Button = game.get_node_or_null(
+			content + "ContinueButton"
+		) as Button
+		if continue_button == null:
+			return false
+		continue_button.pressed.emit()
+		await _frames(3)
+		var resumed: bool = not game.is_paused() and not pause_root.visible
+		_expect(resumed, "CONTINUAR retoma a partida")
+		return back_to_pause and resumed
 
 
 	# --- Utilidades ---------------------------------------------------------

@@ -12,7 +12,7 @@ abas de controles, áudio e vídeo.
 | `ui/scenes/title_screen.tscn` | Cena inicial (fundida do antigo `scenes/boot/`) |
 | `ui/scripts/title_screen.gd` | Fade, respiração do emblema, F11, CONFIGURAÇÕES, sair |
 | `ui/scenes/settings_screen.tscn` | Tela de configurações (abas + rodapé de ações) |
-| `ui/scripts/settings_screen.gd` | Orquestra as seções, aplicar, restaurar, voltar |
+| `ui/scripts/settings_screen.gd` | Orquestra as seções, aplicar, restaurar, voltar — e o **modo embutido** usado pela pausa |
 | `ui/scripts/settings/settings_section.gd` | Base das seções e helpers de layout |
 | `ui/scripts/settings/controls_section.gd` | Sensibilidade, inverter eixo, controles previstos |
 | `ui/scripts/settings/audio_section.gd` | Volumes de geral, efeitos, ambiente e música |

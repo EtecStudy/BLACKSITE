@@ -30,7 +30,7 @@ offset_right = 1200.0
 offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.78, 0.75, 0.68, 0.9)
 theme_override_font_sizes/font_size = 16
-text = "WASD MOVER · MOUSE OLHAR · ESC LIBERAR O MOUSE · F11 TELA CHEIA"
+text = "WASD MOVER · SHIFT CORRER · CTRL AGACHAR · MOUSE OLHAR · ESC PAUSA"
 
 [node name="PauseRoot" type="Control" parent="Interface"]
 unique_name_in_owner = true
@@ -94,7 +94,7 @@ autowrap_mode = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.47, 0.42, 1)
 theme_override_font_sizes/font_size = 14
-text = "WASD mover · Mouse olhar · ESC capturar novamente"
+text = "WASD mover · SHIFT correr · CTRL agachar · ESC capturar novamente"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
@@ -103,8 +103,17 @@ custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 text = "CONTINUAR"
 
+[node name="SettingsButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "CONFIGURAÇÕES"
+
 [node name="MenuButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 text = "VOLTAR AO MENU"
+
+[node name="SettingsLayer" type="CanvasLayer" parent="."]
+layer = 5

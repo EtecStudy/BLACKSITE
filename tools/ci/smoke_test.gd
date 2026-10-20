@@ -95,6 +95,7 @@ func _ready() -> void:
 	_check_video_safety()
 	_check_settings_screen()
 	_check_fps_controller()
+	_check_movement_states()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -684,11 +685,76 @@ func _check_fps_controller() -> void:
 		movement.free()
 
 	for action: String in [
-		"move_forward", "move_back", "move_left", "move_right", "release_mouse"
+		"move_forward", "move_back", "move_left", "move_right",
+		"move_sprint", "move_crouch", "release_mouse"
 	]:
 		_expect(InputMap.has_action(action), "ação de entrada '%s' configurada" % action)
 
 	_expect(
 		FileAccess.file_exists("res://docs/ETAPA-4.md"),
 		"documentação da Etapa 4 presente (docs/ETAPA-4.md)"
+	)
+
+func _check_movement_states() -> void:
+	print("[14] Estados de movimento (Etapa 5)")
+	var player_script: GDScript = load(
+		"res://players/scripts/player_controller.gd"
+	) as GDScript
+	_expect(player_script != null, "script do controlador carrega")
+	if player_script != null:
+		var constants: Dictionary = player_script.get_script_constant_map()
+		_expect(constants.has("MovementState"), "enum MovementState declarado")
+		var states: Dictionary = constants.get("MovementState", {})
+		for state_name: String in ["IDLE", "WALKING", "RUNNING", "CROUCHING"]:
+			_expect(states.has(state_name), "estado '%s' definido" % state_name)
+		_expect(
+			not states.has("JUMPING") and not states.has("FALLING"),
+			"não existe estado de pulo"
+		)
+		_expect(constants.has("STATE_NAMES"), "nomes dos estados disponíveis")
+
+	var player_packed: PackedScene = load("res://players/scenes/player.tscn") as PackedScene
+	if player_packed != null:
+		var player: Node = player_packed.instantiate()
+		var walk: float = float(player.get("walk_speed"))
+		var run: float = float(player.get("run_speed"))
+		var crouch: float = float(player.get("crouch_speed"))
+		_expect(run > walk, "corrida (%.2f m/s) mais rápida que caminhada (%.2f m/s)" % [run, walk])
+		_expect(crouch < walk, "agachado (%.2f m/s) mais lento que caminhada (%.2f m/s)" % [crouch, walk])
+		_expect(player.has_method("get_state"), "controlador expõe get_state()")
+		_expect(player.has_method("is_crouched"), "controlador expõe is_crouched()")
+		_expect(
+			player.has_method("set_sprint_allowed"),
+			"ponto de extensão para a stamina (set_sprint_allowed) presente"
+		)
+		player.free()
+
+	var movement_packed: PackedScene = load(
+		"res://match/scenes/movement_test.tscn"
+	) as PackedScene
+	if movement_packed != null:
+		var movement: Node = movement_packed.instantiate()
+		var settings_button: Button = movement.get_node_or_null(
+			"Interface/PauseRoot/Center/Panel/Margin/Content/SettingsButton"
+		) as Button
+		_expect(settings_button != null, "menu de pausa tem CONFIGURAÇÕES")
+		if settings_button != null:
+			_expect(settings_button.text == "CONFIGURAÇÕES", "botão rotulado CONFIGURAÇÕES")
+		_expect(
+			movement.get_node_or_null("SettingsLayer") != null,
+			"camada para abrir as configurações durante a partida"
+		)
+		movement.free()
+
+	var settings_script: GDScript = load("res://ui/scripts/settings_screen.gd") as GDScript
+	if settings_script != null:
+		var has_embedded: bool = false
+		for method: Dictionary in settings_script.get_script_method_list():
+			if str(method.get("name", "")) == "set_embedded":
+				has_embedded = true
+		_expect(has_embedded, "tela de configurações aceita modo embutido")
+
+	_expect(
+		FileAccess.file_exists("res://docs/ETAPA-5.md"),
+		"documentação da Etapa 5 presente (docs/ETAPA-5.md)"
 	)
