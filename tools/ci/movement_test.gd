@@ -32,12 +32,19 @@ var _player
 var _settings
 var _checks: int = 0
 var _failures: PackedStringArray = PackedStringArray()
+## Watchdog: se nenhuma verificação/espera avançar por este tempo, o teste
+## imprime a última fase e encerra com código 2 (em vez de deixar o CI pendurado).
+const WATCHDOG_MS := 25000
+var _last_progress_ms: int = 0
+var _last_step: String = "início"
+var _finished: bool = false
 var _original_path: String = ""
 var _original_values: Dictionary = {}
 
 
 func _ready() -> void:
 	print("=== Black Sight · teste do controlador FPS ===")
+	_touch("início")
 
 	_settings = get_node_or_null("/root/GameSettings")
 	if _settings != null:
@@ -83,6 +90,26 @@ func _ready() -> void:
 	await _test_drop()
 
 	_finish()
+
+
+## Watchdog: o teste nunca deve ficar pendurado (uma falha dentro de uma
+## coroutine deixaria o processo vivo para sempre no CI).
+func _process(_delta: float) -> void:
+	if _finished:
+		return
+	var idle: int = Time.get_ticks_msec() - _last_progress_ms
+	if idle <= WATCHDOG_MS:
+		return
+	_finished = true
+	printerr("MOVEMENT TEST TRAVOU — %d ms sem progresso (última etapa: %s)" % [idle, _last_step])
+	printerr("verificações até aqui: %d · falhas: %d" % [_checks, _failures.size()])
+	get_tree().quit(2)
+
+
+func _touch(step: String = "") -> void:
+	_last_progress_ms = Time.get_ticks_msec()
+	if not step.is_empty():
+		_last_step = step
 
 
 # --- Montagem ---------------------------------------------------------------
@@ -2292,6 +2319,7 @@ const DROP_VIEW_D := Vector3(4.6, 0.05, 9.2)
 
 func _test_drop() -> void:
 	print("[24] Soltar itens no ambiente (Etapa 9)")
+	_touch("[24] inventário/drop")
 	if _scene.is_settings_open():
 		_scene.close_settings()
 	if _scene.is_paused():
@@ -2342,6 +2370,7 @@ func _test_drop() -> void:
 	)
 
 	# --- Componentes --------------------------------------------------------
+	_touch("[24] componentes")
 	var dropper: ItemDropper = _player.get_item_dropper()
 	var hud: PlayerHud = _scene.get_hud()
 	var bar: InventoryBar = hud.get_inventory_bar() if hud != null else null
@@ -2371,6 +2400,7 @@ func _test_drop() -> void:
 	await _frames(4)
 
 	# --- Drop do slot 1 -----------------------------------------------------
+	_touch("[24] drop do slot 1")
 	var item_a := ItemDefinition.new(&"drop_a", "ITEM A")
 	var item_b := ItemDefinition.new(&"drop_b", "ITEM B")
 	var item_c := ItemDefinition.new(&"drop_c", "ITEM C")
@@ -2406,6 +2436,7 @@ func _test_drop() -> void:
 		_expect(body.linear_velocity.length() < 0.6, "item não é arremessado")
 
 	# --- Drops dos slots 2 e 3 ---------------------------------------------
+	_touch("[24] drops dos slots 2 e 3")
 	inventory.select_slot(1)
 	await _place(DROP_VIEW_B, 0.0)
 	await _tap_action("inventory_drop")
@@ -2422,6 +2453,7 @@ func _test_drop() -> void:
 	_expect(total_items == 3, "nada foi duplicado nem perdido (%d itens)" % total_items)
 
 	# --- Slot vazio não cria nada ------------------------------------------
+	_touch("[24] slot vazio")
 	inventory.select_slot(1)
 	var world_before_empty: int = _world_items().size()
 	await _tap_action("inventory_drop")
@@ -2433,6 +2465,7 @@ func _test_drop() -> void:
 	await _frames(150)
 
 	# --- Segurar G não repete o drop ---------------------------------------
+	_touch("[24] segurar G")
 	var item_hold := ItemDefinition.new(&"drop_hold", "ITEM HOLD")
 	inventory.add_item(item_hold)
 	inventory.select_slot(0)
@@ -2447,7 +2480,11 @@ func _test_drop() -> void:
 	_expect(inventory.get_used_slot_count() == 0, "o item segurado saiu do inventário uma vez")
 
 	# --- Recolher com E -----------------------------------------------------
+	_touch("[24] recolher com E")
 	var last_item: WorldItem = _find_world_item(&"drop_hold")
+	_expect(last_item != null, "o item segurado existe no mundo")
+	if last_item == null:
+		return
 	await _look_at_world_item(last_item)
 	_expect(
 		_player.get_interaction_detector().get_current_interactable() == last_item,
@@ -2468,9 +2505,13 @@ func _test_drop() -> void:
 	_expect(bar.get_slot_text(0) == "ITEM HOLD", "HUD mostra o item recolhido")
 
 	# --- Inventário cheio impede a coleta -----------------------------------
+	_touch("[24] inventário cheio")
 	inventory.add_item(ItemDefinition.new(&"fill_1", "ITEM F1"))
 	inventory.add_item(ItemDefinition.new(&"fill_2", "ITEM F2"))
 	_expect(inventory.get_used_slot_count() == 3, "inventário cheio de novo")
+	if _world_items().is_empty():
+		_expect(false, "há item solto para testar o inventário cheio")
+		return
 	var target: WorldItem = _world_items()[0]
 	await _stand_near_world_item(target)
 	var world_before_full: int = _world_items().size()
@@ -2496,6 +2537,7 @@ func _test_drop() -> void:
 	_expect(_world_items().size() == world_before_full - 1, "sem coleta duplicada")
 
 	# --- Posição inválida cancela sem perder o item ------------------------
+	_touch("[24] posição inválida")
 	var wall := StaticBody3D.new()
 	wall.name = "TestDropWall"
 	var wall_collision := CollisionShape3D.new()
@@ -2519,6 +2561,7 @@ func _test_drop() -> void:
 	await _frames(6)
 
 	# --- Falha de instanciação mantém o item -------------------------------
+	_touch("[24] falha de instanciação")
 	await _frames(150)
 	var scene_backup: PackedScene = dropper.world_item_scene
 	dropper.world_item_scene = null
@@ -2533,6 +2576,10 @@ func _test_drop() -> void:
 	await _frames(150)
 
 	# --- Pausa bloqueia G, E, 1/2/3 e R ------------------------------------
+	_touch("[24] pausa")
+	if _world_items().is_empty():
+		_expect(false, "há item solto para testar a pausa")
+		return
 	var pause_target: WorldItem = _world_items()[0]
 	await _stand_near_world_item(pause_target)
 	_expect(
@@ -2559,6 +2606,7 @@ func _test_drop() -> void:
 	await _frames(8)
 
 	# --- Estado final limpo -------------------------------------------------
+	_touch("[24] limpeza final")
 	await _clear_world_items()
 	inventory.clear()
 	bar.clear_slots()
@@ -2689,9 +2737,11 @@ func _wait_recovery_delay() -> void:
 func _frames(count: int) -> void:
 	for index: int in count:
 		await get_tree().physics_frame
+	_touch()
 
 
 func _expect(condition: bool, description: String) -> void:
+	_touch(description)
 	_checks += 1
 	if condition:
 		print("  ✓ " + description)
@@ -2701,6 +2751,8 @@ func _expect(condition: bool, description: String) -> void:
 
 
 func _finish() -> void:
+	_finished = true
+	_touch("fim")
 	_release_all()
 	if _scene != null:
 		_scene.queue_free()
