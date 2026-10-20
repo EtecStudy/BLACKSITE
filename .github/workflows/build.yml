@@ -87,6 +87,7 @@ jobs:
           fi
 
       - name: TESTE 1c — controlador FPS e cena de teste (headless)
+        timeout-minutes: 8
         run: |
           set -o pipefail
           "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
@@ -585,6 +586,7 @@ jobs:
           }
 
       - name: TESTE W2c — controlador FPS e cena de teste no Windows (headless)
+        timeout-minutes: 8
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
