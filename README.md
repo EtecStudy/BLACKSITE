@@ -16,11 +16,15 @@
 
 ![HUD de stamina na sala de teste](docs/screenshots/hud_stamina.png)
 
+![Inventário de três slots na HUD, com o slot 3 selecionado](docs/screenshots/inventory_hud.png)
+
 ## Download do jogo (Windows)
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.8.0-etapa8-inventory/BlackSight-Etapa8-Inventory-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` (tamanho e SHA-256 após a publicação)
+Arquivo: `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` (40.669.748 bytes ≈ 38,8 MiB)
+
+SHA-256 do ZIP: `4596a98981514a10b94e7a28af22174aa39a576fdb91f21ee645247718e01764`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.

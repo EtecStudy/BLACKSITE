@@ -30,8 +30,8 @@ intactos.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | a preencher |
-| SHA-256 | a preencher |
+| Tamanho | 40.669.748 bytes ≈ 38,8 MiB |
+| SHA-256 | `4596a98981514a10b94e7a28af22174aa39a576fdb91f21ee645247718e01764` |
 | Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.8.0-etapa8-inventory/BlackSight-Etapa8-Inventory-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.7.0: é uma compilação nova.

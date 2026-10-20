@@ -313,17 +313,29 @@ publica a release.
 
 ## 12. Resultados
 
+Execução `39486518665` do workflow (Linux e Windows), concluída com sucesso.
+
 | Verificação | Resultado |
 | --- | --- |
-| Fumaça (Linux) | a preencher |
-| Fluxo de interface (Linux) | a preencher |
-| Controlador FPS + inventário (Linux) | a preencher |
-| Fumaça / UI / movimento (Windows) | a preencher |
-| Captura renderizada do inventário | a preencher |
-| Versão interna e `FileVersion` | a preencher |
-| `.pck` (formato/recursos) | a preencher |
-| ZIP publicado | a preencher |
-| SHA-256 do ZIP | a preencher |
+| Fumaça (Linux) | **308/308** verificações |
+| Fluxo de interface (Linux) | **51/51** verificações |
+| Controlador FPS + inventário (Linux) | **505/505** verificações |
+| Fumaça / UI / movimento (Windows) | **308/308**, **51/51** e **505/505** |
+| Captura renderizada do inventário | `INVENTORY VISUAL OK` — frame em `ci-logs/inventory_hud.png` |
+| Versão interna e `FileVersion` | 0.8.0 · `FileVersion=0.8.0.0` · `FileDescription=Black Sight — Etapa 8` |
+| `.pck` (formato/recursos) | `PACOTE OK`: cena inicial, scripts e assets presentes |
+| ZIP publicado | `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` — **40.669.748 bytes** (≈ 38,8 MiB) |
+| SHA-256 do ZIP | `4596a98981514a10b94e7a28af22174aa39a576fdb91f21ee645247718e01764` |
+
+O SHA-256 e o tamanho são os do **asset da release** (`v0.8.0-etapa8-inventory`),
+conferidos na API do GitHub (`digest` do arquivo). O ZIP do job Linux é outro
+arquivo (empacotado com outra ferramenta) e **não** é o publicado.
+
+O frame da captura renderizada está em
+[`screenshots/inventory_hud.png`](screenshots/inventory_hud.png): três slots no
+canto inferior direito, **ITEM A** no slot 1, `VAZIO` nos demais e o **slot 3
+selecionado** com borda e fundo mais claros. A HUD de stamina continua no canto
+inferior esquerdo e não há indicação de interação porque o item A já foi pego.
 
 ## 13. Limitações desta etapa
 
