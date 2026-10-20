@@ -9,8 +9,12 @@ extends Node3D
 ##   2. pede ao `SpaceProbe` (shared/) um ponto seguro à frente da câmera,
 ##      validando piso, espaço livre e linha de visão;
 ##   3. instancia a cena reutilizável de item no mundo (`items/`, via `@export`);
-##   4. **só depois** de a instância estar na árvore e configurada chama
-##      `remove_item(slot)`. Se qualquer passo falhar, o item continua no
+##   4. **confirma a posição real** já com o item na cena (`confirm_placement`:
+##      caixa livre + pegada apoiada). Esta é a checagem que faltava na
+##      primeira versão da Etapa 9: uma posição validada "no papel" podia não
+##      corresponder ao nó físico real;
+##   5. **só depois** de a instância estar na árvore, configurada e confirmada
+##      chama `remove_item(slot)`. Se qualquer passo falhar, o item continua no
 ##      inventário — nunca existe item no chão sem ter saído do slot, nem item
 ##      apagado do inventário sem existir no mundo.
 ##
@@ -85,7 +89,7 @@ func drop_selected_item() -> bool:
 	)
 	if not bool(spot.get("valid", false)):
 		push_warning("ItemDropper: sem posição segura (%s)" % str(spot.get("reason", "")))
-		world_item.free()
+		_discard_world_item(world_item)
 		drop_blocked.emit(REASON_NO_SPACE)
 		return false
 
@@ -93,9 +97,19 @@ func drop_selected_item() -> bool:
 		drop_blocked.emit(REASON_SPAWN)
 		return false
 
-	# Instância já está na árvore e configurada: agora sim o slot pode esvaziar.
+	# Confirmação pós-instanciação: a posição real do nó precisa ser segura
+	# (caixa livre e pegada apoiada). Sem isso, o item volta a ser só do
+	# inventário — nunca fica meio dentro de uma caixa ou suspenso na quina.
+	if not _confirm_placement(world_item, spot["position"]):
+		push_warning("ItemDropper: posição confirmada inválida — drop cancelado")
+		_discard_world_item(world_item)
+		drop_blocked.emit(REASON_NO_SPACE)
+		return false
+
+	# Instância já está na árvore, configurada e confirmada: agora sim o slot
+	# pode esvaziar.
 	if not bool(inventory.call("remove_item", slot)):
-		world_item.queue_free()
+		_discard_world_item(world_item)
 		return false
 
 	_drops += 1
@@ -148,15 +162,41 @@ func _attach_world_item(instance: Node, position: Vector3) -> bool:
 	var parent: Node = _world_root()
 	if parent == null:
 		push_error("ItemDropper: cena atual indisponível")
-		instance.free()
+		_discard_world_item(instance)
 		return false
 	parent.add_child(instance)
 	if instance.get_parent() != parent:
 		push_error("ItemDropper: a instância não entrou na cena")
-		instance.free()
+		_discard_world_item(instance)
 		return false
 	instance.global_position = position
 	return true
+
+
+## Confirma que a posição real do nó é segura: caixa livre em volta do item e
+## pegada inteiramente apoiada. O próprio item e o jogador ficam fora da
+## consulta (o item acabou de entrar na árvore).
+func _confirm_placement(instance: Node, position: Vector3) -> bool:
+	if instance is Node3D and (instance as Node3D).global_position.distance_to(position) > 0.01:
+		push_error("ItemDropper: a instância não ficou na posição validada")
+		return false
+	return SpaceProbe.confirm_placement(
+		get_world_3d() if is_inside_tree() else null,
+		position,
+		_footprint_of(instance),
+		_exclude_placed(instance),
+		collision_mask
+	)
+
+
+## Remove a instância sem deixar resíduo na cena nem no grupo de itens soltos.
+func _discard_world_item(instance: Node) -> void:
+	if instance == null or not is_instance_valid(instance):
+		return
+	var parent: Node = instance.get_parent()
+	if parent != null:
+		parent.remove_child(instance)
+	instance.free()
 
 
 ## Caixa do item, informada pela própria cena (contrato `get_footprint`).
@@ -198,6 +238,18 @@ func _exclude_rids() -> Array[RID]:
 	var exclude: Array[RID] = []
 	if _actor is CollisionObject3D:
 		exclude.append((_actor as CollisionObject3D).get_rid())
+	return exclude
+
+
+## Jogador + corpos do item recém-colocado (o item não pode "colidir consigo").
+## Lê os filhos como `CollisionObject3D` — `players/` continua sem conhecer a
+## estrutura interna de `items/`.
+func _exclude_placed(instance: Node) -> Array[RID]:
+	var exclude: Array[RID] = _exclude_rids()
+	if instance != null and is_instance_valid(instance):
+		for child: Node in instance.get_children():
+			if child is CollisionObject3D:
+				exclude.append((child as CollisionObject3D).get_rid())
 	return exclude
 
 

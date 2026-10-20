@@ -35,6 +35,9 @@ unique_name_in_owner = true
 mass = 1.0
 linear_damp = 1.5
 angular_damp = 6.0
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
 
 [node name="Base" type="MeshInstance3D" parent="Body"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)

@@ -968,8 +968,8 @@ func _check_stage8() -> void:
 	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
 	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.0",
-		"versão do projeto é 0.9.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.1",
+		"versão do projeto é 0.9.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
@@ -1135,8 +1135,8 @@ func _check_stage9() -> void:
 
 	# --- Versão -------------------------------------------------------------
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.0",
-		"versão do projeto é 0.9.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.1",
+		"versão do projeto é 0.9.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
@@ -1254,3 +1254,32 @@ func _check_stage9() -> void:
 			"pausa lista G soltar"
 		)
 		movement.free()
+
+	# --- Correção do drop (bug dos itens presos) ----------------------------
+	# O bug do teste manual: item apoiado só numa quina de caixa/pilar podia
+	# tombar, entrar no objeto ou "desaparecer". A correção precisa continuar
+	# no código: apoio completo da pegada + confirmação depois de instanciar.
+	for path: String in [
+		"res://docs/ETAPA-9-CORRECAO.md",
+		"res://tools/ci/drop_obstacle_test.gd",
+		"res://tools/ci/drop_obstacle_test.tscn",
+	]:
+		_expect(FileAccess.file_exists(path), "arquivo da correção presente (%s)" % path)
+
+	var probe_source: String = FileAccess.get_file_as_string("res://shared/mapping/space_probe.gd")
+	_expect(probe_source.contains("_support_ok"), "SpaceProbe confere o apoio da pegada")
+	_expect(probe_source.contains("confirm_placement"), "SpaceProbe confirma a posição real do item")
+	_expect(
+		probe_source.contains("SUPPORT_GRID") and probe_source.contains("NO_SURFACE"),
+		"SpaceProbe usa a grade de apoio e a superfície encontrada"
+	)
+	var dropper_source: String = FileAccess.get_file_as_string("res://players/scripts/inventory/item_dropper.gd")
+	_expect(
+		dropper_source.contains("SpaceProbe.confirm_placement"),
+		"drop confirma a posição depois de instanciar o item"
+	)
+	var world_source: String = FileAccess.get_file_as_string("res://items/scenes/world_item.tscn")
+	_expect(
+		world_source.contains("axis_lock_angular_x = true"),
+		"item solto não tomba ao assentar (rotação travada)"
+	)

@@ -1,6 +1,12 @@
 # Black Sight — Etapa 9: soltar itens no ambiente 3D
 
-**Versão:** 0.9.0 · **Base:** v0.8.0-etapa8-inventory · **Tag prevista:** `v0.9.0-etapa9-drop`
+**Versão:** 0.9.0 → **0.9.1** (correção) · **Base:** v0.8.0-etapa8-inventory · **Tags:** `v0.9.0-etapa9-drop` e `v0.9.1-etapa9-drop-fix`
+
+> **Correção da v0.9.1:** itens soltos perto de caixas/pilares/paredes podiam
+> nascer com apoio parcial, tombar e ficar presos ou fora de alcance. A causa
+> e a correção estão em [`ETAPA-9-CORRECAO.md`](ETAPA-9-CORRECAO.md). Este
+> documento descreve a arquitetura da etapa; a seção 5 já inclui o apoio
+> completo da pegada.
 
 Esta etapa liga o inventário ao mundo: o jogador solta o item do slot
 selecionado com **G**, o item vira um objeto físico à frente dele e pode ser
@@ -88,8 +94,17 @@ Ordem de decisão, à frente da câmera (`-basis.z`) na horizontal:
 3. **Espaço** — consulta de forma com a caixa do item (0,42 × 0,32 × 0,42) na
    altura de repouso, 2 cm acima do piso. Paredes, pilares, caixas, outros
    itens soltos e o próprio jogador reprovam.
-4. **Linha de visão** — raio do olho até o centro do item. Se algo bloqueia
+4. **Apoio** — desde a v0.9.1, uma grade 3×3 de raios cobre a pegada do item;
+   todas as amostras precisam atingir a **mesma** superfície. Quina de caixa,
+   borda ou topo fino reprovam o ponto (o item nasceria apoiado só num canto,
+   tombaria e poderia ficar preso). Se o topo de um objeto tem espaço, a busca
+   desliza até 0,4 m sobre ele antes de desistir.
+5. **Linha de visão** — raio do olho até o centro do item. Se algo bloqueia
    antes do ponto, ele é descartado (não soltar atravessando uma parede).
+
+Depois de instanciar, `SpaceProbe.confirm_placement()` repete as checagens de
+espaço e apoio **na posição real do nó**; se falhar, o item volta a existir só
+no inventário.
 
 Se nenhuma candidata passa, **o drop é cancelado e o item continua no
 inventário**; a HUD mostra `SEM ESPAÇO PARA SOLTAR`.

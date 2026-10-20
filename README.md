@@ -3,9 +3,11 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 9 concluída — **soltar itens no ambiente 3D** com G, item
-> físico com colisão e nome, posição validada por física e recolhimento com E.
-> Inventário, interação, stamina, HUD e configurações continuam como na v0.8.0.
+> **Status:** Etapa 9 concluída (v0.9.1) — **soltar itens no ambiente 3D** com G,
+> item físico com colisão e nome, posição validada por física e recolhimento
+> com E. A v0.9.1 corrige o bug do teste manual: itens soltos perto de caixas,
+> pilares e paredes podiam ficar apoiados só numa quina, tombar e entrar no
+> objeto. Inventário, interação, stamina, HUD e configurações continuam iguais.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -21,9 +23,11 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.0-etapa9-drop/BlackSight-Etapa9-Drop-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.1-etapa9-drop-fix/BlackSight-Etapa9-Drop-Fix-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa9-Drop-Windows-x86_64.zip` (tamanho e SHA-256 após a publicação)
+Arquivo: `BlackSight-Etapa9-Drop-Fix-Windows-x86_64.zip` (tamanho e SHA-256 na
+página da release `v0.9.1-etapa9-drop-fix`). O ZIP da v0.9.0 continua
+publicado em `v0.9.0-etapa9-drop`, mas **não** tem a correção do drop.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
