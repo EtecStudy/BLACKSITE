@@ -71,6 +71,7 @@ func _ready() -> void:
 	await _test_stamina()
 	await _test_crouch_toggle()
 	await _test_pause_stamina_mode()
+	await _test_hud()
 
 	_finish()
 
@@ -1039,6 +1040,152 @@ func _test_pause_stamina_mode() -> void:
 	await _frames(6)
 	await _set_crouch_mode("hold")
 	_player.set_stamina(_player.max_stamina)
+
+
+
+# --- HUD (Etapa 6.1) --------------------------------------------------------
+
+func _test_hud() -> void:
+	print("[20] HUD de stamina")
+	if _scene.is_settings_open():
+		_scene.close_settings()
+	if _scene.is_paused():
+		_scene.resume_session()
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_stamina(_player.max_stamina)
+
+	var hud: PlayerHud = _scene.get_hud()
+	_expect(hud != null, "HUD instanciada na partida")
+	if hud == null:
+		return
+	_expect(hud.visible, "HUD visível ao entrar na sala")
+	_expect(hud.is_bound(), "HUD ligada ao jogador")
+	_expect(hud.mouse_filter == Control.MOUSE_FILTER_IGNORE, "HUD não captura o mouse")
+
+	var bar: StaminaBar = hud.get_stamina_bar()
+	_expect(bar != null, "barra de stamina disponível")
+	if bar == null:
+		return
+
+	await _frames(2)
+	_expect(is_equal_approx(bar.get_ratio(), 1.0), "barra cheia com stamina 100")
+	_expect(bar.get_value_text() == "100%", "texto mostra 100%")
+	_expect(bar.get_fill_width() > 0.0, "preenchimento visível")
+
+	# Diminui durante a corrida, acompanhando o valor real.
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(60)
+	var expected: float = _player.get_stamina() / _player.get_max_stamina()
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(6)
+	# Mesma leitura do controlador no mesmo frame: o sinal é síncrono.
+	expected = _player.get_stamina() / _player.get_max_stamina()
+	var shown: float = bar.get_ratio()
+	_expect(shown < 1.0, "barra diminui ao correr (%.0f%%)" % (shown * 100.0))
+	_expect(
+		absf(shown - expected) < 0.001,
+		"barra acompanha a stamina real (%.3f vs %.3f)" % [shown, expected]
+	)
+	_expect(
+		bar.get_value_text() == "%d%%" % roundi(shown * 100.0),
+		"texto acompanha o valor (%s)" % bar.get_value_text()
+	)
+
+	# Esgotamento: o sinal `stamina_changed` é emitido dentro de `set_stamina`,
+	# então a leitura é feita imediatamente, sem deixar a recuperação começar.
+	_player.set_stamina(0.0)
+	_expect(is_equal_approx(bar.get_ratio(), 0.0), "barra no mínimo com stamina 0")
+	_expect(bar.get_fill_width() == 0.0, "sem preenchimento quando esgotada")
+	_expect(bar.get_value_text() == "0%", "texto mostra 0%")
+	await _frames(60)
+	_expect(bar.get_ratio() > 0.0, "barra aumenta durante a recuperação")
+	_expect(
+		absf(bar.get_ratio() - _player.get_stamina() / _player.get_max_stamina()) < 0.001,
+		"recuperação sincronizada com o controlador"
+	)
+
+	# Pausa: o valor exibido não muda.
+	_player.set_stamina(60.0)
+	var paused_ratio: float = bar.get_ratio()
+	_expect(is_equal_approx(paused_ratio, 0.6), "barra mostra 60% antes da pausa")
+	_scene.pause_session()
+	await _frames(2)
+	await _frames(40)
+	_expect(is_equal_approx(bar.get_ratio(), paused_ratio), "barra não muda na pausa")
+	_expect(bar.get_value_text() == "60%", "texto estável na pausa")
+
+	# Configurações abertas a partir da pausa: também estável.
+	_scene.open_settings()
+	await _frames(8)
+	await _frames(30)
+	_expect(
+		is_equal_approx(bar.get_ratio(), paused_ratio),
+		"barra não muda com as configurações abertas"
+	)
+	_expect(bar.get_value_text() == "60%", "texto estável com as configurações abertas")
+	_scene.close_settings()
+	await _frames(4)
+	_expect(_scene.is_paused(), "partida continua pausada ao fechar as configurações")
+	_scene.resume_session()
+	await _frames(4)
+	_expect(not _scene.is_paused(), "partida retomada para os testes seguintes")
+
+	# Posição, tamanho e ausência de texturas (desenho nativo).
+	var panel: Control = hud.get_node_or_null("Layout/Stack/Panel") as Control
+	_expect(panel != null, "painel discreto da HUD existe")
+	if panel != null:
+		var viewport: Vector2 = hud.get_viewport_rect().size
+		var panel_rect: Rect2 = panel.get_global_rect()
+		_expect(
+			panel_rect.position.x >= 16.0 and panel_rect.position.y > viewport.y * 0.7,
+			"HUD no canto inferior esquerdo (%.0f, %.0f)" % [
+				panel_rect.position.x, panel_rect.position.y
+			]
+		)
+		_expect(panel_rect.end.x <= viewport.x * 0.35, "HUD não ocupa a largura da tela")
+		_expect(panel_rect.size.y <= 120.0, "HUD compacta (%.0f px de altura)" % panel_rect.size.y)
+		_expect(panel_rect.end.y <= viewport.y, "HUD não é cortada na parte inferior")
+		_expect(
+			panel.get_node_or_null("StaminaBar") != null,
+			"barra dentro do painel da HUD"
+		)
+	_expect(
+		hud.find_children("*", "TextureRect", true, false).is_empty(),
+		"HUD desenhada sem texturas"
+	)
+
+	# Adaptação a resoluções menores (mesmo caminho do redimensionar/F11).
+	var original_size: Vector2 = hud.size
+	hud.size = Vector2(960.0, 540.0)
+	await _frames(4)
+	if panel != null:
+		var small_rect: Rect2 = panel.get_global_rect()
+		_expect(small_rect.end.y <= 540.0, "HUD cabe em 960×540 (fim em %.0f)" % small_rect.end.y)
+		_expect(small_rect.position.y > 540.0 * 0.7, "HUD segue no rodapé em 960×540")
+		_expect(panel.is_visible_in_tree(), "painel continua visível após redimensionar")
+	_expect(bar.get_ratio() > 0.0, "barra continua desenhando após redimensionar")
+	_expect(bar.get_value_text() != "", "texto continua após redimensionar")
+	hud.size = original_size
+	await _frames(4)
+	_expect(hud.size.is_equal_approx(original_size), "HUD volta ao tamanho original")
+
+	# Limites diretos da barra, independentes do jogo.
+	bar.set_values(-20.0, 100.0)
+	_expect(is_equal_approx(bar.get_ratio(), 0.0), "barra limita valores negativos")
+	bar.set_values(250.0, 100.0)
+	_expect(is_equal_approx(bar.get_ratio(), 1.0), "barra limita acima do máximo")
+	bar.set_values(10.0, 0.0)
+	_expect(is_equal_approx(bar.get_ratio(), 0.0), "máximo zero não quebra a barra")
+	bar.set_values(10.0, 100.0)
+	_expect(bar.is_low(), "barra indica estado baixo abaixo do limiar")
+	bar.set_values(30.0, 100.0)
+	_expect(not bar.is_low(), "barra não alerta acima do limiar")
+
+	_player.set_stamina(_player.max_stamina)
+	await _frames(2)
+	_expect(bar.get_value_text() == "100%", "barra volta a 100% no fim")
 
 
 # --- Utilidades -------------------------------------------------------------

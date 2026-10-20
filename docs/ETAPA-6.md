@@ -13,6 +13,10 @@ existem.
 Fora do escopo: pulo, interação, inventário, criaturas, combate, iluminação e
 HUD de stamina. A etapa **não** implementa a Etapa 7.
 
+> **Correção 6.1:** a HUD de stamina, antes fora de escopo, foi adicionada na
+> release `v0.6.1-etapa6-hud`. A seção **10** descreve a implementação e os
+> testes; as seções 1–9 permanecem como registro da v0.6.0.
+
 ## 2. Stamina
 
 Os parâmetros ficam centralizados como propriedades exportadas de
@@ -41,8 +45,8 @@ Regras implementadas em `_update_stamina(delta)`:
   Com Shift ainda pressionado, o jogador volta a correr automaticamente.
 - A API pública inclui `get_stamina()`, `get_max_stamina()`,
   `get_stamina_ratio()`, `set_stamina()` e `is_sprint_allowed()`, além do sinal
-  `stamina_changed(current, maximum)` — estrutura pronta para uma HUD futura,
-  **sem HUD nesta etapa**.
+  `stamina_changed(current, maximum)` — estrutura usada pela HUD a partir da
+  correção 6.1 (na v0.6.0 não havia HUD).
 
 O gancho `sprint_allowed`/`set_sprint_allowed()` criado na Etapa 5 continua
 sendo o único caminho: não existe segundo controlador nem lógica duplicada.
@@ -124,7 +128,7 @@ Não existe tecla, ação, estado, força ou campo de pulo:
 | `tools/ci/movement_test.gd` | grupos 17–19 (stamina, ALTERNAR, pausa com stamina) |
 | `tools/ci/smoke_test.gd` | grupo 15 (stamina, persistência e lista real) |
 | `tools/ci/ui_flow_test.gd` | modo de agachamento na pausa da partida |
-| `project.godot`, `shared/autoload/app_info.gd`, `export_presets.cfg`, `title_screen.tscn` | versão 0.6.0 / Etapa 6 |
+| `project.godot`, `shared/autoload/app_info.gd`, `export_presets.cfg`, `title_screen.tscn` | versão 0.6.0 / Etapa 6 (histórico; a 6.1 usa 0.6.1) |
 | `.github/workflows/build.yml` | ZIP/release da Etapa 6 e LEIA-ME atualizado |
 | `README.md`, `docs/ARQUITETURA.md`, `docs/CONFIGURACOES.md`, READMEs | documentação |
 
@@ -193,11 +197,112 @@ inicial `v0.6.0`; `%APPDATA%\BlackSight\settings.cfg` foi criado com
 o `.exe` aberto com janela ficou vivo por 25 s com o título “Black Sight”.
 
 
-## 9. Limitações desta etapa
+## 9. Limitações desta etapa (v0.6.0)
 
-- Não existe HUD de stamina: o valor é interno, com sinal e `get_stamina_ratio()`
-  prontos para uma barra futura.
+- Na v0.6.0 não existia HUD de stamina: o valor era interno, com sinal e
+  `get_stamina_ratio()` prontos. A **correção 6.1** adiciona a barra (seção 10).
 - Não há som nem animação de cansaço; a corrida simplesmente passa a andar.
+
+## 10. Correção 6.1 — HUD de stamina
+
+Objetivo: mostrar a stamina real durante a partida com a mesma linguagem visual
+do menu e das configurações, sem criar um segundo estado de stamina e sem
+alterar física, velocidades ou balanceamento.
+
+### 10.1 Direção visual
+
+A HUD reutiliza **apenas** tokens que já existiam no projeto:
+
+| Elemento | Origem no projeto | Valor usado |
+| --- | --- | --- |
+| Painel | `StyleBoxFlat_panel` de `settings_screen.tscn` | fundo `(0.031, 0.031, 0.035, 0.55)`, borda 1 px `(0.62, 0.58, 0.51, 0.22)`, raio 2 |
+| Rótulo | textos secundários das telas | `(0.56, 0.53, 0.47)`, 14 px, Cinzel do tema |
+| Valor | texto principal | `(0.92, 0.89, 0.82)`, 14 px |
+| Trilho | fundo dos botões | `(0.02, 0.02, 0.023, 0.9)` com contorno `(0.62, 0.58, 0.51, 0.32)` |
+| Preenchimento | tom pergaminho da interface | `(0.8, 0.76, 0.68, 0.95)` |
+| Alerta (< 20%) | estado pressionado/alerta dos botões | `(0.55, 0.16, 0.16, 0.95)` |
+| Marcador | linha do divisor das telas | marca o limiar de 20% em `(0.62, 0.58, 0.51, 0.55)` |
+
+Nada de verde/azul, neon, gradientes, ícones ou texturas: o preenchimento é
+desenhado por `Control._draw()` (`StaminaFill`). A HUD ocupa o **canto inferior
+esquerdo**, com margens 36/32, painel de 300 px de largura mínima e trilho de
+8 px de altura — discreta o bastante para não competir com a atmosfera.
+
+### 10.2 Arquitetura e integração
+
+| Arquivo | Papel |
+| --- | --- |
+| `ui/scenes/hud/player_hud.tscn` | HUD reutilizável: `Control` full-rect, `Layout` (margens) → `Stack` (VBox alinhada ao rodapé) → `Panel` → `StaminaBar` |
+| `ui/scenes/hud/stamina_bar.tscn` | `Header` (rótulo + valor) e `Track` (desenho nativo) |
+| `ui/scripts/hud/player_hud.gd` | `bind_player()` conecta ao sinal `stamina_changed` e lê `get_stamina()`/`get_max_stamina()`; não importa o controlador |
+| `ui/scripts/hud/stamina_bar.gd` | recebe `set_values(current, maximum)` e repassa na hora (0–100%, sem estado próprio) |
+| `ui/scripts/hud/stamina_fill.gd` | desenho do trilho, preenchimento, marcador de limiar e alerta |
+| `match/scenes/movement_test.tscn` | instancia a HUD dentro de `Interface`, **antes** de `PauseRoot` (a pausa cobre a HUD) |
+| `match/scripts/movement_test.gd` | chama `bind_player(Player)` no `_ready`; expõe `get_hud()` para os testes |
+
+- A HUD **não** guarda stamina própria: só o último valor desenhado/escrito. O
+  controlador continua sendo a única fonte (`stamina`, `max_stamina`).
+- O sinal `stamina_changed` é emitido pelo controlador apenas quando o valor
+  muda (consumo/recuperação/set_stamina), portanto não há atualização por frame
+  na HUD.
+- Sem dependência circular: `ui/` não importa `players/`; a ligação é feita por
+  `Node` + sinal em `match/`, uma camada acima.
+- `mouse_filter = IGNORE` em toda a HUD: ela não captura clique nem foco e não
+  interfere no mouse, no movimento ou na pausa.
+- `Stack` é uma `VBoxContainer` alinhada ao rodapé, pronta para receber novos
+  componentes (vida, criatura, objetivos) acima da barra sem reconstruir nada.
+- A âncora full-rect acompanha janela, tela cheia (F11) e o stretch
+  `canvas_items` do projeto; a barra usa o espaço disponível, sem cortes.
+
+### 10.3 Parâmetros preservados
+
+Nenhum valor de gameplay foi alterado: máximo 100, consumo 20/s apenas em
+`RUNNING`, recuperação 15/s em `IDLE`/`WALKING`/`CROUCHING`, limiar 20, clamp
+0..100 e pausa sem consumo/recuperação continuam em
+`players/scripts/player_controller.gd`. A HUD apenas observa.
+
+### 10.4 Testes
+
+Grupo **`[20]`** de `tools/ci/movement_test.gd` (42 verificações):
+
+- HUD instanciada, visível, ligada ao jogador e com `mouse_filter` ignorado;
+- barra cheia em 100%, texto `100%` e preenchimento visível;
+- ao correr, a barra cai e o valor mostrado é idêntico ao
+  `get_stamina()/get_max_stamina()` no mesmo frame, inclusive no texto;
+- com stamina 0, razão 0,0, sem preenchimento e texto `0%`; após 60 frames de
+  recuperação, a barra sobe sincronizada;
+- pausa: 60% permanece 60% (40 frames) e o texto não muda; com as configurações
+  abertas o valor continua estável; ao fechar, a partida segue pausada;
+- posição inferior esquerda, largura ≤ 35% da tela, altura ≤ 120 px, sem corte
+  na base e barra dentro do painel;
+- nenhum `TextureRect` na HUD (desenho nativo, sem imagens);
+- redimensionamento para 960×540: a HUD continua no rodapé, visível e dentro da
+  tela; volta ao tamanho original;
+- limites diretos da barra: `-20` → 0%, `250` → 100%, máximo 0 → 0%, alerta
+  abaixo de 20% e sem alerta acima do limiar.
+
+Regressão completa das Etapas 4–6 executada junto (WASD, diagonal, câmera,
+colisões, gravidade, estados, velocidades, agachamento, stamina, pausa,
+configurações e modo de agachamento).
+
+### 10.5 Resultado
+
+| Item | Valor |
+| --- | --- |
+| Execução | *(preenchido após o build)* |
+| SMOKE / UI FLOW / MOVEMENT | *(preenchido após o build)* |
+| Release | `v0.6.1-etapa6-hud` |
+| ZIP | `BlackSight-Etapa6-HUD-Windows-x86_64.zip` |
+| Tamanho / SHA-256 | *(preenchido após o build)* |
+| Inspeção visual | *(preenchido após o build)* |
+
+### 10.6 Limitações
+
+- A HUD não tem animação de transição: o valor é atualizado no mesmo frame do
+  sinal, o que garante que nunca mostre um valor diferente do real.
+- A verificação visual foi feita pelos frames renderizados no CI
+  (Xvfb/OpenGL); o teste em Windows real com uma pessoa continua sendo o passo
+  seguinte.
 - O modo de agachamento é global (não por perfil/tecla).
 - Ainda não há pulo, interação, inventário, criaturas nem combate.
 

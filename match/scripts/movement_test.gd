@@ -1,5 +1,5 @@
 extends Node3D
-## Sessão de teste da movimentação (Etapa 4 → Etapa 6).
+## Sessão de teste da movimentação (Etapa 4 → Etapa 6.1).
 ##
 ## Responsabilidades — apenas **orquestração** de `match/`:
 ## - montar a cena de teste (`maps/scenes/test_room.tscn`) com o jogador
@@ -8,7 +8,9 @@ extends Node3D
 ## - oferecer **CONTINUAR**, **CONFIGURAÇÕES** e **VOLTAR AO MENU**;
 ## - abrir a tela de configurações existente (`ui/`) como sobreposição, sem
 ##   trocar de cena, para não perder a posição/estado do jogador;
-## - manter F11 (tela cheia) funcionando, como nas telas anteriores.
+## - manter F11 (tela cheia) funcionando, como nas telas anteriores;
+## - ligar a HUD (`ui/scenes/hud/player_hud.tscn`) ao jogador, que apenas
+##   escuta `stamina_changed` — a HUD não conhece regras de movimentação.
 ##
 ## Nenhuma regra de movimentação mora aqui: ela está em `PlayerController`.
 ## Nenhum valor de configuração é lido aqui: o jogador lê `GameSettings`.
@@ -25,6 +27,7 @@ const SPAWN_OFFSET := Vector3(0.0, 0.05, 0.0)
 @onready var _continue_button: Button = %ContinueButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _menu_button: Button = %MenuButton
+@onready var _hud: PlayerHud = %PlayerHud
 @onready var _settings_layer: CanvasLayer = $SettingsLayer
 
 var _paused: bool = false
@@ -39,6 +42,8 @@ func _ready() -> void:
 	_continue_button.pressed.connect(resume_session)
 	_settings_button.pressed.connect(open_settings)
 	_menu_button.pressed.connect(return_to_menu)
+	if _hud != null:
+		_hud.bind_player(_player)
 	_place_player_at_spawn()
 	_capture_mouse(true)
 	_fade_hint_later()
@@ -129,6 +134,11 @@ func return_to_menu() -> void:
 
 func is_paused() -> bool:
 	return _paused
+
+
+## HUD da partida (barra de stamina). Exposta para os testes de integração.
+func get_hud() -> PlayerHud:
+	return _hud
 
 
 func _unhandled_input(event: InputEvent) -> void:
