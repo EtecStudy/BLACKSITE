@@ -2425,7 +2425,7 @@ func _test_drop() -> void:
 		_expect(dropped_a.get_item() == item_a, "o item no mundo é o mesmo que saiu do slot")
 		_expect(dropped_a.get_node("Body/NameLabel").text == "ITEM A", "item no mundo mostra ITEM A")
 		var spot: Vector3 = dropped_a.global_position
-		var to_item := spot - _player.global_position
+		var to_item: Vector3 = spot - _player.global_position
 		to_item.y = 0.0
 		_expect(to_item.length() > 0.55, "não nasce dentro da cápsula do jogador (%.2f m)" % to_item.length())
 		_expect(to_item.length() < 2.0, "nasce perto do jogador (%.2f m)" % to_item.length())
