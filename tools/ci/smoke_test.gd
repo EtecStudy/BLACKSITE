@@ -287,12 +287,22 @@ func _check_modules() -> void:
 	)
 
 	# Módulos que ainda são apenas estrutura não podem ter código de gameplay.
-	for pending_module: String in ["creatures", "items", "objectives"]:
+	# `items/` saiu desta lista na Etapa 8: passou a ter o item de teste pegável.
+	for pending_module: String in ["creatures", "objectives"]:
 		var files := _list_gdscript_files("res://%s" % pending_module)
 		_expect(
 			files.is_empty(),
 			"módulo %s ainda não tem scripts (estrutura preparatória)" % pending_module
 		)
+
+	# `items/` tem só o item de teste: inventário, drop, uso e pilha continuam
+	# fora dele (o inventário é estado do jogador e vive em `players/`).
+	var item_scripts := _list_gdscript_files("res://items")
+	_expect(
+		item_scripts.size() == 1
+			and str(item_scripts[0]).ends_with("items/scripts/inventory_test_item.gd"),
+		"items/ tem apenas o item de teste da Etapa 8 (%s)" % str(item_scripts)
+	)
 
 
 func _list_gdscript_files(path: String) -> PackedStringArray:
