@@ -179,14 +179,40 @@ exceto a versão do projeto (0.9.0 → 0.9.1), que é o único número alterado.
 
 ## 5. Resultados
 
-| Verificação | Resultado |
+Run **[39516840747](https://github.com/EtecStudy/BLACKSITE/actions/runs/39516840747)** —
+os dois jobs passaram (Linux e Windows), todos os passos verdes.
+
+| Verificação | Linux | Windows |
+| --- | --- | --- |
+| Fumaça | 356/356 | 356/356 |
+| Fluxo de interface | 53/53 | 53/53 |
+| Controlador + inventário + drop | 586/586 | 586/586 |
+| **Drop junto a obstáculos** | **156/156** | **156/156** |
+| Captura renderizada do drop | `DROP VISUAL OK` | — |
+
+Resultado observado nos casos novos (logs do run):
+
+- chão aberto: item no piso, apoio 100%, zero colisões, recolhido com E;
+- **sobre a caixa**: item no topo (y=1,020), centralizado em X, apoio 100%;
+- ao lado da caixa: piso em z=1,143, fora da caixa;
+- ao lado do pilar: piso em z=−5,336, fora do pilar;
+- ao lado da parede: piso em x=−11,336, fora da parede;
+- espaço insuficiente: `SEM ESPAÇO PARA SOLTAR`, item mantido, nada criado;
+- drops repetidos: 3 de 3 no mundo, nenhum desapareceu, todos recolhidos;
+- itens A, B, C e D: 4 no mundo ao mesmo tempo, todos recuperáveis;
+- inventário cheio com item no chão: nada removido do mundo;
+- pausa: G, E, 1/2/3 e R bloqueados, item intacto depois de retomar.
+
+| Build | Valor |
 | --- | --- |
-| Fumaça (Linux/Windows) | a preencher |
-| Fluxo de interface (Linux/Windows) | a preencher |
-| Controlador + inventário + drop (Linux/Windows) | a preencher |
-| Drop junto a obstáculos (Linux/Windows) | a preencher |
-| Build Windows / `.pck` / ZIP | a preencher |
-| SHA-256 do ZIP | a preencher |
+| `.exe` | `FileVersion 0.9.1.0`, `ProductName=Black Sight`, executado sem janela e com janela no CI |
+| `.pck` | Godot 4.7.2, formato 4, ~1,4 MB |
+| ZIP publicado | `BlackSight-Etapa9-Drop-Fix-Windows-x86_64.zip` — 40.686.282 bytes |
+| SHA-256 do ZIP | `52221c8fe68f02cd5b8c164e07fc81211af33916bb3d6dd08fc169a274a0d473` |
+
+O tamanho e o SHA-256 são os do asset da release `v0.9.1-etapa9-drop-fix`,
+conferidos na API do GitHub (`digest` do arquivo), e coincidem com o
+`zip_sha256` calculado no job Windows.
 
 O teste automatizado **não** substitui o teste manual do usuário.
 
@@ -228,3 +254,7 @@ O teste automatizado **não** substitui o teste manual do usuário.
 - A remoção provisória com R continua existindo.
 - A Etapa 10 (transferência entre jogadores) continua pulada e não foi
   iniciada.
+- O resumo automático de testes da release lista as três suítes que já
+  existiam; a linha do `drop_obstacle_test` foi acrescentada à mão nesta
+  release. A próxima etapa deve incluir o novo log no passo
+  `Resumo dos testes e do pacote (Windows)` do workflow.

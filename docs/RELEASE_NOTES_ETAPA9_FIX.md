@@ -41,6 +41,19 @@ recolher, **R** como remoção provisória, mensagens `SLOT VAZIO`,
 `SEM ESPAÇO PARA SOLTAR` e `INVENTÁRIO CHEIO`, pausa bloqueando G/E/1/2/3/R,
 HUD, interação da Etapa 7, stamina e controles.
 
+## Testes automatizados (run 39516840747)
+
+| Suíte | Linux | Windows |
+| --- | --- | --- |
+| Fumaça (`smoke_test.gd`) | 356 | 356 |
+| Fluxo de interface (`ui_flow_test.gd`) | 53 | 53 |
+| Controlador FPS + inventário + drop (`movement_test.gd`) | 586 | 586 |
+| **Drop junto a obstáculos (`drop_obstacle_test.gd`)** | **156** | **156** |
+
+O CI também exporta o `.exe`, executa o build exportado, inspeciona o `.pck`,
+confere `FileVersion 0.9.1.0` e renderiza o drop sob Xvfb/OpenGL.
+**Isso não substitui o teste manual do usuário.**
+
 ## Como testar
 
 1. Extraia o ZIP mantendo `BlackSight.exe` e `BlackSight.pck` na mesma pasta.
