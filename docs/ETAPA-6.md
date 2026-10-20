@@ -16,6 +16,11 @@ HUD de stamina. A etapa **não** implementa a Etapa 7.
 > **Correção 6.1:** a HUD de stamina, antes fora de escopo, foi adicionada na
 > release `v0.6.1-etapa6-hud`. A seção **10** descreve a implementação e os
 > testes; as seções 1–9 permanecem como registro da v0.6.0.
+>
+> **Correção 6.2:** a recuperação passou a ter **atraso de 1 s** e a ser
+> **bloqueada enquanto SHIFT estiver pressionado** (seção **11**, release
+> `v0.6.2-etapa6-stamina`). A regra de recuperação descrita nas seções 1–10 é a
+> da v0.6.0/6.1 e foi substituída pela seção 11.
 
 ## 2. Stamina
 
@@ -325,31 +330,138 @@ estabilidade), não visualmente.
 
 - A HUD não tem animação de transição: o valor é atualizado no mesmo frame do
   sinal, o que garante que nunca mostre um valor diferente do real.
+- A temporização da recuperação descrita nesta seção foi alterada na correção
+  6.2 (seção 11): agora existe atraso de 1 s e SHIFT bloqueia a recuperação.
 - A verificação visual automatizada cobre um frame da cena real (HUD cheia); o
   restante da conferência visual depende do teste humano no Windows.
 - O teste em Windows real com uma pessoa continua sendo o próximo passo.
 - O modo de agachamento é global (não por perfil/tecla).
 - Ainda não há pulo, interação, inventário, criaturas nem combate.
 
-## 10. Como testar manualmente
+## 11. Correção 6.2 — recuperação de stamina com atraso
+
+A v0.6.1 foi testada manualmente no Windows: a HUD funcionou, mas a stamina
+começava a recuperar imediatamente ao soltar SHIFT. Esta correção muda **apenas
+a temporização da recuperação**, preservando HUD, física, velocidades,
+balanceamento, controles, configurações e persistência.
+
+### 11.1 Regra implementada
+
+| Situação | Comportamento |
+| --- | --- |
+| Correndo (RUNNING) | consome `20/s` como antes |
+| Esgotou (0) com SHIFT ainda pressionado | fica em **0**; `RUNNING → WALKING`; **nenhuma recuperação** |
+| Soltou SHIFT | **atraso de 1,0 s** sem recuperar |
+| SHIFT pressionado de novo durante o atraso | atraso reinicia; **nenhuma recuperação escondida**; corre se houver stamina |
+| Atraso terminado, sem SHIFT | recupera `15/s` em IDLE, WALKING ou CROUCHING |
+| Stamina no máximo | para em 100 (nunca ultrapassa) |
+| Pausa / configurações abertas | stamina, atraso e consumo congelados |
+| Agachado | não consome; recupera só quando o atraso terminou e SHIFT está solto |
+
+O atraso é uma constante de balanceamento do controlador
+(`stamina_recovery_delay = 1.0`), **não** uma nova opção visível em
+CONFIGURAÇÕES. Nenhum outro número mudou: máximo 100, consumo 20/s,
+recuperação 15/s, limiar de retomada 20 e as três velocidades seguem iguais.
+
+Fluxo completo (o que o teste manual deve confirmar):
+
+```
+SHIFT ─▶ corre ─▶ 0% ─▶ WALKING ─▶ continua segurando SHIFT ─▶ 0% (parado)
+      ─▶ solta SHIFT ─▶ 1 s sem recuperar ─▶ 15/s
+      ─▶ ≥ 20 ─▶ pressiona SHIFT ─▶ corre de novo
+```
+
+### 11.2 Implementação
+
+Tudo continua em `players/scripts/player_controller.gd`, dentro de
+`_update_stamina(delta)` — a HUD não participa da regra:
+
+- novo export `stamina_recovery_delay: float = 1.0`;
+- novo estado interno `_recovery_delay_left: float` (segundos restantes);
+- `RUNNING` consome e mantém o atraso cheio; ao esgotar, bloqueia a corrida
+  (`set_sprint_allowed(false)`) e cai para `WALKING` no mesmo frame;
+- **fora da corrida, com SHIFT pressionado, o atraso é recarregado e nada
+  recupera** — é a regra que mantém 0% em 0% enquanto o jogador insiste;
+- sem SHIFT, o atraso decrementa em tempo real e só depois dele a stamina sobe;
+- como `_physics_process` não roda com `movement_enabled == false`, a pausa e a
+  tela de configurações congelam valor **e** atraso sem código extra;
+- API nova apenas de leitura: `get_recovery_delay_left()` e `is_sprint_held()`
+  (usadas pelos testes);
+- o sinal `stamina_changed` e a HUD não mudaram: a barra continua exibindo
+  `get_stamina() / get_max_stamina()`.
+
+### 11.3 Testes
+
+Grupo **`[21]`** de `tools/ci/movement_test.gd`, com os nove cenários pedidos:
+
+| # | Cenário | Verificação |
+| --- | --- | --- |
+| 1 | Corrida normal | ~20 consumidos em 1 s de RUNNING |
+| 2 | Soltar SHIFT | valor parado aos 0,5 s e aos 0,9 s; ~15/s depois de 1 s |
+| 3 | Esgotar com SHIFT pressionado | 0% permanece 0% após 3 s; atraso continua cheio |
+| 4 | Soltar SHIFT após esgotar | 0% por 0,5 s; ~15 recuperados no segundo seguinte |
+| 5 | SHIFT durante o atraso | cancela o atraso; corre com stamina e não recupera sem ela |
+| 6 | Recuperação completa | 0 → 100 sem ultrapassar; corrida liberada |
+| 7 | Pausa e configurações | stamina e atraso congelados; retomada sem reiniciar |
+| 8 | Agachamento | não consome, não recupera com SHIFT, recupera sem ele; ALTERNAR e SEGURAR |
+| 9 | HUD | barra e texto iguais à stamina real em corrida, atraso e recuperação |
+
+Os grupos `[17]`, `[19]` e `[20]` foram ajustados **porque a regra mudou**:
+- `[17]` esperava recuperação com SHIFT pressionado e retomada automática
+  correndo; agora verifica que SHIFT mantém o valor parado e que a retomada
+  acontece depois do atraso, com SHIFT solto;
+- `[19]` media recuperação agachado com SHIFT ainda pressionado; agora mede com
+  SHIFT solto (e confirma o bloqueio com SHIFT);
+- `[20]` passou a aguardar o atraso antes de medir a subida da barra;
+- `[17]` também aguarda o atraso antes de medir as taxas de recuperação
+  andando/agachado/parado.
+
+Nenhuma verificação foi removida; as asserções que mudaram descrevem
+exatamente a nova regra aprovada.
+
+### 11.4 Resultado
+
+| Item | Valor |
+| --- | --- |
+| Execução | *(preenchido após o build)* |
+| SMOKE / UI FLOW / MOVEMENT | *(preenchido após o build)* |
+| Release | `v0.6.2-etapa6-stamina` |
+| ZIP | `BlackSight-Etapa6-Stamina-Windows-x86_64.zip` |
+| Tamanho / SHA-256 | *(preenchido após o build)* |
+
+### 11.5 Limitações
+
+- O atraso não aparece como número na HUD (por decisão de design da 6.1): só a
+  barra, que fica parada durante o segundo de espera.
+- Não há som nem animação de cansaço.
+- A conferência visual continuará sendo a dos frames do CI; o teste manual com
+  o `.exe` no Windows é o passo seguinte e não foi feito por mim.
+
+## 12. Como testar manualmente
 
 1. Abra `BlackSight.exe` → **TESTAR MOVIMENTAÇÃO**.
-2. Ande com **WASD**; segure **SHIFT** e corra por alguns segundos até a corrida
-   parar sozinha. Continue com **SHIFT** pressionado: depois de recuperar, a
-   corrida volta.
-3. Agache com **CTRL** (um toque, modo ALTERNAR) e confirme que a corrida para
-   e a stamina se recupera; toque de novo para levantar.
-4. **ESC** → **CONFIGURAÇÕES** → aba **CONTROLES** → **Agachar com Ctrl →
+2. Corra com **SHIFT** até a stamina zerar e **continue segurando SHIFT**: a
+   barra deve ficar em **0%** e a corrida deve continuar interrompida.
+3. Solte **SHIFT** e observe: a barra fica parada por **1 segundo** e só então
+   começa a subir (15/s). Ao passar de 20%, pressione **SHIFT** para correr de
+   novo.
+4. Com stamina parcial, corra, solte **SHIFT** e pressione de novo antes de
+   1 segundo: a corrida volta e a barra não pode ter subido nesse intervalo.
+5. Agache com **CTRL** (um toque, modo ALTERNAR) e confirme que a corrida para;
+   com **SHIFT** solto a stamina recupera, com **SHIFT** pressionado não.
+6. **ESC** durante a recuperação → espere alguns segundos → **CONTINUAR**: a
+   stamina e o atraso devem continuar exatamente de onde estavam.
+7. **ESC** → **CONFIGURAÇÕES** → aba **CONTROLES** → **Agachar com Ctrl →
    SEGURAR** → **APLICAR** → **VOLTAR** → **CONTINUAR**. Confirme que a posição,
    a câmera e a stamina continuaram iguais e que agora é preciso segurar Ctrl.
-5. Confira a lista de controles na mesma aba: só WASD, Shift, Ctrl, mouse, Esc
-   e F11; o texto do Ctrl muda com o modo escolhido.
-6. Teste **F11**, **VOLTAR AO MENU** e **SAIR DO JOGO**; feche o jogo e reabra
+8. Teste **F11**, **VOLTAR AO MENU** e **SAIR DO JOGO**; feche o jogo e reabra
    para confirmar que o modo escolhido continua salvo.
 
-## 11. Documentos relacionados
+## 13. Documentos relacionados
 
 - [`ETAPA-5.md`](ETAPA-5.md) — estados de movimento e pausa com configurações.
+- [`RELEASE_NOTES_ETAPA6_HUD.md`](RELEASE_NOTES_ETAPA6_HUD.md) — notas da release v0.6.1 (HUD).
+- [`RELEASE_NOTES_ETAPA6_STAMINA.md`](RELEASE_NOTES_ETAPA6_STAMINA.md) — notas desta correção.
 - [`CONFIGURACOES.md`](CONFIGURACOES.md) — onde ficam as configurações.
 - [`ARQUITETURA.md`](ARQUITETURA.md) — módulos e dependências.
-- [`RELEASE_NOTES_ETAPA6.md`](RELEASE_NOTES_ETAPA6.md) — notas da release.
+- [`RELEASE_NOTES_ETAPA6.md`](RELEASE_NOTES_ETAPA6.md) — notas da release v0.6.0.

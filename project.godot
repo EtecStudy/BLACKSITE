@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 6.1: HUD de stamina integrada à partida, stamina e agachamento."
-config/version="0.6.1"
+config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 6.2: HUD de stamina e recuperação com atraso após a corrida."
+config/version="0.6.2"
 run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://shared/textures/branding/icon_1024.png"

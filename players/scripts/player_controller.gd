@@ -12,10 +12,12 @@ extends CharacterBody3D
 ##   RUNNING   — andando com Shift (nunca agachado);
 ##   CROUCHING — agachado (Ctrl), com prioridade sobre Shift.
 ##
-## Stamina (Etapa 6): consumida apenas no estado RUNNING, recuperada nos demais
-## estados. Ao esgotar, `sprint_allowed` vira false e a corrida só volta depois
-## de recuperar `sprint_resume_threshold`. Enquanto a pausa está aberta
-## (`movement_enabled == false`) nada é consumido nem recuperado.
+## Stamina (Etapa 6): consumida apenas no estado RUNNING. A recuperação tem
+## **atraso** (Etapa 6.2): só começa depois de `stamina_recovery_delay` segundos
+## sem intenção de correr, e **segurar Shift bloqueia a recuperação** — inclusive
+## depois de esgotar. Ao esgotar, `sprint_allowed` vira false e a corrida só volta
+## depois de recuperar `sprint_resume_threshold`. Enquanto a pausa está aberta
+## (`movement_enabled == false`) nada é consumido, recuperado ou contado.
 ##
 ## Agachamento (Etapa 6): `crouch_mode` vem de `GameSettings` e aceita
 ## SEGURAR (`hold`, segura Ctrl) ou ALTERNAR (`toggle`, padrão, Ctrl alterna).
@@ -81,6 +83,9 @@ const ACTION_CROUCH := "move_crouch"
 @export var max_stamina: float = 100.0
 @export var stamina_drain_rate: float = 20.0
 @export var stamina_recovery_rate: float = 15.0
+## Etapa 6.2 — atraso (s) sem intenção de correr antes de a stamina recuperar.
+## Não é uma configuração do jogador: é regra de balanceamento do controlador.
+@export var stamina_recovery_delay: float = 1.0
 ## Depois de esgotar, a corrida só volta com pelo menos este valor.
 @export var sprint_resume_threshold: float = 20.0
 
@@ -107,6 +112,9 @@ var _is_crouched: bool = false
 var _crouch_mode: String = SettingsSchema.DEFAULT_CROUCH_MODE
 var _crouch_toggled: bool = false
 var _crouch_action_was_pressed: bool = false
+## Tempo restante (s) do atraso de recuperação. Congela quando o jogo pausa,
+## porque `_update_stamina()` não roda com `movement_enabled == false`.
+var _recovery_delay_left: float = 0.0
 
 var _gravity: float = 9.8
 var _sensitivity_x: float = 1.0
@@ -226,14 +234,40 @@ func _wants_crouch(pressed_now: bool, just_pressed: bool) -> bool:
 	return _crouch_toggled
 
 
-## Consome stamina em RUNNING e recupera nos demais estados.
+## Consome stamina correndo e recupera — somente depois do atraso e sem a
+## intenção de correr (Shift) ativa.
+##
+## Regras (Etapa 6.2):
+## 1. RUNNING consome `stamina_drain_rate` por segundo e mantém o atraso cheio;
+## 2. esgotar zera a stamina, bloqueia a corrida e cai para WALKING no frame;
+## 3. **Shift pressionado bloqueia a recuperação** — parado, andando ou agachado;
+## 4. soltar Shift inicia `stamina_recovery_delay`; nada recupera durante ele;
+## 5. apertar Shift durante o atraso o reinicia (nenhuma recuperação escondida);
+## 6. terminado o atraso, recupera `stamina_recovery_rate` por segundo até o
+##    máximo, liberando a corrida ao atingir `sprint_resume_threshold`.
 func _update_stamina(delta: float) -> void:
+	var sprint_held: bool = Input.is_action_pressed(ACTION_SPRINT)
+
 	if _state == MovementState.RUNNING:
 		if stamina > 0.0:
 			stamina = maxf(0.0, stamina - stamina_drain_rate * delta)
 			stamina_changed.emit(stamina, max_stamina)
+		# A corrida acabou de acontecer: o atraso começa cheio quando ela parar.
+		_recovery_delay_left = stamina_recovery_delay
 		if stamina <= 0.0:
 			set_sprint_allowed(false)
+			_recovery_delay_left = stamina_recovery_delay
+		return
+
+	# Intenção de correr ainda ativa (mesmo exausto, agachado ou parado):
+	# o jogador está se esforçando, então nada de recuperação.
+	if sprint_held:
+		_recovery_delay_left = stamina_recovery_delay
+		return
+
+	# Atraso após a corrida: stamina parada, tempo correndo normalmente.
+	if _recovery_delay_left > 0.0:
+		_recovery_delay_left = maxf(0.0, _recovery_delay_left - delta)
 		return
 
 	if stamina < max_stamina:
@@ -392,6 +426,16 @@ func get_stamina() -> float:
 
 func get_max_stamina() -> float:
 	return max_stamina
+
+
+## Segundos restantes do atraso de recuperação (0 = recuperação liberada).
+func get_recovery_delay_left() -> float:
+	return _recovery_delay_left
+
+
+## True enquanto Shift está pressionado (a corrida está sendo tentada).
+func is_sprint_held() -> bool:
+	return Input.is_action_pressed(ACTION_SPRINT)
 
 
 ## 0.0 a 1.0 — útil para uma barra de stamina futura.

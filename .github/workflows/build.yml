@@ -223,7 +223,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.6\\.1" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.6\\.2" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -236,7 +236,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 6.1 (Windows x86_64 · HUD)
+          BLACK SIGHT — Etapa 6.2 (Windows x86_64 · Stamina)
           ======================================
 
           COMO JOGAR
@@ -244,7 +244,7 @@ jobs:
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
 
-          JOGAR (ETAPA 6.1)
+          JOGAR (ETAPA 6.2)
           - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
           - W A S D ....... andar (relativo à direção da câmera)
           - SHIFT ......... correr (consome stamina)
@@ -260,11 +260,14 @@ jobs:
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
-          - Parado, andando ou agachado a stamina se recupera (15 por segundo).
+          - Segurar SHIFT bloqueia a recuperação: exausto, a stamina fica em 0
+            enquanto SHIFT continuar pressionado.
+          - Ao soltar SHIFT, a stamina espera 1 segundo antes de recuperar
+            (15 por segundo) parado, andando ou agachado.
           - Depois de esgotar, a corrida só volta com 20 pontos ou mais.
           - Agachado nunca se corre e a stamina não é consumida.
           - A HUD no canto inferior esquerdo mostra a stamina atual (0 a 100%)
-            e acompanha o consumo e a recuperação em tempo real.
+            e acompanha o consumo, o atraso e a recuperação em tempo real.
 
           CONFIGURAÇÕES
           - Clique em CONFIGURAÇÕES na tela inicial ou use ESC durante o jogo.
@@ -293,31 +296,33 @@ jobs:
           real de controles, mantendo os estados de movimento da Etapa 5.
           Correção 6.1: HUD discreta no canto inferior esquerdo com a barra de
           stamina em tempo real, integrada à cena da partida.
+          Correção 6.2: recuperação com atraso de 1 s depois da corrida e
+          bloqueada enquanto SHIFT estiver pressionado.
           Ainda não há pulo, inventário, interação, criaturas nem multiplayer.
 
-          Versão 0.6.1 — Etapa 6.1 (HUD de stamina)
+          Versão 0.6.2 — Etapa 6.2 (recuperação com atraso)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa6-HUD-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa6-Stamina-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa6-HUD-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa6-HUD-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa6-Stamina-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa6-HUD-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa6-HUD-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa6-HUD-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa6-HUD-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa6-HUD-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa6-hud-windows
+          name: black-sight-etapa62-windows
           path: |
-            BlackSight-Etapa6-HUD-Windows-x86_64.zip
+            BlackSight-Etapa6-Stamina-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
@@ -327,7 +332,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa6-hud-logs
+          name: black-sight-etapa62-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -353,7 +358,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 6.1"
+            echo "## Black Sight · Etapa 6.2"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -617,7 +622,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 6.1 (Windows x86_64 - HUD)
+          BLACK SIGHT - Etapa 6.2 (Windows x86_64 - Stamina)
           ======================================
 
           COMO JOGAR
@@ -630,7 +635,7 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
-          JOGAR (ETAPA 6.1)
+          JOGAR (ETAPA 6.2)
           - Clique em TESTAR MOVIMENTACAO na tela inicial.
           - W A S D ....... andar (relativo a direcao da camera)
           - SHIFT ......... correr (consome stamina)
@@ -646,11 +651,14 @@ jobs:
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
-          - Parado, andando ou agachado a stamina se recupera (15 por segundo).
+          - Segurar SHIFT bloqueia a recuperacao: exausto, a stamina fica em 0
+            enquanto SHIFT continuar pressionado.
+          - Ao soltar SHIFT, a stamina espera 1 segundo antes de recuperar
+            (15 por segundo) parado, andando ou agachado.
           - Depois de esgotar, a corrida so volta com 20 pontos ou mais.
           - Agachado nunca corre e a stamina nao e consumida.
           - A HUD no canto inferior esquerdo mostra a stamina atual (0 a 100%)
-            e acompanha o consumo e a recuperacao em tempo real.
+            e acompanha o consumo, o atraso e a recuperacao em tempo real.
 
           CONFIGURACOES
           - Clique em CONFIGURACOES na tela inicial ou use ESC durante o jogo.
@@ -678,9 +686,11 @@ jobs:
           real de controles, mantendo os estados de movimento da Etapa 5.
           Correcao 6.1: HUD discreta no canto inferior esquerdo com a barra de
           stamina em tempo real, integrada a cena da partida.
+          Correcao 6.2: recuperacao com atraso de 1 s depois da corrida e
+          bloqueada enquanto SHIFT estiver pressionado.
           Ainda nao ha pulo, inventario, interacao, criaturas nem multiplayer.
 
-          Versao 0.6.1 - Etapa 6.1 (HUD de stamina)
+          Versao 0.6.2 - Etapa 6.2 (recuperacao com atraso)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -691,7 +701,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa6-HUD-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa6-Stamina-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -708,9 +718,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa6-hud-windows-real
+          name: black-sight-etapa62-windows-real
           path: |
-            BlackSight-Etapa6-HUD-Windows-x86_64.zip
+            BlackSight-Etapa6-Stamina-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -720,9 +730,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.6.1-etapa6-hud --yes --cleanup-tag 2>$null
+          gh release delete v0.6.2-etapa6-stamina --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.6.1-etapa6-hud "BlackSight-Etapa6-HUD-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 6.1 - HUD de stamina (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA6_HUD.md
+          gh release create v0.6.2-etapa6-stamina "BlackSight-Etapa6-Stamina-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 6.2 - Recuperação de stamina (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA6_STAMINA.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -747,7 +757,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 6.1 (Windows real · HUD)", "")
+          $summary = @("## Black Sight - Etapa 6.2 (Windows real · Stamina)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

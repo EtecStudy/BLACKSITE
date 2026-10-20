@@ -3,9 +3,10 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 6 concluída e corrigida em 6.1 — stamina na corrida com
-> **HUD no canto inferior esquerdo**, modos de agachamento (ALTERNAR/SEGURAR) e
-> lista real de controles, com configurações acessíveis durante a partida.
+> **Status:** Etapa 6 concluída e corrigida em 6.1 (HUD de stamina) e 6.2
+> (recuperação com atraso) — stamina na corrida com **HUD no canto inferior
+> esquerdo**, modos de agachamento (ALTERNAR/SEGURAR) e lista real de controles,
+> com configurações acessíveis durante a partida.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -34,7 +35,7 @@ Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compat
 | Tecla | Ação |
 | --- | --- |
 | `W` `A` `S` `D` | Andar (relativo à direção da câmera) |
-| `Shift` | Correr (consome stamina; nunca agachado) |
+| `Shift` | Correr (consome stamina; nunca agachado). Segurar Shift também bloqueia a recuperação |
 | `Ctrl` | Agachar — **ALTERNAR** (padrão): um toque agacha, outro levanta; **SEGURAR**: mantenha pressionado |
 | Mouse | Olhar (limite de ±89° na vertical) |
 | `Esc` | Liberar o mouse / abrir a pausa |
@@ -63,9 +64,12 @@ controles que existem de verdade — sem interação, lanterna, pulo ou inventá
   corrida, câmera que acompanha a altura e cápsula que só volta a ficar em pé
   quando há espaço.
 - **Stamina e agachamento configurável** (Etapa 6): correr consome 20/s (máximo
-  100), recupera 15/s parado/andando/agachado, para ao esgotar e volta a partir
-  de 20. O modo de agachamento (**ALTERNAR** padrão ou **SEGURAR**) fica em
-  `settings.cfg` e vale na hora, inclusive durante a partida.
+  100), para ao esgotar e a corrida só volta a partir de 20. O modo de
+  agachamento (**ALTERNAR** padrão ou **SEGURAR**) fica em `settings.cfg` e vale
+  na hora, inclusive durante a partida.
+- **Recuperação com atraso** (correção 6.2): depois de soltar SHIFT a stamina
+  espera 1 s antes de recuperar (15/s), e **segurar SHIFT bloqueia a
+  recuperação** — exausto, o jogador fica em 0% até soltar a tecla.
 - **HUD de stamina** (correção 6.1): barra discreta no canto inferior esquerdo,
   com rótulo, porcentagem e desenho nativo, ligada ao sinal `stamina_changed`.
   Não captura mouse nem foco e permanece estável na pausa e nas configurações.

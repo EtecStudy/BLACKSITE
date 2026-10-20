@@ -1,5 +1,5 @@
 extends Node
-## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 6).
+## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 6.2).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
@@ -8,7 +8,8 @@ extends Node
 ## O teste instancia a **cena real** (`match/scenes/movement_test.tscn`) e
 ## verifica movimento, estados (parado/andando/correndo/agachado), câmera,
 ## física, colisões, menu de pausa com configurações, integração com as
-## configurações da Etapa 3, stamina e os dois modos de agachamento
+## configurações da Etapa 3, stamina (consumo, atraso de recuperação e
+## exaustão), a HUD da Etapa 6.1 e os dois modos de agachamento
 ## (SEGURAR e ALTERNAR, este último o padrão do jogo). As entradas são simuladas com `Input.action_press`,
 ## que é o mesmo caminho usado pelo teclado.
 ##
@@ -72,6 +73,7 @@ func _ready() -> void:
 	await _test_crouch_toggle()
 	await _test_pause_stamina_mode()
 	await _test_hud()
+	await _test_recovery_delay()
 
 	_finish()
 
@@ -726,10 +728,11 @@ func _test_stamina() -> void:
 	)
 	_expect(_player.get_stamina() > 0.0, "corrida curta não esgota a stamina")
 
-	# Recuperação andando.
+	# Recuperação andando — só depois do atraso de 1 s (Etapa 6.2).
 	Input.action_release("move_sprint")
 	await _frames(4)
 	_expect_state(PlayerController.MovementState.WALKING, "soltar SHIFT → ANDANDO")
+	await _wait_recovery_delay()
 	_player.set_stamina(40.0)
 	var walk_start: float = _player.get_stamina()
 	await _frames(60)
@@ -743,6 +746,7 @@ func _test_stamina() -> void:
 	Input.action_press("move_crouch")
 	await _frames(8)
 	_expect_state(PlayerController.MovementState.CROUCHING, "CTRL andando → AGACHADO")
+	await _wait_recovery_delay()
 	_player.set_stamina(40.0)
 	var crouch_start: float = _player.get_stamina()
 	await _frames(60)
@@ -757,6 +761,7 @@ func _test_stamina() -> void:
 	await _frames(12)
 
 	# Recuperação parado.
+	await _wait_recovery_delay()
 	_player.set_stamina(40.0)
 	var idle_start: float = _player.get_stamina()
 	await _frames(60)
@@ -784,17 +789,36 @@ func _test_stamina() -> void:
 	var low: float = _player.get_stamina()
 	await _frames(20)
 	_expect_state(PlayerController.MovementState.WALKING, "SHIFT pressionado não corre com stamina baixa")
-	_expect(_player.get_stamina() > low, "stamina recupera mesmo com SHIFT pressionado")
+	# Etapa 6.2: exausto e ainda segurando SHIFT = nenhuma recuperação.
+	_expect(
+		is_equal_approx(_player.get_stamina(), low),
+		"SHIFT pressionado mantém a stamina parada (%.1f)" % _player.get_stamina()
+	)
 
 	# Retorno determinístico: abaixo do limiar continua bloqueada; ao passar do
-	# limiar, a corrida é liberada e volta sozinha com SHIFT pressionado.
+	# limiar com SHIFT solto, a corrida é liberada e volta a correr.
 	Input.action_release("move_forward")
 	Input.action_release("move_sprint")
 	await _frames(6)
+	await _wait_recovery_delay()
 	_player.set_stamina(_player.sprint_resume_threshold - 5.0)
 	_expect(
 		not _player.is_sprint_allowed(),
 		"5 pontos abaixo do limiar: corrida continua bloqueada"
+	)
+	var unlocked: bool = false
+	for index: int in 90:
+		await get_tree().physics_frame
+		if _player.is_sprint_allowed():
+			unlocked = true
+			break
+	_expect(
+		_player.get_stamina() >= 0.0,
+		"stamina não fica negativa ao recuperar o limiar"
+	)
+	_expect(
+		unlocked and _player.is_sprint_allowed(),
+		"corrida liberada ao recuperar o limiar (%.1f)" % _player.get_stamina()
 	)
 	Input.action_press("move_forward")
 	Input.action_press("move_sprint")
@@ -804,14 +828,6 @@ func _test_stamina() -> void:
 		if int(_player.get_state()) == PlayerController.MovementState.RUNNING:
 			resumed = true
 			break
-	_expect(
-		_player.get_stamina() >= 0.0,
-		"stamina não fica negativa ao retomar"
-	)
-	_expect(
-		_player.is_sprint_allowed(),
-		"corrida liberada ao recuperar o limiar (%.1f)" % _player.get_stamina()
-	)
 	_expect(resumed, "com SHIFT pressionado, volta a CORRER ao recuperar o limiar")
 	Input.action_release("move_forward")
 	Input.action_release("move_sprint")
@@ -1023,9 +1039,25 @@ func _test_pause_stamina_mode() -> void:
 	_expect_state(PlayerController.MovementState.CROUCHING, "corrida é interrompida ao agachar")
 	var crouched_stamina: float = _player.get_stamina()
 	await _frames(30)
+	# Etapa 6.2: SHIFT ainda pressionado bloqueia a recuperação no agachamento.
 	_expect(
-		_player.get_stamina() > crouched_stamina,
-		"agachado recupera stamina durante a partida"
+		is_equal_approx(_player.get_stamina(), crouched_stamina),
+		"agachado com SHIFT pressionado não recupera (%.1f)" % _player.get_stamina()
+	)
+	Input.action_release("move_sprint")
+	await _wait_recovery_delay()
+	var crouch_recovering: float = _player.get_stamina()
+	await _frames(30)
+	_expect(
+		_player.get_stamina() > crouch_recovering,
+		"agachado recupera stamina depois do atraso"
+	)
+	var before_shift: float = _player.get_stamina()
+	Input.action_press("move_sprint")
+	await _frames(10)
+	_expect(
+		is_equal_approx(_player.get_stamina(), before_shift),
+		"SHIFT pressionado volta a bloquear a recuperação"
 	)
 	await _tap_crouch()
 	await _frames(12)
@@ -1099,6 +1131,7 @@ func _test_hud() -> void:
 	_expect(is_equal_approx(bar.get_ratio(), 0.0), "barra no mínimo com stamina 0")
 	_expect(bar.get_fill_width() == 0.0, "sem preenchimento quando esgotada")
 	_expect(bar.get_value_text() == "0%", "texto mostra 0%")
+	await _wait_recovery_delay()
 	await _frames(60)
 	_expect(bar.get_ratio() > 0.0, "barra aumenta durante a recuperação")
 	_expect(
@@ -1187,6 +1220,291 @@ func _test_hud() -> void:
 	await _frames(2)
 	_expect(bar.get_value_text() == "100%", "barra volta a 100% no fim")
 
+# --- Atraso de recuperação e exaustão (Etapa 6.2) ---------------------------
+
+func _test_recovery_delay() -> void:
+	print("[21] Atraso de recuperação e exaustão (Etapa 6.2)")
+	await _set_crouch_mode("hold")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	await _wait_recovery_delay()
+	_player.set_stamina(_player.max_stamina)
+
+	_expect(
+		is_equal_approx(_player.stamina_recovery_delay, 1.0),
+		"atraso de recuperação = 1,0 s"
+	)
+	_expect(
+		_player.has_method("get_recovery_delay_left") and _player.has_method("is_sprint_held"),
+		"controlador expõe get_recovery_delay_left() e is_sprint_held()"
+	)
+	_expect(
+		is_equal_approx(_player.get_stamina(), 100.0),
+		"começa com stamina cheia (%.1f)" % _player.get_stamina()
+	)
+
+	# [1] Corrida normal: consome 20/s.
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(60)
+	_expect_state(PlayerController.MovementState.RUNNING, "[1] corrida com SHIFT")
+	var drained: float = 100.0 - _player.get_stamina()
+	_expect(
+		absf(drained - _player.stamina_drain_rate) < 4.0,
+		"[1] 1 s correndo consome ~20 (%.1f)" % drained
+	)
+
+	# [2] Soltar SHIFT: 1 s sem recuperar e depois 15/s.
+	Input.action_release("move_sprint")
+	await _frames(2)
+	_expect_state(PlayerController.MovementState.WALKING, "[2] soltar SHIFT → ANDANDO")
+	var released_at: float = _player.get_stamina()
+	_expect(
+		_player.get_recovery_delay_left() > 0.9,
+		"[2] atraso começa cheio (%.2f s)" % _player.get_recovery_delay_left()
+	)
+	await _frames(30)
+	_expect(
+		absf(_player.get_stamina() - released_at) < 0.01,
+		"[2] nada recupera nos primeiros 0,5 s (%.2f)" % _player.get_stamina()
+	)
+	await _frames(20)
+	_expect(
+		absf(_player.get_stamina() - released_at) < 0.01,
+		"[2] continua parada a ~0,85 s (%.2f)" % _player.get_stamina()
+	)
+	await _wait_recovery_delay()
+	var recovering_from: float = _player.get_stamina()
+	await _frames(60)
+	var walk_gain: float = _player.get_stamina() - recovering_from
+	_expect(
+		is_equal_approx(_player.get_recovery_delay_left(), 0.0),
+		"[2] atraso termina depois de ~1 s"
+	)
+	_expect(
+		absf(walk_gain - _player.stamina_recovery_rate) < 4.0,
+		"[2] recupera ~15/s depois do atraso (%.1f)" % walk_gain
+	)
+
+	# [3] Esgotamento com SHIFT pressionado: 0% permanece 0%.
+	_player.set_stamina(5.0)
+	_player.set_sprint_allowed(true)
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	var zero_seen: bool = false
+	for index: int in 60:
+		await get_tree().physics_frame
+		if _player.get_stamina() <= 0.0:
+			zero_seen = true
+			break
+	_expect(zero_seen, "[3] stamina chega a 0 correndo")
+	_expect(not _player.is_sprint_allowed(), "[3] corrida bloqueada ao esgotar")
+	await _frames(180)
+	_expect(
+		is_equal_approx(_player.get_stamina(), 0.0),
+		"[3] 3 s com SHIFT pressionado mantêm 0%% (%.2f)" % _player.get_stamina()
+	)
+	_expect(
+		_player.get_recovery_delay_left() > 0.9,
+		"[3] atraso permanece cheio enquanto SHIFT está pressionado"
+	)
+
+	# [4] Soltar SHIFT após esgotar: 1 s parado e depois recupera.
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(2)
+	_expect(
+		is_equal_approx(_player.get_stamina(), 0.0),
+		"[4] continua 0 ao soltar SHIFT"
+	)
+	await _frames(30)
+	_expect(
+		is_equal_approx(_player.get_stamina(), 0.0),
+		"[4] nada recupera nos primeiros 0,5 s"
+	)
+	await _wait_recovery_delay()
+	await _frames(60)
+	var recovered: float = _player.get_stamina()
+	_expect(recovered > 10.0, "[4] recupera depois do atraso (%.1f)" % recovered)
+	_expect(
+		absf(recovered - _player.stamina_recovery_rate) < 6.0,
+		"[4] recuperação ≈ 15/s (%.1f)" % recovered
+	)
+
+	# [5] SHIFT durante o atraso.
+	# (a) com stamina suficiente: cancela o atraso e volta a correr.
+	await _wait_recovery_delay()
+	_player.set_stamina(90.0)
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(20)
+	Input.action_release("move_sprint")
+	await _frames(6)
+	var delay_running: float = _player.get_stamina()
+	_expect(_player.get_recovery_delay_left() > 0.5, "[5] atraso em andamento")
+	Input.action_press("move_sprint")
+	await _frames(10)
+	_expect_state(PlayerController.MovementState.RUNNING, "[5] SHIFT no atraso volta a correr")
+	_expect(
+		_player.get_stamina() < delay_running,
+		"[5] corrida consome de novo, sem recuperação escondida"
+	)
+	# (b) sem stamina suficiente: nada recupera enquanto SHIFT está pressionado.
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(2)
+	_player.set_stamina(10.0)
+	Input.action_press("move_sprint")
+	await _frames(2)
+	var blocked_at: float = _player.get_stamina()
+	await _frames(60)
+	_expect(
+		is_equal_approx(_player.get_stamina(), blocked_at),
+		"[5] SHIFT no atraso não recupera stamina (%.1f)" % _player.get_stamina()
+	)
+	_expect_state(PlayerController.MovementState.IDLE, "[5] sem stamina suficiente não corre")
+	Input.action_release("move_sprint")
+	await _wait_recovery_delay()
+	await _frames(30)
+	_expect(
+		_player.get_stamina() > blocked_at,
+		"[5] soltar SHIFT libera a recuperação"
+	)
+
+	# [6] Recuperação completa: 0 → 100 sem ultrapassar.
+	_player.set_stamina(0.0)
+	await _wait_recovery_delay()
+	var over_max: bool = false
+	for index: int in 420:
+		await get_tree().physics_frame
+		if _player.get_stamina() > _player.max_stamina + 0.0001:
+			over_max = true
+	_expect(
+		is_equal_approx(_player.get_stamina(), _player.max_stamina),
+		"[6] recupera até o máximo (%.1f)" % _player.get_stamina()
+	)
+	_expect(not over_max, "[6] nunca ultrapassa 100")
+	_expect(
+		absf(_player.get_stamina_ratio() - 1.0) < 0.0001,
+		"[6] razão volta a 1,0"
+	)
+	_expect(_player.is_sprint_allowed(), "[6] corrida liberada novamente")
+
+	# [7] Pausa e configurações congelam stamina e atraso.
+	_player.set_stamina(60.0)
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(12)
+	Input.action_release("move_sprint")
+	Input.action_release("move_forward")
+	await _frames(2)
+	var delay_before_pause: float = _player.get_recovery_delay_left()
+	var stamina_before_pause: float = _player.get_stamina()
+	_expect(delay_before_pause > 0.5, "[7] atraso ativo antes da pausa")
+	_scene.pause_session()
+	await _frames(4)
+	await _frames(120)
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before_pause),
+		"[7] pausa não recupera stamina (%.1f)" % _player.get_stamina()
+	)
+	_expect(
+		absf(_player.get_recovery_delay_left() - delay_before_pause) < 0.0001,
+		"[7] pausa não avança o atraso (%.2f s)" % _player.get_recovery_delay_left()
+	)
+	_scene.open_settings()
+	await _frames(120)
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before_pause),
+		"[7] configurações não recuperam stamina"
+	)
+	_expect(
+		absf(_player.get_recovery_delay_left() - delay_before_pause) < 0.0001,
+		"[7] configurações não avançam o atraso"
+	)
+	_scene.close_settings()
+	await _frames(6)
+	_scene.resume_session()
+	await _frames(6)
+	_expect(
+		absf(_player.get_stamina() - stamina_before_pause) < 1.5,
+		"[7] retoma do mesmo valor (%.1f)" % _player.get_stamina()
+	)
+	_expect(
+		_player.get_recovery_delay_left() <= delay_before_pause + 0.2,
+		"[7] atraso continua de onde parou (%.2f s)" % _player.get_recovery_delay_left()
+	)
+	await _wait_recovery_delay()
+
+	# [8] Agachamento: não consome, não recupera com SHIFT, recupera sem ele.
+	await _set_crouch_mode("toggle")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	await _wait_recovery_delay()
+	_player.set_stamina(50.0)
+	await _tap_crouch()
+	await _frames(10)
+	_expect(_player.is_crouched(), "[8] ALTERNAR agacha")
+	_expect_state(PlayerController.MovementState.CROUCHING, "[8] estado AGACHADO")
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(30)
+	_expect(
+		is_equal_approx(_player.get_stamina(), 50.0),
+		"[8] agachado não consome e SHIFT não recupera (%.1f)" % _player.get_stamina()
+	)
+	Input.action_release("move_sprint")
+	await _wait_recovery_delay()
+	var crouch_from: float = _player.get_stamina()
+	await _frames(30)
+	_expect(_player.get_stamina() > crouch_from, "[8] agachado recupera depois do atraso")
+	Input.action_release("move_forward")
+	await _tap_crouch()
+	await _frames(10)
+	_expect(not _player.is_crouched(), "[8] ALTERNAR levanta")
+	await _set_crouch_mode("hold")
+	Input.action_press("move_crouch")
+	await _frames(10)
+	_expect(_player.is_crouched(), "[8] SEGURAR agacha")
+	Input.action_release("move_crouch")
+	await _frames(10)
+	_expect(not _player.is_crouched(), "[8] SEGURAR levanta")
+	await _set_crouch_mode("hold")
+
+	# [9] HUD continua refletindo a stamina real.
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	await _wait_recovery_delay()
+	_player.set_stamina(75.0)
+	var hud: PlayerHud = _scene.get_hud()
+	var bar: StaminaBar = hud.get_stamina_bar() if hud != null else null
+	_expect(bar != null, "[9] HUD disponível")
+	if bar == null:
+		return
+	_expect(bar.get_value_text() == "75%", "[9] HUD mostra 75%")
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(60)
+	_expect(
+		absf(bar.get_ratio() - _player.get_stamina_ratio()) < 0.0001,
+		"[9] barra acompanha a corrida"
+	)
+	Input.action_release("move_sprint")
+	await _frames(45)
+	_expect(
+		absf(bar.get_ratio() - _player.get_stamina_ratio()) < 0.0001,
+		"[9] barra parada durante o atraso"
+	)
+	await _wait_recovery_delay()
+	await _frames(30)
+	_expect(
+		bar.get_ratio() > 0.0 and absf(bar.get_ratio() - _player.get_stamina_ratio()) < 0.0001,
+		"[9] barra acompanha a recuperação"
+	)
+	_expect(bar.get_ratio() <= 1.0, "[9] barra nunca passa de 100%")
+	_expect(bar.get_value_text() == "%d%%" % roundi(_player.get_stamina_ratio() * 100.0),
+		"[9] texto acompanha a stamina real (%s)" % bar.get_value_text())
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(6)
+
 
 # --- Utilidades -------------------------------------------------------------
 
@@ -1236,6 +1554,14 @@ func _release_all() -> void:
 	for action: String in MOVE_ACTIONS:
 		if InputMap.has_action(action):
 			Input.action_release(action)
+
+
+## Avança a física até o atraso de recuperação zerar (Shift precisa estar solto).
+func _wait_recovery_delay() -> void:
+	for index: int in 180:
+		if _player.get_recovery_delay_left() <= 0.0:
+			return
+		await get_tree().physics_frame
 
 
 func _frames(count: int) -> void:

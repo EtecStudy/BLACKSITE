@@ -762,7 +762,7 @@ func _check_movement_states() -> void:
 
 
 func _check_stage6() -> void:
-	print("[15] Stamina, modos de agachamento e controles reais (Etapa 6)")
+	print("[15] Stamina, atraso de recuperação, agachamento e controles (Etapa 6.2)")
 
 	# --- Esquema -------------------------------------------------------------
 	var defaults: Dictionary = SettingsSchema.defaults()
@@ -796,6 +796,10 @@ func _check_stage6() -> void:
 			is_equal_approx(float(player.get("stamina_recovery_rate")), 15.0),
 			"recuperação de stamina = 15/s"
 		)
+		_expect(
+			is_equal_approx(float(player.get("stamina_recovery_delay")), 1.0),
+			"atraso de recuperação = 1,0 s (Etapa 6.2)"
+		)
 		var threshold: float = float(player.get("sprint_resume_threshold"))
 		_expect(
 			threshold > 0.0 and threshold < float(player.get("max_stamina")),
@@ -804,9 +808,12 @@ func _check_stage6() -> void:
 		for method: String in [
 			"get_stamina", "get_max_stamina", "get_stamina_ratio", "set_stamina",
 			"get_crouch_mode", "is_sprint_allowed", "set_sprint_allowed",
+			"get_recovery_delay_left", "is_sprint_held",
 		]:
 			_expect(player.has_method(method), "controlador expõe %s()" % method)
 		_expect(player.has_signal("stamina_changed"), "sinal stamina_changed preparado para a HUD")
+		var hud_scene: PackedScene = load("res://ui/scenes/hud/player_hud.tscn") as PackedScene
+		_expect(hud_scene != null, "HUD da Etapa 6.1 continua presente e carrega")
 		var source: String = FileAccess.get_file_as_string(
 			"res://players/scripts/player_controller.gd"
 		).to_lower()
