@@ -10,7 +10,9 @@ extends Node3D
 ##   trocar de cena, para não perder a posição/estado do jogador;
 ## - manter F11 (tela cheia) funcionando, como nas telas anteriores;
 ## - ligar a HUD (`ui/scenes/hud/player_hud.tscn`) ao jogador, que apenas
-##   escuta `stamina_changed` — a HUD não conhece regras de movimentação.
+##   escuta `stamina_changed` — a HUD não conhece regras de movimentação;
+## - ligar a indicação de interação (Etapa 7) ao `InteractionDetector` do
+##   jogador e suspender a detecção durante a pausa/configurações.
 ##
 ## Nenhuma regra de movimentação mora aqui: ela está em `PlayerController`.
 ## Nenhum valor de configuração é lido aqui: o jogador lê `GameSettings`.
@@ -44,6 +46,8 @@ func _ready() -> void:
 	_menu_button.pressed.connect(return_to_menu)
 	if _hud != null:
 		_hud.bind_player(_player)
+		# Etapa 7: a HUD mostra a indicação de interação; a ligação é por sinal.
+		_hud.bind_interaction(_player.get_interaction_detector())
 	_place_player_at_spawn()
 	_capture_mouse(true)
 	_fade_hint_later()
@@ -65,6 +69,7 @@ func pause_session() -> void:
 	_paused = true
 	_pause_root.visible = true
 	_player.movement_enabled = false
+	_set_interaction_enabled(false)
 	# Para na hora: sem deslize residual enquanto o menu está aberto.
 	_player.velocity.x = 0.0
 	_player.velocity.z = 0.0
@@ -79,7 +84,16 @@ func resume_session() -> void:
 	_paused = false
 	_pause_root.visible = false
 	_player.movement_enabled = true
+	_set_interaction_enabled(true)
 	_capture_mouse(true)
+
+
+## Liga/desliga a detecção de interação (Etapa 7). A pausa e a tela de
+## configurações nunca executam `interact` nem trocam o foco.
+func _set_interaction_enabled(value: bool) -> void:
+	var detector: InteractionDetector = _player.get_interaction_detector()
+	if detector != null:
+		detector.set_detection_enabled(value)
 
 
 ## Abre a tela de configurações existente por cima da partida pausada.

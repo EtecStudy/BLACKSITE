@@ -4,7 +4,9 @@ extends CharacterBody3D
 ##
 ## Escopo atual: **andar** (WASD), **correr** (Shift), **agachar** (Ctrl),
 ## **stamina**, **olhar** com o mouse, **gravidade** e **colisão**.
-## Pulo não existe. Interação e inventário pertencem às próximas etapas.
+## Pulo não existe. A interação (Etapa 7) vive em
+## `players/scripts/interaction/interaction_detector.gd`, um componente da cena
+## do jogador — o controlador apenas o expõe.
 ##
 ## Estados (`MovementState`):
 ##   IDLE      — parado (sem direção pressionada);
@@ -129,6 +131,9 @@ var _capsule: CapsuleShape3D
 
 @onready var _head: Node3D = $Head
 @onready var _collision: CollisionShape3D = $Collision
+@onready var _interaction_detector: InteractionDetector = get_node_or_null(
+	"Head/Camera/InteractionDetector"
+) as InteractionDetector
 
 
 func _ready() -> void:
@@ -478,6 +483,13 @@ func get_eye_height() -> float:
 ## Etapa 6 (stamina) chamará isto; nesta etapa permanece sempre true.
 func set_sprint_allowed(value: bool) -> void:
 	sprint_allowed = value
+
+
+## Detector de interação (Etapa 7). É um componente da cena do jogador: o
+## controlador só o expõe para a sessão ligar à HUD — nenhuma regra de
+## interação mora aqui.
+func get_interaction_detector() -> InteractionDetector:
+	return _interaction_detector
 
 
 func get_sensitivity() -> Vector2:

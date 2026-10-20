@@ -3,10 +3,10 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 6 concluída e corrigida em 6.1 (HUD de stamina) e 6.2
-> (recuperação com atraso) — stamina na corrida com **HUD no canto inferior
-> esquerdo**, modos de agachamento (ALTERNAR/SEGURAR) e lista real de controles,
-> com configurações acessíveis durante a partida.
+> **Status:** Etapa 7 concluída — **sistema genérico de interação** por olhar
+> (raycast da câmera, alcance de 2,5 m, linha de visão) com a indicação
+> `[E] Interagir` e um objeto de teste. Stamina, agachamento, HUD e controles
+> anteriores continuam exatamente como na v0.6.2.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -37,6 +37,7 @@ Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compat
 | `W` `A` `S` `D` | Andar (relativo à direção da câmera) |
 | `Shift` | Correr (consome stamina; nunca agachado). Segurar Shift também bloqueia a recuperação |
 | `Ctrl` | Agachar — **ALTERNAR** (padrão): um toque agacha, outro levanta; **SEGURAR**: mantenha pressionado |
+| `E` | Interagir com o objeto sob a mira (aparece `[E] Interagir` no rodapé) |
 | Mouse | Olhar (limite de ±89° na vertical) |
 | `Esc` | Liberar o mouse / abrir a pausa |
 | `F11` | Alternar janela ↔ tela cheia |
@@ -48,7 +49,8 @@ Na pausa da cena de teste: **CONTINUAR** (ou `Esc`) captura o mouse de novo,
 
 A sensibilidade do mouse, a inversão vertical e o **modo de agachamento** são
 os configurados em **CONFIGURAÇÕES → CONTROLES**. A lista mostrada ali é a dos
-controles que existem de verdade — sem interação, lanterna, pulo ou inventário.
+controles que existem de verdade — inclui `E — Interagir` e continua sem
+lanterna, pulo, inventário ou ataque.
 
 ## O que existe hoje
 
@@ -73,13 +75,21 @@ controles que existem de verdade — sem interação, lanterna, pulo ou inventá
 - **HUD de stamina** (correção 6.1): barra discreta no canto inferior esquerdo,
   com rótulo, porcentagem e desenho nativo, ligada ao sinal `stamina_changed`.
   Não captura mouse nem foco e permanece estável na pausa e nas configurações.
+- **Interação genérica** (Etapa 7): o jogador olha para um objeto interativo a
+  até **2,5 m** e vê a indicação `[E] Interagir`; **E** executa a ação do próprio
+  objeto. Paredes e caixas bloqueiam (linha de visão), a indicação some ao olhar
+  para outro lugar, ao se afastar ou na pausa, e nada é instanciado por frame.
+  O contrato (`can_interact()` / `get_interaction_text()` / `interact()`) fica em
+  `shared/interaction/interactable.gd`; o detector, na câmera do jogador.
+- **Painel de Teste de Interação** na sala de teste, que mostra
+  **INTERAÇÃO EXECUTADA** ao ser acionado.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
 
-Ainda **não** existe: pulo, inventário, interação, criaturas, multiplayer,
-voz e o mapa definitivo. A HUD mostra apenas a stamina; vida, objetivos e
-inventário vêm nas próximas etapas.
-Ver [`docs/ETAPA-6.md`](docs/ETAPA-6.md).
+Ainda **não** existe: pulo, inventário, portas, itens coletáveis, criaturas,
+multiplayer, voz e o mapa definitivo. A HUD mostra apenas a stamina e a
+indicação de interação; vida, objetivos e inventário vêm nas próximas etapas.
+Ver [`docs/ETAPA-7.md`](docs/ETAPA-7.md) e [`docs/ETAPA-6.md`](docs/ETAPA-6.md).
 
 ## Arquitetura
 
@@ -87,15 +97,15 @@ O projeto é dividido em módulos por responsabilidade. Detalhes completos em
 [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ```
-players/       jogador: player.tscn + player_controller.gd
+players/       jogador: player.tscn + player_controller.gd + detector de interação
 creatures/     criaturas e IA (estrutura)
 maps/          mapas e salas — test_room.tscn
-items/         itens, inventário e interação (estrutura)
+items/         itens e inventário (estrutura; interação vive em shared/)
 objectives/    objetivos e progressão (estrutura)
 match/         orquestração — movement_test (sala + jogador + pausa)
 ui/            menus e HUD — tela inicial e configurações
 audio/         buses de áudio e sons da interface
-shared/        recursos, tema, configurações e autoloads
+shared/        recursos, tema, configurações, autoloads e o contrato Interactable
 ```
 
 Cada módulo tem seu próprio `README.md` com a responsabilidade, o que entra nele

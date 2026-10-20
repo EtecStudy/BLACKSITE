@@ -5,9 +5,9 @@ extends Node
 ## pela interface. Nenhum estado de jogo é mantido aqui.
 
 const GAME_NAME: String = "Black Sight"
-const VERSION: String = "0.6.2"
-const STAGE: int = 6
-const STAGE_LABEL: String = "Etapa 6.2 · Recuperação de stamina"
+const VERSION: String = "0.7.0"
+const STAGE: int = 7
+const STAGE_LABEL: String = "Etapa 7 · Interação"
 
 
 ## Ex.: "v0.1.0"

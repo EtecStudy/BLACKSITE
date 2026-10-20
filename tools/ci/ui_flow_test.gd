@@ -324,7 +324,7 @@ class FlowDriver:
 			return false
 		_expect(not pause_root.visible, "configurações escondem o menu de pausa")
 
-		# Etapa 6: modo de agachamento na mesma tela, durante a partida.
+		# Etapas 6–7: modo de agachamento e lista real (agora com E — Interagir).
 		var controls: ControlsSection = screen.get_section("controls") as ControlsSection
 		_expect(controls != null, "seção CONTROLES disponível na partida")
 		if controls != null:
@@ -334,12 +334,13 @@ class FlowDriver:
 			for row: Array in rows:
 				keys.append(str(row[0]))
 				labels += "%s %s " % [str(row[0]), str(row[1])]
-			_expect(keys.size() == 6, "lista real de controles durante a partida (%d)" % keys.size())
+			_expect(keys.size() == 7, "lista real de controles durante a partida (%d)" % keys.size())
+			_expect(keys.has("E"), "lista inclui E — Interagir (Etapa 7)")
 			_expect(
-				not labels.to_lower().contains("interagir")
+				labels.to_lower().contains("interagir")
 					and not labels.to_lower().contains("lanterna")
 					and not labels.to_lower().contains("pular"),
-				"lista não mostra ações não implementadas"
+				"lista mostra só ações implementadas"
 			)
 			controls.set_crouch_mode_id("hold")
 			_expect(

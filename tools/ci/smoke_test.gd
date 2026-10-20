@@ -663,11 +663,30 @@ func _check_fps_controller() -> void:
 				"câmera na altura dos olhos (%.2f m)" % head.position.y
 			)
 		_expect(player.get_node_or_null("Head/Camera") is Camera3D, "câmera 3D presente")
+		var detector := player.get_node_or_null("Head/Camera/InteractionDetector")
+		_expect(detector != null, "detector de interação na câmera do jogador")
+		if detector != null:
+			_expect(
+				is_equal_approx(float(detector.get("interaction_distance")), 2.5),
+				"alcance de interação = 2,5 m"
+			)
 		player.free()
 
 	_expect(
 		load("res://maps/scenes/test_room.tscn") is PackedScene,
 		"sala de teste carrega (maps/scenes/test_room.tscn)"
+	)
+	_expect(
+		load("res://maps/scenes/interaction_test_panel.tscn") is PackedScene,
+		"painel de teste de interação carrega"
+	)
+	_expect(
+		load("res://ui/scenes/hud/interaction_prompt.tscn") is PackedScene,
+		"indicação de interação carrega"
+	)
+	_expect(
+		load("res://shared/interaction/interactable.gd") is GDScript,
+		"contrato Interactable carrega (shared/interaction)"
 	)
 
 	var movement_packed: PackedScene = load("res://match/scenes/movement_test.tscn") as PackedScene
@@ -683,13 +702,25 @@ func _check_fps_controller() -> void:
 			movement.get_node_or_null("Interface/PauseRoot") != null,
 			"cena de teste tem camada de pausa"
 		)
+		_expect(
+			movement.get_node_or_null("InteractionPanel") != null,
+			"cena de teste tem o painel de interação"
+		)
 		movement.free()
 
 	for action: String in [
 		"move_forward", "move_back", "move_left", "move_right",
-		"move_sprint", "move_crouch", "release_mouse"
+		"move_sprint", "move_crouch", "release_mouse", "interact"
 	]:
 		_expect(InputMap.has_action(action), "ação de entrada '%s' configurada" % action)
+
+	# Etapa 7: E é a tecla física padrão de `interact`.
+	var interact_key: int = 0
+	for event: InputEvent in InputMap.action_get_events("interact"):
+		var key := event as InputEventKey
+		if key != null:
+			interact_key = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+	_expect(interact_key == KEY_E, "interact usa E como tecla padrão")
 
 	_expect(
 		FileAccess.file_exists("res://docs/ETAPA-4.md"),
@@ -762,7 +793,7 @@ func _check_movement_states() -> void:
 
 
 func _check_stage6() -> void:
-	print("[15] Stamina, atraso de recuperação, agachamento e controles (Etapa 6.2)")
+	print("[15] Stamina, agachamento e controles reais (Etapas 6.2–7)")
 
 	# --- Esquema -------------------------------------------------------------
 	var defaults: Dictionary = SettingsSchema.defaults()
@@ -862,9 +893,9 @@ func _check_stage6() -> void:
 		keys.append(str(row[0]))
 		joined += "%s %s " % [str(row[0]), str(row[1])]
 	var lowered: String = joined.to_lower()
-	_expect(rows.size() == 6, "lista tem exatamente seis controles (%d)" % rows.size())
+	_expect(rows.size() == 7, "lista tem exatamente sete controles (%d)" % rows.size())
 	_expect(
-		keys == ["W A S D", "Shift", "Ctrl", "Mouse", "Esc", "F11"],
+		keys == ["W A S D", "Shift", "Ctrl", "E", "Mouse", "Esc", "F11"],
 		"teclas reais na ordem esperada: %s" % str(keys)
 	)
 	_expect(lowered.contains("mover"), "WASD descreve mover")
@@ -872,13 +903,13 @@ func _check_stage6() -> void:
 	_expect(lowered.contains("olhar"), "mouse descreve olhar")
 	_expect(lowered.contains("pausar"), "Esc descreve pausar")
 	_expect(lowered.contains("tela cheia"), "F11 descreve tela cheia")
-	_expect(not lowered.contains("interagir"), "não lista E/Interagir")
+	_expect(lowered.contains("interagir"), "E descreve interagir (Etapa 7)")
 	_expect(not lowered.contains("lanterna"), "não lista F/Lanterna")
 	_expect(not lowered.contains("pular") and not lowered.contains("pulo"), "não lista pulo")
 	_expect(not lowered.contains("inventário") and not lowered.contains("inventario"),
 		"não lista inventário")
 	_expect(not lowered.contains("ataque"), "não lista ataque")
-	_expect(not keys.has("E") and not keys.has("F"), "não lista as teclas E e F")
+	_expect(keys.has("E") and not keys.has("F"), "lista E (implementada) e não F")
 	_expect(not keys.has("Space") and not lowered.contains("espaço"), "não lista a barra de espaço")
 
 	section.set_crouch_mode_id("hold")
@@ -899,4 +930,8 @@ func _check_stage6() -> void:
 	_expect(
 		FileAccess.file_exists("res://docs/ETAPA-6.md"),
 		"documentação da Etapa 6 presente (docs/ETAPA-6.md)"
+	)
+	_expect(
+		FileAccess.file_exists("res://docs/ETAPA-7.md"),
+		"documentação da Etapa 7 presente (docs/ETAPA-7.md)"
 	)

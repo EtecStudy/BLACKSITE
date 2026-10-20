@@ -1,5 +1,5 @@
 extends Node
-## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 6.2).
+## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 7).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
@@ -9,9 +9,10 @@ extends Node
 ## verifica movimento, estados (parado/andando/correndo/agachado), câmera,
 ## física, colisões, menu de pausa com configurações, integração com as
 ## configurações da Etapa 3, stamina (consumo, atraso de recuperação e
-## exaustão), a HUD da Etapa 6.1 e os dois modos de agachamento
-## (SEGURAR e ALTERNAR, este último o padrão do jogo). As entradas são simuladas com `Input.action_press`,
-## que é o mesmo caminho usado pelo teclado.
+## exaustão), a HUD da Etapa 6.1, os dois modos de agachamento (SEGURAR e
+## ALTERNAR, este último o padrão do jogo) e o sistema de interação da Etapa 7
+## (raycast, distância, linha de visão, indicação, pausa). As entradas são
+## simuladas com `Input.action_press`, que é o mesmo caminho usado pelo teclado.
 ##
 ## Sai com 0 em caso de sucesso e 1 em caso de falha.
 
@@ -74,6 +75,7 @@ func _ready() -> void:
 	await _test_pause_stamina_mode()
 	await _test_hud()
 	await _test_recovery_delay()
+	await _test_interaction()
 
 	_finish()
 
@@ -1521,6 +1523,311 @@ func _test_recovery_delay() -> void:
 	Input.action_release("move_forward")
 	Input.action_release("move_sprint")
 	await _frames(6)
+
+# --- Interação (Etapa 7) ----------------------------------------------------
+
+const INTERACTION_PANEL_SCENE := "res://maps/scenes/interaction_test_panel.tscn"
+const INTERACTION_VIEW := Vector3(1.6, 0.05, 8.2)
+const INTERACTION_PITCH := -0.18
+
+
+func _test_interaction() -> void:
+	print("[22] Interação (Etapa 7)")
+	if _scene.is_settings_open():
+		_scene.close_settings()
+	if _scene.is_paused():
+		_scene.resume_session()
+	await _set_crouch_mode("hold")
+
+	var detector: InteractionDetector = _player.get_interaction_detector()
+	_expect(detector != null, "detector de interação existe na câmera do jogador")
+	if detector == null:
+		return
+
+	var hud: PlayerHud = _scene.get_hud()
+	var prompt: InteractionPrompt = hud.get_interaction_prompt() if hud != null else null
+	var panel: InteractionTestPanel = _scene.get_node_or_null(
+		"InteractionPanel"
+	) as InteractionTestPanel
+	_expect(panel != null, "painel de teste presente na cena da partida")
+	if panel == null or prompt == null:
+		return
+
+	# --- Configuração do sistema -------------------------------------------
+	_expect(is_equal_approx(detector.interaction_distance, 2.5), "distância máxima = 2,5 m")
+	_expect(
+		is_equal_approx(detector.get_interaction_distance(), 2.5),
+		"distância exposta por get_interaction_distance()"
+	)
+	_expect(InputMap.has_action("interact"), "ação interact existe no InputMap")
+	var interact_key: int = 0
+	for event: InputEvent in InputMap.action_get_events("interact"):
+		var key := event as InputEventKey
+		if key != null:
+			interact_key = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+	_expect(interact_key == KEY_E, "E é a tecla padrão de interact")
+	var detector_source: String = FileAccess.get_file_as_string(
+		"res://players/scripts/interaction/interaction_detector.gd"
+	)
+	_expect(
+		not detector_source.contains("KEY_E") and not detector_source.contains("is_key_pressed"),
+		"detector usa a ação do InputMap (nenhuma tecla codificada)"
+	)
+	_expect(
+		detector_source.contains("Interactable"),
+		"detector resolve o foco pelo contrato Interactable"
+	)
+	_expect(
+		not detector_source.contains("is Porta") and not detector_source.contains("is Door"),
+		"detector não conhece tipos de objeto"
+	)
+
+	# --- Detecção -----------------------------------------------------------
+	await _place(INTERACTION_VIEW, 0.0)
+	_player.set_look(0.0, INTERACTION_PITCH)
+	await _frames(6)
+	_expect(
+		detector.get_current_interactable() == panel,
+		"objeto interativo dentro do alcance é detectado"
+	)
+	_expect(prompt.visible and prompt.is_shown(), "indicação aparece com objeto válido")
+	_expect(prompt.get_prompt_text() == "Interagir", "indicação mostra o texto do objeto")
+	_expect(prompt.get_key_text() == "E", "indicação mostra a tecla E")
+	_expect(prompt.mouse_filter == Control.MOUSE_FILTER_IGNORE, "indicação não captura o mouse")
+
+	# Posição e tamanho da indicação.
+	var viewport: Vector2 = hud.get_viewport_rect().size
+	var panel_rect: Rect2 = prompt.get_panel_rect()
+	_expect(panel_rect.position.y > viewport.y * 0.6, "indicação no terço inferior (%.0f)" % panel_rect.position.y)
+	_expect(
+		absf(panel_rect.get_center().x - viewport.x * 0.5) < 2.0,
+		"indicação centralizada (centro em %.0f de %.0f)" % [panel_rect.get_center().x, viewport.x]
+	)
+	_expect(
+		panel_rect.end.x <= viewport.x and panel_rect.end.y <= viewport.y,
+		"indicação dentro da tela"
+	)
+	_expect(panel_rect.size.x < viewport.x * 0.5, "indicação compacta (%.0f px)" % panel_rect.size.x)
+	var prompt_id: int = prompt.get_instance_id()
+
+	# --- Execução -----------------------------------------------------------
+	var stamina_before: float = _player.get_stamina()
+	var before: int = panel.get_interaction_count()
+	Input.action_press("interact")
+	await _frames(4)
+	Input.action_release("interact")
+	await _frames(2)
+	_expect(panel.get_interaction_count() == before + 1, "E executa interact() do objeto")
+	_expect(panel.is_feedback_visible(), "objeto mostra a confirmação da interação")
+	_expect(
+		panel.get_feedback_text() == "INTERAÇÃO EXECUTADA",
+		"texto de retorno do objeto (%s)" % panel.get_feedback_text()
+	)
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before),
+		"interagir não altera a stamina (%.1f)" % _player.get_stamina()
+	)
+	var bar: StaminaBar = hud.get_stamina_bar()
+	_expect(
+		bar != null and absf(bar.get_ratio() - _player.get_stamina_ratio()) < 0.001,
+		"HUD de stamina continua refletindo o valor real"
+	)
+
+	# Teclas que não interagem.
+	var count_after_keys: int = panel.get_interaction_count()
+	for action: String in ["move_forward", "move_sprint", "move_crouch"]:
+		Input.action_press(action)
+		await _frames(3)
+		Input.action_release(action)
+		await _frames(2)
+	_expect(
+		panel.get_interaction_count() == count_after_keys,
+		"outras ações não executam a interação"
+	)
+
+	# A indicação não bloqueia o movimento.
+	await _place(Vector3(1.6, 0.05, 8.6), 0.0)
+	_player.set_look(0.0, -0.19)
+	await _frames(6)
+	_expect(detector.get_current_interactable() == panel, "focado antes do teste de movimento")
+	var move_from: Vector3 = _player.global_position
+	Input.action_press("move_forward")
+	await _frames(20)
+	Input.action_release("move_forward")
+	await _frames(4)
+	var moved: float = Vector2(
+		_player.global_position.x - move_from.x, _player.global_position.z - move_from.z
+	).length()
+	_expect(moved > 0.3, "indicação não bloqueia o movimento (%.2f m)" % moved)
+
+	# --- Fora do alcance ----------------------------------------------------
+	await _place(Vector3(1.6, 0.05, 10.6), 0.0)
+	_player.set_look(0.0, -0.14)
+	await _frames(6)
+	_expect(detector.get_current_interactable() == null, "objeto fora do alcance não é detectado")
+	_expect(not prompt.visible, "indicação desaparece fora do alcance")
+	var count_out: int = panel.get_interaction_count()
+	_expect(not detector.try_interact(), "try_interact() falha sem alvo no alcance")
+	await _frames(2)
+	_expect(panel.get_interaction_count() == count_out, "interação não acontece fora do alcance")
+
+	# --- Linha de visão bloqueada ------------------------------------------
+	await _place(INTERACTION_VIEW, 0.0)
+	_player.set_look(0.0, INTERACTION_PITCH)
+	await _frames(6)
+	_expect(
+		detector.get_current_interactable() == panel,
+		"volta a detectar ao voltar ao alcance"
+	)
+
+	var wall := StaticBody3D.new()
+	wall.name = "TestInteractionWall"
+	var wall_collision := CollisionShape3D.new()
+	var wall_shape := BoxShape3D.new()
+	wall_shape.size = Vector3(2.0, 2.0, 0.2)
+	wall_collision.shape = wall_shape
+	wall.add_child(wall_collision)
+	_scene.add_child(wall)
+	wall.global_position = Vector3(1.6, 1.4, 7.2)
+	await _frames(6)
+	_expect(detector.get_current_interactable() == null, "parede bloqueia a linha de visão")
+	_expect(not prompt.visible, "indicação desaparece com obstáculo")
+	Input.action_press("interact")
+	await _frames(4)
+	Input.action_release("interact")
+	await _frames(2)
+	_expect(panel.get_interaction_count() == count_out, "interação não acontece através da parede")
+	wall.queue_free()
+	await _frames(6)
+	_expect(detector.get_current_interactable() == panel, "foco volta quando a parede sai")
+
+	# --- Olhar para o vazio e para objeto não interativo --------------------
+	_player.set_look(0.0, 0.6)
+	await _frames(6)
+	_expect(detector.get_current_interactable() == null, "olhar para o vazio remove o foco")
+	_expect(not prompt.visible, "indicação desaparece ao olhar para o vazio")
+
+	await _place(Vector3(0, 0.05, -10.0), 0.0)
+	_player.set_look(0.0, -0.1)
+	await _frames(6)
+	_expect(
+		detector.get_current_interactable() == null,
+		"objeto não interativo (parede) não vira foco"
+	)
+
+	# --- Outro objeto e texto dinâmico --------------------------------------
+	var panel_scene: PackedScene = load(INTERACTION_PANEL_SCENE) as PackedScene
+	var second: InteractionTestPanel = panel_scene.instantiate() as InteractionTestPanel
+	_expect(second != null, "painel de teste é reutilizável (segunda instância)")
+	if second != null:
+		second.interaction_text = "Examinar"
+		_scene.add_child(second)
+		second.global_position = Vector3(4.5, 0.0, 6.2)
+		await _frames(4)
+		await _place(Vector3(4.5, 0.05, 8.2), 0.0)
+		_player.set_look(0.0, INTERACTION_PITCH)
+		await _frames(6)
+		_expect(detector.get_current_interactable() == second, "olhar para outro objeto muda o foco")
+		_expect(prompt.get_prompt_text() == "Examinar", "texto acompanha o objeto focado")
+		_expect(
+			prompt.get_instance_id() == prompt_id,
+			"indicação é o mesmo nó (nada instanciado por frame)"
+		)
+		var prompt_count: int = 0
+		for child: Node in hud.find_children("*", "Control", true, false):
+			if child is InteractionPrompt:
+				prompt_count += 1
+		_expect(prompt_count == 1, "existe uma única indicação na HUD (%d)" % prompt_count)
+
+		second.set_interaction_enabled(false)
+		await _frames(6)
+		_expect(
+			detector.get_current_interactable() == null,
+			"objeto desativado deixa de ser interativo"
+		)
+		_expect(not prompt.visible, "indicação some quando o objeto deixa de ser interativo")
+		second.set_interaction_enabled(true)
+		await _frames(6)
+		_expect(detector.get_current_interactable() == second, "objeto reativado volta a ser focado")
+		await _place(Vector3(0, 0.05, 0), 0.0)
+		_player.set_look(0.0, 0.0)
+		await _frames(4)
+		second.queue_free()
+		await _frames(6)
+	_expect(not prompt.visible, "indicação some ao remover o objeto")
+
+	# --- Pausa --------------------------------------------------------------
+	await _place(INTERACTION_VIEW, 0.0)
+	_player.set_look(0.0, INTERACTION_PITCH)
+	await _frames(6)
+	_expect(detector.get_current_interactable() == panel, "focado antes da pausa")
+	var count_pause: int = panel.get_interaction_count()
+	_scene.pause_session()
+	await _frames(6)
+	_expect(not prompt.visible, "indicação fica oculta na pausa")
+	_expect(
+		detector.get_current_interactable() == panel,
+		"foco preservado durante a pausa"
+	)
+	Input.action_press("interact")
+	await _frames(6)
+	Input.action_release("interact")
+	await _frames(2)
+	_expect(panel.get_interaction_count() == count_pause, "E não interage durante a pausa")
+	_expect(not detector.try_interact(), "try_interact() bloqueado na pausa")
+
+	_scene.open_settings()
+	await _frames(6)
+	_scene.close_settings()
+	await _frames(4)
+	_expect(panel.get_interaction_count() == count_pause, "configurações não executam interação")
+
+	_scene.resume_session()
+	await _frames(8)
+	_expect(prompt.visible, "indicação volta após CONTINUAR")
+	Input.action_press("interact")
+	await _frames(4)
+	Input.action_release("interact")
+	await _frames(2)
+	_expect(
+		panel.get_interaction_count() == count_pause + 1,
+		"interação funciona de novo após CONTINUAR"
+	)
+
+	# --- Ancoragem (independe da resolução) --------------------------------
+	var panel_node: PanelContainer = prompt.get_node_or_null("Panel") as PanelContainer
+	_expect(panel_node != null, "indicação tem painel próprio")
+	if panel_node != null:
+		_expect(
+			is_equal_approx(panel_node.anchor_left, 0.5)
+				and is_equal_approx(panel_node.anchor_right, 0.5),
+			"indicação ancorada no centro horizontal"
+		)
+		_expect(
+			is_equal_approx(panel_node.anchor_top, 1.0)
+				and is_equal_approx(panel_node.anchor_bottom, 1.0),
+			"indicação ancorada no rodapé (acima da stamina)"
+		)
+		_expect(
+			panel_node.offset_top < 0.0 and absf(panel_node.offset_top) < viewport.y * 0.25,
+			"indicação fica a %.0f px do rodapé" % absf(panel_node.offset_top)
+		)
+	_expect(
+		is_equal_approx(hud.anchor_right, 1.0) and is_equal_approx(hud.anchor_bottom, 1.0),
+		"HUD ocupa a tela inteira (indicação acompanha a resolução)"
+	)
+	_expect(
+		prompt.get_panel_rect().size.y < viewport.y * 0.2,
+		"indicação compacta (altura %.0f px)" % prompt.get_panel_rect().size.y
+	)
+
+	# --- Estado final limpo -------------------------------------------------
+	Input.action_release("interact")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_look(0.0, 0.0)
+	await _frames(4)
+	_player.set_stamina(_player.max_stamina)
+	await _frames(2)
 
 
 # --- Utilidades -------------------------------------------------------------

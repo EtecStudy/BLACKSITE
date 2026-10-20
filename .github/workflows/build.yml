@@ -223,7 +223,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.6\\.2" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.7\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -236,7 +236,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 6.2 (Windows x86_64 · Stamina)
+          BLACK SIGHT — Etapa 7 (Windows x86_64 · Interação)
           ======================================
 
           COMO JOGAR
@@ -244,19 +244,29 @@ jobs:
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
 
-          JOGAR (ETAPA 6.2)
+          JOGAR (ETAPA 7)
           - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
           - W A S D ....... andar (relativo à direção da câmera)
           - SHIFT ......... correr (consome stamina)
           - CTRL .......... agachar
                             ALTERNAR (padrão): um toque agacha, outro levanta
                             SEGURAR: mantenha CTRL pressionado
+          - E ............. interagir (quando a indicação [E] Interagir aparece)
           - Mouse ......... olhar (até 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
           - CONFIGURAÇÕES . abre as configurações durante a pausa
           - VOLTAR AO MENU  volta à tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
+
+          INTERAÇÃO
+          - Olhe para um objeto interativo (o Painel de Teste, à frente do
+            ponto de partida) e a indicação [E] Interagir aparece no rodapé.
+          - Alcance máximo de 2,5 m, medido do centro da câmera.
+          - Paredes e caixas bloqueiam: sem linha de visão não há interação.
+          - A indicação some ao olhar para outro lugar, ao se afastar ou ao
+            abrir a pausa. Pressione E para acionar o objeto.
+          - No painel de teste aparece "INTERAÇÃO EXECUTADA" por instantes.
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
@@ -298,31 +308,34 @@ jobs:
           stamina em tempo real, integrada à cena da partida.
           Correção 6.2: recuperação com atraso de 1 s depois da corrida e
           bloqueada enquanto SHIFT estiver pressionado.
-          Ainda não há pulo, inventário, interação, criaturas nem multiplayer.
+          Etapa 7: sistema genérico de interação por olhar (raycast da câmera,
+          2,5 m, linha de visão), indicação discreta [E] Interagir e um painel
+          de teste. Stamina e controles anteriores seguem iguais.
+          Ainda não há pulo, inventário, portas, itens, criaturas nem multiplayer.
 
-          Versão 0.6.2 — Etapa 6.2 (recuperação com atraso)
+          Versão 0.7.0 — Etapa 7 (interação)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa6-Stamina-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa7-Interaction-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa6-Stamina-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa7-Interaction-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa6-Stamina-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa6-Stamina-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa7-Interaction-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa7-Interaction-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa62-windows
+          name: black-sight-etapa7-windows
           path: |
-            BlackSight-Etapa6-Stamina-Windows-x86_64.zip
+            BlackSight-Etapa7-Interaction-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
@@ -332,7 +345,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa62-logs
+          name: black-sight-etapa7-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -358,7 +371,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 6.2"
+            echo "## Black Sight · Etapa 7"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -622,7 +635,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 6.2 (Windows x86_64 - Stamina)
+          BLACK SIGHT - Etapa 7 (Windows x86_64 - Interacao)
           ======================================
 
           COMO JOGAR
@@ -635,19 +648,29 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
-          JOGAR (ETAPA 6.2)
+          JOGAR (ETAPA 7)
           - Clique em TESTAR MOVIMENTACAO na tela inicial.
           - W A S D ....... andar (relativo a direcao da camera)
           - SHIFT ......... correr (consome stamina)
           - CTRL .......... agachar
                             ALTERNAR (padrao): um toque agacha, outro levanta
                             SEGURAR: mantenha CTRL pressionado
+          - E ............. interagir (quando aparece [E] Interagir)
           - Mouse ......... olhar (ate 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
           - CONFIGURACOES . abre as configuracoes durante a pausa
           - VOLTAR AO MENU  volta a tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
+
+          INTERACAO
+          - Olhe para um objeto interativo (o Painel de Teste, a frente do
+            ponto de partida) e a indicacao [E] Interagir aparece no rodape.
+          - Alcance maximo de 2,5 m, medido do centro da camera.
+          - Paredes e caixas bloqueiam: sem linha de visao nao ha interacao.
+          - A indicacao some ao olhar para outro lugar, ao se afastar ou ao
+            abrir a pausa. Pressione E para acionar o objeto.
+          - No painel de teste aparece "INTERACAO EXECUTADA" por instantes.
 
           STAMINA
           - A corrida consome 20 pontos por segundo e para ao chegar a 0.
@@ -688,9 +711,12 @@ jobs:
           stamina em tempo real, integrada a cena da partida.
           Correcao 6.2: recuperacao com atraso de 1 s depois da corrida e
           bloqueada enquanto SHIFT estiver pressionado.
-          Ainda nao ha pulo, inventario, interacao, criaturas nem multiplayer.
+          Etapa 7: sistema generico de interacao por olhar (raycast da camera,
+          2,5 m, linha de visao), indicacao discreta [E] Interagir e um painel
+          de teste. Stamina e controles anteriores seguem iguais.
+          Ainda nao ha pulo, inventario, portas, itens, criaturas nem multiplayer.
 
-          Versao 0.6.2 - Etapa 6.2 (recuperacao com atraso)
+          Versao 0.7.0 - Etapa 7 (interacao)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -701,7 +727,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa6-Stamina-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa7-Interaction-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -718,9 +744,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa62-windows-real
+          name: black-sight-etapa7-windows-real
           path: |
-            BlackSight-Etapa6-Stamina-Windows-x86_64.zip
+            BlackSight-Etapa7-Interaction-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -730,9 +756,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.6.2-etapa6-stamina --yes --cleanup-tag 2>$null
+          gh release delete v0.7.0-etapa7-interaction --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.6.2-etapa6-stamina "BlackSight-Etapa6-Stamina-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 6.2 - Recuperação de stamina (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA6_STAMINA.md
+          gh release create v0.7.0-etapa7-interaction "BlackSight-Etapa7-Interaction-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 7 - Sistema de interação (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA7_INTERACTION.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -757,7 +783,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 6.2 (Windows real · Stamina)", "")
+          $summary = @("## Black Sight - Etapa 7 (Windows real · Interacao)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

@@ -7,12 +7,18 @@ extends Control
 ## `get_max_stamina()`. A HUD não importa o controlador (ui/ continua dependendo
 ## apenas de shared/) e não guarda uma segunda stamina.
 ##
+## Etapa 7: `bind_interaction(detector)` liga a indicação "[E] Interagir" ao
+## `InteractionDetector` do jogador — de novo por sinal, sem importar
+## `players/`. A indicação é um nó único: só o texto e a visibilidade mudam.
+##
 ## Estrutura preparada para crescer: novos componentes entram no `Stack` do
 ## canto inferior esquerdo, acima da barra, sem reconstruir a HUD.
 
 @onready var _stamina_bar: StaminaBar = %StaminaBar
+@onready var _interaction_prompt: InteractionPrompt = %InteractionPrompt
 
 var _player: Node = null
+var _interaction_detector: Node = null
 
 
 func _ready() -> void:
@@ -36,6 +42,52 @@ func bind_player(player: Node) -> void:
 
 func get_stamina_bar() -> StaminaBar:
 	return _stamina_bar
+
+
+## Liga a indicação de interação ao detector do jogador (Etapa 7).
+## O detector só precisa ter os sinais `focus_changed` e `focus_text_changed` e
+## o método `get_current_interactable()` — a HUD não importa `players/`.
+func bind_interaction(detector: Node) -> void:
+	if _interaction_detector != null:
+		var old_focus := Callable(self, "_on_interaction_focus_changed")
+		var old_text := Callable(self, "_on_interaction_text_changed")
+		if _interaction_detector.is_connected("focus_changed", old_focus):
+			_interaction_detector.disconnect("focus_changed", old_focus)
+		if _interaction_detector.is_connected("focus_text_changed", old_text):
+			_interaction_detector.disconnect("focus_text_changed", old_text)
+	_interaction_detector = detector
+	if _interaction_prompt != null:
+		_interaction_prompt.hide_prompt()
+	if _interaction_detector == null:
+		return
+	if not _interaction_detector.has_signal("focus_changed"):
+		return
+	_interaction_detector.connect("focus_changed", _on_interaction_focus_changed)
+	_interaction_detector.connect("focus_text_changed", _on_interaction_text_changed)
+	_on_interaction_focus_changed(_interaction_detector.get_current_interactable())
+
+
+func get_interaction_prompt() -> InteractionPrompt:
+	return _interaction_prompt
+
+
+func is_interaction_bound() -> bool:
+	return _interaction_detector != null
+
+
+func _on_interaction_focus_changed(interactable: Node) -> void:
+	if _interaction_prompt == null:
+		return
+	if interactable == null:
+		_interaction_prompt.hide_prompt()
+		return
+	_interaction_prompt.show_prompt(str(interactable.get_interaction_text()))
+
+
+func _on_interaction_text_changed(text: String) -> void:
+	if _interaction_prompt == null or not _interaction_prompt.is_shown():
+		return
+	_interaction_prompt.show_prompt(text)
 
 
 func is_bound() -> bool:

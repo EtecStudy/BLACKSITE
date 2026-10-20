@@ -56,7 +56,7 @@ BlackSight/
 
 | Módulo | Finalidade | Conteúdo real hoje |
 | --- | --- | --- |
-| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos | `scenes/player.tscn`, `scripts/player_controller.gd` |
+| `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos e detecção de interação | `scenes/player.tscn`, `scripts/player_controller.gd`, `scripts/interaction/interaction_detector.gd` |
 | `creatures/` | Criaturas: percepção, máquina de estados, patrulha, perseguição, spawn | apenas `README.md` |
 | `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste) |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
@@ -227,8 +227,40 @@ IDLE ◄─► WALKING ◄─► RUNNING
   ou embutida na pausa (`set_embedded(true)`), emitindo `back_requested` em vez
   de trocar de cena. Nenhum estado da partida é perdido.
 
-Detalhes: [`ETAPA-4.md`](ETAPA-4.md), [`ETAPA-5.md`](ETAPA-5.md) e
-[`ETAPA-6.md`](ETAPA-6.md).
+## 6.3 Interação (Etapa 7)
+
+```
+shared/interaction/interactable.gd        contrato: can_interact / get_interaction_text / interact
+
+players/scenes/player.tscn
+└── Head/Camera/InteractionDetector       raycast do centro da câmera, 2,5 m, LOS
+        │  focus_changed / focus_text_changed (sinais)
+        ▼
+ui/scenes/hud/player_hud.tscn
+└── InteractionPrompt                     “[E] Interagir” (nó único, sem UI por frame)
+
+maps/scenes/interaction_test_panel.tscn   objeto de teste (InteractionTestPanel)
+match/scripts/movement_test.gd            liga HUD ↔ detector; suspende na pausa
+```
+
+- O **objeto** executa a própria ação. O detector só pergunta “é interativo?”,
+  “pode agora?” e chama `interact()`; não existe verificação de tipo concreto.
+- O raio parte de `camera.global_position` na direção `-basis.z`, com máscara de
+  física padrão 1 (mundo), excluindo o corpo do jogador. O primeiro corpo
+  atingido define a linha de visão: parede/caixa bloqueia.
+- A distância máxima (**2,5 m**) fica em `InteractionDetector`, em uma única
+  constante (`DEFAULT_INTERACTION_DISTANCE`) exportada como `interaction_distance`.
+  Não há opção nas configurações.
+- A ação `interact` vem do InputMap (`physical_keycode` 69 = E). O detector usa
+  `Input.is_action_pressed`, com borda própria — nunca `Input.is_key_pressed`.
+- A HUD continua sem importar `players/`: `bind_interaction(detector: Node)` usa
+  apenas os sinais e `get_current_interactable()`.
+- Na pausa/configurações a detecção é suspensa (`set_detection_enabled(false)`
+  via `match/`), a indicação é escondida, `interact` não roda e o foco é
+  preservado para a retomada.
+
+Detalhes: [`ETAPA-4.md`](ETAPA-4.md), [`ETAPA-5.md`](ETAPA-5.md),
+[`ETAPA-6.md`](ETAPA-6.md) e [`ETAPA-7.md`](ETAPA-7.md).
 
 ---
 

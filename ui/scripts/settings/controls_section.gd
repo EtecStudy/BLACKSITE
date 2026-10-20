@@ -4,7 +4,7 @@ extends SettingsSection
 ## **real** dos controles implementados.
 ##
 ## A lista descreve apenas o que existe hoje no jogo: mover, correr, agachar,
-## olhar, pausar e tela cheia. Pulo, interação, lanterna e inventário não
+## interagir, olhar, pausar e tela cheia. Pulo, lanterna e inventário não
 ## aparecem porque não estão implementados.
 ##
 ## A descrição do Ctrl é dinâmica: em ALTERNAR mostra "Alternar agachamento";
@@ -19,6 +19,7 @@ const KEY_ROWS := [
 	["W A S D", "Mover"],
 	["Shift", "Correr (consome stamina)"],
 	["Ctrl", ""],
+	["E", "Interagir"],
 	["Mouse", "Olhar"],
 	["Esc", "Pausar"],
 	["F11", "Tela cheia"],
