@@ -158,7 +158,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "Teste em primeira pessoa: andar, correr, agachar, interagir e guardar itens. Olhe para um item de teste e pressione E; use 1, 2 e 3 para escolher o slot."
+text = "Teste em primeira pessoa: andar, correr, agachar, interagir e guardar itens. Olhe para um item e pressione E; use 1, 2 e 3 para escolher o slot e G para soltar o item no chão."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]
@@ -171,7 +171,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.47, 0.44, 0.39, 1)
 theme_override_font_sizes/font_size = 15
-text = "Black Sight · Etapa 8"
+text = "Black Sight · Etapa 9"
 horizontal_alignment = 1
 
 [node name="Fade" type="ColorRect" parent="."]

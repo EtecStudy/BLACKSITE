@@ -3,7 +3,7 @@
 **Responsabilidade:** interfaces, menus e HUD — tela inicial, menus, pausa e
 HUD em jogo.
 
-**Estado atual (Etapa 8):** tela inicial da Etapa 1 preservada integralmente
+**Estado atual (Etapa 9):** tela inicial da Etapa 1 preservada integralmente
 (mesma cena, mesmas animações, mesmo comportamento) + tela de configurações com
 abas de controles, áudio e vídeo, usada também por cima da partida pausada +
 **HUD de stamina**, **indicação `[E] Interagir`** e **barra do inventário de três
@@ -28,7 +28,7 @@ slots** (`ui/scenes/hud/`), desenhadas com controles nativos.
 | `ui/scripts/hud/interaction_prompt.gd` | Texto vem do objeto; tecla vem do InputMap |
 | `ui/scenes/hud/inventory_bar.tscn` | Três slots com número, item/`VAZIO` e realce (Etapa 8) |
 | `ui/scripts/hud/inventory_bar.gd` | Só desenha: recebe `set_slot()` / `set_selected()` |
-| `ui/scripts/hud/player_hud.gd` | `bind_player()`, `bind_interaction()` e `bind_inventory()` — sempre por sinal |
+| `ui/scripts/hud/player_hud.gd` | `bind_player()`, `bind_interaction()`, `bind_inventory()` e `bind_drop_input()` — sempre por sinal; `show_message()` reaproveita o painel de aviso |
 
 A tela de configurações não lê nem grava arquivos: ela conversa com o autoload
 `GameSettings` (`shared/settings/`), que é o único dono da persistência.

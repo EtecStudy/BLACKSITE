@@ -13,8 +13,9 @@ extends Node
 ## ALTERNAR, este último o padrão do jogo), o sistema de interação da Etapa 7
 ## (raycast, distância, linha de visão, indicação, pausa) e o inventário de três
 ## slots da Etapa 8 (API, coleta, seleção, remoção, substituição, inventário
-## cheio e pausa). As entradas são simuladas com `Input.action_press`, que é o
-## mesmo caminho usado pelo teclado.
+## cheio e pausa) e o drop da Etapa 9 (soltar, posição segura, recolher,
+## inventário cheio, falhas e pausa). As entradas são simuladas com
+## `Input.action_press`, que é o mesmo caminho usado pelo teclado.
 ##
 ## Sai com 0 em caso de sucesso e 1 em caso de falha.
 
@@ -79,6 +80,7 @@ func _ready() -> void:
 	await _test_recovery_delay()
 	await _test_interaction()
 	await _test_inventory()
+	await _test_drop()
 
 	_finish()
 
@@ -2277,6 +2279,345 @@ func _test_inventory() -> void:
 	_player.set_look(0.0, 0.0)
 	_player.set_stamina(_player.max_stamina)
 	await _frames(4)
+
+# --- Soltar itens no ambiente (Etapa 9) -------------------------------------
+
+const WORLD_ITEM_SCENE := "res://items/scenes/world_item.tscn"
+## Pontos de drop usados pelos testes (área aberta ao sul da sala).
+const DROP_VIEW_A := Vector3(-2.4, 0.05, 9.2)
+const DROP_VIEW_B := Vector3(0.0, 0.05, 9.2)
+const DROP_VIEW_C := Vector3(2.4, 0.05, 9.2)
+const DROP_VIEW_D := Vector3(4.6, 0.05, 9.2)
+
+
+func _test_drop() -> void:
+	print("[24] Soltar itens no ambiente (Etapa 9)")
+	if _scene.is_settings_open():
+		_scene.close_settings()
+	if _scene.is_paused():
+		_scene.resume_session()
+	await _set_crouch_mode("hold")
+	if _player.is_crouched():
+		await _tap_crouch()
+		await _frames(10)
+
+	# --- Ação do InputMap ---------------------------------------------------
+	_expect(InputMap.has_action("inventory_drop"), "ação 'inventory_drop' existe")
+	var drop_is_g: bool = false
+	for event: InputEvent in InputMap.action_get_events("inventory_drop"):
+		var key := event as InputEventKey
+		if key == null:
+			continue
+		var code: int = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+		if code == KEY_G:
+			drop_is_g = true
+	_expect(drop_is_g, "ação 'inventory_drop' usa G")
+	var remove_is_r: bool = false
+	for event: InputEvent in InputMap.action_get_events("inventory_remove"):
+		var key := event as InputEventKey
+		if key == null:
+			continue
+		var code: int = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+		if code == KEY_R:
+			remove_is_r = true
+	_expect(remove_is_r, "remoção de teste continua em R (não reutilizada)")
+	_expect(
+		KEY_G != KEY_R and InputMap.action_get_events("inventory_drop").size() > 0,
+		"G e R são ações distintas"
+	)
+
+	var input_source: String = FileAccess.get_file_as_string(
+		"res://players/scripts/inventory/inventory_input.gd"
+	)
+	var dropper_source: String = FileAccess.get_file_as_string(
+		"res://players/scripts/inventory/item_dropper.gd"
+	)
+	_expect(
+		not input_source.contains("is_key_pressed") and not dropper_source.contains("is_key_pressed"),
+		"entrada e drop não leem teclas diretamente"
+	)
+	_expect(
+		not input_source.contains("KEY_G") and not dropper_source.contains("KEY_G"),
+		"nenhuma tecla codificada no código do drop"
+	)
+
+	# --- Componentes --------------------------------------------------------
+	var dropper: ItemDropper = _player.get_item_dropper()
+	var hud: PlayerHud = _scene.get_hud()
+	var bar: InventoryBar = hud.get_inventory_bar() if hud != null else null
+	var inventory: Inventory = _player.get_inventory()
+	_expect(dropper != null, "jogador tem o componente que solta itens")
+	_expect(_scene.get_item_dropper() == dropper, "a sessão expõe o mesmo componente")
+	_expect(hud != null and hud.is_drop_bound(), "HUD ligada ao aviso do drop")
+	_expect(load(WORLD_ITEM_SCENE) != null, "cena reutilizável do item no mundo carrega")
+	if dropper == null or hud == null or bar == null or inventory == null:
+		return
+	_expect(dropper.world_item_scene != null, "componente com a cena do item configurada")
+	_expect(not dropper.is_processing(), "drop não processa nada por frame")
+	var scene_item: WorldItem = load(WORLD_ITEM_SCENE).instantiate() as WorldItem
+	_expect(scene_item is Interactable, "item no mundo usa o contrato da Etapa 7")
+	_expect(scene_item != null and scene_item.get_node_or_null("Body") is RigidBody3D,
+		"item no mundo tem corpo físico")
+	_expect(
+		scene_item != null and scene_item.get_node_or_null("Body/NameLabel") is Label3D,
+		"item no mundo mostra o nome"
+	)
+	if scene_item != null:
+		scene_item.free()
+
+	inventory.clear()
+	await _clear_world_items()
+	bar.clear_slots()
+	await _frames(4)
+
+	# --- Drop do slot 1 -----------------------------------------------------
+	var item_a := ItemDefinition.new(&"drop_a", "ITEM A")
+	var item_b := ItemDefinition.new(&"drop_b", "ITEM B")
+	var item_c := ItemDefinition.new(&"drop_c", "ITEM C")
+	_expect(inventory.add_item(item_a), "item A no inventário")
+	_expect(inventory.add_item(item_b), "item B no inventário")
+	_expect(inventory.add_item(item_c), "item C no inventário")
+	inventory.select_slot(0)
+	await _place(DROP_VIEW_A, 0.0)
+	var drops_before: int = dropper.get_drop_count()
+	await _tap_action("inventory_drop")
+	_expect(dropper.get_drop_count() == drops_before + 1, "G solta o item do slot 1")
+	_expect(inventory.is_slot_empty(0), "slot 1 fica vazio")
+	_expect(not inventory.is_slot_empty(1) and not inventory.is_slot_empty(2),
+		"slots não selecionados continuam intactos")
+	_expect(bar.get_slot_text(0) == "VAZIO", "HUD mostra VAZIO no slot 1 na hora")
+	_expect(bar.get_slot_text(1) == "ITEM B" and bar.get_slot_text(2) == "ITEM C",
+		"HUD preserva os outros slots")
+	var world_items: Array = _world_items()
+	_expect(world_items.size() == 1, "um item no mundo (%d)" % world_items.size())
+	var dropped_a: WorldItem = world_items[0] if world_items.size() == 1 else null
+	if dropped_a != null:
+		_expect(dropped_a.get_item() == item_a, "o item no mundo é o mesmo que saiu do slot")
+		_expect(dropped_a.get_node("Body/NameLabel").text == "ITEM A", "item no mundo mostra ITEM A")
+		var spot: Vector3 = dropped_a.global_position
+		var to_item := spot - _player.global_position
+		to_item.y = 0.0
+		_expect(to_item.length() > 0.55, "não nasce dentro da cápsula do jogador (%.2f m)" % to_item.length())
+		_expect(to_item.length() < 2.0, "nasce perto do jogador (%.2f m)" % to_item.length())
+		_expect(to_item.normalized().dot(Vector3(0, 0, -1)) > 0.5, "nasce à frente da câmera")
+		await _frames(40)
+		var body: RigidBody3D = dropped_a.get_node("Body")
+		_expect(absf(body.global_position.y) < 0.08, "item assenta no chão (y=%.3f)" % body.global_position.y)
+		_expect(body.linear_velocity.length() < 0.6, "item não é arremessado")
+
+	# --- Drops dos slots 2 e 3 ---------------------------------------------
+	inventory.select_slot(1)
+	await _place(DROP_VIEW_B, 0.0)
+	await _tap_action("inventory_drop")
+	_expect(inventory.is_slot_empty(1), "G solta o item do slot 2")
+	_expect(inventory.is_slot_empty(0), "slot 1 continua vazio")
+	_expect(_world_items().size() == 2, "dois itens no mundo")
+	inventory.select_slot(2)
+	await _place(DROP_VIEW_C, 0.0)
+	await _tap_action("inventory_drop")
+	_expect(inventory.is_slot_empty(2), "G solta o item do slot 3")
+	_expect(inventory.get_used_slot_count() == 0, "inventário vazio depois dos três drops")
+	_expect(_world_items().size() == 3, "três itens no mundo (%d)" % _world_items().size())
+	var total_items: int = inventory.get_used_slot_count() + _world_items().size()
+	_expect(total_items == 3, "nada foi duplicado nem perdido (%d itens)" % total_items)
+
+	# --- Slot vazio não cria nada ------------------------------------------
+	inventory.select_slot(1)
+	var world_before_empty: int = _world_items().size()
+	await _tap_action("inventory_drop")
+	_expect(_world_items().size() == world_before_empty, "G em slot vazio não cria item")
+	_expect(inventory.get_used_slot_count() == 0, "G em slot vazio não altera o inventário")
+	_expect(hud.is_full_message_visible(), "HUD indica SLOT VAZIO")
+	_expect(hud.get_full_message_text() == "SLOT VAZIO",
+		"texto do aviso: %s" % hud.get_full_message_text())
+	await _frames(150)
+
+	# --- Segurar G não repete o drop ---------------------------------------
+	var item_hold := ItemDefinition.new(&"drop_hold", "ITEM HOLD")
+	inventory.add_item(item_hold)
+	inventory.select_slot(0)
+	await _place(DROP_VIEW_D, 0.0)
+	world_before_empty = _world_items().size()
+	Input.action_press("inventory_drop")
+	await _frames(40)
+	Input.action_release("inventory_drop")
+	await _frames(4)
+	_expect(_world_items().size() == world_before_empty + 1,
+		"segurar G solta uma única vez (%d)" % (_world_items().size() - world_before_empty))
+	_expect(inventory.get_used_slot_count() == 0, "o item segurado saiu do inventário uma vez")
+
+	# --- Recolher com E -----------------------------------------------------
+	var last_item: WorldItem = _find_world_item(&"drop_hold")
+	await _look_at_world_item(last_item)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == last_item,
+		"item solto é detectado pelo olhar"
+	)
+	_expect(
+		hud.get_interaction_prompt().is_shown()
+			and hud.get_interaction_prompt().get_prompt_text() == "Pegar",
+		"indicação mostra Pegar"
+	)
+	var world_before_pickup: int = _world_items().size()
+	await _tap_action("interact")
+	_expect(last_item.is_queued_for_deletion() or not is_instance_valid(last_item),
+		"objeto do mundo desaparece depois da coleta")
+	_expect(_world_items().size() == world_before_pickup - 1, "um item a menos no mundo")
+	_expect(inventory.get_used_slot_count() == 1, "item voltou ao inventário")
+	_expect(inventory.get_item(0) == item_hold, "item voltou ao primeiro slot vazio")
+	_expect(bar.get_slot_text(0) == "ITEM HOLD", "HUD mostra o item recolhido")
+
+	# --- Inventário cheio impede a coleta -----------------------------------
+	inventory.add_item(ItemDefinition.new(&"fill_1", "ITEM F1"))
+	inventory.add_item(ItemDefinition.new(&"fill_2", "ITEM F2"))
+	_expect(inventory.get_used_slot_count() == 3, "inventário cheio de novo")
+	var target: WorldItem = _world_items()[0]
+	await _stand_near_world_item(target)
+	var world_before_full: int = _world_items().size()
+	await _tap_action("interact")
+	_expect(not target.is_collected(), "inventário cheio não recolhe")
+	_expect(_world_items().size() == world_before_full, "objeto continua no mundo")
+	_expect(inventory.get_used_slot_count() == 3, "nenhum item do inventário foi removido")
+	_expect(hud.is_full_message_visible(), "HUD avisa INVENTÁRIO CHEIO")
+	_expect(hud.get_full_message_text() == "INVENTÁRIO CHEIO",
+		"texto do aviso cheio: %s" % hud.get_full_message_text())
+	await _frames(150)
+
+	# Abrir espaço e tentar de novo.
+	var selected_for_remove: int = inventory.get_selected_slot()
+	await _tap_action("inventory_remove")
+	_expect(inventory.get_used_slot_count() == 2, "R libera um slot (remoção de teste preservada)")
+	_expect(selected_for_remove == inventory.get_selected_slot(), "R não muda a seleção")
+	await _look_at_world_item(target)
+	await _tap_action("interact")
+	_expect(target.is_queued_for_deletion() or not is_instance_valid(target),
+		"nova tentativa recolhe depois de abrir espaço")
+	_expect(inventory.get_used_slot_count() == 3, "inventário volta a ficar cheio")
+	_expect(_world_items().size() == world_before_full - 1, "sem coleta duplicada")
+
+	# --- Posição inválida cancela sem perder o item ------------------------
+	var wall := StaticBody3D.new()
+	wall.name = "TestDropWall"
+	var wall_collision := CollisionShape3D.new()
+	var wall_shape := BoxShape3D.new()
+	wall_shape.size = Vector3(2.0, 2.4, 0.2)
+	wall_collision.shape = wall_shape
+	wall.add_child(wall_collision)
+	_scene.add_child(wall)
+	var used_before_wall: int = inventory.get_used_slot_count()
+	var world_before_wall: int = _world_items().size()
+	await _place(Vector3(6.0, 0.05, 9.0), 0.0)
+	wall.global_position = _player.global_position + Vector3(0.0, 1.2, -0.55)
+	await _frames(6)
+	await _tap_action("inventory_drop")
+	_expect(inventory.get_used_slot_count() == used_before_wall, "drop sem espaço mantém o item")
+	_expect(_world_items().size() == world_before_wall, "drop sem espaço não cria objeto")
+	_expect(hud.is_full_message_visible(), "HUD avisa SEM ESPAÇO PARA SOLTAR")
+	_expect(hud.get_full_message_text() == "SEM ESPAÇO PARA SOLTAR",
+		"texto do aviso: %s" % hud.get_full_message_text())
+	wall.queue_free()
+	await _frames(6)
+
+	# --- Falha de instanciação mantém o item -------------------------------
+	await _frames(150)
+	var scene_backup: PackedScene = dropper.world_item_scene
+	dropper.world_item_scene = null
+	var drops_before_fail: int = dropper.get_drop_count()
+	await _tap_action("inventory_drop")
+	_expect(dropper.get_drop_count() == drops_before_fail, "falha de instanciação não conta drop")
+	_expect(inventory.get_used_slot_count() == used_before_wall, "falha de instanciação mantém o item")
+	_expect(hud.get_full_message_text() == "NÃO FOI POSSÍVEL SOLTAR",
+		"texto do aviso de falha: %s" % hud.get_full_message_text())
+	_expect(_world_items().size() == world_before_wall, "falha de instanciação não cria objeto")
+	dropper.world_item_scene = scene_backup
+	await _frames(150)
+
+	# --- Pausa bloqueia G, E, 1/2/3 e R ------------------------------------
+	var pause_target: WorldItem = _world_items()[0]
+	await _stand_near_world_item(pause_target)
+	_expect(
+		_player.get_interaction_detector().get_current_interactable() == pause_target,
+		"item solto em foco antes da pausa"
+	)
+	var used_before_pause: int = inventory.get_used_slot_count()
+	var world_before_pause: int = _world_items().size()
+	inventory.select_slot(0)
+	var selected_before_pause: int = inventory.get_selected_slot()
+	_scene.pause_session()
+	await _frames(6)
+	await _tap_action("inventory_drop")
+	_expect(_world_items().size() == world_before_pause, "G não solta item na pausa")
+	_expect(inventory.get_used_slot_count() == used_before_pause, "pausa não mexe no inventário")
+	await _tap_action("inventory_slot_3")
+	_expect(inventory.get_selected_slot() == selected_before_pause, "1/2/3 bloqueados na pausa")
+	await _tap_action("inventory_remove")
+	_expect(inventory.get_used_slot_count() == used_before_pause, "R bloqueado na pausa")
+	await _tap_action("interact")
+	_expect(not pause_target.is_collected(), "E não recolhe na pausa")
+	_expect(_world_items().size() == world_before_pause, "nada muda no mundo durante a pausa")
+	_scene.resume_session()
+	await _frames(8)
+
+	# --- Estado final limpo -------------------------------------------------
+	await _clear_world_items()
+	inventory.clear()
+	bar.clear_slots()
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_look(0.0, 0.0)
+	_player.set_stamina(_player.max_stamina)
+	await _frames(4)
+	_expect(_world_items().is_empty(), "mundo sem itens soltos ao final")
+	_expect(load(WORLD_ITEM_SCENE) != null, "cena do item continua carregando após os testes")
+
+
+## Itens soltos atualmente na cena (grupo `world_items`).
+func _world_items() -> Array:
+	var found: Array = []
+	for node: Node in get_tree().get_nodes_in_group(WorldItem.WORLD_GROUP):
+		if node is WorldItem and is_instance_valid(node) and not node.is_queued_for_deletion():
+			found.append(node)
+	return found
+
+
+## Remove os itens soltos da cena (limpeza entre testes).
+func _clear_world_items() -> void:
+	for node: Node in get_tree().get_nodes_in_group(WorldItem.WORLD_GROUP):
+		if is_instance_valid(node):
+			node.queue_free()
+	await _frames(4)
+
+
+## Primeiro item solto com o `id` indicado (null se não existir).
+func _find_world_item(item_id: StringName) -> WorldItem:
+	for node: Node in _world_items():
+		var world_item: WorldItem = node as WorldItem
+		if world_item != null and world_item.get_item() != null and world_item.get_item().id == item_id:
+			return world_item
+	return null
+
+
+## Fica a 1,6 m ao sul do item solto e aponta a câmera para ele.
+func _stand_near_world_item(world_item: WorldItem) -> void:
+	if world_item == null or not is_instance_valid(world_item):
+		return
+	var spot: Vector3 = world_item.global_position
+	await _place(Vector3(spot.x, 0.05, spot.z + 1.6), 0.0)
+	await _look_at_world_item(world_item)
+
+
+## Aponta a câmera para um item solto e espera o detector atualizar.
+func _look_at_world_item(world_item: WorldItem) -> void:
+	if world_item == null or not is_instance_valid(world_item):
+		return
+	var body: Node3D = world_item.get_node_or_null("Body") as Node3D
+	var target: Vector3 = body.global_position if body != null else world_item.global_position
+	target.y += 0.18
+	var camera: Camera3D = _player.get_node_or_null("Head/Camera") as Camera3D
+	var eye: Vector3 = camera.global_position if camera != null else _player.global_position
+	var delta: Vector3 = target - eye
+	var horizontal: float = Vector2(delta.x, delta.z).length()
+	_player.set_look(atan2(-delta.x, -delta.z), atan2(delta.y, maxf(horizontal, 0.001)))
+	await _frames(10)
 
 
 ## Pressiona e solta uma ação em dois frames (borda lida pelo componente).

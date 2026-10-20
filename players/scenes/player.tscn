@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://players/scripts/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://players/scripts/interaction/interaction_detector.gd" id="2_detector"]
 [ext_resource type="Script" path="res://players/scripts/inventory/inventory.gd" id="3_inventory"]
 [ext_resource type="Script" path="res://players/scripts/inventory/inventory_input.gd" id="4_inventory_input"]
+[ext_resource type="Script" path="res://players/scripts/inventory/item_dropper.gd" id="5_dropper"]
+[ext_resource type="PackedScene" path="res://items/scenes/world_item.tscn" id="6_world_item"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -38,3 +40,7 @@ script = ExtResource("3_inventory")
 
 [node name="InventoryInput" type="Node" parent="."]
 script = ExtResource("4_inventory_input")
+
+[node name="ItemDropper" type="Node3D" parent="Head/Camera"]
+script = ExtResource("5_dropper")
+world_item_scene = ExtResource("6_world_item")

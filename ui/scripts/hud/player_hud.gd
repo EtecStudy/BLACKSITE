@@ -21,6 +21,8 @@ extends Control
 
 const FULL_MESSAGE_HOLD := 1.6
 const FULL_MESSAGE_FADE := 0.3
+## Texto padrão (aviso de inventário cheio da Etapa 8).
+const FULL_MESSAGE_TEXT := "INVENTÁRIO CHEIO"
 
 @onready var _stamina_bar: StaminaBar = %StaminaBar
 @onready var _interaction_prompt: InteractionPrompt = %InteractionPrompt
@@ -31,6 +33,7 @@ const FULL_MESSAGE_FADE := 0.3
 var _player: Node = null
 var _interaction_detector: Node = null
 var _inventory: Node = null
+var _drop_input: Node = null
 var _message_tween: Tween = null
 
 
@@ -134,6 +137,28 @@ func bind_inventory(inventory: Node) -> void:
 	_refresh_inventory()
 
 
+## Liga o aviso discreto ao componente que solta itens (Etapa 9). Só precisa do
+## sinal `drop_blocked(reason: String)` — a HUD não importa `players/`.
+## O mesmo painel do "INVENTÁRIO CHEIO" é reaproveitado: nenhuma tela nova.
+func bind_drop_input(dropper: Node) -> void:
+	if _drop_input != null and is_instance_valid(_drop_input):
+		var old_callback := Callable(self, "_on_drop_blocked")
+		if _drop_input.is_connected("drop_blocked", old_callback):
+			_drop_input.disconnect("drop_blocked", old_callback)
+	_drop_input = dropper
+	if _drop_input != null and _drop_input.has_signal("drop_blocked"):
+		_drop_input.connect("drop_blocked", _on_drop_blocked)
+
+
+func is_drop_bound() -> bool:
+	return _drop_input != null
+
+
+func _on_drop_blocked(reason: String) -> void:
+	if not reason.is_empty():
+		show_message(reason)
+
+
 func get_inventory_bar() -> InventoryBar:
 	return _inventory_bar
 
@@ -168,8 +193,15 @@ func _on_inventory_item_rejected(_item: ItemDefinition) -> void:
 
 
 func show_full_message() -> void:
+	show_message(FULL_MESSAGE_TEXT)
+
+
+## Mostra um texto curto no mesmo painel discreto da HUD (1,6 s + fade de 0,3 s).
+func show_message(text: String) -> void:
 	if _full_message == null:
 		return
+	if _message_label != null and not text.is_empty():
+		_message_label.text = text
 	_full_message.visible = true
 	_full_message.modulate.a = 1.0
 	if _message_tween != null and _message_tween.is_valid():

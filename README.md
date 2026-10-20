@@ -3,10 +3,9 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 8 concluída — **inventário de três slots** com coleta por
-> interação, seleção com 1/2/3, remoção provisória com R, substituição e aviso de
-> inventário cheio. Movimento, stamina, interação, HUD e configurações continuam
-> como na v0.7.0.
+> **Status:** Etapa 9 concluída — **soltar itens no ambiente 3D** com G, item
+> físico com colisão e nome, posição validada por física e recolhimento com E.
+> Inventário, interação, stamina, HUD e configurações continuam como na v0.8.0.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -20,17 +19,15 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.8.0-etapa8-inventory/BlackSight-Etapa8-Inventory-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.0-etapa9-drop/BlackSight-Etapa9-Drop-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa8-Inventory-Windows-x86_64.zip` (40.669.748 bytes ≈ 38,8 MiB)
-
-SHA-256 do ZIP: `4596a98981514a10b94e7a28af22174aa39a576fdb91f21ee645247718e01764`
+Arquivo: `BlackSight-Etapa9-Drop-Windows-x86_64.zip` (tamanho e SHA-256 após a publicação)
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
-   **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar e use **1**, **2**
-   e **3** para escolher o slot.
+   **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
+   escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 
@@ -43,7 +40,8 @@ Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compat
 | `Ctrl` | Agachar — **ALTERNAR** (padrão): um toque agacha, outro levanta; **SEGURAR**: mantenha pressionado |
 | `E` | Interagir com o objeto sob a mira (aparece `[E] Interagir`) ou pegar o item (`[E] Pegar`) |
 | `1` `2` `3` | Selecionar o slot do inventário (inclusive slot vazio) |
-| `R` | **Provisória:** remover o item do slot selecionado (só para validar a Etapa 8) |
+| `G` | Soltar no chão o item do slot selecionado (ele pode ser recolhido com `E`) |
+| `R` | **Provisória:** remover o item do slot selecionado (tecla de teste; use `G`) |
 | Mouse | Olhar (limite de ±89° na vertical) |
 | `Esc` | Liberar o mouse / abrir a pausa |
 | `F11` | Alternar janela ↔ tela cheia |
@@ -55,9 +53,9 @@ Na pausa da cena de teste: **CONTINUAR** (ou `Esc`) captura o mouse de novo,
 
 A sensibilidade do mouse, a inversão vertical e o **modo de agachamento** são
 os configurados em **CONFIGURAÇÕES → CONTROLES**. A lista mostrada ali é a dos
-controles que existem de verdade — inclui `E — Interagir` e `1 2 3 — Selecionar
-slot` e continua sem lanterna, pulo, uso/descarte de item ou ataque. (A tecla
-`R` não é listada: é provisória desta etapa.)
+controles que existem de verdade — inclui `E — Interagir`, `1 2 3 — Selecionar
+slot` e `G — Soltar item no chão`, e continua sem lanterna, pulo, arremesso,
+uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
 
 ## O que existe hoje
 
@@ -97,15 +95,25 @@ slot` e continua sem lanterna, pulo, uso/descarte de item ou ataque. (A tecla
   **R** remove (provisória) e, com o inventário cheio, o item novo não entra e a
   HUD avisa **INVENTÁRIO CHEIO**. O item genérico (`ItemDefinition`, em
   `shared/items/`) tem apenas **id** e **nome**.
+- **Soltar itens no ambiente** (Etapa 9): **G** solta o item do slot selecionado
+  à frente do jogador. A posição é validada por física (`SpaceProbe`: piso com
+  normal para cima, espaço livre para a caixa do item e linha de visão), então
+  nada aparece dentro de parede, caixa ou do próprio jogador. O item vira um
+  `RigidBody3D` baixo e estável, com o nome flutuando, e volta ao inventário com
+  **E** — o objeto só some depois de `add_item()` confirmar. Inventário cheio
+  mantém o objeto no chão; slot vazio ou sem espaço cancela o drop sem perder o
+  item. A física dos itens segue o modelo de pausa do projeto: o jogador para, o
+  mundo continua simulando e a interação fica bloqueada.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
 
-Ainda **não** existe: pulo, uso/descarte de item, pilha, peso, equipamentos,
-portas, chaves, objetivos, criaturas, multiplayer, voz e o mapa definitivo. A HUD
-mostra a stamina, a indicação de interação e os três slots; vida, objetivos e
-telas de inventário completas vêm nas próximas etapas.
-Ver [`docs/ETAPA-8.md`](docs/ETAPA-8.md), [`docs/ETAPA-7.md`](docs/ETAPA-7.md) e
-[`docs/ETAPA-6.md`](docs/ETAPA-6.md).
+Ainda **não** existe: pulo, arremesso, uso/consumo de item, pilha, peso,
+equipamentos, transferência entre jogadores, portas, chaves, objetivos,
+criaturas, multiplayer, voz e o mapa definitivo. A HUD mostra a stamina, a
+indicação de interação e os três slots; vida, objetivos e telas de inventário
+completas vêm nas próximas etapas.
+Ver [`docs/ETAPA-9.md`](docs/ETAPA-9.md), [`docs/ETAPA-8.md`](docs/ETAPA-8.md) e
+[`docs/ETAPA-7.md`](docs/ETAPA-7.md).
 
 ## Arquitetura
 
@@ -113,15 +121,15 @@ O projeto é dividido em módulos por responsabilidade. Detalhes completos em
 [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ```
-players/       jogador: controlador, detector de interação e inventário (3 slots)
+players/       jogador: controlador, detector de interação, inventário e drop
 creatures/     criaturas e IA (estrutura)
 maps/          mapas e salas — test_room.tscn
-items/         itens pegáveis (InventoryTestItem) e futuros itens do jogo
+items/         itens no mundo (InventoryTestItem, WorldItem) e futuros itens
 objectives/    objetivos e progressão (estrutura)
 match/         orquestração — movement_test (sala + jogador + pausa)
 ui/            menus e HUD — tela inicial e configurações
 audio/         buses de áudio e sons da interface
-shared/        recursos, tema, configurações, autoloads, Interactable e ItemDefinition
+shared/        recursos, tema, configurações, autoloads, Interactable, ItemDefinition e SpaceProbe
 ```
 
 Cada módulo tem seu próprio `README.md` com a responsabilidade, o que entra nele

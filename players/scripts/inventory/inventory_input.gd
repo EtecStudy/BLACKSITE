@@ -6,10 +6,13 @@ extends Node
 ## aqui — igual ao `InteractionDetector` da Etapa 7. As ações lidas são:
 ##
 ## - `inventory_slot_1`, `inventory_slot_2`, `inventory_slot_3` → selecionar slot;
-## - `inventory_remove` (R) → remover o item do slot selecionado.
+## - `inventory_drop` (G, Etapa 9) → soltar o item do slot selecionado no mundo;
+## - `inventory_remove` (R) → remover o item do slot selecionado (teste).
 ##
-## **`inventory_remove` é provisória**: existe só para validar remoção nesta
-## etapa. Quando houver descarte/uso de item, ela será substituída.
+## **`inventory_remove` é provisória**: existe desde a Etapa 8 só para validar a
+## remoção. O caminho normal para se desfazer de um item é **G** (soltar no
+## mundo), que o mantém recuperável. A remoção por R será revista quando houver
+## descarte definitivo.
 ##
 ## A borda é detectada manualmente (estado anterior + atual), porque os testes
 ## simulam teclado com `Input.action_press` — o mesmo caminho do teclado real.
@@ -20,6 +23,7 @@ extends Node
 ## borda atrasada ao continuar.
 
 const ACTION_REMOVE := "inventory_remove"
+const ACTION_DROP := "inventory_drop"
 
 ## Ações de seleção na ordem dos slots: índice 0 → slot 1, e assim por diante.
 const ACTION_SELECT_SLOTS := [
@@ -50,6 +54,9 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	for action: String in _read_edges():
+		if action == ACTION_DROP:
+			drop_selected()
+			continue
 		if action == ACTION_REMOVE:
 			remove_selected()
 			continue
@@ -79,6 +86,25 @@ func select_slot(slot_index: int) -> bool:
 	if inventory == null:
 		return false
 	return bool(inventory.call("select_slot", slot_index))
+
+
+## Solta no mundo o item do slot selecionado (ação `inventory_drop`, G).
+## O trabalho é do `ItemDropper` (câmera); a entrada só repassa.
+func drop_selected() -> bool:
+	if is_blocked():
+		return false
+	var dropper: Node = get_item_dropper()
+	if dropper == null:
+		return false
+	return bool(dropper.call("drop_selected_item"))
+
+
+## Componente que solta itens, por contrato: o jogador o expõe.
+func get_item_dropper() -> Node:
+	var parent: Node = get_parent()
+	if parent == null or not parent.has_method("get_item_dropper"):
+		return null
+	return parent.call("get_item_dropper") as Node
 
 
 ## Remove o item do slot selecionado (ação provisória de teste).
@@ -117,6 +143,7 @@ func get_action_names() -> Array[String]:
 	var names: Array[String] = []
 	for action: String in ACTION_SELECT_SLOTS:
 		names.append(action)
+	names.append(ACTION_DROP)
 	names.append(ACTION_REMOVE)
 	return names
 

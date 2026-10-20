@@ -3,10 +3,10 @@
 **Responsabilidade:** tudo que pertence ao(s) jogador(es) — controlador em
 primeira pessoa, câmera, entrada de input, "lanterna"/visão, atributos e estados.
 
-**Estado atual (Etapa 8):** controlador FPS com estados de movimento
+**Estado atual (Etapa 9):** controlador FPS com estados de movimento
 (parado, andando, correndo e agachado), **stamina** na corrida,
 **agachamento configurável** (ALTERNAR ou SEGURAR), **detector de interação**
-(Etapa 7) e **inventário de três slots** (Etapa 8).
+(Etapa 7), **inventário de três slots** (Etapa 8) e **drop de itens** (Etapa 9).
 
 | Caminho | O que é |
 | --- | --- |
@@ -15,7 +15,8 @@ primeira pessoa, câmera, entrada de input, "lanterna"/visão, atributos e estad
 | `players/scripts/interaction/interaction_detector.gd` | Raycast da câmera, foco e ação `interact` (Etapa 7) |
 | `players/scripts/inventory/inventory.gd` | Inventário de 3 slots, API e sinais (Etapa 8) |
 | `players/scripts/inventory/inventory_slot.gd` | Slot individual (um item) |
-| `players/scripts/inventory/inventory_input.gd` | Teclas 1/2/3 e R pelo InputMap |
+| `players/scripts/inventory/inventory_input.gd` | Teclas 1/2/3, G e R pelo InputMap |
+| `players/scripts/inventory/item_dropper.gd` | Solta o item do slot selecionado com posição validada (Etapa 9) |
 
 ## O que está implementado
 
@@ -78,11 +79,21 @@ enum MovementState { IDLE, WALKING, RUNNING, CROUCHING }
   (`SLOT_COUNT = 3`), primeiro slot livre, remoção, substituição, seleção e
   consulta do item selecionado. Não desenha, não lê teclado e não processa por
   frame.
-- `InventoryInput` lê `inventory_slot_1..3` e `inventory_remove` (R, provisória)
-  do **InputMap**, com borda própria. Na pausa (`movement_enabled == false` ou
-  `set_input_enabled(false)`) nada muda.
+- `InventoryInput` lê `inventory_slot_1..3`, `inventory_drop` (G) e
+  `inventory_remove` (R, provisória) do **InputMap**, com borda própria. Na
+  pausa (`movement_enabled == false` ou `set_input_enabled(false)`) nada muda.
 - O controlador só expõe `get_inventory()` e `get_inventory_input()`.
 - A HUD escuta sinais; o módulo continua dependendo apenas de `shared/`.
+
+## Drop (Etapa 9)
+
+- `ItemDropper` fica em `Head/Camera`. Recebe a cena do item por `@export`,
+  pergunta a pegada por contrato (`get_footprint`, como o item da Etapa 8 faz
+  com `get_inventory`) e usa `SpaceProbe` (`shared/`) para validar piso, espaço e
+  linha de visão. O módulo continua sem importar `items/`.
+- Ordem segura: valida → instancia → adiciona → configura → **depois** remove do
+  slot. Falha em qualquer passo mantém o item no inventário.
+- Sem arremesso, sem cópia do inventário e sem processamento por frame.
 
 ## O que ainda **não** existe
 
@@ -94,6 +105,7 @@ Os pontos de extensão naturais:
 | --- | --- |
 | HUD de stamina | escutar `stamina_changed` em `ui/` e usar `get_stamina_ratio()` |
 | Uso de item | `Inventory.get_selected_item()` + uma ação `use_item` |
+| Modelos de item | trocar/instanciar outra cena em `WorldItem` por `id` |
 | Lanterna | `SpotLight3D` filho da câmera |
 | Animações | novo nó de malha filho do corpo (a câmera não muda) |
 

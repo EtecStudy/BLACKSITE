@@ -4,10 +4,11 @@ extends SettingsSection
 ## **real** dos controles implementados.
 ##
 ## A lista descreve apenas o que existe hoje no jogo: mover, correr, agachar,
-## interagir, selecionar slot do inventário, olhar, pausar e tela cheia. Pulo,
-## lanterna, uso/descarte de item e inventário completo não aparecem porque não
-## estão implementados. A tecla R (remoção provisória da Etapa 8) também não é
-## listada: é uma ação de teste, que será substituída nas próximas etapas.
+## interagir, selecionar slot do inventário, soltar item no chão, olhar, pausar e
+## tela cheia. Pulo, lanterna, uso de item e inventário completo não aparecem
+## porque não estão implementados. A tecla R (remoção provisória da Etapa 8)
+## também não é listada: é uma ação de teste, que será substituída nas próximas
+## etapas — o caminho normal para se desfazer de um item é G.
 ##
 ## A descrição do Ctrl é dinâmica: em ALTERNAR mostra "Alternar agachamento";
 ## em SEGURAR mostra "Segurar para agachar". A preferência fica em
@@ -23,6 +24,7 @@ const KEY_ROWS := [
 	["Ctrl", ""],
 	["E", "Interagir"],
 	["1 2 3", "Selecionar slot"],
+	["G", "Soltar item no chão"],
 	["Mouse", "Olhar"],
 	["Esc", "Pausar"],
 	["F11", "Tela cheia"],

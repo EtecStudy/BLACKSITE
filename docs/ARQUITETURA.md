@@ -290,9 +290,36 @@ match/scripts/movement_test.gd             liga HUD ↔ inventário; pausa a ent
 - A pausa desliga `InteractionDetector` e `InventoryInput`; seleção, remoção e
   coleta ficam bloqueadas e o estado é preservado.
 
+## 6.5 Itens soltos no mundo (Etapa 9)
+
+```
+shared/mapping/space_probe.gd              SpaceProbe (piso + espaço + visão)
+
+players/scenes/player.tscn
+└── Head/Camera
+    ├── InteractionDetector                (Etapa 7, inalterado)
+    └── ItemDropper                        decide e executa o drop
+        └── world_item_scene ────────────► items/scenes/world_item.tscn
+                                             WorldItem extends Interactable
+                                             └── RigidBody3D (colisão + física)
+
+ui/scenes/hud/player_hud.tscn              painel de aviso reaproveitado
+```
+
+- `SpaceProbe` é geometria de física pura em `shared/` (não conhece item nem
+  jogador) e responde "dá ou não dá" com o motivo.
+- `ItemDropper` fica na câmera do jogador: lê o slot selecionado, valida a
+  posição, instancia o item e **só depois** remove do inventário. Se qualquer
+  passo falhar, o item continua no slot.
+- `WorldItem` vive em `items/`, usa o contrato `Interactable` da Etapa 7 e
+  `add_item()` da Etapa 8; não importa `players/`.
+- A HUD escuta `drop_blocked` e mostra o texto no mesmo painel de aviso da
+  Etapa 8 — não existe segunda barra nem estado duplicado.
+- A pausa desliga `InventoryInput` (G, 1/2/3, R) e o `InteractionDetector` (E).
+
 Detalhes: [`ETAPA-4.md`](ETAPA-4.md), [`ETAPA-5.md`](ETAPA-5.md),
-[`ETAPA-6.md`](ETAPA-6.md), [`ETAPA-7.md`](ETAPA-7.md) e
-[`ETAPA-8.md`](ETAPA-8.md).
+[`ETAPA-6.md`](ETAPA-6.md), [`ETAPA-7.md`](ETAPA-7.md),
+[`ETAPA-8.md`](ETAPA-8.md) e [`ETAPA-9.md`](ETAPA-9.md).
 
 ---
 

@@ -3,7 +3,7 @@
 **Responsabilidade:** sistemas e recursos compartilhados entre módulos.
 É o nível mais baixo da arquitetura: **não depende de nenhum outro módulo**.
 
-## Estado atual (Etapa 6): conteúdo real
+## Estado atual (Etapa 9): conteúdo real
 
 | Caminho | O que é |
 | --- | --- |
@@ -17,6 +17,9 @@
 | `shared/settings/game_settings.gd` | Autoload `GameSettings` — carrega, aplica e salva `user://settings.cfg` (Etapas 3–6) |
 | `shared/settings/audio_applier.gd` | Percentual → dB nos buses de áudio (Etapa 3) |
 | `shared/settings/video_applier.gd` | Modo de janela, resolução e VSync com limites de segurança (Etapa 3) |
+| `shared/interaction/interactable.gd` | Contrato dos objetos interativos (Etapa 7) |
+| `shared/items/item_definition.gd` | `ItemDefinition`: `id` + `display_name` (Etapa 8) |
+| `shared/mapping/space_probe.gd` | `SpaceProbe`: consultas de física para achar um ponto livre no chão (Etapa 9) |
 
 ## O que pode entrar aqui no futuro
 

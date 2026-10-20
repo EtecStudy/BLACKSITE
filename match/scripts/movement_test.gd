@@ -14,7 +14,8 @@ extends Node3D
 ## - ligar a indicação de interação (Etapa 7) ao `InteractionDetector` do
 ##   jogador e suspender a detecção durante a pausa/configurações;
 ## - ligar a HUD do inventário (Etapa 8) ao `Inventory` do jogador e suspender
-##   as teclas 1/2/3/R durante a pausa/configurações.
+##   as teclas 1/2/3/G/R durante a pausa/configurações;
+## - ligar o aviso discreto da HUD ao `ItemDropper` (Etapa 9).
 ##
 ## Nenhuma regra de movimentação mora aqui: ela está em `PlayerController`.
 ## Nenhum valor de configuração é lido aqui: o jogador lê `GameSettings`.
@@ -52,6 +53,8 @@ func _ready() -> void:
 		_hud.bind_interaction(_player.get_interaction_detector())
 		# Etapa 8: os três slots da HUD escutam o inventário do jogador.
 		_hud.bind_inventory(_player.get_inventory())
+		# Etapa 9: o aviso "SLOT VAZIO"/"SEM ESPAÇO..." usa o mesmo painel.
+		_hud.bind_drop_input(_player.get_item_dropper())
 	_place_player_at_spawn()
 	_capture_mouse(true)
 	_fade_hint_later()
@@ -173,6 +176,11 @@ func get_hud() -> PlayerHud:
 ## Inventário do jogador (Etapa 8). Exposto para os testes de integração.
 func get_inventory() -> Inventory:
 	return _player.get_inventory()
+
+
+## Componente que solta itens no mundo (Etapa 9). Exposto para os testes.
+func get_item_dropper() -> ItemDropper:
+	return _player.get_item_dropper()
 
 
 func _unhandled_input(event: InputEvent) -> void:

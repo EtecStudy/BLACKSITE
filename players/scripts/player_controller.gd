@@ -500,10 +500,16 @@ func get_inventory() -> Inventory:
 	return get_node_or_null("Inventory") as Inventory
 
 
-## Entrada do inventário (teclas 1/2/3 e R provisória). A sessão desliga
+## Entrada do inventário (teclas 1/2/3, G e R provisória). A sessão desliga
 ## durante a pausa, do mesmo jeito que faz com o detector de interação.
 func get_inventory_input() -> InventoryInput:
 	return get_node_or_null("InventoryInput") as InventoryInput
+
+
+## Componente que solta o item do slot selecionado no mundo (Etapa 9). Fica na
+## câmera, ao lado do detector de interação; o controlador só o expõe.
+func get_item_dropper() -> ItemDropper:
+	return get_node_or_null("Head/Camera/ItemDropper") as ItemDropper
 
 
 func get_sensitivity() -> Vector2:

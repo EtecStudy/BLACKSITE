@@ -98,6 +98,7 @@ func _ready() -> void:
 	_check_movement_states()
 	_check_stage6()
 	_check_stage8()
+	_check_stage9()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -295,13 +296,16 @@ func _check_modules() -> void:
 			"módulo %s ainda não tem scripts (estrutura preparatória)" % pending_module
 		)
 
-	# `items/` tem só o item de teste: inventário, drop, uso e pilha continuam
-	# fora dele (o inventário é estado do jogador e vive em `players/`).
+	# `items/` tem só as duas representações de item: o item de teste da
+	# Etapa 8 e o item solto da Etapa 9. Inventário é estado do jogador
+	# (`players/`); uso, pilha e crafting continuam fora do projeto.
 	var item_scripts := _list_gdscript_files("res://items")
+	item_scripts.sort()
 	_expect(
-		item_scripts.size() == 1
-			and str(item_scripts[0]).ends_with("items/scripts/inventory_test_item.gd"),
-		"items/ tem apenas o item de teste da Etapa 8 (%s)" % str(item_scripts)
+		item_scripts.size() == 2
+			and str(item_scripts[0]).ends_with("items/scripts/inventory_test_item.gd")
+			and str(item_scripts[1]).ends_with("items/scripts/world_item.gd"),
+		"items/ tem apenas o item de teste e o item solto (%s)" % str(item_scripts)
 	)
 
 
@@ -904,9 +908,12 @@ func _check_stage6() -> void:
 		keys.append(str(row[0]))
 		joined += "%s %s " % [str(row[0]), str(row[1])]
 	var lowered: String = joined.to_lower()
-	_expect(rows.size() == 8, "lista tem exatamente oito controles (%d)" % rows.size())
+	# Etapa 9: entrou "G — Soltar item no chão" (ação implementada de verdade),
+	# por isso a lista passa de oito para nove linhas. R continua fora: é a
+	# remoção provisória de teste da Etapa 8.
+	_expect(rows.size() == 9, "lista tem exatamente nove controles (%d)" % rows.size())
 	_expect(
-		keys == ["W A S D", "Shift", "Ctrl", "E", "1 2 3", "Mouse", "Esc", "F11"],
+		keys == ["W A S D", "Shift", "Ctrl", "E", "1 2 3", "G", "Mouse", "Esc", "F11"],
 		"teclas reais na ordem esperada: %s" % str(keys)
 	)
 	_expect(lowered.contains("mover"), "WASD descreve mover")
@@ -916,6 +923,8 @@ func _check_stage6() -> void:
 	_expect(lowered.contains("tela cheia"), "F11 descreve tela cheia")
 	_expect(lowered.contains("interagir"), "E descreve interagir (Etapa 7)")
 	_expect(lowered.contains("slot"), "1 2 3 descreve selecionar slot (Etapa 8)")
+	_expect(lowered.contains("soltar"), "G descreve soltar item (Etapa 9)")
+	_expect(not keys.has("R"), "R (remoção provisória) continua fora da lista")
 	_expect(not lowered.contains("lanterna"), "não lista F/Lanterna")
 	_expect(not lowered.contains("pular") and not lowered.contains("pulo"), "não lista pulo")
 	_expect(not lowered.contains("usar item") and not lowered.contains("equipar"),
@@ -955,15 +964,18 @@ func _check_stage8() -> void:
 	print("[16] Inventário de três slots (Etapa 8)")
 
 	# --- Versão -------------------------------------------------------------
+	# A versão pertence ao build, não à etapa: ela avança a cada release
+	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
+	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.8.0",
-		"versão do projeto é 0.8.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.0",
+		"versão do projeto é 0.9.0"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Etapa 8"),
-			"AppInfo anuncia a Etapa 8 (%s)" % str(app_info.stage_label())
+			str(app_info.stage_label()).contains("Etapa 9"),
+			"AppInfo anuncia a etapa atual (%s)" % str(app_info.stage_label())
 		)
 
 	# --- InputMap -----------------------------------------------------------
@@ -1099,3 +1111,129 @@ func _check_stage8() -> void:
 			.contains("is_key_pressed"),
 		"inventário não lê teclas diretamente"
 	)
+
+
+func _check_stage9() -> void:
+	print("[17] Soltar itens no ambiente (Etapa 9)")
+
+	# --- Versão -------------------------------------------------------------
+	_expect(
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.9.0",
+		"versão do projeto é 0.9.0"
+	)
+	var app_info = get_node_or_null("/root/AppInfo")
+	if app_info != null:
+		_expect(
+			str(app_info.stage_label()).contains("Etapa 9"),
+			"AppInfo anuncia a Etapa 9 (%s)" % str(app_info.stage_label())
+		)
+
+	# --- InputMap -----------------------------------------------------------
+	_expect(InputMap.has_action("inventory_drop"), "ação 'inventory_drop' configurada")
+	var drop_uses_g: bool = false
+	for event: InputEvent in InputMap.action_get_events("inventory_drop"):
+		var key := event as InputEventKey
+		if key == null:
+			continue
+		var code: int = key.physical_keycode if key.physical_keycode != 0 else key.keycode
+		if code == KEY_G:
+			drop_uses_g = true
+	_expect(drop_uses_g, "ação 'inventory_drop' usa G")
+	_expect(InputMap.has_action("inventory_remove"), "remoção de teste continua existindo")
+	_expect(not InputMap.has_action("inventory_throw"), "não existe ação de arremesso")
+
+	# --- Arquivos -----------------------------------------------------------
+	for path: String in [
+		"res://items/scripts/world_item.gd",
+		"res://items/scenes/world_item.tscn",
+		"res://players/scripts/inventory/item_dropper.gd",
+		"res://shared/mapping/space_probe.gd",
+		"res://docs/ETAPA-9.md",
+	]:
+		_expect(FileAccess.file_exists(path), "arquivo da Etapa 9 presente (%s)" % path)
+
+	# --- Item no mundo ------------------------------------------------------
+	var world_packed: PackedScene = load("res://items/scenes/world_item.tscn") as PackedScene
+	_expect(world_packed != null, "cena do item solto carrega")
+	if world_packed != null:
+		var world_item: WorldItem = world_packed.instantiate() as WorldItem
+		_expect(world_item != null, "cena do item solto tem o script WorldItem")
+		if world_item != null:
+			_expect(world_item is Interactable, "item solto usa o contrato Interactable")
+			_expect(
+				world_item.get_node_or_null("Body") is RigidBody3D,
+				"item solto tem corpo físico (RigidBody3D)"
+			)
+			_expect(
+				world_item.get_node_or_null("Body/Collision") is CollisionShape3D,
+				"item solto tem colisão"
+			)
+			var label := world_item.get_node_or_null("Body/NameLabel") as Label3D
+			_expect(label != null, "item solto tem etiqueta 3D")
+			_expect(not world_item.can_interact(null), "item solto sem ator não é interativo")
+			_expect(world_item.configure_item(null) == false, "item inválido é recusado")
+			var smoke_item := ItemDefinition.new(&"smoke_world", "ITEM MUNDO")
+			_expect(world_item.configure_item(smoke_item), "item válido é aceito")
+			add_child(world_item)
+			_expect(world_item.is_in_group(WorldItem.WORLD_GROUP), "item solto entra no grupo de mundo")
+			_expect(label != null and label.text == "ITEM MUNDO", "etiqueta mostra o nome do item")
+			_expect(world_item.get_item() == smoke_item, "item solto guarda a definição")
+			_expect(world_item.get_display_name() == "ITEM MUNDO", "nome para exibição")
+			remove_child(world_item)
+			world_item.free()
+
+	# --- Componente de drop no jogador -------------------------------------
+	var player_packed: PackedScene = load("res://players/scenes/player.tscn") as PackedScene
+	if player_packed != null:
+		var player: Node = player_packed.instantiate()
+		var dropper := player.get_node_or_null("Head/Camera/ItemDropper")
+		_expect(dropper is ItemDropper, "jogador tem ItemDropper na câmera")
+		_expect(player.get_item_dropper() == dropper, "controlador expõe get_item_dropper()")
+		if dropper != null:
+			_expect(dropper.world_item_scene != null, "drop aponta para a cena do item")
+			_expect(not dropper.is_processing(), "drop não processa por frame")
+			_expect(dropper.get_drop_count() == 0, "contador de drops começa em zero")
+		player.free()
+	_expect(
+		not FileAccess.get_file_as_string("res://players/scripts/inventory/item_dropper.gd")
+			.contains("is_key_pressed"),
+		"componente do drop não lê teclas diretamente"
+	)
+
+	# --- HUD reaproveitada --------------------------------------------------
+	var hud_packed: PackedScene = load("res://ui/scenes/hud/player_hud.tscn") as PackedScene
+	if hud_packed != null:
+		var hud: PlayerHud = hud_packed.instantiate() as PlayerHud
+		add_child(hud)
+		_expect(hud.has_method("bind_drop_input"), "HUD aceita a ligação com o drop")
+		_expect(hud.has_method("show_message"), "HUD reutiliza o painel de aviso")
+		var probe := ItemDropper.new()
+		add_child(probe)
+		hud.bind_drop_input(probe)
+		_expect(hud.is_drop_bound(), "HUD ligada ao componente de drop")
+		probe.drop_blocked.emit("SLOT VAZIO")
+		_expect(
+			hud.get_full_message_text() == "SLOT VAZIO" and hud.is_full_message_visible(),
+			"aviso do drop usa o mesmo painel da HUD (%s)" % hud.get_full_message_text()
+		)
+		_expect(hud.get_inventory_bar() != null and hud.get_inventory_bar().get_slot_count() == 3,
+			"barra de inventário continua única, com 3 slots")
+		remove_child(probe)
+		probe.free()
+		remove_child(hud)
+		hud.free()
+
+	# --- Cena de teste ------------------------------------------------------
+	var movement_packed: PackedScene = load("res://match/scenes/movement_test.tscn") as PackedScene
+	if movement_packed != null:
+		var movement: Node = movement_packed.instantiate()
+		var hint := movement.get_node_or_null("Interface/HintLabel") as Label
+		var text: String = hint.text if hint != null else ""
+		_expect(text.contains("G SOLTAR"), "cena de teste ensina G SOLTAR (%s)" % text)
+		_expect(text.contains("R REMOVER TESTE"), "cena de teste marca R como teste")
+		var pause_controls := movement.get_node_or_null("Interface/PauseRoot/Center/Panel/Margin/Content/PauseControls") as Label
+		_expect(
+			pause_controls != null and pause_controls.text.contains("G soltar"),
+			"pausa lista G soltar"
+		)
+		movement.free()
