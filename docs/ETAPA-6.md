@@ -182,7 +182,7 @@ a partida) é o próximo passo, com o usuário rodando o `.exe` publicado.
 | SHA-256 do ZIP | `12ef1e50932bf310aaabefa62b776985eb04578cc9dad9803c164a193a37d79d` |
 | `BlackSight.exe` | 109.193.728 bytes |
 | `BlackSight.pck` | 1.415.316 bytes |
-| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.281 / 190 bytes |
+| `LEIA-ME.txt` / `SHA256SUMS.txt` | 2.420 / 164 bytes |
 
 ### 8.5 Teste no Windows real
 
