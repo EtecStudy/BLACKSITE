@@ -35,8 +35,8 @@ velocidades, sprint, agachamento e HUD) está intacta.
 | --- | --- |
 | Arquivo | `BlackSight-Etapa7-Interaction-Windows-x86_64.zip` |
 | Conteúdo | `BlackSight.exe`, `BlackSight.pck`, `LEIA-ME.txt`, `SHA256SUMS.txt` |
-| Tamanho | a preencher |
-| SHA-256 | a preencher |
+| Tamanho | **40.653.078 bytes** (≈ 38,8 MiB) |
+| SHA-256 | `3cdac8c7d64008235694996c145dbe734bb0e7aabc499f1f9b24a8e203f25878` |
 | Download | <https://github.com/EtecStudy/BLACKSITE/releases/download/v0.7.0-etapa7-interaction/BlackSight-Etapa7-Interaction-Windows-x86_64.zip> |
 
 Este ZIP **substitui** o da v0.6.2: é uma compilação nova.
@@ -58,6 +58,19 @@ Este ZIP **substitui** o da v0.6.2: é uma compilação nova.
    (ALTERNAR/SEGURAR), F11, ESC, VOLTAR AO MENU e SAIR DO JOGO.
 9. Em **CONFIGURAÇÕES → CONTROLES**, a lista deve ter 7 linhas, com
    **E — Interagir**.
+
+## Testes automatizados
+
+Run `39478005585` (`ce95812`), aprovado no Linux e no Windows:
+
+- Fumaça: **251/251**
+- Fluxo de interface: **50/50**
+- Controlador FPS / interação: **363/363** (grupo `[22]` com 63 verificações)
+- `.exe`: `FileVersion 0.7.0.0`, executa headless e com janela (vivo após 25 s)
+- `.pck`: formato 4, 90 recursos
+
+O teste manual no Windows (itens A–F de `docs/ETAPA-7.md`) é do usuário e não é
+declarado como concluído aqui.
 
 ## Requisitos
 

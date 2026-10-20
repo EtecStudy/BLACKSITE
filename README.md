@@ -18,15 +18,16 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.2-etapa6-stamina/BlackSight-Etapa6-Stamina-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.7.0-etapa7-interaction/BlackSight-Etapa7-Interaction-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa6-Stamina-Windows-x86_64.zip` (40.640.419 bytes ≈ 38,8 MiB)
+Arquivo: `BlackSight-Etapa7-Interaction-Windows-x86_64.zip` (40.653.078 bytes ≈ 38,8 MiB)
 
-SHA-256 do ZIP: `31c4fabc402c515ed0c161be47930ea4155b8d226d16a148cb822020735d2ce9`
+SHA-256 do ZIP: `3cdac8c7d64008235694996c145dbe734bb0e7aabc499f1f9b24a8e203f25878`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
-3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D.
+3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D e olhe para o
+   **Painel de Teste** à frente: a indicação `[E] Interagir` aparece no rodapé.
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 

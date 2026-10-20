@@ -249,18 +249,39 @@ real da partida, com a física real:
 Linux e no Windows, exporta o `.exe`, executa o build exportado, inspeciona o
 `.pck`, confere `FileVersion`, empacota o ZIP e publica a release.
 
+**Resultado:** run `39478005585` verde nos dois jobs; ZIP publicado com
+**40.653.078 bytes** e SHA-256
+`3cdac8c7d64008235694996c145dbe734bb0e7aabc499f1f9b24a8e203f25878`.
+
+### 10.4 Inspeção visual (captura automática)
+
+A captura da cena de teste (`ci-logs/movement_test.png`, 1920×1080) mostra o
+texto de ajuda já com **“E INTERAGIR”**, a HUD de stamina intacta no canto
+inferior esquerdo e o **Painel de Teste** à direita, com o título legível. A
+indicação `[E] Interagir` **não** aparece nessa captura porque a câmera da
+captura olha para o centro da sala, não para o painel; o posicionamento e o
+estilo dela são cobertos pelos testes de layout (rodapé, centralizada, 137 px de
+largura, 36 px de altura) e devem ser confirmados visualmente no teste manual.
+
 ## 11. Resultados
+
+Execução **39478005585** (`ce95812`), concluída com sucesso nos dois jobs.
 
 | Verificação | Resultado |
 | --- | --- |
-| Fumaça (Linux) | a preencher |
-| Fluxo de interface (Linux) | a preencher |
-| Controlador FPS (Linux) | a preencher |
-| Fumaça / UI / movimento (Windows) | a preencher |
-| Versão interna e `FileVersion` | a preencher |
-| `.pck` (formato/recursos) | a preencher |
-| ZIP publicado | a preencher |
-| SHA-256 do ZIP | a preencher |
+| Fumaça (Linux) | **251/251** |
+| Fluxo de interface (Linux) | **50/50** |
+| Controlador FPS (Linux) | **363/363** (inclui o grupo `[22]`, 63 verificações) |
+| Fumaça / UI / movimento (Windows) | **251 / 50 / 363**, todos aprovados |
+| Versão interna | `v0.7.0 · Godot 4.7.2-stable (official) · gl_compatibility` |
+| `FileVersion` / `FileDescription` | `0.7.0.0` / `Black Sight — Etapa 7` (`ProductName=Black Sight`) |
+| `.pck` | formato 4, **90 recursos**, `PACOTE OK` |
+| Execução real do `.exe` | headless OK; janela viva após 25 s, título “Black Sight” |
+| `settings.cfg` | criado em `%APPDATA%\BlackSight`; `crouch_mode="toggle"` preservado |
+| ZIP | **40.653.078 bytes**, 4 arquivos (`exe`, `pck`, `LEIA-ME`, `SHA256SUMS`) |
+| SHA-256 do ZIP | `3cdac8c7d64008235694996c145dbe734bb0e7aabc499f1f9b24a8e203f25878` |
+
+Release: <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.7.0-etapa7-interaction>
 
 ## 12. Limitações desta etapa
 
