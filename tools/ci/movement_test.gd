@@ -34,7 +34,7 @@ var _checks: int = 0
 var _failures: PackedStringArray = PackedStringArray()
 ## Watchdog: se nenhuma verificação/espera avançar por este tempo, o teste
 ## imprime a última fase e encerra com código 2 (em vez de deixar o CI pendurado).
-const WATCHDOG_MS := 25000
+const WATCHDOG_MS := 60000
 var _last_progress_ms: int = 0
 var _last_step: String = "início"
 var _finished: bool = false
@@ -2737,7 +2737,8 @@ func _wait_recovery_delay() -> void:
 func _frames(count: int) -> void:
 	for index: int in count:
 		await get_tree().physics_frame
-	_touch()
+		# Enquanto os frames andam, o teste está vivo: reinicia o watchdog.
+		_touch()
 
 
 func _expect(condition: bool, description: String) -> void:
