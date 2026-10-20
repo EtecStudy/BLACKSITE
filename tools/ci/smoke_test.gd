@@ -999,7 +999,24 @@ func _check_stage8() -> void:
 			found,
 			"ação '%s' usa %s" % [action, OS.get_keycode_string(expected_actions[action])]
 		)
-	_expect(not InputMap.has_action("inventory_drop"), "não existe ação de drop nesta etapa")
+	# A Etapa 9 acrescentou `inventory_drop` (G) de propósito. O que a Etapa 8
+	# garante continua valendo: não existem slots extras nem ações de inventário
+	# fora do conjunto previsto (3 slots + remoção de teste + drop).
+	var inventory_actions: Array = []
+	for action: String in InputMap.get_actions():
+		if action.begins_with("inventory_"):
+			inventory_actions.append(action)
+	inventory_actions.sort()
+	_expect(
+		inventory_actions == [
+			"inventory_drop",
+			"inventory_remove",
+			"inventory_slot_1",
+			"inventory_slot_2",
+			"inventory_slot_3",
+		],
+		"ações de inventário são exatamente as previstas: %s" % str(inventory_actions)
+	)
 
 	# --- Arquivos -----------------------------------------------------------
 	for path: String in [
