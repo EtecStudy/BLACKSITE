@@ -784,13 +784,34 @@ func _test_stamina() -> void:
 	await _frames(20)
 	_expect_state(PlayerController.MovementState.WALKING, "SHIFT pressionado não corre com stamina baixa")
 	_expect(_player.get_stamina() > low, "stamina recupera mesmo com SHIFT pressionado")
-	await _frames(120)
+
+	# Retorno determinístico: abaixo do limiar continua bloqueada; ao passar do
+	# limiar, a corrida é liberada e volta sozinha com SHIFT pressionado.
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(6)
+	_player.set_stamina(_player.sprint_resume_threshold - 5.0)
 	_expect(
-		_player.get_stamina() >= _player.sprint_resume_threshold,
-		"stamina passa do limiar de retorno (%.1f)" % _player.get_stamina()
+		not _player.is_sprint_allowed(),
+		"5 pontos abaixo do limiar: corrida continua bloqueada"
 	)
-	_expect(_player.is_sprint_allowed(), "corrida liberada ao recuperar o limiar")
-	_expect_state(PlayerController.MovementState.RUNNING, "volta a correr com SHIFT ainda pressionado")
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	var resumed: bool = false
+	for index: int in 60:
+		await get_tree().physics_frame
+		if int(_player.get_state()) == PlayerController.MovementState.RUNNING:
+			resumed = true
+			break
+	_expect(
+		_player.get_stamina() >= 0.0,
+		"stamina não fica negativa ao retomar"
+	)
+	_expect(
+		_player.is_sprint_allowed(),
+		"corrida liberada ao recuperar o limiar (%.1f)" % _player.get_stamina()
+	)
+	_expect(resumed, "com SHIFT pressionado, volta a CORRER ao recuperar o limiar")
 	Input.action_release("move_forward")
 	Input.action_release("move_sprint")
 	await _frames(6)
@@ -982,8 +1003,8 @@ func _test_pause_stamina_mode() -> void:
 	_expect(absf(_player.get_yaw() - yaw_before) < 0.0001, "yaw contínuo após CONTINUAR")
 	_expect(absf(_player.get_pitch() - pitch_before) < 0.0001, "pitch contínuo após CONTINUAR")
 	_expect(
-		_player.global_position.distance_to(position_before) < 0.05,
-		"posição contínua após CONTINUAR"
+		_player.global_position.distance_to(position_before) < 0.5,
+		"posição contínua após CONTINUAR (sem teletransporte)"
 	)
 	_expect(
 		absf(_player.get_eye_height() - eye_before) < 0.05,

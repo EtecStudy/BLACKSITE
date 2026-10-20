@@ -35,7 +35,7 @@ const STATUS_COLOR_OK := Color(0.62, 0.72, 0.6, 1.0)
 @onready var _apply_button: Button = %ApplyButton
 @onready var _defaults_button: Button = %DefaultsButton
 @onready var _back_button: Button = %BackButton
-@onready var _back_hint: Label = %BackHint
+@onready var _back_hint: Label = %SidebarHint
 @onready var _tab_buttons: Array = [%TabControls, %TabAudio, %TabVideo]
 
 var _settings
