@@ -1,5 +1,5 @@
 extends Node
-## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 5).
+## Teste automatizado do controlador FPS e da cena de teste (Etapa 4 → Etapa 6).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
@@ -7,8 +7,9 @@ extends Node
 ##
 ## O teste instancia a **cena real** (`match/scenes/movement_test.tscn`) e
 ## verifica movimento, estados (parado/andando/correndo/agachado), câmera,
-## física, colisões, menu de pausa com configurações e integração com as
-## configurações da Etapa 3. As entradas são simuladas com `Input.action_press`,
+## física, colisões, menu de pausa com configurações, integração com as
+## configurações da Etapa 3, stamina e os dois modos de agachamento
+## (SEGURAR e ALTERNAR, este último o padrão do jogo). As entradas são simuladas com `Input.action_press`,
 ## que é o mesmo caminho usado pelo teclado.
 ##
 ## Sai com 0 em caso de sucesso e 1 em caso de falha.
@@ -41,6 +42,12 @@ func _ready() -> void:
 		_remove_test_file()
 		_settings.apply(SettingsSchema.defaults())
 
+		# Os grupos [12]–[16] foram escritos para o modo SEGURAR (Etapa 5).
+		# O padrão novo (ALTERNAR) é verificado no smoke test e no grupo [18].
+		var hold_values: Dictionary = SettingsSchema.defaults()
+		hold_values[SettingsSchema.SECTION_CONTROLS]["crouch_mode"] = "hold"
+		_settings.apply(hold_values)
+
 	_check_input_map()
 	await _start_scene()
 	if _scene == null:
@@ -61,6 +68,9 @@ func _ready() -> void:
 	await _test_crouch_camera()
 	await _test_crouch_ceiling()
 	await _test_pause_settings()
+	await _test_stamina()
+	await _test_crouch_toggle()
+	await _test_pause_stamina_mode()
 
 	_finish()
 
@@ -384,7 +394,9 @@ func _expect_state(expected: int, description: String) -> void:
 
 func _test_states() -> void:
 	print("[12] Estados de movimento")
+	await _set_crouch_mode("hold")
 	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_stamina(_player.max_stamina)
 	_expect_state(PlayerController.MovementState.IDLE, "sem entrada → PARADO")
 
 	Input.action_press("move_forward")
@@ -434,6 +446,7 @@ func _test_states() -> void:
 
 func _test_speeds() -> void:
 	print("[13] Velocidades")
+	_player.set_stamina(_player.max_stamina)
 	_expect(
 		_player.run_speed > _player.walk_speed * 1.2,
 		"corrida claramente maior que caminhada (%.2f m/s vs %.2f m/s)" % [
@@ -576,6 +589,7 @@ func _test_crouch_ceiling() -> void:
 
 func _test_pause_settings() -> void:
 	print("[16] Pausa com configurações")
+	_player.set_stamina(_player.max_stamina)
 	await _place(Vector3(0, 0.05, 0), 0.0)
 	Input.action_press("move_crouch")
 	await _frames(10)
@@ -629,6 +643,8 @@ func _test_pause_settings() -> void:
 	# autoload chega ao controlador sem reiniciar a partida.
 	var doubled: Dictionary = SettingsSchema.defaults()
 	doubled[SettingsSchema.SECTION_CONTROLS]["mouse_sensitivity_x"] = 2.0
+	# Este grupo foi escrito para o modo SEGURAR (Etapa 5).
+	doubled[SettingsSchema.SECTION_CONTROLS]["crouch_mode"] = "hold"
 	_settings.apply(doubled)
 	await _frames(2)
 	_expect(
@@ -673,11 +689,355 @@ func _test_pause_settings() -> void:
 		"movimento volta a funcionar depois de CONTINUAR"
 	)
 
-	# Restaura os padrões para os testes seguintes.
+	# Restaura os padrões (sensibilidade 1.0) e o modo SEGURAR.
 	_settings.apply(SettingsSchema.defaults())
+	await _set_crouch_mode("hold")
+
+
+# --- Stamina e modos de agachamento (Etapa 6) ------------------------------
+
+func _test_stamina() -> void:
+	print("[17] Stamina")
+	await _set_crouch_mode("hold")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_stamina(_player.max_stamina)
+
+	_expect(is_equal_approx(_player.get_max_stamina(), 100.0), "stamina máxima = 100")
+	_expect(is_equal_approx(_player.stamina_drain_rate, 20.0), "consumo = 20 por segundo")
+	_expect(is_equal_approx(_player.stamina_recovery_rate, 15.0), "recuperação = 15 por segundo")
+	_expect(
+		_player.sprint_resume_threshold > 0.0 and _player.sprint_resume_threshold < 50.0,
+		"limiar de retorno configurado (%.0f)" % _player.sprint_resume_threshold
+	)
+	_expect(is_equal_approx(_player.get_stamina(), 100.0), "stamina começa cheia")
+	_expect(_player.is_sprint_allowed(), "corrida liberada com stamina cheia")
+	_expect(is_equal_approx(_player.get_stamina_ratio(), 1.0), "razão de stamina = 1.0 cheia")
+
+	# Consumo apenas no estado RUNNING.
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(60)
+	var consumed: float = 100.0 - _player.get_stamina()
+	_expect_state(PlayerController.MovementState.RUNNING, "correndo com stamina")
+	_expect(
+		absf(consumed - _player.stamina_drain_rate) < 4.0,
+		"1 s correndo consome ~%.0f (%.1f)" % [_player.stamina_drain_rate, consumed]
+	)
+	_expect(_player.get_stamina() > 0.0, "corrida curta não esgota a stamina")
+
+	# Recuperação andando.
+	Input.action_release("move_sprint")
+	await _frames(4)
+	_expect_state(PlayerController.MovementState.WALKING, "soltar SHIFT → ANDANDO")
+	_player.set_stamina(40.0)
+	var walk_start: float = _player.get_stamina()
+	await _frames(60)
+	var walk_gain: float = _player.get_stamina() - walk_start
+	_expect(
+		absf(walk_gain - _player.stamina_recovery_rate) < 4.0,
+		"1 s andando recupera ~%.0f (%.1f)" % [_player.stamina_recovery_rate, walk_gain]
+	)
+
+	# Recuperação agachado (e nenhum consumo).
+	Input.action_press("move_crouch")
+	await _frames(8)
+	_expect_state(PlayerController.MovementState.CROUCHING, "CTRL andando → AGACHADO")
+	_player.set_stamina(40.0)
+	var crouch_start: float = _player.get_stamina()
+	await _frames(60)
+	var crouch_gain: float = _player.get_stamina() - crouch_start
+	_expect(crouch_gain > 0.0, "agachado recupera stamina (%.1f)" % crouch_gain)
+	_expect(
+		absf(crouch_gain - _player.stamina_recovery_rate) < 4.0,
+		"recuperação agachado ≈ %.0f/s (%.1f)" % [_player.stamina_recovery_rate, crouch_gain]
+	)
+	Input.action_release("move_crouch")
+	Input.action_release("move_forward")
+	await _frames(12)
+
+	# Recuperação parado.
+	_player.set_stamina(40.0)
+	var idle_start: float = _player.get_stamina()
+	await _frames(60)
+	var idle_gain: float = _player.get_stamina() - idle_start
+	_expect(
+		absf(idle_gain - _player.stamina_recovery_rate) < 4.0,
+		"1 s parado recupera ~%.0f (%.1f)" % [_player.stamina_recovery_rate, idle_gain]
+	)
+
+	# Esgotamento: RUNNING → WALKING, bloqueio e retorno após o limiar.
+	_player.set_stamina(3.0)
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	var zero_seen: bool = false
+	var interrupted: bool = false
+	for index: int in 45:
+		await get_tree().physics_frame
+		if _player.get_stamina() <= 0.0:
+			zero_seen = true
+			if int(_player.get_state()) == PlayerController.MovementState.WALKING:
+				interrupted = true
+	_expect(zero_seen, "stamina chega a 0 sem ficar negativa")
+	_expect(interrupted, "esgotar interrompe a corrida (RUNNING → WALKING)")
+	_expect(not _player.is_sprint_allowed(), "corrida bloqueada com stamina esgotada")
+	var low: float = _player.get_stamina()
+	await _frames(20)
+	_expect_state(PlayerController.MovementState.WALKING, "SHIFT pressionado não corre com stamina baixa")
+	_expect(_player.get_stamina() > low, "stamina recupera mesmo com SHIFT pressionado")
+	await _frames(120)
+	_expect(
+		_player.get_stamina() >= _player.sprint_resume_threshold,
+		"stamina passa do limiar de retorno (%.1f)" % _player.get_stamina()
+	)
+	_expect(_player.is_sprint_allowed(), "corrida liberada ao recuperar o limiar")
+	_expect_state(PlayerController.MovementState.RUNNING, "volta a correr com SHIFT ainda pressionado")
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(6)
+
+	# Limites duros de set_stamina.
+	_player.set_stamina(1.0e6)
+	_expect(is_equal_approx(_player.get_stamina(), 100.0), "set_stamina limita ao máximo")
+	_player.set_stamina(-5.0)
+	_expect(is_equal_approx(_player.get_stamina(), 0.0), "set_stamina limita a zero")
+	_expect(not _player.is_sprint_allowed(), "set_stamina(0) bloqueia a corrida")
+	_player.set_stamina(_player.max_stamina)
+	_expect(_player.is_sprint_allowed(), "set_stamina(cheia) libera a corrida")
+
+
+func _test_crouch_toggle() -> void:
+	print("[18] Modo ALTERNAR (padrão)")
+	await _set_crouch_mode("toggle")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_stamina(_player.max_stamina)
+	_expect(_player.get_crouch_mode() == "toggle", "controlador lê o modo ALTERNAR")
+	_expect(not _player.is_crouched(), "começa em pé")
+
+	await _tap_crouch()
+	await _frames(20)
+	_expect(_player.is_crouched(), "um toque em CTRL agacha")
+	_expect_state(PlayerController.MovementState.CROUCHING, "estado AGACHADO após o toque")
+	var standing_eye: float = _player.standing_eye_height
+	_expect(
+		absf(_player.get_eye_height() - _player.crouched_eye_height) < 0.05,
+		"câmera desce ao agachar em ALTERNAR (%.2f m)" % _player.get_eye_height()
+	)
+
+	# Agachado nunca corre nem consome stamina.
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(30)
+	_expect_state(PlayerController.MovementState.CROUCHING, "agachado + SHIFT continua AGACHADO")
+	_expect(
+		is_equal_approx(_player.get_stamina(), _player.max_stamina),
+		"agachado não consome stamina (%.1f)" % _player.get_stamina()
+	)
+	Input.action_release("move_sprint")
+	Input.action_release("move_forward")
+	await _frames(10)
+	_expect(_player.is_crouched(), "soltar CTRL não levanta em ALTERNAR")
+
+	# Colisão: não levanta sob obstáculo; levanta quando o espaço fica livre.
+	var blocker := StaticBody3D.new()
+	blocker.name = "TestCeilingToggle"
+	var collision := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = Vector3(2.0, 0.3, 2.0)
+	collision.shape = box
+	blocker.add_child(collision)
+	_scene.add_child(blocker)
+	blocker.global_position = _player.global_position + Vector3(0.0, 1.4, 0.0)
+	await _frames(3)
+
+	await _tap_crouch()
+	await _frames(20)
+	_expect(_player.is_crouched(), "não levanta sob obstáculo em ALTERNAR")
+	blocker.queue_free()
+	await _frames(20)
+	_expect(not _player.is_crouched(), "levanta ao liberar o espaço em ALTERNAR")
+	_expect(
+		absf(_player.get_eye_height() - standing_eye) < 0.05,
+		"câmera volta à altura normal (%.2f m)" % _player.get_eye_height()
+	)
+
+	# Dois toques alternam de novo.
+	await _tap_crouch()
+	await _frames(12)
+	_expect(_player.is_crouched(), "novo toque agacha de novo")
+	await _tap_crouch()
+	await _frames(12)
+	_expect(not _player.is_crouched(), "outro toque levanta")
+
+	# Modo SEGURAR: só permanece agachado enquanto CTRL está pressionado.
+	await _set_crouch_mode("hold")
+	await _frames(4)
+	_expect(_player.get_crouch_mode() == "hold", "controlador lê o modo SEGURAR")
+	Input.action_press("move_crouch")
+	await _frames(10)
+	_expect(_player.is_crouched(), "SEGURAR: agachado com CTRL pressionado")
+	Input.action_release("move_crouch")
+	await _frames(14)
+	_expect(not _player.is_crouched(), "SEGURAR: levanta ao soltar CTRL")
+
+
+func _test_pause_stamina_mode() -> void:
+	print("[19] Pausa, stamina e troca de modo em partida")
+	await _set_crouch_mode("hold")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	_player.set_stamina(80.0)
+	_player.set_look(0.6, 0.2)
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(30)
+	_expect_state(PlayerController.MovementState.RUNNING, "correndo antes da pausa")
+	var stamina_before: float = _player.get_stamina()
+	var position_before: Vector3 = _player.global_position
+	var yaw_before: float = _player.get_yaw()
+	var pitch_before: float = _player.get_pitch()
+	var eye_before: float = _player.get_eye_height()
+	_expect(stamina_before < 80.0, "corrida consumiu stamina (%.1f)" % stamina_before)
+
+	_scene.pause_session()
+	await _frames(40)
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before),
+		"pausa não consome nem recupera stamina (%.1f)" % _player.get_stamina()
+	)
+	_expect(_player.global_position.distance_to(position_before) < 0.02, "posição preservada na pausa")
+	_expect(absf(_player.get_yaw() - yaw_before) < 0.0001, "yaw preservado na pausa")
+	_expect(absf(_player.get_pitch() - pitch_before) < 0.0001, "pitch preservado na pausa")
+	_expect_state(PlayerController.MovementState.RUNNING, "estado preservado na pausa")
+
+	_scene.open_settings()
+	await _frames(8)
+	_expect(_scene.is_settings_open(), "CONFIGURAÇÕES abre durante a partida")
+	var screen: SettingsScreen = _scene.get_node_or_null(
+		"SettingsLayer/SettingsScreen"
+	) as SettingsScreen
+	_expect(screen != null, "mesma tela de configurações da tela inicial")
+	var controls: ControlsSection = null
+	if screen != null:
+		controls = screen.get_section("controls") as ControlsSection
+	_expect(controls != null, "seção CONTROLES disponível na partida")
+	if controls != null and screen != null:
+		_expect(controls.crouch_mode_id() == "hold", "modo atual exibido: SEGURAR")
+		_expect(
+			controls.get_crouch_hint_text() == "Segurar para agachar",
+			"texto do CTRL em SEGURAR"
+		)
+		controls.set_crouch_mode_id("toggle")
+		_expect(
+			controls.get_crouch_hint_text() == "Alternar agachamento",
+			"texto do CTRL muda ao escolher ALTERNAR"
+		)
+		var apply_button: Button = screen.get_node_or_null("%ApplyButton") as Button
+		_expect(apply_button != null, "botão APLICAR presente")
+		if apply_button != null:
+			apply_button.pressed.emit()
+			await _frames(4)
+			_expect(_player.get_crouch_mode() == "toggle", "modo ALTERNAR chega ao controlador")
+			_expect(
+				is_equal_approx(_player.get_stamina(), stamina_before),
+				"APLICAR não altera a stamina"
+			)
+			controls = screen.get_section("controls") as ControlsSection
+			_expect(
+				controls != null and controls.crouch_mode_id() == "toggle",
+				"tela reconstrói com o modo salvo"
+			)
+			if controls != null:
+				_expect(
+					controls.get_crouch_hint_text() == "Alternar agachamento",
+					"texto do CTRL continua dinâmico após aplicar"
+				)
+		var back_button: Button = screen.get_node_or_null("%BackButton") as Button
+		_expect(back_button != null, "botão VOLTAR presente")
+		if back_button != null:
+			back_button.pressed.emit()
+			await _frames(6)
+
+	_expect(not _scene.is_settings_open(), "VOLTAR fecha as configurações")
+	_expect(_scene.is_paused(), "VOLTAR retorna ao menu de pausa")
+	_expect(absf(_player.get_yaw() - yaw_before) < 0.0001, "yaw mantido ao voltar")
+	_expect(absf(_player.get_pitch() - pitch_before) < 0.0001, "pitch mantido ao voltar")
+	_expect(
+		_player.global_position.distance_to(position_before) < 0.02,
+		"posição mantida ao voltar"
+	)
+	_expect(
+		is_equal_approx(_player.get_stamina(), stamina_before),
+		"stamina mantida ao voltar"
+	)
+
+	var content := "Interface/PauseRoot/Center/Panel/Margin/Content/"
+	var continue_button: Button = _scene.get_node_or_null(
+		content + "ContinueButton"
+	) as Button
+	_expect(continue_button != null, "botão CONTINUAR presente")
+	if continue_button != null:
+		continue_button.pressed.emit()
+		await _frames(3)
+	_expect(not _scene.is_paused(), "CONTINUAR retoma a partida")
+	_expect(_player.movement_enabled, "jogador habilitado de novo")
+	_expect(absf(_player.get_yaw() - yaw_before) < 0.0001, "yaw contínuo após CONTINUAR")
+	_expect(absf(_player.get_pitch() - pitch_before) < 0.0001, "pitch contínuo após CONTINUAR")
+	_expect(
+		_player.global_position.distance_to(position_before) < 0.05,
+		"posição contínua após CONTINUAR"
+	)
+	_expect(
+		absf(_player.get_eye_height() - eye_before) < 0.05,
+		"câmera contínua após CONTINUAR (%.2f m)" % _player.get_eye_height()
+	)
+	_expect(
+		absf(_player.get_stamina() - stamina_before) < 2.0,
+		"stamina continua de onde parou (%.1f)" % _player.get_stamina()
+	)
+
+	# ALTERNAR em partida: um toque agacha; outro levanta e volta a correr.
+	await _tap_crouch()
+	await _frames(10)
+	_expect(_player.is_crouched(), "toque em CTRL agacha durante a partida")
+	_expect_state(PlayerController.MovementState.CROUCHING, "corrida é interrompida ao agachar")
+	var crouched_stamina: float = _player.get_stamina()
+	await _frames(30)
+	_expect(
+		_player.get_stamina() > crouched_stamina,
+		"agachado recupera stamina durante a partida"
+	)
+	await _tap_crouch()
+	await _frames(12)
+	_expect(not _player.is_crouched(), "segundo toque levanta")
+	_expect_state(
+		PlayerController.MovementState.RUNNING,
+		"com SHIFT pressionado, volta a CORRER ao levantar"
+	)
+
+	Input.action_release("move_forward")
+	Input.action_release("move_sprint")
+	await _frames(6)
+	await _set_crouch_mode("hold")
+	_player.set_stamina(_player.max_stamina)
 
 
 # --- Utilidades -------------------------------------------------------------
+
+func _set_crouch_mode(mode: String) -> void:
+	if _settings == null:
+		return
+	var values: Dictionary = _settings.current()
+	values[SettingsSchema.SECTION_CONTROLS]["crouch_mode"] = mode
+	_settings.apply(values)
+	await _frames(3)
+
+
+## Pressiona e solta CTRL em dois frames (borda detectada pelo controlador).
+func _tap_crouch() -> void:
+	Input.action_press("move_crouch")
+	await _frames(2)
+	Input.action_release("move_crouch")
+	await _frames(2)
+
 
 func _place(position: Vector3, yaw: float) -> void:
 	_release_all()

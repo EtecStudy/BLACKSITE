@@ -324,6 +324,48 @@ class FlowDriver:
 			return false
 		_expect(not pause_root.visible, "configurações escondem o menu de pausa")
 
+		# Etapa 6: modo de agachamento na mesma tela, durante a partida.
+		var controls: ControlsSection = screen.get_section("controls") as ControlsSection
+		_expect(controls != null, "seção CONTROLES disponível na partida")
+		if controls != null:
+			var rows: Array = controls.get_key_hint_rows()
+			var keys: Array = []
+			var labels: String = ""
+			for row: Array in rows:
+				keys.append(str(row[0]))
+				labels += "%s %s " % [str(row[0]), str(row[1])]
+			_expect(keys.size() == 6, "lista real de controles durante a partida (%d)" % keys.size())
+			_expect(
+				not labels.to_lower().contains("interagir")
+					and not labels.to_lower().contains("lanterna")
+					and not labels.to_lower().contains("pular"),
+				"lista não mostra ações não implementadas"
+			)
+			controls.set_crouch_mode_id("hold")
+			_expect(
+				controls.get_crouch_hint_text() == "Segurar para agachar",
+				"texto do Ctrl muda para o modo SEGURAR"
+			)
+			var apply_button_game: Button = screen.get_node_or_null("%ApplyButton") as Button
+			_expect(apply_button_game != null, "APLICAR disponível na partida")
+			if apply_button_game != null:
+				apply_button_game.pressed.emit()
+				await _frames(4)
+				_expect(
+					str(settings.current().controls.crouch_mode) == "hold",
+					"modo SEGURAR é aplicado durante a partida"
+				)
+				controls = screen.get_section("controls") as ControlsSection
+				_expect(
+					controls != null and controls.crouch_mode_id() == "hold",
+					"tela mantém o modo SEGURAR depois de aplicar"
+				)
+				if controls != null:
+					_expect(
+						controls.get_crouch_hint_text() == "Segurar para agachar",
+						"texto do Ctrl continua em SEGURAR"
+					)
+
 		var back_button: Button = screen.get_node_or_null("%BackButton") as Button
 		_expect(back_button != null, "configurações têm VOLTAR")
 		if back_button == null:
@@ -344,6 +386,11 @@ class FlowDriver:
 		await _frames(3)
 		var resumed: bool = not game.is_paused() and not pause_root.visible
 		_expect(resumed, "CONTINUAR retoma a partida")
+		var player := game.get_node_or_null("Player")
+		if player != null:
+			_expect(player.movement_enabled, "jogador habilitado após CONTINUAR")
+		# Volta ao padrão do jogo (ALTERNAR) para não deixar efeito colateral.
+		settings.apply(SettingsSchema.defaults())
 		return back_to_pause and resumed
 
 

@@ -35,6 +35,11 @@ const DEFAULT_MOUSE_SENSITIVITY_X: float = 1.0
 const DEFAULT_MOUSE_SENSITIVITY_Y: float = 1.0
 const DEFAULT_INVERT_Y: bool = false
 
+## Modo de agachamento (Etapa 6).
+const CROUCH_MODE_HOLD: String = "hold"
+const CROUCH_MODE_TOGGLE: String = "toggle"
+const DEFAULT_CROUCH_MODE: String = CROUCH_MODE_TOGGLE
+
 # --- Áudio (percentual 0-100) ---------------------------------------------
 const VOLUME_MIN: int = 0
 const VOLUME_MAX: int = 100
@@ -65,6 +70,21 @@ const RESOLUTION_CANDIDATES := [
 ]
 
 
+## Normaliza o modo de agachamento: qualquer valor desconhecido vira o padrão.
+static func normalize_crouch_mode(value: Variant, fallback: String = DEFAULT_CROUCH_MODE) -> String:
+	var text: String = str(value).strip_edges().to_lower()
+	if text == CROUCH_MODE_HOLD or text == CROUCH_MODE_TOGGLE:
+		return text
+	return fallback
+
+
+## Rótulo em português do modo de agachamento.
+static func crouch_mode_label(mode: String) -> String:
+	if normalize_crouch_mode(mode) == CROUCH_MODE_HOLD:
+		return "Segurar"
+	return "Alternar"
+
+
 ## Estrutura completa com todos os valores padrão.
 static func defaults() -> Dictionary:
 	return {
@@ -72,6 +92,7 @@ static func defaults() -> Dictionary:
 			"mouse_sensitivity_x": DEFAULT_MOUSE_SENSITIVITY_X,
 			"mouse_sensitivity_y": DEFAULT_MOUSE_SENSITIVITY_Y,
 			"invert_y": DEFAULT_INVERT_Y,
+			"crouch_mode": DEFAULT_CROUCH_MODE,
 		},
 		SECTION_AUDIO: {
 			"master_volume": DEFAULT_MASTER_VOLUME,
@@ -108,6 +129,9 @@ static func sanitize(raw: Variant) -> Dictionary:
 			MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX
 		)
 		controls["invert_y"] = _to_bool(controls_in.get("invert_y"), DEFAULT_INVERT_Y)
+		controls["crouch_mode"] = normalize_crouch_mode(
+			controls_in.get("crouch_mode"), DEFAULT_CROUCH_MODE
+		)
 
 	var audio_in: Variant = data.get(SECTION_AUDIO, null)
 	if typeof(audio_in) == TYPE_DICTIONARY:

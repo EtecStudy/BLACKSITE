@@ -210,6 +210,7 @@ jobs:
           cat "$CFG" | tee ci-logs/exported-settings.cfg
           grep -q "master_volume" ci-logs/exported-settings.cfg
           grep -q "mouse_sensitivity_x" ci-logs/exported-settings.cfg
+          grep -q "crouch_mode" ci-logs/exported-settings.cfg
 
       - name: TESTE 6 — inspecionar o pacote .pck exportado
         run: |
@@ -222,7 +223,7 @@ jobs:
           file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
           file build/windows/BlackSight.exe | grep -qi "PE32+"
           file build/windows/BlackSight.exe | grep -qi "x86-64"
-          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.5\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.6\\.0" || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
           if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
             echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
           fi
@@ -235,7 +236,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 5 (Windows x86_64)
+          BLACK SIGHT — Etapa 6 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -243,23 +244,31 @@ jobs:
           2. Dê duplo clique em BlackSight.exe.
              (BlackSight.pck precisa estar na mesma pasta do .exe)
 
-          JOGAR (ETAPA 5)
+          JOGAR (ETAPA 6)
           - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
           - W A S D ....... andar (relativo à direção da câmera)
-          - SHIFT ......... correr (não funciona agachado)
-          - CTRL .......... agachar (tem prioridade sobre SHIFT)
+          - SHIFT ......... correr (consome stamina)
+          - CTRL .......... agachar
+                            ALTERNAR (padrão): um toque agacha, outro levanta
+                            SEGURAR: mantenha CTRL pressionado
           - Mouse ......... olhar (até 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
           - CONFIGURAÇÕES . abre as configurações durante a pausa
           - VOLTAR AO MENU  volta à tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
-          - Ainda não há stamina, pulo nem interação.
+
+          STAMINA
+          - A corrida consome 20 pontos por segundo e para ao chegar a 0.
+          - Parado, andando ou agachado a stamina se recupera (15 por segundo).
+          - Depois de esgotar, a corrida só volta com 20 pontos ou mais.
+          - Agachado nunca se corre e a stamina não é consumida.
 
           CONFIGURAÇÕES
           - Clique em CONFIGURAÇÕES na tela inicial ou use ESC durante o jogo.
           - É a mesma tela e o mesmo arquivo nos dois caminhos.
           - Abas: CONTROLES, ÁUDIO e VÍDEO.
+          - Em CONTROLES: sensibilidade, inversão do eixo Y e MODO DE AGACHAMENTO.
           - APLICAR grava os valores; RESTAURAR PADRÕES volta ao original;
             VOLTAR (ou Esc) retorna ao menu sem aplicar o que não foi confirmado.
           - O arquivo fica em %APPDATA%\BlackSight\settings.cfg
@@ -278,35 +287,33 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVAÇÃO
-          Etapa 5: estados de movimento (parado, andando, correndo e agachado),
-          câmera que acompanha o agachamento e configurações acessíveis pelo
-          menu de pausa.
-          Ainda não há stamina, pulo, inventário, interação, criaturas nem
-          multiplayer.
+          Etapa 6: stamina, modos de agachamento (ALTERNAR/SEGURAR) e lista
+          real de controles, mantendo os estados de movimento da Etapa 5.
+          Ainda não há pulo, inventário, interação, criaturas nem multiplayer.
 
-          Versão 0.5.0 — Etapa 5
+          Versão 0.6.0 — Etapa 6
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa5-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa6-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa5-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa5-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa6-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa6-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa5-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa5-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa5-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa5-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa5-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa6-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa6-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa6-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa6-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa6-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa5-windows
+          name: black-sight-etapa6-windows
           path: |
-            BlackSight-Etapa5-Windows-x86_64.zip
+            BlackSight-Etapa6-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
@@ -316,7 +323,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa5-logs
+          name: black-sight-etapa6-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -342,7 +349,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 5"
+            echo "## Black Sight · Etapa 6"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -565,7 +572,7 @@ jobs:
           $cfg = Join-Path $env:APPDATA "BlackSight/settings.cfg"
           if (-not (Test-Path $cfg)) { throw "O .exe não criou $cfg (user://settings.cfg)" }
           Get-Content $cfg | Tee-Object -FilePath ci-logs/08b-settings-cfg.log
-          foreach ($key in @("mouse_sensitivity_x","master_volume","window_mode","vsync")) {
+          foreach ($key in @("mouse_sensitivity_x","crouch_mode","master_volume","window_mode","vsync")) {
             if (-not (Select-String -Path $cfg -SimpleMatch $key)) { throw "Configuração ausente no arquivo: $key" }
           }
           "OK: user://settings.cfg criado pelo .exe exportado" | Out-File ci-logs/08b-settings-cfg.ok
@@ -606,7 +613,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 5 (Windows x86_64)
+          BLACK SIGHT - Etapa 6 (Windows x86_64)
           ======================================
 
           COMO JOGAR
@@ -619,23 +626,31 @@ jobs:
           - BlackSight.pck ......... dados do jogo (obrigatorio)
           - SHA256SUMS.txt ......... conferencia de integridade
 
-          JOGAR (ETAPA 5)
+          JOGAR (ETAPA 6)
           - Clique em TESTAR MOVIMENTACAO na tela inicial.
           - W A S D ....... andar (relativo a direcao da camera)
-          - SHIFT ......... correr (nao funciona agachado)
-          - CTRL .......... agachar (prioridade sobre SHIFT)
+          - SHIFT ......... correr (consome stamina)
+          - CTRL .......... agachar
+                            ALTERNAR (padrao): um toque agacha, outro levanta
+                            SEGURAR: mantenha CTRL pressionado
           - Mouse ......... olhar (ate 89 graus para cima/baixo)
           - Esc ........... libera o mouse e abre a pausa
           - CONTINUAR ..... volta ao jogo, no mesmo lugar
           - CONFIGURACOES . abre as configuracoes durante a pausa
           - VOLTAR AO MENU  volta a tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
-          - Ainda nao ha stamina, pulo nem interacao.
+
+          STAMINA
+          - A corrida consome 20 pontos por segundo e para ao chegar a 0.
+          - Parado, andando ou agachado a stamina se recupera (15 por segundo).
+          - Depois de esgotar, a corrida so volta com 20 pontos ou mais.
+          - Agachado nunca corre e a stamina nao e consumida.
 
           CONFIGURACOES
           - Clique em CONFIGURACOES na tela inicial ou use ESC durante o jogo.
           - E a mesma tela e o mesmo arquivo nos dois caminhos.
           - Abas: CONTROLES, AUDIO e VIDEO.
+          - Em CONTROLES: sensibilidade, inversao do eixo Y e MODO DE AGACHAMENTO.
           - APLICAR grava; RESTAURAR PADROES volta ao original;
             VOLTAR (ou Esc) retorna ao menu sem aplicar o que nao foi confirmado.
           - Arquivo: %APPDATA%\BlackSight\settings.cfg (fora da pasta do jogo).
@@ -653,12 +668,11 @@ jobs:
             (renderizador GL Compatibility; funciona em GPUs integradas)
 
           OBSERVACAO
-          Etapa 5: estados de movimento (parado, andando, correndo e agachado),
-          camera que acompanha o agachamento e configuracoes pela pausa.
-          Ainda nao ha stamina, pulo, inventario, interacao, criaturas nem
-          multiplayer.
+          Etapa 6: stamina, modos de agachamento (ALTERNAR/SEGURAR) e lista
+          real de controles, mantendo os estados de movimento da Etapa 5.
+          Ainda nao ha pulo, inventario, interacao, criaturas nem multiplayer.
 
-          Versao 0.5.0 - Etapa 5
+          Versao 0.6.0 - Etapa 6
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -669,7 +683,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa5-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa6-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -686,9 +700,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa5-windows-real
+          name: black-sight-etapa6-windows-real
           path: |
-            BlackSight-Etapa5-Windows-x86_64.zip
+            BlackSight-Etapa6-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -698,9 +712,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.5.0-etapa5 --yes --cleanup-tag 2>$null
+          gh release delete v0.6.0-etapa6 --yes --cleanup-tag 2>$null
           if ($LASTEXITCODE -ne 0) { Write-Host "Release anterior não existia." }
-          gh release create v0.5.0-etapa5 "BlackSight-Etapa5-Windows-x86_64.zip" --title "Black Sight - Etapa 5 - Estados de movimento (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA5.md
+          gh release create v0.6.0-etapa6 "BlackSight-Etapa6-Windows-x86_64.zip" --title "Black Sight - Etapa 6 - Stamina e agachamento (Windows x86_64)" --notes-file docs/RELEASE_NOTES_ETAPA6.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -725,7 +739,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 5 (Windows real)", "")
+          $summary = @("## Black Sight - Etapa 6 (Windows real)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

@@ -1,5 +1,5 @@
 extends Node3D
-## Sessão de teste da movimentação (Etapa 4 → Etapa 5).
+## Sessão de teste da movimentação (Etapa 4 → Etapa 6).
 ##
 ## Responsabilidades — apenas **orquestração** de `match/`:
 ## - montar a cena de teste (`maps/scenes/test_room.tscn`) com o jogador

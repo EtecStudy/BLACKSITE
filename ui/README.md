@@ -3,18 +3,18 @@
 **Responsabilidade:** interfaces, menus e HUD — tela inicial, menus, pausa e
 HUD em jogo.
 
-**Estado atual (Etapa 3):** tela inicial da Etapa 1 preservada integralmente
+**Estado atual (Etapa 6):** tela inicial da Etapa 1 preservada integralmente
 (mesma cena, mesmas animações, mesmo comportamento) + tela de configurações com
-abas de controles, áudio e vídeo.
+abas de controles, áudio e vídeo, usada também por cima da partida pausada.
 
 | Caminho | O que é |
 | --- | --- |
 | `ui/scenes/title_screen.tscn` | Cena inicial (fundida do antigo `scenes/boot/`) |
 | `ui/scripts/title_screen.gd` | Fade, respiração do emblema, F11, CONFIGURAÇÕES, sair |
 | `ui/scenes/settings_screen.tscn` | Tela de configurações (abas + rodapé de ações) |
-| `ui/scripts/settings_screen.gd` | Orquestra as seções, aplicar, restaurar, voltar — e o **modo embutido** usado pela pausa |
+| `ui/scripts/settings_screen.gd` | Orquestra as seções, aplicar, restaurar, voltar — e o **modo embutido** usado pela pausa; `get_section()` expõe a aba ativa |
 | `ui/scripts/settings/settings_section.gd` | Base das seções e helpers de layout |
-| `ui/scripts/settings/controls_section.gd` | Sensibilidade, inverter eixo, controles previstos |
+| `ui/scripts/settings/controls_section.gd` | Sensibilidade, inverter eixo, **modo de agachamento** e lista real de controles (texto do Ctrl dinâmico) |
 | `ui/scripts/settings/audio_section.gd` | Volumes de geral, efeitos, ambiente e música |
 | `ui/scripts/settings/video_section.gd` | Resolução, modo de janela e VSync |
 

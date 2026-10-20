@@ -1,4 +1,4 @@
-# Configurações do Black Sight (Etapa 3)
+# Configurações do Black Sight (Etapas 3–6)
 
 Documento de referência das configurações do jogo: onde ficam, como são
 validadas, quais arquivos cuidam de cada parte e como acrescentar um novo
@@ -36,6 +36,7 @@ game="Black Sight"
 mouse_sensitivity_x=1.0
 mouse_sensitivity_y=1.0
 invert_y=false
+crouch_mode="toggle"
 
 [audio]
 master_volume=80
@@ -59,6 +60,7 @@ vsync=true
 | `controls` | `mouse_sensitivity_x` | `1.0` | `0.1` a `5.0`, passo `0.05` |
 | `controls` | `mouse_sensitivity_y` | `1.0` | `0.1` a `5.0`, passo `0.05` |
 | `controls` | `invert_y` | `false` | inverte o eixo vertical do olhar |
+| `controls` | `crouch_mode` | `"toggle"` | `"toggle"` = alternar (padrão) · `"hold"` = segurar Ctrl |
 | `audio` | `master_volume` | `80` | `0` a `100` (%) |
 | `audio` | `sfx_volume` | `80` | `0` a `100` (%) |
 | `audio` | `ambience_volume` | `70` | `0` a `100` (%) |
@@ -141,19 +143,37 @@ Volume em `0%` silencia o bus (`mute`) em vez de aplicar `-inf dB`.
 
 ## 7. Controles
 
-A tela mostra os controles do jogador (WASD, mouse, Shift, Ctrl, E, F, Esc).
-Na Etapa 5 já funcionam **WASD, mouse, Shift (correr), Ctrl (agachar) e Esc
-(pausa)**; E (interagir) e F (lanterna) entram nas próximas etapas.
+A partir da Etapa 6 a lista mostra **somente os controles implementados**:
+WASD (mover), Shift (correr), Ctrl (agachar), mouse (olhar), Esc (pausar) e F11
+(tela cheia). Não há E—Interagir, F—Lanterna, pulo, inventário nem ataque.
+
+### 7.1 Modo de agachamento (`crouch_mode`)
+
+| Valor | Interface | Regra |
+| --- | --- | --- |
+| `"toggle"` | ALTERNAR (**padrão**) | um toque em Ctrl agacha, outro levanta |
+| `"hold"` | SEGURAR | agacha enquanto Ctrl estiver pressionado |
+
+- O texto da linha do Ctrl na tela muda conforme o modo:
+  **“Segurar para agachar”** ou **“Alternar agachamento”**.
+- Qualquer valor desconhecido ou ausente cai no padrão (`toggle`), via
+  `SettingsSchema.normalize_crouch_mode()`.
+- O controlador relê o valor no sinal `applied`; a troca vale imediatamente,
+  inclusive durante a partida, sem recriar o jogador.
+- A postura atual é preservada ao trocar de modo (`_crouch_toggled` é
+  sincronizado com `_is_crouched`), e `_can_stand()` continua impedindo levantar
+  sob obstáculos nos dois modos.
 
 As configurações também podem ser abertas **durante a partida**:
-`ESC → CONFIGURAÇÕES`. É a mesma tela e o mesmo arquivo; `VOLTAR`/Esc
-retornam ao menu de pausa e só `CONTINUAR` volta ao jogo.
+`ESC → CONFIGURAÇÕES → CONTROLES → MODO DE AGACHAMENTO → APLICAR → VOLTAR`.
+É a mesma tela e o mesmo arquivo; posição, orientação, estado, stamina e câmera
+são preservados, e só `CONTINUAR` volta ao jogo.
 
-Sensibilidade horizontal/vertical e inversão do eixo vertical são lidas pelo
-`PlayerController` (`players/scripts/player_controller.gd`) na entrada da cena
-e reaplicadas sempre que o gerenciador emite `applied`. O controlador não lê
-`ConfigFile` e não guarda cópia dos valores: `GameSettings` continua sendo a
-fonte única.
+Sensibilidade horizontal/vertical, inversão do eixo vertical e modo de
+agachamento são lidos pelo `PlayerController`
+(`players/scripts/player_controller.gd`) na entrada da cena e reaplicados
+sempre que o gerenciador emite `applied`. O controlador não lê `ConfigFile` e
+não guarda cópia dos valores: `GameSettings` continua sendo a fonte única.
 
 ## 8. Como acrescentar um novo parâmetro
 
@@ -173,8 +193,9 @@ APLICAR).
 
 ## 9. Limitações conhecidas desta etapa
 
-- Corrida e agachamento existem, mas **não há stamina** (Etapa 6), pulo nem
-  interação; a sensibilidade e a inversão vertical já afetam a câmera.
+- Stamina é interna (sem HUD, som ou animação) e não há pulo nem interação; a
+  sensibilidade, a inversão vertical e o modo de agachamento já afetam a câmera
+  e o controlador.
 - Música, ambiente e voz não têm sons; só os buses respondem.
 - VSync depende do driver: em GL Compatibility alguns drivers ignoram a opção.
 - O modo "janela maximizada" não guarda o tamanho anterior da janela.

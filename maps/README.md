@@ -3,8 +3,9 @@
 **Responsabilidade:** mapas, salas e ambientes — geometria, iluminação, pontos
 de spawn, portas e transições de área.
 
-**Estado atual (Etapa 4):** existe **uma sala de teste** para validar o
-controlador em primeira pessoa. Não é o laboratório definitivo e não tem portas.
+**Estado atual (Etapa 6):** existe **uma sala de teste** para validar o
+controlador em primeira pessoa (movimento, colisão, agachamento e stamina).
+Não é o laboratório definitivo e não tem portas.
 
 | Caminho | O que é |
 | --- | --- |

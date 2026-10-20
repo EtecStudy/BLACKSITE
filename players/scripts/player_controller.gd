@@ -1,17 +1,24 @@
 class_name PlayerController
 extends CharacterBody3D
-## Controlador em primeira pessoa do Black Sight (Etapa 4 → Etapa 5).
+## Controlador em primeira pessoa do Black Sight (Etapa 4 → Etapa 6).
 ##
 ## Escopo atual: **andar** (WASD), **correr** (Shift), **agachar** (Ctrl),
-## **olhar** com o mouse, **gravidade** e **colisão**. Pulo não existe.
-## Stamina, interação e inventário pertencem às próximas etapas — os pontos de
-## extensão estão indicados abaixo, mas nada disso está implementado aqui.
+## **stamina**, **olhar** com o mouse, **gravidade** e **colisão**.
+## Pulo não existe. Interação e inventário pertencem às próximas etapas.
 ##
 ## Estados (`MovementState`):
 ##   IDLE      — parado (sem direção pressionada);
 ##   WALKING   — andando;
 ##   RUNNING   — andando com Shift (nunca agachado);
 ##   CROUCHING — agachado (Ctrl), com prioridade sobre Shift.
+##
+## Stamina (Etapa 6): consumida apenas no estado RUNNING, recuperada nos demais
+## estados. Ao esgotar, `sprint_allowed` vira false e a corrida só volta depois
+## de recuperar `sprint_resume_threshold`. Enquanto a pausa está aberta
+## (`movement_enabled == false`) nada é consumido nem recuperado.
+##
+## Agachamento (Etapa 6): `crouch_mode` vem de `GameSettings` e aceita
+## SEGURAR (`hold`, segura Ctrl) ou ALTERNAR (`toggle`, padrão, Ctrl alterna).
 ##
 ## Integração com a Etapa 3 (fonte única de verdade):
 ## - sensibilidade horizontal/vertical e inversão do eixo vertical vêm de
@@ -69,19 +76,37 @@ const ACTION_CROUCH := "move_crouch"
 ## Quão rápido a câmera acompanha a mudança de altura (1/s).
 @export var crouch_blend_speed: float = 12.0
 
+# --- Stamina (Etapa 6) ------------------------------------------------------
+## Capacidade máxima e taxas em unidades por segundo.
+@export var max_stamina: float = 100.0
+@export var stamina_drain_rate: float = 20.0
+@export var stamina_recovery_rate: float = 15.0
+## Depois de esgotar, a corrida só volta com pelo menos este valor.
+@export var sprint_resume_threshold: float = 20.0
+
 ## Quando false, o jogador não responde a WASD, Shift, Ctrl nem ao mouse.
 ## Usado pela pausa e pelas configurações abertas durante a partida.
 var movement_enabled: bool = true
 
-## Ponto de extensão da Etapa 6: com a stamina esgotada, a Etapa 6 poderá
-## chamar `set_sprint_allowed(false)`. Nada consome stamina nesta etapa.
+## Quando false, a corrida é bloqueada (stamina esgotada). O próprio
+## controlador liga/desliga isto em `_update_stamina`; a API segue pública para
+## efeitos futuros. A corrida só volta após `sprint_resume_threshold`.
 var sprint_allowed: bool = true
+
+## Valor atual de stamina. Começa em `max_stamina` no `_ready` e muda apenas
+## em `_physics_process` (ou por `set_stamina`).
+var stamina: float = 0.0
 
 ## Emitido quando o estado muda (para HUD/sons futuros).
 signal state_changed(previous: int, current: int)
+## Emitido quando a stamina muda (para a HUD futura).
+signal stamina_changed(current: float, maximum: float)
 
 var _state: MovementState = MovementState.IDLE
 var _is_crouched: bool = false
+var _crouch_mode: String = SettingsSchema.DEFAULT_CROUCH_MODE
+var _crouch_toggled: bool = false
+var _crouch_action_was_pressed: bool = false
 
 var _gravity: float = 9.8
 var _sensitivity_x: float = 1.0
@@ -107,6 +132,7 @@ func _ready() -> void:
 		_capsule = (_collision.shape as CapsuleShape3D).duplicate() as CapsuleShape3D
 		_collision.shape = _capsule
 		_collision.position.y = _capsule.height * 0.5
+	stamina = max_stamina
 	reload_settings()
 	if _settings != null and _settings.has_signal("applied"):
 		_settings.applied.connect(_on_settings_applied)
@@ -132,6 +158,11 @@ func reload_settings() -> void:
 		SettingsSchema.MOUSE_SENSITIVITY_MAX
 	)
 	_invert_y = bool(controls.get("invert_y", SettingsSchema.DEFAULT_INVERT_Y))
+	_crouch_mode = SettingsSchema.normalize_crouch_mode(
+		controls.get("crouch_mode"), SettingsSchema.DEFAULT_CROUCH_MODE
+	)
+	# Mantém o interruptor coerente com a postura ao trocar de modo.
+	_crouch_toggled = _is_crouched
 
 
 func _on_settings_applied(_values: Dictionary) -> void:
@@ -142,19 +173,29 @@ func _physics_process(delta: float) -> void:
 	var desired: Vector3 = Vector3.ZERO
 	var input_dir: Vector2 = Vector2.ZERO
 
+	# Detecção de borda própria (funciona igual em teste e em jogo).
+	var crouch_pressed: bool = Input.is_action_pressed(ACTION_CROUCH)
+	var crouch_just_pressed: bool = crouch_pressed and not _crouch_action_was_pressed
+	_crouch_action_was_pressed = crouch_pressed
+
 	if movement_enabled:
 		input_dir = Input.get_vector(
 			ACTION_LEFT, ACTION_RIGHT, ACTION_FORWARD, ACTION_BACK
 		)
 
 		# Ctrl tem prioridade sobre Shift: agachado nunca corre.
-		var wants_crouch: bool = Input.is_action_pressed(ACTION_CROUCH)
+		var wants_crouch: bool = _wants_crouch(crouch_pressed, crouch_just_pressed)
 		if wants_crouch and not _is_crouched:
 			_set_crouched(true)
 		elif not wants_crouch and _is_crouched and _can_stand():
 			_set_crouched(false)
 
 		_update_state(input_dir)
+		_update_stamina(delta)
+
+		# Stamina esgotada neste frame: cai para WALKING imediatamente.
+		if _state == MovementState.RUNNING and not sprint_allowed:
+			_update_state(input_dir)
 
 		if input_dir.length_squared() > 0.0:
 			# Relativo à orientação horizontal do corpo (girada pelo mouse).
@@ -171,6 +212,35 @@ func _physics_process(delta: float) -> void:
 	_blend_eye_height(delta)
 	_apply_gravity(delta)
 	move_and_slide()
+
+
+## Interpreta o Ctrl conforme o modo configurado.
+## - ALTERNAR: cada aperto liga/desliga o agachamento;
+## - SEGURAR: agacha enquanto Ctrl estiver pressionado.
+func _wants_crouch(pressed_now: bool, just_pressed: bool) -> bool:
+	if _crouch_mode == SettingsSchema.CROUCH_MODE_TOGGLE:
+		if just_pressed:
+			_crouch_toggled = not _crouch_toggled
+		return _crouch_toggled
+	_crouch_toggled = pressed_now
+	return _crouch_toggled
+
+
+## Consome stamina em RUNNING e recupera nos demais estados.
+func _update_stamina(delta: float) -> void:
+	if _state == MovementState.RUNNING:
+		if stamina > 0.0:
+			stamina = maxf(0.0, stamina - stamina_drain_rate * delta)
+			stamina_changed.emit(stamina, max_stamina)
+		if stamina <= 0.0:
+			set_sprint_allowed(false)
+		return
+
+	if stamina < max_stamina:
+		stamina = minf(max_stamina, stamina + stamina_recovery_rate * delta)
+		stamina_changed.emit(stamina, max_stamina)
+	if not sprint_allowed and stamina >= sprint_resume_threshold:
+		set_sprint_allowed(true)
 
 
 ## Calcula o estado a partir do que está sendo pressionado. Enquanto a pausa
@@ -314,6 +384,38 @@ func get_pitch() -> float:
 
 func get_state() -> MovementState:
 	return _state
+
+
+func get_stamina() -> float:
+	return stamina
+
+
+func get_max_stamina() -> float:
+	return max_stamina
+
+
+## 0.0 a 1.0 — útil para uma barra de stamina futura.
+func get_stamina_ratio() -> float:
+	return stamina / max_stamina if max_stamina > 0.0 else 0.0
+
+
+## Define a stamina já limitada a [0, max] e ajusta o bloqueio da corrida.
+## Usado por testes e, no futuro, por efeitos de jogo (ex.: adrenalina).
+func set_stamina(value: float) -> void:
+	stamina = clampf(value, 0.0, max_stamina)
+	if stamina <= 0.0:
+		set_sprint_allowed(false)
+	elif stamina >= sprint_resume_threshold:
+		set_sprint_allowed(true)
+	stamina_changed.emit(stamina, max_stamina)
+
+
+func get_crouch_mode() -> String:
+	return _crouch_mode
+
+
+func is_sprint_allowed() -> bool:
+	return sprint_allowed
 
 
 func get_state_name() -> String:

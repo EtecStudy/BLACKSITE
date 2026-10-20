@@ -155,7 +155,7 @@ func add_option_row(title: String, options: Array, selected_index: int,
 	return option
 
 
-func add_key_hint_row(key_text: String, description: String) -> void:
+func add_key_hint_row(key_text: String, description: String) -> Label:
 	var line := HBoxContainer.new()
 	line.add_theme_constant_override("separation", 18)
 
@@ -173,3 +173,4 @@ func add_key_hint_row(key_text: String, description: String) -> void:
 	line.add_child(description_label)
 
 	add_child(line)
+	return description_label

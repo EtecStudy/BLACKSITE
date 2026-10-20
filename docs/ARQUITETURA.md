@@ -1,6 +1,6 @@
 # Black Sight — Arquitetura do projeto
 
-Documento de referência da organização interna (atualizado na Etapa 5).
+Documento de referência da organização interna (atualizado na Etapa 6).
 Motor: **Godot 4.7.2**, renderizador **GL Compatibility**.
 
 Regra de ouro: **cada pasta de módulo tem uma responsabilidade única**, e as
@@ -186,7 +186,7 @@ Detalhes e receita para adicionar parâmetros: [`CONFIGURACOES.md`](CONFIGURACOE
 
 ---
 
-## 6.2 Jogador e estados de movimento (Etapas 4–5)
+## 6.2 Jogador, estados e stamina (Etapas 4–6)
 
 ```
 players/scenes/player.tscn          CharacterBody3D + cápsula + Head + Camera3D
@@ -212,12 +212,20 @@ IDLE ◄─► WALKING ◄─► RUNNING
 - `match/` é o único que instancia os dois juntos e controla a sessão.
 - A UI da tela inicial apenas troca de cena por caminho; não importa classes de
   gameplay.
-- A sensibilidade é lida de `GameSettings` e reaplicada no sinal `applied`.
+- A sensibilidade, a inversão vertical e o modo de agachamento são lidos de
+  `GameSettings` e reaplicados no sinal `applied`.
+- A stamina (Etapa 6) vive no próprio controlador: 100 máx., consumo de 20/s só
+  em `RUNNING`, recuperação de 15/s nos demais estados e retorno da corrida em
+  20. O gancho `set_sprint_allowed()` da Etapa 5 continua sendo o único caminho
+  para bloquear/liberar a corrida.
+- HUDs futuros escutam `state_changed` e `stamina_changed`; nenhuma regra de
+  gameplay mora em `ui/`.
 - A tela de configurações é **a mesma** nos dois fluxos: sozinha (menu inicial)
   ou embutida na pausa (`set_embedded(true)`), emitindo `back_requested` em vez
   de trocar de cena. Nenhum estado da partida é perdido.
 
-Detalhes: [`ETAPA-4.md`](ETAPA-4.md) e [`ETAPA-5.md`](ETAPA-5.md).
+Detalhes: [`ETAPA-4.md`](ETAPA-4.md), [`ETAPA-5.md`](ETAPA-5.md) e
+[`ETAPA-6.md`](ETAPA-6.md).
 
 ---
 

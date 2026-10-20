@@ -1,6 +1,6 @@
 class_name SettingsScreen
 extends Control
-## Tela de configurações (Etapa 3 → Etapa 5).
+## Tela de configurações (Etapa 3 → Etapa 6).
 ##
 ## Orquestra as seções (Controles, Áudio, Vídeo) e o ciclo de vida dos valores:
 ## - mantém uma **cópia de trabalho** (`_staged`) separada do que está salvo;
@@ -55,6 +55,12 @@ func set_embedded(value: bool) -> void:
 
 func is_embedded() -> bool:
 	return _embedded
+
+
+## Devolve a seção montada de uma aba (`controls`, `audio` ou `video`).
+## Útil para testes de interface e para consultas sem varrer a árvore.
+func get_section(tab_key: String) -> SettingsSection:
+	return _sections.get(tab_key, null) as SettingsSection
 
 
 func _ready() -> void:

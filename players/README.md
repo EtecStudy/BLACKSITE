@@ -3,8 +3,9 @@
 **Responsabilidade:** tudo que pertence ao(s) jogador(es) — controlador em
 primeira pessoa, câmera, entrada de input, "lanterna"/visão, atributos e estados.
 
-**Estado atual (Etapa 5):** controlador FPS com estados de movimento
-(parado, andando, correndo e agachado).
+**Estado atual (Etapa 6):** controlador FPS com estados de movimento
+(parado, andando, correndo e agachado), **stamina** na corrida e
+**agachamento configurável** (ALTERNAR ou SEGURAR).
 
 | Caminho | O que é |
 | --- | --- |
@@ -34,7 +35,7 @@ enum MovementState { IDLE, WALKING, RUNNING, CROUCHING }
 | `IDLE` | sem direção | `0` |
 | `WALKING` | direção pressionada | `walk_speed` = 3,2 m/s |
 | `RUNNING` | direção + Shift, sem Ctrl | `run_speed` = 5,6 m/s |
-| `CROUCHING` | Ctrl (prioridade sobre Shift) | `crouch_speed` = 1,6 m/s |
+| `CROUCHING` | Ctrl (prioridade sobre Shift; ALTERNAR ou SEGURAR) | `crouch_speed` = 1,6 m/s |
 
 - `state_changed(previous, current)` é emitido a cada transição.
 - `get_state()`, `get_state_name()`, `is_crouched()`, `speed_for_state()` e
@@ -42,16 +43,38 @@ enum MovementState { IDLE, WALKING, RUNNING, CROUCHING }
 - Agachar reduz a cápsula de 1,8 m para 1,2 m **a partir do topo** e desce a
   câmera de 1,62 m para 1,02 m com suavização.
 - `_can_stand()` impede levantar sob teto/objetos (consulta de forma).
-- `sprint_allowed` / `set_sprint_allowed()` é o gancho da stamina da Etapa 6.
+- `sprint_allowed` / `set_sprint_allowed()` continua sendo o único gancho da
+  corrida — agora ligado à stamina.
+
+## Stamina e modos de agachamento (Etapa 6)
+
+| Parâmetro | Valor | Regra |
+| --- | --- | --- |
+| `max_stamina` | 100 | teto |
+| `stamina_drain_rate` | 20/s | só no estado `RUNNING` |
+| `stamina_recovery_rate` | 15/s | `IDLE`, `WALKING` e `CROUCHING` |
+| `sprint_resume_threshold` | 20 | mínimo para liberar a corrida de novo |
+
+- O consumo depende do **estado efetivo**, nunca da tecla: soltar Shift, parar,
+  agachar ou abrir a pausa encerram a corrida e o consumo.
+- Ao chegar a 0, `set_sprint_allowed(false)` derruba `RUNNING` → `WALKING` no
+  mesmo frame; com Shift pressionado, a corrida volta sozinha ao recuperar 20.
+- Agachado nunca corre e recupera stamina.
+- API: `get_stamina()`, `get_max_stamina()`, `get_stamina_ratio()`,
+  `set_stamina()`, `is_sprint_allowed()` e o sinal
+  `stamina_changed(current, maximum)` (HUD futura, sem HUD nesta etapa).
+- `crouch_mode` (`hold`/`toggle`) vem de `GameSettings` e é relido no sinal
+  `applied`. ALTERNAR é o padrão; SEGURAR mantém o comportamento antigo.
+- `_can_stand()` vale nos dois modos.
 
 ## O que ainda **não** existe
 
-Stamina, pulo, interação, lanterna, dano, animações de corpo e som de passos.
+Pulo, interação, lanterna, dano, animações de corpo, som de passos e HUD.
 Os pontos de extensão naturais:
 
 | Próxima etapa | Onde mexer |
 | --- | --- |
-| Stamina | `sprint_allowed` / `set_sprint_allowed()` já existe; falta o recurso e o consumo |
+| HUD de stamina | escutar `stamina_changed` em `ui/` e usar `get_stamina_ratio()` |
 | Interação | raycast na `Camera3D` + sinal para `match/` |
 | Lanterna | `SpotLight3D` filho da câmera |
 | Animações | novo nó de malha filho do corpo (a câmera não muda) |

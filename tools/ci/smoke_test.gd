@@ -96,6 +96,7 @@ func _ready() -> void:
 	_check_settings_screen()
 	_check_fps_controller()
 	_check_movement_states()
+	_check_stage6()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -757,4 +758,138 @@ func _check_movement_states() -> void:
 	_expect(
 		FileAccess.file_exists("res://docs/ETAPA-5.md"),
 		"documentação da Etapa 5 presente (docs/ETAPA-5.md)"
+	)
+
+
+func _check_stage6() -> void:
+	print("[15] Stamina, modos de agachamento e controles reais (Etapa 6)")
+
+	# --- Esquema -------------------------------------------------------------
+	var defaults: Dictionary = SettingsSchema.defaults()
+	var controls_defaults: Dictionary = defaults.get(SettingsSchema.SECTION_CONTROLS, {})
+	_expect(
+		str(controls_defaults.get("crouch_mode", "")) == "toggle",
+		"modo de agachamento padrão é ALTERNAR"
+	)
+	_expect(
+		SettingsSchema.normalize_crouch_mode("valor-invalido")
+			== SettingsSchema.DEFAULT_CROUCH_MODE,
+		"modo inválido cai no padrão ALTERNAR"
+	)
+	_expect(
+		SettingsSchema.normalize_crouch_mode("HOLD") == "hold",
+		"normalização do modo aceita maiúsculas"
+	)
+	_expect(SettingsSchema.crouch_mode_label("hold") == "Segurar", "rótulo do modo SEGURAR")
+	_expect(SettingsSchema.crouch_mode_label("toggle") == "Alternar", "rótulo do modo ALTERNAR")
+
+	# --- Controlador ---------------------------------------------------------
+	var player_packed: PackedScene = load("res://players/scenes/player.tscn") as PackedScene
+	if player_packed != null:
+		var player: Node = player_packed.instantiate()
+		_expect(is_equal_approx(float(player.get("max_stamina")), 100.0), "stamina máxima = 100")
+		_expect(
+			is_equal_approx(float(player.get("stamina_drain_rate")), 20.0),
+			"consumo de stamina = 20/s"
+		)
+		_expect(
+			is_equal_approx(float(player.get("stamina_recovery_rate")), 15.0),
+			"recuperação de stamina = 15/s"
+		)
+		var threshold: float = float(player.get("sprint_resume_threshold"))
+		_expect(
+			threshold > 0.0 and threshold < float(player.get("max_stamina")),
+			"limiar de retorno entre 0 e o máximo (%.0f)" % threshold
+		)
+		for method: String in [
+			"get_stamina", "get_max_stamina", "get_stamina_ratio", "set_stamina",
+			"get_crouch_mode", "is_sprint_allowed", "set_sprint_allowed",
+		]:
+			_expect(player.has_method(method), "controlador expõe %s()" % method)
+		_expect(player.has_signal("stamina_changed"), "sinal stamina_changed preparado para a HUD")
+		var source: String = FileAccess.get_file_as_string(
+			"res://players/scripts/player_controller.gd"
+		).to_lower()
+		_expect(not source.contains("jump"), "controlador não tem código de pulo")
+		_expect(not source.contains("velocity.y +="), "não há impulso vertical positivo")
+		player.free()
+
+	_expect(not InputMap.has_action("jump"), "não existe ação de pulo")
+	_expect(not InputMap.has_action("move_jump"), "não existe ação move_jump")
+	var jump_actions: Array = []
+	for action: String in InputMap.get_actions():
+		if action.to_lower().contains("jump") or action.to_lower().contains("pular"):
+			jump_actions.append(action)
+	_expect(jump_actions.is_empty(), "nenhuma ação de pulo no Input Map")
+
+	# --- Persistência do modo de agachamento --------------------------------
+	var settings = get_node_or_null("/root/GameSettings")
+	if settings != null:
+		var values: Dictionary = settings.current()
+		values[SettingsSchema.SECTION_CONTROLS]["crouch_mode"] = "hold"
+		settings.apply(values)
+		_expect(
+			str(settings.current().controls.crouch_mode) == "hold",
+			"modo SEGURAR aplicado em memória"
+		)
+		var config := ConfigFile.new()
+		var loaded: bool = config.load(settings.config_path) == OK
+		_expect(
+			loaded and str(config.get_value("controls", "crouch_mode", "")) == "hold",
+			"modo gravado em settings.cfg"
+		)
+		settings.apply(SettingsSchema.defaults())
+		_expect(
+			str(settings.current().controls.crouch_mode) == "toggle",
+			"RESTAURAR PADRÕES volta ao modo ALTERNAR"
+		)
+
+	# --- Lista real de controles --------------------------------------------
+	var section := ControlsSection.new()
+	add_child(section)
+	section.setup(SettingsSchema.defaults())
+	var rows: Array = section.get_key_hint_rows()
+	var keys: Array = []
+	var joined: String = ""
+	for row: Array in rows:
+		keys.append(str(row[0]))
+		joined += "%s %s " % [str(row[0]), str(row[1])]
+	var lowered: String = joined.to_lower()
+	_expect(rows.size() == 6, "lista tem exatamente seis controles (%d)" % rows.size())
+	_expect(
+		keys == ["W A S D", "Shift", "Ctrl", "Mouse", "Esc", "F11"],
+		"teclas reais na ordem esperada: %s" % str(keys)
+	)
+	_expect(lowered.contains("mover"), "WASD descreve mover")
+	_expect(lowered.contains("correr"), "SHIFT descreve correr")
+	_expect(lowered.contains("olhar"), "mouse descreve olhar")
+	_expect(lowered.contains("pausar"), "Esc descreve pausar")
+	_expect(lowered.contains("tela cheia"), "F11 descreve tela cheia")
+	_expect(not lowered.contains("interagir"), "não lista E/Interagir")
+	_expect(not lowered.contains("lanterna"), "não lista F/Lanterna")
+	_expect(not lowered.contains("pular") and not lowered.contains("pulo"), "não lista pulo")
+	_expect(not lowered.contains("inventário") and not lowered.contains("inventario"),
+		"não lista inventário")
+	_expect(not lowered.contains("ataque"), "não lista ataque")
+	_expect(not keys.has("E") and not keys.has("F"), "não lista as teclas E e F")
+	_expect(not keys.has("Space") and not lowered.contains("espaço"), "não lista a barra de espaço")
+
+	section.set_crouch_mode_id("hold")
+	_expect(
+		section.get_crouch_hint_text() == "Segurar para agachar",
+		"Ctrl em SEGURAR: 'Segurar para agachar'"
+	)
+	section.set_crouch_mode_id("toggle")
+	_expect(
+		section.get_crouch_hint_text() == "Alternar agachamento",
+		"Ctrl em ALTERNAR: 'Alternar agachamento'"
+	)
+	var read: Dictionary = section.read_values().get(SettingsSchema.SECTION_CONTROLS, {})
+	_expect(str(read.get("crouch_mode", "")) == "toggle", "read_values() inclui crouch_mode")
+	remove_child(section)
+	section.free()
+
+	_expect(
+		FileAccess.file_exists("res://docs/ETAPA-6.md"),
+		"documentação da Etapa 6 presente (docs/ETAPA-6.md)"
 	)

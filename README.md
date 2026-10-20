@@ -3,8 +3,9 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 5 concluída — estados de movimento (parado, andando,
-> correndo e agachado) e configurações acessíveis pelo menu de pausa.
+> **Status:** Etapa 6 concluída — stamina na corrida, modos de agachamento
+> (ALTERNAR/SEGURAR) e lista real de controles, com configurações acessíveis
+> durante a partida.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -14,11 +15,11 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.5.0-etapa5/BlackSight-Etapa5-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.6.0-etapa6/BlackSight-Etapa6-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa5-Windows-x86_64.zip` (40.630.076 bytes ≈ 38,7 MiB)
+Arquivo: `BlackSight-Etapa6-Windows-x86_64.zip` (TAMANHO_ZIP)
 
-SHA-256 do ZIP: `4ebc60d966a14edee54036f3f2c24dfb845a6224d1b381c191b8b6c68228308e`
+SHA-256 do ZIP: `SHA256_ZIP`
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
@@ -31,8 +32,8 @@ Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compat
 | Tecla | Ação |
 | --- | --- |
 | `W` `A` `S` `D` | Andar (relativo à direção da câmera) |
-| `Shift` | Correr (enquanto houver direção e o jogador não estiver agachado) |
-| `Ctrl` | Agachar (prioridade sobre `Shift`); solta para levantar |
+| `Shift` | Correr (consome stamina; nunca agachado) |
+| `Ctrl` | Agachar — **ALTERNAR** (padrão): um toque agacha, outro levanta; **SEGURAR**: mantenha pressionado |
 | Mouse | Olhar (limite de ±89° na vertical) |
 | `Esc` | Liberar o mouse / abrir a pausa |
 | `F11` | Alternar janela ↔ tela cheia |
@@ -42,8 +43,9 @@ Na pausa da cena de teste: **CONTINUAR** (ou `Esc`) captura o mouse de novo,
 **CONFIGURAÇÕES** abre a mesma tela da Etapa 3 por cima da partida pausada
 (VOLTAR/Esc retornam à pausa) e **VOLTAR AO MENU** retorna à tela inicial.
 
-A sensibilidade do mouse e a inversão vertical são as configuradas em
-**CONFIGURAÇÕES → CONTROLES**.
+A sensibilidade do mouse, a inversão vertical e o **modo de agachamento** são
+os configurados em **CONFIGURAÇÕES → CONTROLES**. A lista mostrada ali é a dos
+controles que existem de verdade — sem interação, lanterna, pulo ou inventário.
 
 ## O que existe hoje
 
@@ -57,13 +59,17 @@ A sensibilidade do mouse e a inversão vertical são as configuradas em
 - **Estados de movimento** (Etapa 5): parado, andando, correndo (Shift) e
   agachado (Ctrl), com velocidades próprias, prioridade do agachamento sobre a
   corrida, câmera que acompanha a altura e cápsula que só volta a ficar em pé
-  quando há espaço. Corrida pronta para a stamina da Etapa 6.
+  quando há espaço.
+- **Stamina e agachamento configurável** (Etapa 6): correr consome 20/s (máximo
+  100), recupera 15/s parado/andando/agachado, para ao esgotar e volta a partir
+  de 20. O modo de agachamento (**ALTERNAR** padrão ou **SEGURAR**) fica em
+  `settings.cfg` e vale na hora, inclusive durante a partida.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
 
-Ainda **não** existe: stamina, pulo, inventário, interação, criaturas,
-multiplayer, voz e o mapa definitivo.
-Ver [`docs/ETAPA-5.md`](docs/ETAPA-5.md).
+Ainda **não** existe: pulo, inventário, interação, criaturas, multiplayer,
+voz e o mapa definitivo. Também não há HUD de stamina nesta etapa.
+Ver [`docs/ETAPA-6.md`](docs/ETAPA-6.md).
 
 ## Arquitetura
 
@@ -124,7 +130,7 @@ godot --headless --path . --export-release "Windows Desktop" build/windows/Black
 | Cena principal | `ui/scenes/title_screen.tscn` |
 | Autoloads | `AppInfo`, `GameSettings`, `UiAudio` |
 | Buses de áudio | `Master`, `Music`, `SFX`, `Ambience`, `Voice` |
-| Input Map | `move_forward/back/left/right` (W/S/A/D) e `release_mouse` (Esc) |
+| Input Map | `move_forward/back/left/right` (W/S/A/D), `move_sprint` (Shift), `move_crouch` (Ctrl) e `release_mouse` (Esc) |
 
 ## Testes
 
@@ -155,6 +161,7 @@ godot --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/mov
 | --- | --- |
 | [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) | Módulos, dependências, convenções, comunicação |
 | [`docs/CONFIGURACOES.md`](docs/CONFIGURACOES.md) | Onde ficam as configurações e como adicionar parâmetros |
+| [`docs/ETAPA-6.md`](docs/ETAPA-6.md) | Stamina, modos de agachamento e controles reais |
 | [`docs/ETAPA-5.md`](docs/ETAPA-5.md) | Estados de movimento, agachamento e pausa com configurações |
 | [`docs/ETAPA-4.md`](docs/ETAPA-4.md) | Controlador FPS, cena de teste e resultados |
 | [`docs/ETAPA-3.md`](docs/ETAPA-3.md) | Configurações de controles, áudio e vídeo |
