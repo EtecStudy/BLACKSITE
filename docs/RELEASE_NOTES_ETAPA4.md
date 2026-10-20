@@ -41,7 +41,7 @@ gravidade e colisão em uma sala 3D de teste.
 ## Testes
 
 O pacote publicado é exatamente o gerado pelo workflow
-[`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/main/.github/workflows/build.yml).
+[`build.yml`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blacksite/.github/workflows/build.yml).
 Antes de publicar, a execução
 [39344854993](https://github.com/EtecStudy/BLACKSITE/actions/runs/39344854993)
 rodou no Linux e no Windows real:
@@ -53,7 +53,7 @@ rodou no Linux e no Windows real:
   colisões.
 
 Evidências, detalhes e limitações:
-[`docs/ETAPA-4.md`](https://github.com/EtecStudy/BLACKSITE/blob/main/docs/ETAPA-4.md).
+[`docs/ETAPA-4.md`](https://github.com/EtecStudy/BLACKSITE/blob/arena/aa5e0e47-blacksite/docs/ETAPA-4.md).
 
 ## Limitações desta etapa
 
