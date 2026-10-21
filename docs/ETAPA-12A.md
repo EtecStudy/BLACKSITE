@@ -334,6 +334,22 @@ piso, teto visível em todos os ambientes, escala (o jogador de 1,8 m deve
 parecer pequeno), as duas escadas descendo e subindo, corrida com SHIFT, ESC
 abrindo e fechando a pausa, sem queda de FPS anormal.
 
+### 6.3 Resultado da execução no CI
+
+| Item | Resultado |
+| --- | --- |
+| Run | `39685967579` (Linux e Windows, ambos verdes) |
+| Teste da planta (Linux) | **PRIMEIRO ANDAR OK** — 347 verificações |
+| Teste da planta (Windows) | **PRIMEIRO ANDAR OK** — 347 verificações |
+| Demais suítes (Windows) | fumaça 381 · interface 85 · controlador 598 · modular 364 |
+| Capturas | 14 de 14, sem falhas (`ci-logs/visual-12a`) |
+| Commit publicado | `9d508281294199332dc6f9c93ce917be5a168027` |
+| ZIP | `BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip` · 40.802.508 bytes |
+| SHA-256 | `4234515572ce9a646a45a6b5422476ea39f1f938eb8881371e4efe58d59e8d52` |
+
+Os números de 2026-10-21 referem-se a este build; a revisão manual do
+percurso (6.2) continua pendente de execução por uma pessoa.
+
 ## 7. Limitações
 
 - **Sem iluminação final.** As 33 luzes são provisórias e há névoa leve; nada
@@ -353,8 +369,14 @@ abrindo e fechando a pausa, sem queda de FPS anormal.
   (34 deles divisórias internas). É o esperado para a escala pedida, mas é uma cena pesada
   para o renderer GL Compatibility em máquinas modestas; a Etapa 12B deve
   avaliar agrupamento/malha única se necessário.
-- **Validação visual** depende de renderização real (CI Windows e revisão
-  manual); neste ambiente de trabalho não foi possível abrir o Godot.
+- **Validação visual** depende de renderização real: as 14 capturas foram
+  geradas no CI Windows e revisadas por imagem, mas **o percurso manual não
+  foi executado**: o Godot não está disponível no ambiente de trabalho.
+- **Capturas escuras:** as luzes provisórias deixam as imagens com pouca luz;
+  elas servem para conferir geometria e circulação, não atmosfera.
+- **Vista de cima:** a planta baixa capturada mostra só a silhueta do prédio,
+  porque o teto real cobre todas as salas (a referência legível é
+  `docs/images/etapa-12a-planta.png`, desenhada em 2D).
 
 ## 8. Próximos passos (não iniciados)
 

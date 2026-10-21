@@ -58,6 +58,21 @@ paredes do fundo até a laje e guarda-corpos nas três bordas abertas.
 - CI Linux e Windows executam o teste headless e o job Windows gera **14
   capturas** do andar para revisão.
 
+## Publicação
+
+| Item | Valor |
+| --- | --- |
+| Tag | `v0.12.0-etapa12a-primeiro-andar` |
+| Commit | `9d508281294199332dc6f9c93ce917be5a168027` |
+| ZIP | 40.802.508 bytes |
+| SHA-256 | `4234515572ce9a646a45a6b5422476ea39f1f938eb8881371e4efe58d59e8d52` |
+| CI | run `39685967579` — Linux e Windows verdes |
+| Testes | planta 347 (duas plataformas), fumaça 381, interface 85, controlador 598, modular 364 |
+| Capturas | 14/14 |
+
+O **percurso manual** descrito em `docs/ETAPA-12A.md` §6.2 ainda precisa ser
+feito por uma pessoa; os testes automatizados não substituem essa revisão.
+
 ## Limitações desta etapa
 
 - Iluminação **provisória** (33 luzes + ambiente leve); a iluminação final é de

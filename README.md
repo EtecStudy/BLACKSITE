@@ -29,7 +29,8 @@
 **https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.12.0-etapa12a-primeiro-andar**
 
 Arquivo: `BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip`
-(tamanho, SHA-256 e commit são os publicados na release da Etapa 12A).
+(40.802.508 bytes, SHA-256 `42345155…e8d52`, commit `9d50828`; números
+completos e testes na release da Etapa 12A).
 
 A 0.12.0 adiciona o **primeiro andar do laboratório** ao menu, sem alterar
 nenhum sistema anterior nem a biblioteca modular. A versão anterior,
