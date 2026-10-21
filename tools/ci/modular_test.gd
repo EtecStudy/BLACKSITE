@@ -193,8 +193,8 @@ func _test_wall_dimensions() -> void:
 	if a != null and b != null:
 		var ba: AABB = _collision_aabb(a)
 		var bb: AABB = _collision_aabb(b)
-		var end_a: float = ba.end.x + a.global_position.x
-		var start_b: float = bb.position.x + b.global_position.x
+		var end_a: float = ba.end.x
+		var start_b: float = bb.position.x
 		_expect(is_equal_approx(end_a, start_b),
 			"painéis vizinhos: encostam sem sobrepor (%.3f / %.3f)" % [end_a, start_b])
 		_expect(_hits(Vector3(0.2, 1.5, 3.2), Vector3(0.2, 1.5, 4.8))
@@ -295,8 +295,8 @@ func _test_corner_and_floor() -> void:
 		expect_surface(Vector3(1.0, 1.0, 12), 0.0, "pisos vizinhos: junta sem lacuna")
 		var ta: AABB = _collision_aabb(tile_a)
 		var tb: AABB = _collision_aabb(tile_b)
-		_expect(is_equal_approx(ta.end.x, tb.position.x - (tile_b.global_position.x - tile_a.global_position.x)),
-			"pisos vizinhos: encostam sem sobrepor")
+		_expect(is_equal_approx(ta.end.x, tb.position.x),
+			"pisos vizinhos: encostam sem sobrepor (%.3f / %.3f)" % [ta.end.x, tb.position.x])
 		_free_module(tile_a)
 		_free_module(tile_b)
 
@@ -515,7 +515,8 @@ func _test_demo_and_movement() -> void:
 		_expect(room.get_node_or_null("MainWallN_00") != null, "demonstração: corredor principal presente")
 		_expect(room.get_node_or_null("LabAFloor_00_00") != null, "demonstração: sala de pesquisa A presente")
 		_expect(room.get_node_or_null("LabBFloor_00_00") != null, "demonstração: sala de pesquisa B presente")
-		_expect(room.get_node_or_null("MainTeeOpening") != null, "demonstração: junção modular do ramal")
+		_expect(_count_named(room, "MainWallNOpen") == 2,
+			"demonstração: aberturas modulares na parede norte (%d)" % _count_named(room, "MainWallNOpen"))
 		_expect(room.get_node_or_null("SecWallW_00") != null, "demonstração: ramal secundário presente")
 		_expect(room.get_node_or_null("HallWallNOpen_02") != null, "demonstração: sala técnica com abertura")
 		_expect(room.get_node_or_null("MezzStairs") != null, "demonstração: escada presente")
@@ -606,6 +607,9 @@ func _test_demo_and_movement() -> void:
 		"guarda-corpo impede sair pela borda (z = %.2f)" % _player.global_position.z)
 
 	# Pausa: ESC abre e fecha sem trocar de cena (a UI é testada em ui_flow_test).
+	# Posiciona no meio do mezanino, longe dos guarda-corpos, para que o teste de
+	# retomada meça movimento livre (encostado na guarda o jogador não anda).
+	await _place(Vector3(38.0, 3.25, -36.0), 0.0)
 	_expect(_scene.has_method("pause_session") and _scene.has_method("resume_session"),
 		"demonstração: pausa/retomada expostas para a interface")
 	_scene.pause_session()
@@ -724,20 +728,37 @@ func expect_surface(origin: Vector3, expected_y: float, label: String) -> void:
 	_expect(absf(y - expected_y) < 0.06, "%s (y = %.2f)" % [label, y])
 
 
-## Largura livre do vão na linha de uma parede, medida com raios laterais.
+## Largura livre do vão na linha de uma parede, medida na geometria de colisão.
+##
+## Usa as caixas de colisão da própria peça que cobrem a altura `height` e a
+## banda da parede (mesma linha de `z` da origem), devolvendo o maior intervalo
+## livre dentro de [-half, half]. Independe do passo da física.
 func _opening_width(module: Node3D, height: float, half: float) -> float:
 	var origin: Vector3 = module.global_position
-	var free_min: float = 99.0
-	var free_max: float = -99.0
-	var x: float = -half
-	while x <= half + 0.0001:
-		if not _hits(origin + Vector3(x, height, -0.8), origin + Vector3(x, height, 0.8)):
-			free_min = minf(free_min, x)
-			free_max = maxf(free_max, x)
-		x += 0.01
-	if free_min > free_max:
+	var blocked: Array = []
+	for shape: CollisionShape3D in _collision_shapes(module):
+		var box: BoxShape3D = shape.shape as BoxShape3D
+		if box == null:
+			continue
+		var center: Vector3 = shape.global_transform.origin
+		if height < center.y - box.size.y / 2.0 or height > center.y + box.size.y / 2.0:
+			continue
+		# Só o que está na mesma banda de parede (a soleira e o piso ficam abaixo).
+		if absf(center.z - origin.z) > box.size.z / 2.0 + 0.05:
+			continue
+		blocked.append(Vector2(center.x - box.size.x / 2.0, center.x + box.size.x / 2.0))
+	if blocked.is_empty():
 		return 0.0
-	return free_max - free_min
+	blocked.sort_custom(func(p_left: Vector2, p_right: Vector2) -> bool:
+		return p_left.x < p_right.x)
+	var best: float = 0.0
+	var cursor: float = -half
+	for span: Vector2 in blocked:
+		if span.x > cursor:
+			best = maxf(best, span.x - cursor)
+		cursor = maxf(cursor, span.y)
+	best = maxf(best, half - cursor)
+	return best
 
 
 ## Percorre uma linha de parede e confirma que ela é contínua, exceto nos vãos
@@ -780,8 +801,9 @@ func _collision_aabb(root: Node3D) -> AABB:
 		var box: BoxShape3D = shape.shape as BoxShape3D
 		if box == null:
 			continue
-		var body: Node3D = shape.get_parent() as Node3D
-		var center: Vector3 = body.position + shape.position
+		# Mundo: `position` do nó raiz não entra na conta, então o AABB não pode
+		# ser montado com `body.position + shape.position` (dá local + deslocamento).
+		var center: Vector3 = shape.global_transform.origin
 		var size: Vector3 = box.size
 		var box_aabb := AABB(center - size / 2.0, size)
 		if first:

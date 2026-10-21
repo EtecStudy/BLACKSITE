@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://maps/modular/ceilings/ceiling_tile.tscn" id="2_ceiling_tile"]
 [ext_resource type="PackedScene" path="res://maps/modular/walls/wall_panel_2m.tscn" id="3_wall_panel_2m"]
 
-[node name="CorridorSecondary8m" type="Node3D"]
+[node name="CorridorSecondary8m" type="StaticBody3D"]
 [node name="Floor_00_00" parent="." instance=ExtResource("1_floor_tile")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
 

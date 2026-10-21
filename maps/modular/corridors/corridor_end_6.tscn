@@ -22,7 +22,7 @@ size = Vector3(0.1, 0.16, 2.6)
 material = ExtResource("m_trim")
 size = Vector3(0.14, 0.9, 0.9)
 
-[node name="CorridorEnd6" type="Node3D"]
+[node name="CorridorEnd6" type="StaticBody3D"]
 [node name="Floor_00_00" parent="." instance=ExtResource("1_floor_tile")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
 
