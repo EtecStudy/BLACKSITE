@@ -25,8 +25,9 @@ funcionais, energia, eventos de terror ou multiplayer.
 - **Duas escadas funcionais** para o subsolo, em regiões opostas do mapa
   (norte, x 23–25; sul, x 67–69), com poço, hall inferior em −3,2 m, paredes
   e guarda-corpos.
-- 40 vãos (30 portas de 2,4 × 3,0 m, 6 aberturas de 3,6 × 4,2 m e 4 bocas de
-  corredor de 6 m), 23 pilares, 5 vigas e teto real em toda a planta.
+- 40 vãos entre ambientes (30 portas de 2,4 × 3,0 m, 6 aberturas de 3,6 × 4,2 m
+  e 4 bocas de corredor de 6 m), mais **9 portas internas nas divisórias**
+  (39 portas na cena), 23 pilares, 5 vigas e teto real em toda a planta.
 
 ## O que **não** mudou
 
