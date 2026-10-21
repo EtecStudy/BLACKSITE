@@ -238,7 +238,8 @@ func _test_hierarchy() -> void:
 	_expect(_count_prefix("PartDoor_") == 9,
 		"portas nas divisórias (%d)" % _count_prefix("PartDoor_"))
 	_expect(_count_prefix("Opening_") >= 6, "aberturas estruturais (%d)" % _count_prefix("Opening_"))
-	var panels: int = _count_prefix("Wall_") + _count_prefix("Part_")
+	var panels: int = _count_prefix("Wall_") + _count_prefix("Part_") \
+		+ _count_prefix("ShaftWall")
 	_expect(panels >= 740, "painéis de parede (%d)" % panels)
 	_expect(_count_prefix("Floor_") >= 1800, "placas de piso (%d)" % _count_prefix("Floor_"))
 	_expect(_count_prefix("Ceil_") >= 1800, "placas de teto (%d)" % _count_prefix("Ceil_"))
