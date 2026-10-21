@@ -468,8 +468,8 @@ func is_sprint_held() -> bool:
 ## Estado de corrida efetivo: evento de teclado manda; sem eventos (testes com
 ## `Input.action_press`), cai no estado da ação.
 func _sprint_pressed() -> bool:
-	if _sprint_event_seen and not _sprint_event_held:
-		return false
+	if _sprint_event_seen:
+		return _sprint_event_held
 	return Input.is_action_pressed(ACTION_SPRINT)
 
 
