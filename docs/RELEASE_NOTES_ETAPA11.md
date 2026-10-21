@@ -36,12 +36,14 @@ sala de teste e a HUD aprovada.
   de 3,6 m.
 - Sala de pesquisa B (12 × 16) com porta de 2,4 m.
 - Ramal secundário de 4 m ligando o corredor à sala técnica, com **junção
-  modular** (abertura + pilastras) dos dois lados.
-- Sala técnica de 14 × 20 com **pórtico de 4 pilares e 4 vigas**, mezanino em
+  modular** (`wall_opening_4m`, com pilares de 0,20 m) dos dois lados.
+- Sala técnica de 14 × 20 com **pórtico de 4 pilares e 6 vigas**, mezanino em
   `y = 3,2`, **8 guarda-corpos** e **escada de 16 degraus** com guardas.
 - Sala de equipamentos 8 × 8 ligada à sala técnica.
 - 12 luzes pontuais, ambiente com névoa e tonemap, materiais industriais.
-- **706 nós** de geometria (257 pisos, 239 tetos, 142 paredes/portas).
+- **706 nós** de geometria (257 pisos, 239 tetos/luminárias, 142 módulos de
+  parede entre painéis, portas e aberturas, 14 cantos, 12 pilares, 10 vigas,
+  8 guarda-corpos, 3 colunas de apoio e a escada).
 
 ## Correções
 
@@ -56,6 +58,20 @@ sala de teste e a HUD aprovada.
 - **Peças atravessadas:** painéis duplicados no mesmo plano e cantos com braços
   invadindo a parede foram eliminados na geração; a demonstração é validada
   sem sobreposições nem frestas.
+
+## Testes deste build (Windows e Linux, código de saída 0)
+
+| Suíte | Verificações |
+| --- | --- |
+| Fumaça (`smoke_test`) | 359 |
+| Fluxo de interface (`ui_flow_test`) | 76 |
+| Controlador FPS + inventário + drop (`movement_test`) | 598 |
+| Drop junto a obstáculos (`drop_obstacle_test`) | 156 |
+| Sistema modular de salas (`modular_test`) | 327 |
+
+O build também importa o projeto, executa as cenas headless, renderiza as
+cenas com Xvfb/OpenGL, exporta o `.exe` e executa o pacote exportado. **Nada
+disso substitui o teste manual abaixo** — a aprovação depende dele.
 
 ## Como testar manualmente
 
@@ -77,6 +93,16 @@ sala de teste e a HUD aprovada.
 `W A S D` andar · `Shift` correr · `Ctrl` agachar · `E` interagir/pegar ·
 `1 2 3` selecionar · `G` soltar item · `R` remover · `Esc` pausa ·
 `F11` tela cheia
+
+## Pacote publicado
+
+| Item | Valor |
+| --- | --- |
+| Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.1-etapa11-correcao> |
+| Arquivo | `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` |
+| Tamanho | 40.728.124 bytes |
+| SHA-256 | `876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f` |
+| Commit | `53851dc` |
 
 ## Ainda fora do escopo
 

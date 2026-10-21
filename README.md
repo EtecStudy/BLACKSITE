@@ -27,8 +27,10 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.1-etapa11-correcao/BlackSight-Etapa11-Correcao-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` (tamanho e SHA-256
-publicados no corpo da release `v0.11.1-etapa11-correcao`, gerados pelo build).
+Arquivo: `BlackSight-Etapa11-Correcao-Windows-x86_64.zip`
+(40.728.124 bytes · SHA-256
+`876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f`,
+commit `53851dc`).
 A release anterior da Etapa 11 (`v0.11.0-etapa11-modular-rooms`) **continua
 publicada**, junto de `v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop` e das
 demais.

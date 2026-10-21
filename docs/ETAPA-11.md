@@ -194,17 +194,20 @@ Planta (metros; `x` para leste, `z` para sul, `y` para cima):
 
 O que a cena contém:
 
-- **706 nós** no total: 257 placas de piso, 239 de teto, 142 módulos de parede
-  (painéis, portas e aberturas), 14 blocos de canto, 12 pilares, 8 vigas,
-  8 módulos de guarda-corpo, 12 `OmniLight3D` e o `WorldEnvironment`
+- **706 nós** no total: 257 placas de piso, 239 de teto (227 cegas + 12
+  luminárias), 143 módulos de parede (137 painéis, 3 portas e 3 aberturas),
+  14 blocos de canto, 12 pilares, 10 vigas, 8 módulos de guarda-corpo,
+  3 colunas de apoio, 1 escada, 12 `OmniLight3D` e o `WorldEnvironment`
   (fog + tonemap);
 - **corredor principal de 40 m** com 6 m de largura, vigas a cada 8 m e
   luminárias no teto;
-- **junção modular** do ramal: vão de 4 m no corredor fechado por
-  `wall_opening_4m` + duas pilastras `wall_junction`;
+- **junção modular** do ramal: o vão de 4 m é uma `wall_opening_4m` da própria
+  parede norte do corredor (`MainWallNOpen_14`), com pilares de 0,20 m nas
+  duas pontas — sem peça avulsa atravessando a parede do ramal;
 - **três portas** (salas A, B e equipamentos) e **três aberturas**;
 - **paredes compartilhadas**: nenhuma parede entre ambientes é duplicada;
-- **pórtico de 6 × 6 m** na sala técnica: 4 pilares + 4 vigas de 6 m;
+- **pórtico de 6 × 6 m** na sala técnica: 4 pilares + 6 vigas de 6 m
+  (duas no eixo X e quatro no eixo Z, fechando os quatro nós do pórtico);
 - **mezanino** em `y = 3,2` com 8 guarda-corpos e 3 colunas de apoio;
 - **escada** de 16 degraus ligando o piso ao mezanino, com guardas laterais;
 - **espaço para correr**: o corredor permite 40 m em linha reta (mais de 7 s
@@ -288,7 +291,8 @@ O teste modular verifica, entre outros pontos:
 - parede de 2 × 6 × 0,40 m, piso de 2 × 2 × 0,30 m com topo em `y = 0`,
   teto com base em `y = 6`;
 - porta com vão de 2,4 m e verga em 3,0 m; abertura com vão de 3,6 m e verga
-  em 4,2 m (medidos com raios na cena real);
+  em 4,2 m (largura medida na geometria de colisão e passagem conferida com
+  raios na cena real);
 - dois painéis vizinhos encostam sem sobrepor e a junta continua sólida;
 - salas 10 × 10, 14 × 20 e 8 × 8: piso contínuo, paredes contínuas fora dos
   vãos, portas e aberturas livres;
@@ -303,7 +307,21 @@ O teste modular verifica, entre outros pontos:
   equipamentos, parede que barra o jogador, subida da escada e guarda-corpo
   do mezanino;
 - pausa: com `movement_enabled = false` o jogador não anda com WASD; ao
-  retomar, volta a andar.
+  retomar, volta a andar (medido no meio do mezanino, longe do guarda-corpo).
+
+Resultado do build que publicou este pacote (commit `53851dc`):
+
+| Suíte | Windows | Linux |
+| --- | --- | --- |
+| `smoke_test` | 359 verificações | 359 |
+| `ui_flow_test` | 76 | 76 |
+| `movement_test` | 598 | 598 |
+| `drop_obstacle_test` | 156 | 156 |
+| `modular_test` | 327 | 327 |
+
+Todos com código de saída 0; além deles o build roda a importação, a execução
+headless, a renderização (Xvfb/OpenGL), a exportação Windows e a execução do
+`.exe` exportado. Nada disso substitui o teste manual da seção seguinte.
 
 ### Manual (Linux ou Windows, com janela)
 
@@ -326,6 +344,9 @@ O teste modular verifica, entre outros pontos:
 
 ## 7. Limitações conhecidas
 
+- **Nós do pórtico**: as vigas de 6 m se cruzam no eixo dos pilares (duas no
+  eixo X e quatro no eixo Z). As almas se interpenetram ~0,09 m dentro do nó,
+  como numa ligação real; é intencional e invisível.
 - **Ponta de viga dentro de pilar/pilastra**: a viga de 6 m termina no eixo do
   pilar (como uma viga apoiada). O volume da ponta fica embutido no pilar —
   é intencional e invisível.
@@ -348,6 +369,15 @@ O teste modular verifica, entre outros pontos:
 ## 8. Release
 
 A correção é publicada como **`v0.11.1-etapa11-correcao`**, sem sobrescrever a
-release anterior `v0.11.0-etapa11-modular-rooms`. O pacote Windows é
-`BlackSight-Etapa11-Correcao-Windows-x86_64.zip`; tamanho e SHA-256 são
-publicados no corpo da release, gerados pelo próprio build.
+release anterior `v0.11.0-etapa11-modular-rooms`.
+
+| Item | Valor |
+| --- | --- |
+| Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.1-etapa11-correcao> |
+| Arquivo | `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` |
+| Tamanho | 40.728.124 bytes |
+| SHA-256 | `876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f` |
+| Commit do build | `53851dc` |
+
+O ZIP contém `BlackSight.exe` (109.193.728 bytes), `BlackSight.pck`
+(1.721.544 bytes), `LEIA-ME.txt` e `SHA256SUMS.txt`.
