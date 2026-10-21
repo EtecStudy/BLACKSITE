@@ -260,7 +260,9 @@ func _test_corner_and_floor() -> void:
 		_expect(_hits(o + Vector3(1, 1.5, -1), o + Vector3(1, 1.5, 1)), "canto externo: braço em X")
 		_expect(_hits(o + Vector3(-1, 1.5, -1), o + Vector3(1, 1.5, -1)), "canto externo: braço em Z")
 		var aabb: AABB = _collision_aabb(outer)
-		_expect(aabb.position.z <= -GRID + 0.01, "canto externo: braço para -Z (%.2f m)" % aabb.position.z)
+		# Coordenadas de mundo: compara com a origem do módulo, não com zero.
+		_expect(aabb.position.z <= o.z - GRID + 0.01,
+			"canto externo: braço para -Z (%.2f m)" % (aabb.position.z - o.z))
 		_free_module(outer)
 
 	var junction: Node3D = await _spawn_module("res://maps/modular/walls/wall_junction.tscn", Vector3(0, 0, 14))
@@ -482,7 +484,7 @@ func _test_demo_and_movement() -> void:
 	var spawn: Vector3 = _player.global_position
 	_expect(spawn.distance_to(Vector3(0, 0.15, 3)) < 0.25,
 		"jogador nasce no Spawn do cenário (%.2f, %.2f, %.2f)" % [spawn.x, spawn.y, spawn.z])
-	expect_surface(Vector3(12, 6, 10), 4.0, "mezanino: piso em y = 4")
+	expect_surface(Vector3(12, 4, 10), 4.0, "mezanino: piso em y = 4")
 
 	# Conectividade: raios na altura do jogador entre ambientes vizinhos.
 	_expect(_path_clear([Vector3(0, 0.9, 3), Vector3(0, 0.9, -8)]),
@@ -514,8 +516,8 @@ func _test_demo_and_movement() -> void:
 	_expect(_player.global_position.z > 7.2,
 		"entra na sala retangular pela abertura (z = %.2f)" % _player.global_position.z)
 
-	# Parede barra o jogador.
-	await _place(Vector3(0, 0.05, 3.0), -PI / 2.0)
+	# Parede barra o jogador (yaw +90° = oeste).
+	await _place(Vector3(0, 0.05, 3.0), PI / 2.0)
 	await _walk(2.0)
 	_expect(_player.global_position.x < -4.2 and _player.global_position.x > -5.0,
 		"parede oeste barra o jogador (x = %.2f)" % _player.global_position.x)
