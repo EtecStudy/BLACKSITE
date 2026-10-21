@@ -291,16 +291,20 @@ jogo). Sai com 0 só se **tudo** passar; o log não pode conter `✗`.
    cima (face do teto na altura do ambiente); no vão da escada não existe piso
    em 0 e o hall inferior tem piso em −3,2.
 4. **Paredes e vãos** — cada lado de cada ambiente é amostrado de 1 em 1 m:
-   parede sólida ou vão documentado; nenhum buraco fora da lista.
-5. **Geometria dos vãos** — vão livre na altura de passagem, parede fechando
-   acima (verga) e portas de divisória atravessáveis.
+   parede sólida ou vão documentado; nenhum buraco fora da lista. A contagem
+   soma as peças de divisória: 30 portas de parede + 9 de divisória = 39;
+   689 painéis `Wall_` + 34 `Part_` + 24 painéis dos poços (`ShaftWall*`) =
+   747 painéis.
+5. **Geometria dos vãos** — canal livre na altura de passagem medido com
+   0,7 m de folga de cada bordo (as paredes perpendiculares encostam no vão),
+   parede fechando acima (verga) e portas de divisória atravessáveis.
 6. **Sem duplicidade** — nenhuma peça na mesma posição, nenhum painel de
    parede sobreposto.
 7. **Conectividade real** — o jogador **atravessa os 40 vãos** caminhando
    (não é `has_node`).
 8. **Escadas** — desce 3,2 m, chega ao hall inferior, volta a subir e retorna
    ao andar; repetido nas duas escadas.
-9. **Rota completa** — 40 pontos conferidos contra as paredes ligam entrada →
+9. **Rota completa** — 41 pontos conferidos contra as paredes ligam entrada →
    recepção → segurança → controle → corredor → cruzamento → pesquisa →
    análises → observação → escritórios → arquivo → funcionários → logística →
    elétrica → manutenção → escada sul.

@@ -233,9 +233,13 @@ func _test_hierarchy() -> void:
 	_expect(_count_prefix("StairModule") == 2, "duas escadas (%d)" % _count_prefix("StairModule"))
 	_expect(_count_prefix("Pillar_") >= 20, "pilares estruturais (%d)" % _count_prefix("Pillar_"))
 	_expect(_count_prefix("Beam_") >= 5, "vigas no corredor principal (%d)" % _count_prefix("Beam_"))
-	_expect(_count_prefix("Door_") >= 35, "portas instaladas (%d)" % _count_prefix("Door_"))
+	var doors: int = _count_prefix("Door_") + _count_prefix("PartDoor_")
+	_expect(doors >= 39, "portas instaladas (%d)" % doors)
+	_expect(_count_prefix("PartDoor_") == 9,
+		"portas nas divisórias (%d)" % _count_prefix("PartDoor_"))
 	_expect(_count_prefix("Opening_") >= 6, "aberturas estruturais (%d)" % _count_prefix("Opening_"))
-	_expect(_count_prefix("Wall_") >= 650, "painéis de parede (%d)" % _count_prefix("Wall_"))
+	var panels: int = _count_prefix("Wall_") + _count_prefix("Part_")
+	_expect(panels >= 740, "painéis de parede (%d)" % panels)
 	_expect(_count_prefix("Floor_") >= 1800, "placas de piso (%d)" % _count_prefix("Floor_"))
 	_expect(_count_prefix("Ceil_") >= 1800, "placas de teto (%d)" % _count_prefix("Ceil_"))
 
@@ -354,7 +358,9 @@ func _test_floor_and_ceiling() -> void:
 		var hit_y: float = (in_hole["position"] as Vector3).y if not in_hole.is_empty() else 99.0
 		_expect(not in_hole.is_empty() and hit_y < -0.25,
 			"%s: dentro do vão não existe piso em 0 (y = %.2f)" % [stair[0], hit_y])
-		var landing: Dictionary = _ray(Vector3(x, 1.0, z1 - 1.0), Vector3(x, -6.0, z1 - 1.0))
+		# O hall inferior continua sob a laje do andar (z > vão da escada),
+		# então a sonda desce de dentro do hall, abaixo da laje em -0,3.
+		var landing: Dictionary = _ray(Vector3(x, -1.0, z1 - 1.0), Vector3(x, -6.0, z1 - 1.0))
 		_expect(not landing.is_empty()
 			and absf((landing["position"] as Vector3).y - (-3.2)) < 0.06,
 			"%s: hall inferior com piso em -3,2" % stair[0])
@@ -463,7 +469,9 @@ func _test_opening_geometry() -> void:
 		# livre por dentro do vão, na altura de passagem
 		var free_ok: bool = true
 		var probe_y: float = minf(height - 0.6, height * 0.6)
-		for offset: float in [-half + 0.4, 0.0, half - 0.4]:
+		# As paredes perpendiculares encostam no bordo do vão; a sonda mede um
+		# canal livre com 0,7 m de folga de cada lado, não o vão inteiro.
+		for offset: float in [-half + 0.7, 0.0, half - 0.7]:
 			var point := Vector3(plane, probe_y, center + offset) if axis == "x" \
 				else Vector3(center + offset, probe_y, plane)
 			if not _point_free(point, 0.25):
@@ -699,8 +707,9 @@ const ROTA := [
 	Vector3(47.1, 0.05, 35.0),
 	Vector3(50.9, 0.05, 35.0),
 	Vector3(63.1, 0.05, 35.0),
-	Vector3(66.9, 0.05, 35.0),
-	Vector3(68.0, 0.05, 30.5),
+	Vector3(66.2, 0.05, 35.0),
+	Vector3(66.2, 0.05, 28.3),
+	Vector3(68.0, 0.05, 28.3),
 ]
 
 
@@ -736,8 +745,14 @@ func _cross_opening(v: Array) -> bool:
 		start.z = clampf(start.z, float(inside[2]) + 0.9, float(inside[3]) - 0.9)
 		start.z = minf(start.z, plane - 0.9) if north else maxf(start.z, plane + 0.9)
 		expected_after = plane + 1.4 if north else plane - 1.4
-	await _place(start, 0.0)
-	await _walk(2.6)
+	# O destino fica 2,2 m depois do plano: o controlador caminha de frente
+	# para o vão e o teste confere em que lado do plano ele terminou.
+	var dest: Vector3
+	if axis == "x":
+		dest = Vector3(plane + 2.2 if west else plane - 2.2, 0.05, center)
+	else:
+		dest = Vector3(center, 0.05, plane + 2.2 if north else plane - 2.2)
+	await _walk_to(start, dest, 6.0)
 	var after: Vector3 = _player.global_position
 	var crossed: bool
 	if axis == "x":
@@ -759,7 +774,10 @@ func _space_of(name: String) -> Array:
 ## Caminha em linha reta até perto do destino (com correção de rumo).
 func _walk_to(from: Vector3, to: Vector3, max_seconds: float) -> bool:
 	await _place(from, atan2(-(to.x - from.x), -(to.z - from.z)))
-	var budget: int = int(max_seconds * 60.0)
+	# Velocidade de caminhada medida no controlador: 3,2 m/s. Usa 2,4 m/s de
+	# margem para não cortar trechos longos do corredor principal.
+	var needed: float = from.distance_to(to) / 2.4 + 3.0
+	var budget: int = int(maxf(max_seconds, needed) * 60.0)
 	var elapsed: int = 0
 	Input.action_press("move_forward")
 	while elapsed < budget:
@@ -772,6 +790,7 @@ func _walk_to(from: Vector3, to: Vector3, max_seconds: float) -> bool:
 		_player.set_look(atan2(-delta.x, -delta.z), 0.0)
 	Input.action_release("move_forward")
 	await _frames(4)
+	_touch()
 	var remaining: Vector3 = to - _player.global_position
 	remaining.y = 0.0
 	if remaining.length() > 2.0:
