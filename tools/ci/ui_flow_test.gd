@@ -293,6 +293,86 @@ class FlowDriver:
 						title_again = await _wait_for_scene("TitleScreen", 1200)
 						_expect(title_again != null, "VOLTAR AO MENU retorna à tela inicial")
 
+		# 11. Demonstração modular: ESC abre a pausa, retoma e volta ao menu
+		#     (revisão da Etapa 11 — o ESC travava o jogo).
+		var cycle_ok: bool = true
+		for cycle: int in 2:
+			if title_again == null:
+				break
+			var modular_button: Button = title_again.get_node_or_null(
+				"Content/Buttons/ModularDemoButton"
+			) as Button
+			_expect(modular_button != null, "botão DEMONSTRAR MÓDULOS presente (ciclo %d)" % (cycle + 1))
+			if modular_button == null:
+				cycle_ok = false
+				break
+			modular_button.pressed.emit()
+			var demo: Node = await _wait_for_scene("ModularDemoSession", 2400)
+			_expect(demo != null, "DEMONSTRAR MÓDULOS abre a demonstração (ciclo %d)" % (cycle + 1))
+			if demo == null:
+				cycle_ok = false
+				break
+
+			var player: Node = demo.get_node_or_null("Player")
+			var pause_root: Control = demo.get_node_or_null("Interface/PauseRoot") as Control
+			_expect(player != null and pause_root != null, "demonstração tem jogador e menu de pausa")
+			if player == null or pause_root == null:
+				cycle_ok = false
+				break
+			_expect(not pause_root.visible and not demo.is_paused(), "demonstração começa sem pausa")
+			_expect(player.movement_enabled, "jogador habilitado ao entrar")
+
+			# Abrir e fechar a pausa várias vezes com ESC real (via viewport).
+			var toggle_ok: bool = true
+			for attempt: int in 3:
+				_push_key(KEY_ESCAPE)
+				await _frames(4)
+				if not (demo.is_paused() and pause_root.visible and not player.movement_enabled):
+					toggle_ok = false
+					break
+				_push_key(KEY_ESCAPE)
+				await _frames(4)
+				if demo.is_paused() or pause_root.visible or not player.movement_enabled:
+					toggle_ok = false
+					break
+			_expect(toggle_ok, "ESC abre e fecha a pausa 3 vezes sem travar (ciclo %d)" % (cycle + 1))
+			_expect(
+				not player.is_sprint_held(),
+				"retomar não deixa a corrida presa (ciclo %d)" % (cycle + 1)
+			)
+
+			# A pausa precisa segurar o jogador mesmo com uma tecla pressionada.
+			Input.action_press("move_forward")
+			await _frames(4)
+			_push_key(KEY_ESCAPE)
+			await _frames(4)
+			var frozen: Vector3 = (player as Node3D).global_position
+			await _frames(20)
+			var still: bool = (player as Node3D).global_position.distance_to(frozen) < 0.02
+			Input.action_release("move_forward")
+			_expect(still and demo.is_paused(), "jogador fica parado com o menu aberto")
+			_push_key(KEY_ESCAPE)
+			await _frames(6)
+			_expect(not demo.is_paused() and player.movement_enabled, "ESC retoma a demonstração")
+
+			# Voltar ao menu pelo botão (a troca de cena é agendada).
+			_push_key(KEY_ESCAPE)
+			await _frames(4)
+			var menu: Button = demo.get_node_or_null(
+				"Interface/PauseRoot/Center/Panel/Margin/Content/MenuButton"
+			) as Button
+			_expect(menu != null, "menu de pausa da demonstração tem VOLTAR AO MENU")
+			if menu == null:
+				cycle_ok = false
+				break
+			menu.pressed.emit()
+			title_again = await _wait_for_scene("TitleScreen", 2400)
+			_expect(title_again != null, "VOLTAR AO MENU retorna à tela inicial (ciclo %d)" % (cycle + 1))
+			if title_again == null:
+				cycle_ok = false
+				break
+		_expect(cycle_ok, "menu → demonstração → menu funcionou duas vezes seguidas")
+
 		_finish()
 
 
@@ -405,6 +485,21 @@ class FlowDriver:
 		event.keycode = KEY_F11
 		event.pressed = true
 		scene._unhandled_input(event)
+
+
+	## Injeta uma tecla pelo viewport — o mesmo caminho do teclado real,
+	## incluindo `_input`, GUI e `_unhandled_input`.
+	func _push_key(keycode: Key) -> void:
+		var down := InputEventKey.new()
+		down.keycode = keycode
+		down.physical_keycode = keycode
+		down.pressed = true
+		get_tree().root.push_input(down)
+		var up := InputEventKey.new()
+		up.keycode = keycode
+		up.physical_keycode = keycode
+		up.pressed = false
+		get_tree().root.push_input(up)
 
 
 	func _visible_section(screen: Node) -> Node:

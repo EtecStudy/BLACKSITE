@@ -120,6 +120,23 @@ var _crouch_action_was_pressed: bool = false
 ## porque `_update_stamina()` não roda com `movement_enabled == false`.
 var _recovery_delay_left: float = 0.0
 
+## Corrida observada nos **eventos** de teclado (pressionar/soltar), e não só
+## no estado da ação a cada frame.
+##
+## Motivo (bug relatado no teste manual da Etapa 11): no Godot 4.7.2 a ação de
+## uma tecla modificadora pode continuar "pressionada" em `Input` depois de
+## soltar Shift — o motor chega a registrar um eco extra de pressionamento
+## depois do evento de soltura (godotengine/godot#122554 e #122728). Como o
+## estado de corrida era lido apenas com `Input.is_action_pressed`, a corrida
+## ficava presa até apertar e soltar Shift de novo.
+##
+## O latch abaixo é alimentado por `_input()`: o evento de soltura sempre
+## desliga a corrida, mesmo que o estado da ação tenha ficado preso. Quando
+## nenhum evento de teclado foi visto (testes que usam `Input.action_press`),
+## o controlador continua lendo `Input.is_action_pressed` normalmente.
+var _sprint_event_held: bool = false
+var _sprint_event_seen: bool = false
+
 var _gravity: float = 9.8
 var _sensitivity_x: float = 1.0
 var _sensitivity_y: float = 1.0
@@ -253,7 +270,7 @@ func _wants_crouch(pressed_now: bool, just_pressed: bool) -> bool:
 ## 6. terminado o atraso, recupera `stamina_recovery_rate` por segundo até o
 ##    máximo, liberando a corrida ao atingir `sprint_resume_threshold`.
 func _update_stamina(delta: float) -> void:
-	var sprint_held: bool = Input.is_action_pressed(ACTION_SPRINT)
+	var sprint_held: bool = _sprint_pressed()
 
 	if _state == MovementState.RUNNING:
 		if stamina > 0.0:
@@ -292,7 +309,7 @@ func _update_state(input_dir: Vector2) -> void:
 		moving
 		and sprint_allowed
 		and not _is_crouched
-		and Input.is_action_pressed(ACTION_SPRINT)
+		and _sprint_pressed()
 	)
 	var next: MovementState
 	if _is_crouched:
@@ -441,8 +458,42 @@ func get_recovery_delay_left() -> float:
 
 
 ## True enquanto Shift está pressionado (a corrida está sendo tentada).
+##
+## Usa o latch de eventos quando ele já viu teclado de verdade: assim soltar
+## Shift desliga a corrida na hora, mesmo que `Input` tenha ficado preso.
 func is_sprint_held() -> bool:
+	return _sprint_pressed()
+
+
+## Estado de corrida efetivo: evento de teclado manda; sem eventos (testes com
+## `Input.action_press`), cai no estado da ação.
+func _sprint_pressed() -> bool:
+	if _sprint_event_seen and not _sprint_event_held:
+		return false
 	return Input.is_action_pressed(ACTION_SPRINT)
+
+
+## Registra pressionar/soltar de Shift nos eventos. Roda mesmo com
+## `movement_enabled == false` para que a pausa não deixe um estado velho.
+func _input(event: InputEvent) -> void:
+	var key_event := event as InputEventKey
+	if key_event == null or key_event.echo:
+		return
+	if not event.is_action(ACTION_SPRINT):
+		return
+	_sprint_event_seen = true
+	_sprint_event_held = key_event.pressed
+
+
+## Sincroniza o latch com o estado da ação quando nenhum evento de teclado foi
+## visto (testes que usam `Input.action_press`). Chamado pela sessão ao retomar
+## depois da pausa para não herdar uma corrida "presa".
+##
+## Se um evento de Shift já foi visto, ele continua mandando: apagar o latch ali
+## reintroduziria justamente o bug (o estado da ação pode estar preso).
+func reset_sprint_state() -> void:
+	if not _sprint_event_seen:
+		_sprint_event_held = Input.is_action_pressed(ACTION_SPRINT)
 
 
 ## 0.0 a 1.0 — útil para uma barra de stamina futura.

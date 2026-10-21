@@ -1,0 +1,66 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/wall_material.tres" id="m_wall"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_trim")
+size = Vector3(0.72, 0.22, 0.72)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(0.72, 0.22, 0.72)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_wall")
+size = Vector3(0.12, 2.68, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_4"]
+size = Vector3(0.12, 2.68, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_wall")
+size = Vector3(0.48, 2.68, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_6"]
+size = Vector3(0.48, 2.68, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_7"]
+material = ExtResource("m_trim")
+size = Vector3(0.72, 0.18, 0.72)
+
+[node name="SupportColumn" type="StaticBody3D"]
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 0)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="BaseCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="Web" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="WebCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0)
+shape = SubResource("BoxShape3D_box_4")
+
+[node name="FlangeA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, -0.2)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="FlangeACollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, -0.2)
+shape = SubResource("BoxShape3D_box_6")
+
+[node name="FlangeB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0.2)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="FlangeBCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0.2)
+shape = SubResource("BoxShape3D_box_6")
+
+[node name="Capital" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.81, 0)
+mesh = SubResource("BoxMesh_box_7")

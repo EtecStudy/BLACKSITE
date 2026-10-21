@@ -1,83 +1,84 @@
-# Black Sight — Etapa 11 · Sistema modular de salas (v0.11.0)
+# Black Sight — Etapa 11 · Correção da biblioteca modular (v0.11.1)
 
-**Tag:** `v0.11.0-etapa11-modular-rooms`
-**Arquivo:** `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip` (Windows x86_64)
-**Base:** `v0.9.1-etapa9-drop-fix`
+**Tag:** `v0.11.1-etapa11-correcao`
+**Arquivo:** `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` (Windows x86_64)
+**Base:** `v0.11.0-etapa11-modular-rooms` (preservada, não é sobrescrita)
 
-Esta entrega adiciona a **biblioteca modular de salas** e uma **cena de
-demonstração independente**, sem substituir a cena de teste de movimentação nem
-alterar os sistemas aprovados das etapas anteriores.
+Correção da Etapa 11: a biblioteca modular foi revisada para uma instalação
+industrial de grande escala, a cena de demonstração foi reconstruída sobre ela
+e dois bugs relatados no teste manual foram corrigidos: **ESC travava/voltava
+ao menu sem controle** e **a corrida ficava presa depois de soltar SHIFT**.
 
-## O que foi adicionado
+Nenhum sistema das etapas anteriores foi removido. Movimentação, stamina,
+interação, inventário e descarte continuam iguais (Etapas 5–9), assim como a
+sala de teste e a HUD aprovada.
 
-### Biblioteca (`maps/modular/`)
+## O que mudou na biblioteca
 
-- **Grade de 2 m** com convenções documentadas (origem, eixos, espessuras,
-  pontos de encaixe).
-- **Paredes**: reta de 2 m, reta de 4 m, vão de porta (1,2 × 2,4 m), abertura de
-  conexão (2,0 × 2,6 m), canto interno, canto externo e pilastra de junção.
-- **Pisos** de 2 × 2 m com o topo em `y = 0` e espessura de 0,25 m.
-- **Corredores**: reto (4 m), canto de 90° e junção em T (6 m + ramo de 2 m).
-- **Salas**: quadrada de 10 × 10 m e retangular de 10 × 14 m, montadas com as
-  mesmas peças (25 e 35 pisos, 4 cantos e 12/11 paredes).
-- **Estrutura**: pilar de 0,5 m com capitel e guarda-corpo de 2 m.
-- **Escada reta**: 20 degraus de 0,20 × 0,30 m, 4 m de subida em 6 m
-  (**33,7°**), rampa de colisão única e guardas laterais.
-- **Materiais compartilhados**: quatro `StandardMaterial3D`; nenhum modelo,
-  textura ou plugin externo.
+- **Escala industrial:** pé-direito de **6 m**, paredes de **0,40 m** de
+  espessura, corredor principal de **6 m** e secundário de **4 m**, salas de
+  pesquisa de **10 × 10 m** e **12 × 16 m**, sala técnica de **14 × 20 m**.
+- **25 peças**: pisos e tetos de 2 × 2 m, painéis de parede de 2 m, módulos de
+  **porta (4 m, vão 2,4 × 3,0 m)** e **abertura (4 m, vão 3,6 × 4,2 m)**,
+  cantos internos/externos, pilastra de encontro, pilar I, viga de 6 m, coluna
+  de apoio, guarda-corpo, escada e seis peças de corredor (reto principal,
+  reto secundário, canto em L, T, cruzamento em X e terminação com comporta).
+- **Salas prontas**: pesquisa 10 × 10, pesquisa 12 × 16, técnica 14 × 20 e
+  equipamentos 8 × 8, todas com piso, teto e pilares.
+- **Encaixe documentado** (grade de 2 m, pivôs, eixos, alturas) e verificado:
+  paredes compartilhadas entre ambientes (sem duplicação), pisos que terminam
+  na face da parede e soleiras que emendam os pisos.
 
-### Demonstração (`match/scenes/modular_demo.tscn`)
+## O que mudou na demonstração
 
-Aberta pelo botão **DEMONSTRAR MÓDULOS** na tela inicial (ou pela cena no
-editor). Usa o **mesmo jogador, a mesma HUD e o mesmo controlador** das outras
-cenas.
+- Corredor principal de **40 m** com vigas e luminárias industriais.
+- Sala de pesquisa A (10 × 10) com **dois acessos**: porta de 2,4 m e abertura
+  de 3,6 m.
+- Sala de pesquisa B (12 × 16) com porta de 2,4 m.
+- Ramal secundário de 4 m ligando o corredor à sala técnica, com **junção
+  modular** (abertura + pilastras) dos dois lados.
+- Sala técnica de 14 × 20 com **pórtico de 4 pilares e 4 vigas**, mezanino em
+  `y = 3,2`, **8 guarda-corpos** e **escada de 16 degraus** com guardas.
+- Sala de equipamentos 8 × 8 ligada à sala técnica.
+- 12 luzes pontuais, ambiente com névoa e tonemap, materiais industriais.
+- **706 nós** de geometria (257 pisos, 239 tetos, 142 paredes/portas).
 
-O cenário (`maps/scenes/modular_demo_room.tscn`) contém:
+## Correções
 
-- sala quadrada com porta no norte e abertura no leste;
-- corredor norte com fundo fechado (parede + pilastras);
-- corredor leste → canto de 90° → corredor sul → sala retangular;
-- sala retangular com mezanino em `y = 4` (15 pisos), 15 guarda-corpos e a
-  escada que liga os dois níveis;
-- quatro pilares na sala quadrada;
-- `Spawn` e iluminação própria (ambiente + 6 luzes pontuais).
+- **ESC:** o menu de pausa agora é real (CONTINUAR / CONFIGURAÇÕES / VOLTAR AO
+  MENU). O ESC abre e fecha a pausa; a troca de cena no botão de menu é
+  agendada com `call_deferred`, fora do evento de teclado. Abrir e fechar
+  repetidamente não corrompe estado e não trava.
+- **SHIFT:** o pressionamento/soltura passa a ser registrado por evento
+  (`_input`), e não só pelo estado da ação a cada frame — o estado da ação pode
+  ficar preso no Godot 4.7.2. Soltar Shift desliga a corrida imediatamente;
+  retomar depois da pausa não herda corrida.
+- **Peças atravessadas:** painéis duplicados no mesmo plano e cantos com braços
+  invadindo a parede foram eliminados na geração; a demonstração é validada
+  sem sobreposições nem frestas.
 
 ## Como testar manualmente
 
 1. Extraia o ZIP e mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta.
-2. Execute `BlackSight.exe`.
-3. Clique em **DEMONSTRAR MÓDULOS**.
-4. Ande pelo corredor, entre nas duas salas, passe pela porta e pela abertura,
-   suba a escada até o mezanino (`y = 4`) e desça de volta.
-5. Confira que os guarda-corpos seguram nas bordas fechadas do mezanino e que
-   não há frestas entre as peças.
-6. `ESC` volta ao menu; `F11` alterna a tela cheia.
-
-A cena **TESTAR MOVIMENTAÇÃO** (Etapa 5/9) continua exatamente como antes.
+2. Execute `BlackSight.exe` → **DEMONSTRAR MÓDULOS**.
+3. Ande e corra pelo corredor; solte SHIFT e confirme que a corrida para na
+   hora.
+4. Entre na sala de pesquisa pelos dois acessos (porta e abertura).
+5. Siga pelo ramal até a sala técnica e entre na sala de equipamentos.
+6. Suba a escada, ande pelo mezanino e encoste no guarda-corpo.
+7. Pressione **ESC** 5 vezes (abrir/fechar) e confirme que o jogador volta a
+   andar ao retomar.
+8. Abra **CONFIGURAÇÕES** pelo menu e volte; use **VOLTAR AO MENU** e entre na
+   demonstração outra vez.
+9. Confira que não há parede piscando nem fresta no piso dos corredores.
 
 ## Controles (inalterados)
 
 `W A S D` andar · `Shift` correr · `Ctrl` agachar · `E` interagir/pegar ·
-`1 2 3` selecionar slot · `G` soltar item · `R` remover (provisória) ·
-`Mouse` olhar · `Esc` pausa/menu · `F11` tela cheia.
+`1 2 3` selecionar · `G` soltar item · `R` remover · `Esc` pausa ·
+`F11` tela cheia
 
-## Testes automatizados
+## Ainda fora do escopo
 
-- `tools/ci/modular_test.tscn` — 10 grupos com física real: catálogo, dimensões,
-  vãos, cantos/piso, salas, corredores, escada, demonstração, caminhada e
-  escada com o jogador.
-- Regressão completa: `smoke_test`, `ui_flow_test`, `movement_test` (contém a
-  suíte do inventário e do drop), `drop_obstacle_test` e o build exportado.
-
-As contagens reais desta execução (Linux e Windows) e o SHA-256 do ZIP estão
-nas seções geradas automaticamente abaixo.
-
-## Limitações (propositais)
-
-- A demonstração é uma **amostra** das peças, não o laboratório final.
-- Sem geração procedural, portas funcionais/trancadas, chaves, cartões,
-  objetivos, distribuição de itens, criaturas/IA, multiplayer ou novas
-  mecânicas do jogador.
-- Paredes de altura fixa (4 m), salas sem teto e escada reta de 2 m de largura.
-- A posição definitiva da escada no mapa final não foi decidida.
-- O mezanino é uma plataforma com guarda-corpos, não um segundo andar fechado.
+Laboratório definitivo, portas funcionais, geração procedural, criaturas,
+objetivos de partida e multiplayer.

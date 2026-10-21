@@ -92,6 +92,7 @@ func _ready() -> void:
 	await _test_inventory()
 	await _test_drop()
 	_expect(_drop_completed, "grupo [24] executado até o fim")
+	await _test_sprint_release()
 
 	_finish()
 
@@ -2754,6 +2755,83 @@ func _expect(condition: bool, description: String) -> void:
 	else:
 		_failures.append(description)
 		printerr("  ✗ " + description)
+
+
+func _test_sprint_release() -> void:
+	print("[25] Soltura do SHIFT e corrida presa (revisão da Etapa 11)")
+	await _set_crouch_mode("hold")
+	await _place(Vector3(0, 0.05, 0), 0.0)
+	await _wait_recovery_delay()
+	_player.set_stamina(_player.max_stamina)
+	_player.reset_sprint_state()
+	Input.action_release("move_sprint")
+
+	# [1] Corrida normal com as ações simuladas (caminho dos outros grupos).
+	Input.action_press("move_forward")
+	Input.action_press("move_sprint")
+	await _frames(30)
+	_expect_state(PlayerController.MovementState.RUNNING, "[1] SHIFT pressionado corre")
+	_expect(_player.is_sprint_held(), "[1] is_sprint_held() verdadeiro")
+
+	# [2] O motor deixa a ação presa, mas chega um evento REAL de soltura:
+	#     a corrida precisa desligar na hora. Este é o bug relatado.
+	var release := InputEventKey.new()
+	release.keycode = KEY_SHIFT
+	release.physical_keycode = KEY_SHIFT
+	release.pressed = false
+	_player._input(release)
+	await _frames(4)
+	_expect(not _player.is_sprint_held(), "[2] evento de soltura desliga a corrida")
+	_expect_state(PlayerController.MovementState.WALKING, "[2] ação presa não mantém RUNNING")
+	_expect(
+		Input.is_action_pressed("move_sprint"),
+		"[2] o teste manteve a ação presa de propósito"
+	)
+	# Solta de verdade para os próximos passos.
+	Input.action_release("move_sprint")
+	_player.reset_sprint_state()
+	await _frames(3)
+
+	# [3] Caminho real de teclado pelo viewport: pressionar e soltar.
+	var press := InputEventKey.new()
+	press.keycode = KEY_SHIFT
+	press.physical_keycode = KEY_SHIFT
+	press.pressed = true
+	get_tree().root.push_input(press)
+	await _frames(20)
+	_expect(_player.is_sprint_held(), "[3] tecla SHIFT pressionada corre")
+	_expect_state(PlayerController.MovementState.RUNNING, "[3] estado RUNNING")
+	var release_real := InputEventKey.new()
+	release_real.keycode = KEY_SHIFT
+	release_real.physical_keycode = KEY_SHIFT
+	release_real.pressed = false
+	get_tree().root.push_input(release_real)
+	await _frames(20)
+	_expect(not _player.is_sprint_held(), "[3] soltar SHIFT pelo teclado desliga a corrida")
+	_expect_state(PlayerController.MovementState.WALKING, "[3] volta a ANDANDO")
+
+	# [4] Pausa: Shift pressionado, menu aberto e a tecla solta com o jogo
+	#     parado. Ao retomar, nada de corrida herdada.
+	Input.action_press("move_sprint")
+	var pause_press := InputEventKey.new()
+	pause_press.keycode = KEY_SHIFT
+	pause_press.physical_keycode = KEY_SHIFT
+	pause_press.pressed = true
+	_player._input(pause_press)
+	await _frames(10)
+	_expect(_player.is_sprint_held(), "[4] corrida ativa antes da pausa")
+	_player.movement_enabled = false
+	await _frames(6)
+	_player._input(release)
+	Input.action_release("move_sprint")
+	await _frames(6)
+	_player.movement_enabled = true
+	await _frames(10)
+	_expect(not _player.is_sprint_held(), "[4] retomar não herda corrida da pausa")
+	_expect_state(PlayerController.MovementState.WALKING, "[4] estado WALKING ao retomar")
+	Input.action_release("move_forward")
+	_player.reset_sprint_state()
+	await _frames(4)
 
 
 func _finish() -> void:

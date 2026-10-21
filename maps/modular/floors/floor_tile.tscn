@@ -1,20 +1,28 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/floor_material.tres" id="1_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/floor_material.tres" id="m_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
 
-[sub_resource type="BoxMesh" id="MeshBox_1"]
-material = ExtResource("1_floor")
-size = Vector3(2, 0.25, 2)
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_floor")
+size = Vector3(2, 0.3, 2)
 
-[sub_resource type="BoxShape3D" id="ShapeBox_2"]
-size = Vector3(2, 0.25, 2)
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(2, 0.3, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_trim")
+size = Vector3(2, 0.012, 0.05)
 
 [node name="FloorTile" type="StaticBody3D"]
-
 [node name="Slab" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
-mesh = SubResource("MeshBox_1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+mesh = SubResource("BoxMesh_box_1")
 
 [node name="SlabCollision" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
-shape = SubResource("ShapeBox_2")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="Seam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.004, 0)
+mesh = SubResource("BoxMesh_box_3")

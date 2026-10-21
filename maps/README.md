@@ -9,14 +9,15 @@ controlador em primeira pessoa e uma **biblioteca modular de peças** de salas.
 | Caminho | O que é |
 | --- | --- |
 | `maps/scenes/test_room.tscn` | Sala 24 × 24 m: piso, paredes, pilares, caixas, luzes e `Spawn` |
-| `maps/scenes/modular_demo_room.tscn` | Cenário da demonstração modular (salas, corredores, mezanino e escada) |
-| `maps/modular/walls/` | Paredes retas (2 m/4 m), porta, abertura, cantos interno/externo e pilastra |
-| `maps/modular/floors/` | Piso 2 × 2 m com topo em `y = 0` |
-| `maps/modular/corridors/` | Corredor reto, canto e junção em T |
-| `maps/modular/rooms/` | Sala quadrada 10 × 10 m e sala retangular 10 × 14 m |
-| `maps/modular/stairs/` | Escada reta: 4 m de subida em 6 m (33,7°) |
-| `maps/modular/structure/` | Pilar e guarda-corpo de 2 m |
-| `maps/modular/materials/` | Os quatro materiais compartilhados por todas as peças |
+| `maps/scenes/modular_demo_room.tscn` | Demonstração modular industrial (corredor de 40 m, 2 salas de pesquisa, ramal, sala técnica com mezanino e escada) |
+| `maps/modular/walls/` | Painel de 2 × 6 m, porta e abertura de 4 m, cantos e pilastra de encontro |
+| `maps/modular/floors/` | Piso 2 × 2 m (topo em `y = 0`) e soleira de 2 m |
+| `maps/modular/ceilings/` | Laje de teto e laje com luminária (2 × 2 m) |
+| `maps/modular/corridors/` | Principal (6 m), secundário (4 m), canto em L, T, X e terminação |
+| `maps/modular/rooms/` | Salas de 10 × 10, 12 × 16, 14 × 20 e 8 × 8 m |
+| `maps/modular/stairs/` | Escada de 16 degraus: 3,2 m de subida em 5,6 m (29,7°) |
+| `maps/modular/structure/` | Pilar I, coluna de apoio, viga de 6 m e guarda-corpo de 2 m |
+| `maps/modular/materials/` | Os sete materiais compartilhados por todas as peças |
 
 Convenções de grade, origens, medidas e instruções de encaixe estão em
 [`docs/ETAPA-11.md`](../docs/ETAPA-11.md).

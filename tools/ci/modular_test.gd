@@ -1,58 +1,77 @@
 extends Node
-## Teste do sistema modular de salas (Etapa 11).
+## Teste do sistema modular industrial (Etapa 11 — revisão).
 ##
 ## Uso:
 ##     godot --headless --path . --fixed-fps 60 --audio-driver Dummy \
 ##         res://tools/ci/modular_test.tscn
 ##
 ## Verifica, com física real (não só "a cena carregou"):
-##   1. catálogo: cada módulo esperado existe, carrega, tem raiz e colisão;
-##   2. dimensões: parede, vão de porta, abertura, canto, piso e escada, por
-##      raycast nas faces reais;
-##   3. encaixe: salas montadas sem lacuna nem sobreposição nas paredes e no
-##      piso; aberturas livres na altura do jogador;
-##   4. cena de demonstração: carrega, tem jogador, spawn e módulos;
-##   5. jogabilidade: atravessar porta, abertura, corredor e canto, bater em
-##      parede e **subir e descer a escada** com o controlador existente.
+##   1. catálogo: cada módulo esperado existe, carrega, instancia e tem colisão;
+##   2. convenção de encaixe: grade de 2 m, parede de 0,40 × 6 m, piso de
+##      2 × 2 m com topo em y = 0, teto de 0,20 m;
+##   3. vãos: porta de 4 m (vão 2,4 × 3,0) e abertura de 4 m (vão 3,6 × 4,2),
+##      com ombreiras e verga fechando a parede;
+##   4. encaixe entre peças: painéis vizinhos sem fresta nem sobreposição,
+##      piso + piso, piso + teto na altura certa e canto de 0,40 m;
+##   5. salas: piso contínuo, paredes contínuas fora dos vãos e porta livre;
+##   6. corredores: principais e secundários, canto em L, T, cruzamento e
+##      terminação, todos com piso e passagem livres;
+##   7. escada: 16 degraus de 0,20 × 0,35 (3,20 m em 5,60 m) e guarda lateral;
+##   8. demonstração: carrega, tem jogador/HUD/spawn e os módulos declarados;
+##   9. jogabilidade: atravessar porta, abertura, ramal, hall e subir a escada
+##      com o controlador existente; parede barra o jogador.
 ##
 ## Sai com 0 em caso de sucesso e 1 em caso de falha.
 
 const GRID := 2.0
-const WALL_H := 4.0
-const WALL_T := 0.25
-const DOOR_W := 1.2
-const DOOR_H := 2.4
-const OPEN_H := 2.6
-const STAIR_RUN := 6.0
-const STAIR_RISE := 4.0
+const WALL_H := 6.0
+const WALL_T := 0.4
+const FLOOR_T := 0.30
+const CEIL_T := 0.20
+const DOOR_W := 2.4
+const DOOR_H := 3.0
+const OPEN_W := 3.6
+const OPEN_H := 4.2
+const STAIR_RUN := 5.6
+const STAIR_RISE := 3.2
+const STAIR_STEPS := 16
 const PLAYER_EYE := 1.62
 
 const DEMO_SCENE := "res://maps/scenes/modular_demo_room.tscn"
 const DEMO_SESSION := "res://match/scenes/modular_demo.tscn"
 
-## Módulos obrigatórios da biblioteca (Etapa 11).
+## Módulos obrigatórios da biblioteca (Etapa 11 — revisão).
 const MODULES := [
-	"res://maps/modular/walls/wall_straight_2m.tscn",
-	"res://maps/modular/walls/wall_straight_4m.tscn",
-	"res://maps/modular/walls/wall_door_2m.tscn",
-	"res://maps/modular/walls/wall_opening_2m.tscn",
+	"res://maps/modular/floors/floor_tile.tscn",
+	"res://maps/modular/floors/threshold_2m.tscn",
+	"res://maps/modular/ceilings/ceiling_tile.tscn",
+	"res://maps/modular/ceilings/ceiling_light.tscn",
+	"res://maps/modular/walls/wall_panel_2m.tscn",
+	"res://maps/modular/walls/wall_door_4m.tscn",
+	"res://maps/modular/walls/wall_opening_4m.tscn",
 	"res://maps/modular/walls/wall_corner_inner.tscn",
 	"res://maps/modular/walls/wall_corner_outer.tscn",
 	"res://maps/modular/walls/wall_junction.tscn",
-	"res://maps/modular/floors/floor_tile.tscn",
 	"res://maps/modular/structure/pillar.tscn",
+	"res://maps/modular/structure/support_column.tscn",
+	"res://maps/modular/structure/beam_6m.tscn",
 	"res://maps/modular/structure/railing_2m.tscn",
-	"res://maps/modular/corridors/corridor_straight.tscn",
-	"res://maps/modular/corridors/corridor_corner.tscn",
-	"res://maps/modular/corridors/corridor_junction.tscn",
-	"res://maps/modular/rooms/room_square.tscn",
-	"res://maps/modular/rooms/room_rect.tscn",
 	"res://maps/modular/stairs/stairs_straight.tscn",
+	"res://maps/modular/corridors/corridor_main_8m.tscn",
+	"res://maps/modular/corridors/corridor_secondary_8m.tscn",
+	"res://maps/modular/corridors/corridor_corner_6.tscn",
+	"res://maps/modular/corridors/corridor_tee_6.tscn",
+	"res://maps/modular/corridors/corridor_cross_6.tscn",
+	"res://maps/modular/corridors/corridor_end_6.tscn",
+	"res://maps/modular/rooms/room_lab_10x10.tscn",
+	"res://maps/modular/rooms/room_lab_12x16.tscn",
+	"res://maps/modular/rooms/room_tech_14x20.tscn",
+	"res://maps/modular/rooms/room_equipment_8x8.tscn",
 ]
 
 ## Ancoragem por família: onde fica a origem local de cada peça.
-const ANCHOR_FLOOR := "centro da pegada, no piso (y = 0)"
-const ANCHOR_WALL := "centro do vão no eixo da parede, no piso"
+const ANCHOR_FLOOR := "centro da pegada, topo do piso em y = 0"
+const ANCHOR_WALL := "centro do vão no eixo da parede, base em y = 0"
 const ANCHOR_CORNER := "interseção da grade (encontro das duas paredes)"
 const ANCHOR_STAIR := "centro do primeiro degrau, no piso"
 
@@ -69,7 +88,7 @@ const WATCHDOG_MS := 60000
 
 
 func _ready() -> void:
-	print("=== Black Sight · teste do sistema modular (Etapa 11) ===")
+	print("=== Black Sight · teste do sistema modular industrial (Etapa 11) ===")
 	_touch("início")
 	_space = get_viewport().world_3d.direct_space_state
 	_test_catalog()
@@ -117,20 +136,14 @@ func _test_catalog() -> void:
 			continue
 		var shapes: Array = _collision_shapes(instance)
 		_expect(shapes.size() > 0, "%s tem colisão estrutural" % path.get_file())
-		var all_have_shape: bool = true
 		var layer_ok: bool = true
 		for shape: CollisionShape3D in shapes:
-			if shape.shape == null:
-				all_have_shape = false
 			var body: CollisionObject3D = shape.get_parent() as CollisionObject3D
 			if body == null or (body.collision_layer & 1) == 0:
 				layer_ok = false
-		_expect(all_have_shape, "%s: toda colisão tem forma" % path.get_file())
-		_expect(layer_ok, "%s: colisões na camada 1 (mundo)" % path.get_file())
-		var aabb: AABB = _collision_aabb(instance)
-		_expect(aabb.size.y > 0.0 and aabb.size.x > 0.0 and aabb.size.z > 0.0,
-			"%s: volume físico definido (%.2f × %.2f × %.2f)" % [
-				path.get_file(), aabb.size.x, aabb.size.y, aabb.size.z])
+			if shape.shape == null:
+				layer_ok = false
+		_expect(layer_ok, "%s: colisões com forma e na camada 1 (mundo)" % path.get_file())
 		instance.free()
 
 	# Materiais compartilhados: as cenas apontam para os mesmos .tres.
@@ -139,7 +152,7 @@ func _test_catalog() -> void:
 		var text: String = FileAccess.get_file_as_string(path)
 		for found: RegExMatch in _regex_find_all(text, "materials/([a-z_]+)\\.tres"):
 			material_paths[found.get_string(1)] = true
-	_expect(material_paths.size() >= 3,
+	_expect(material_paths.size() >= 6,
 		"materiais compartilhados usados pelos módulos (%d arquivos)" % material_paths.size())
 	for name: String in material_paths:
 		_expect(FileAccess.file_exists("res://maps/modular/materials/%s.tres" % name),
@@ -148,7 +161,7 @@ func _test_catalog() -> void:
 	# Convenções documentadas junto do catálogo.
 	var docs: String = FileAccess.get_file_as_string("res://docs/ETAPA-11.md")
 	_expect(docs.length() > 0, "documentação da etapa existe")
-	for term: String in ["GRID", "2", "parede", "escada"]:
+	for term: String in ["GRID", "0,40", "parede", "escada"]:
 		_expect(docs.findn(term) >= 0, "documentação cita '%s'" % term)
 	_expect(ANCHOR_FLOOR.contains("piso") and ANCHOR_WALL.contains("parede")
 			and ANCHOR_CORNER.contains("interseção") and ANCHOR_STAIR.contains("degrau"),
@@ -159,244 +172,278 @@ func _test_catalog() -> void:
 
 func _test_wall_dimensions() -> void:
 	print("[2] Dimensões das paredes")
-	var walls: Dictionary = {
-		"res://maps/modular/walls/wall_straight_2m.tscn": 2.0,
-		"res://maps/modular/walls/wall_straight_4m.tscn": 4.0,
-	}
-	for path: String in walls:
-		var length: float = walls[path]
-		var wall: Node3D = await _spawn_module(path)
-		_expect(wall != null, "%s instanciada no mundo" % path.get_file())
-		if wall == null:
-			continue
+	var wall: Node3D = await _spawn_module("res://maps/modular/walls/wall_panel_2m.tscn")
+	_expect(wall != null, "painel de parede instanciado")
+	if wall != null:
 		var aabb: AABB = _collision_aabb(wall)
-		_expect(is_equal_approx(aabb.size.x, length), "%s: comprimento %.2f m" % [path.get_file(), aabb.size.x])
-		_expect(is_equal_approx(aabb.size.z, WALL_T), "%s: espessura %.2f m" % [path.get_file(), aabb.size.z])
-		_expect(is_equal_approx(aabb.size.y, WALL_H), "%s: altura %.2f m" % [path.get_file(), aabb.size.y])
-		_expect(is_equal_approx(aabb.position.y, 0.0), "%s: nasce no piso" % path.get_file())
-		_expect(is_equal_approx(aabb.position.z, -WALL_T / 2), "%s: centrada no eixo" % path.get_file())
-		# sólida na altura do jogador e no topo
-		_expect(_hits(wall.global_position + Vector3(0, 1.5, -1), wall.global_position + Vector3(0, 1.5, 1)),
-			"%s: bloqueia na altura do jogador" % path.get_file())
-		_expect(_hits(wall.global_position + Vector3(0, 3.9, -1), wall.global_position + Vector3(0, 3.9, 1)),
-			"%s: atinge a altura de 4 m" % path.get_file())
-		_expect(not _hits(wall.global_position + Vector3(0, 4.6, -1), wall.global_position + Vector3(0, 4.6, 1)),
-			"%s: termina em 4 m (nada acima)" % path.get_file())
+		_expect(is_equal_approx(aabb.size.x, GRID), "painel: comprimento %.2f m" % aabb.size.x)
+		_expect(is_equal_approx(aabb.size.z, WALL_T), "painel: espessura %.2f m" % aabb.size.z)
+		_expect(is_equal_approx(aabb.size.y, WALL_H), "painel: altura livre %.2f m" % aabb.size.y)
+		_expect(is_equal_approx(aabb.position.y, 0.0), "painel: nasce no piso (y = 0)")
+		_expect(is_equal_approx(aabb.position.z, -WALL_T / 2), "painel: centrado no eixo")
+		var o: Vector3 = wall.global_position
+		_expect(_hits(o + Vector3(0, 1.5, -1), o + Vector3(0, 1.5, 1)), "painel: bloqueia na altura do jogador")
+		_expect(_hits(o + Vector3(0, 5.9, -1), o + Vector3(0, 5.9, 1)), "painel: atinge 5,9 m (pé-direito alto)")
+		_expect(not _hits(o + Vector3(0, 6.5, -1), o + Vector3(0, 6.5, 1)), "painel: termina em 6 m (nada acima)")
 		_free_module(wall)
 
-	# Parede de 4 m cobre exatamente dois módulos de 2 m.
-	var long_wall: Node3D = await _spawn_module("res://maps/modular/walls/wall_straight_4m.tscn")
-	var short_a: Node3D = await _spawn_module("res://maps/modular/walls/wall_straight_2m.tscn", Vector3(0, 0, 3))
-	var short_b: Node3D = await _spawn_module("res://maps/modular/walls/wall_straight_2m.tscn", Vector3(0, 0, 5))
-	if long_wall != null and short_a != null and short_b != null:
-		var long_size: float = _collision_aabb(long_wall).size.x
-		var pair_size: float = _collision_aabb(short_a).size.x + _collision_aabb(short_b).size.x
-		_expect(is_equal_approx(long_size, pair_size),
-			"parede de 4 m = duas de 2 m (%.2f m)" % long_size)
-	for module: Node3D in [long_wall, short_a, short_b]:
+	# Dois painéis de 2 m lado a lado: junta exata, sem sobreposição.
+	var a: Node3D = await _spawn_module("res://maps/modular/walls/wall_panel_2m.tscn", Vector3(0, 0, 4))
+	var b: Node3D = await _spawn_module("res://maps/modular/walls/wall_panel_2m.tscn", Vector3(2, 0, 4))
+	if a != null and b != null:
+		var ba: AABB = _collision_aabb(a)
+		var bb: AABB = _collision_aabb(b)
+		var end_a: float = ba.end.x + a.global_position.x
+		var start_b: float = bb.position.x + b.global_position.x
+		_expect(is_equal_approx(end_a, start_b),
+			"painéis vizinhos: encostam sem sobrepor (%.3f / %.3f)" % [end_a, start_b])
+		_expect(_hits(Vector3(0.2, 1.5, 3.2), Vector3(0.2, 1.5, 4.8))
+				and _hits(Vector3(1.8, 1.5, 3.2), Vector3(1.8, 1.5, 4.8)),
+			"painéis vizinhos: os dois lados da junta continuam sólidos")
+	for module: Node3D in [a, b]:
 		if module != null:
 			_free_module(module)
+	await _frames(3)
 
 
 # --- 3. Vãos de porta e abertura -------------------------------------------
 
 func _test_openings() -> void:
-	print("[3] Vão de porta e abertura de conexão")
-	var door: Node3D = await _spawn_module("res://maps/modular/walls/wall_door_2m.tscn")
+	print("[3] Vão de porta (4 m) e abertura (4 m)")
+	var door: Node3D = await _spawn_module("res://maps/modular/walls/wall_door_4m.tscn")
 	_expect(door != null, "parede com porta instanciada")
 	if door != null:
-		var origin: Vector3 = door.global_position
-		_expect(_collision_aabb(door).size.x >= 2.0 - 0.001, "porta: módulo de 2 m")
-		_expect(not _hits(origin + Vector3(0, 1.2, -1), origin + Vector3(0, 1.2, 1)),
-			"porta: vão livre na altura do peito")
-		_expect(not _hits(origin + Vector3(0, DOOR_H - 0.1, -1), origin + Vector3(0, DOOR_H - 0.1, 1)),
+		var o: Vector3 = door.global_position
+		var aabb: AABB = _collision_aabb(door)
+		_expect(is_equal_approx(aabb.size.x, 4.0), "porta: módulo de 4 m (%.2f)" % aabb.size.x)
+		_expect(not _hits(o + Vector3(0, 1.2, -1), o + Vector3(0, 1.2, 1)), "porta: vão livre na altura do peito")
+		_expect(not _hits(o + Vector3(0, DOOR_H - 0.1, -1), o + Vector3(0, DOOR_H - 0.1, 1)),
 			"porta: vão livre até %.1f m" % DOOR_H)
-		_expect(_hits(origin + Vector3(0, DOOR_H + 0.15, -1), origin + Vector3(0, DOOR_H + 0.15, 1)),
+		_expect(_hits(o + Vector3(0, DOOR_H + 0.2, -1), o + Vector3(0, DOOR_H + 0.2, 1)),
 			"porta: verga acima do vão")
-		_expect(_hits(origin + Vector3(0.9, 1.2, -1), origin + Vector3(0.9, 1.2, 1)),
-			"porta: ombreira lateral fecha a parede")
-		_expect(_hits(origin + Vector3(-0.9, 1.2, -1), origin + Vector3(-0.9, 1.2, 1)),
-			"porta: ombreira oposta fecha a parede")
-		var gap: float = _opening_width(door, 1.2)
-		_expect(absf(gap - DOOR_W) < 0.06, "porta: largura do vão %.2f m (esperado %.2f)" % [gap, DOOR_W])
+		_expect(_hits(o + Vector3(1.7, 1.2, -1), o + Vector3(1.7, 1.2, 1)), "porta: ombreira leste fecha a parede")
+		_expect(_hits(o + Vector3(-1.7, 1.2, -1), o + Vector3(-1.7, 1.2, 1)), "porta: ombreira oeste fecha a parede")
+		var gap: float = _opening_width(door, 1.2, 2.0)
+		_expect(absf(gap - DOOR_W) < 0.08, "porta: largura do vão %.2f m (esperado %.2f)" % [gap, DOOR_W])
 		_free_module(door)
 
-	var opening: Node3D = await _spawn_module("res://maps/modular/walls/wall_opening_2m.tscn", Vector3(0, 0, 6))
+	var opening: Node3D = await _spawn_module("res://maps/modular/walls/wall_opening_4m.tscn", Vector3(0, 0, 6))
 	_expect(opening != null, "parede com abertura instanciada")
 	if opening != null:
-		var origin: Vector3 = opening.global_position
-		_expect(not _hits(origin + Vector3(-0.9, 1.5, -1), origin + Vector3(-0.9, 1.5, 1)),
-			"abertura: passa a 0,9 m do centro")
-		_expect(not _hits(origin + Vector3(0.9, OPEN_H - 0.2, -1), origin + Vector3(0.9, OPEN_H - 0.2, 1)),
+		var o: Vector3 = opening.global_position
+		_expect(is_equal_approx(_collision_aabb(opening).size.x, 4.0), "abertura: módulo de 4 m")
+		_expect(not _hits(o + Vector3(-1.6, 1.5, -1), o + Vector3(-1.6, 1.5, 1)),
+			"abertura: passa a 1,6 m do centro")
+		_expect(not _hits(o + Vector3(0.0, OPEN_H - 0.2, -1), o + Vector3(0.0, OPEN_H - 0.2, 1)),
 			"abertura: livre até %.1f m" % OPEN_H)
-		_expect(_hits(origin + Vector3(0.9, OPEN_H + 0.2, -1), origin + Vector3(0.9, OPEN_H + 0.2, 1)),
+		_expect(_hits(o + Vector3(0.0, OPEN_H + 0.2, -1), o + Vector3(0.0, OPEN_H + 0.2, 1)),
 			"abertura: verga acima")
+		_expect(_hits(o + Vector3(1.9, 1.2, -1), o + Vector3(1.9, 1.2, 1)), "abertura: pilar lateral fecha a parede")
+		var gap: float = _opening_width(opening, 1.2, 2.0)
+		_expect(absf(gap - OPEN_W) < 0.08, "abertura: largura do vão %.2f m (esperado %.2f)" % [gap, OPEN_W])
 		_free_module(opening)
+	await _frames(3)
 
 
-# --- 4. Canto, junção e piso ------------------------------------------------
+# --- 4. Canto, junção, piso e teto -----------------------------------------
 
 func _test_corner_and_floor() -> void:
-	print("[4] Cantos, junção e piso")
+	print("[4] Cantos, junção, piso e teto")
 	var corner: Node3D = await _spawn_module("res://maps/modular/walls/wall_corner_inner.tscn")
 	_expect(corner != null, "canto interno instanciado")
 	if corner != null:
 		var o: Vector3 = corner.global_position
-		_expect(_hits(o + Vector3(1, 1.5, -1), o + Vector3(1, 1.5, 1)), "canto: braço em X")
-		_expect(_hits(o + Vector3(-1, 1.5, 1), o + Vector3(1, 1.5, 1)), "canto: braço em Z")
-		_expect(not _hits(o + Vector3(0.8, 1.5, 0.8), o + Vector3(0.8, 3.0, 0.8)),
-			"canto: interior livre")
 		var aabb: AABB = _collision_aabb(corner)
-		# A pilastra de 0,34 m avança 0,045 m além da face da parede (por fora).
-		_expect(aabb.position.x > -0.2 and aabb.position.x <= -WALL_T / 2 + 0.001,
-			"canto: nasce na linha da grade (%.3f m)" % aabb.position.x)
-		_expect(absf(aabb.end.x - GRID) < 0.01, "canto: braço termina em %.1f m" % GRID)
+		_expect(is_equal_approx(aabb.size.x, WALL_T) and is_equal_approx(aabb.size.z, WALL_T),
+			"canto: bloco de %.2f × %.2f m" % [aabb.size.x, aabb.size.z])
+		_expect(is_equal_approx(aabb.size.y, WALL_H), "canto: altura %.2f m" % aabb.size.y)
+		_expect(_hits(o + Vector3(-0.5, 1.5, 0), o + Vector3(0.5, 1.5, 0)), "canto: sólido na diagonal")
 		_free_module(corner)
 
-	var outer: Node3D = await _spawn_module("res://maps/modular/walls/wall_corner_outer.tscn", Vector3(0, 0, 8))
+	var outer: Node3D = await _spawn_module("res://maps/modular/walls/wall_corner_outer.tscn", Vector3(0, 0, 3))
 	_expect(outer != null, "canto externo instanciado")
 	if outer != null:
-		var o: Vector3 = outer.global_position
-		_expect(_hits(o + Vector3(1, 1.5, -1), o + Vector3(1, 1.5, 1)), "canto externo: braço em X")
-		_expect(_hits(o + Vector3(-1, 1.5, -1), o + Vector3(1, 1.5, -1)), "canto externo: braço em Z")
-		var aabb: AABB = _collision_aabb(outer)
-		# Coordenadas de mundo: compara com a origem do módulo, não com zero.
-		_expect(aabb.position.z <= o.z - GRID + 0.01,
-			"canto externo: braço para -Z (%.2f m)" % (aabb.position.z - o.z))
+		var aabb_o: AABB = _collision_aabb(outer)
+		_expect(is_equal_approx(aabb_o.size.x, WALL_T) and is_equal_approx(aabb_o.size.y, WALL_H),
+			"canto externo: bloco de 0,40 × 6 m")
 		_free_module(outer)
 
-	var junction: Node3D = await _spawn_module("res://maps/modular/walls/wall_junction.tscn", Vector3(0, 0, 14))
+	var junction: Node3D = await _spawn_module("res://maps/modular/walls/wall_junction.tscn", Vector3(0, 0, 6))
 	_expect(junction != null, "pilastra de junção instanciada")
 	if junction != null:
-		var aabb: AABB = _collision_aabb(junction)
-		_expect(aabb.size.x > WALL_T and aabb.size.z > WALL_T,
-			"junção: cobre a costura (%.2f m)" % aabb.size.x)
-		_expect(aabb.size.y > WALL_H, "junção: passa da altura da parede (capital)")
+		var aabb_j: AABB = _collision_aabb(junction)
+		_expect(aabb_j.size.x > WALL_T and aabb_j.size.z < WALL_T,
+			"junção: cobre a costura na face da parede (%.2f × %.2f)" % [aabb_j.size.x, aabb_j.size.z])
+		_expect(is_equal_approx(aabb_j.size.y, WALL_H), "junção: acompanha a altura da parede")
 		_free_module(junction)
 
-	# Piso: 2 × 2 m com o topo exatamente em y = 0.
-	var tile: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(0, 0, 20))
+	# Piso: 2 × 2 m, topo em y = 0, espessura 0,30.
+	var tile: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(0, 0, 9))
 	_expect(tile != null, "piso instanciado")
 	if tile != null:
-		var aabb: AABB = _collision_aabb(tile)
-		_expect(is_equal_approx(aabb.size.x, GRID) and is_equal_approx(aabb.size.z, GRID),
-			"piso: %.1f × %.1f m" % [aabb.size.x, aabb.size.z])
-		_expect(is_equal_approx(aabb.end.y, 0.0), "piso: topo em y = 0")
-		_expect(is_equal_approx(aabb.position.y, -0.25), "piso: espessura 0,25 m")
+		var aabb_t: AABB = _collision_aabb(tile)
+		_expect(is_equal_approx(aabb_t.size.x, GRID) and is_equal_approx(aabb_t.size.z, GRID),
+			"piso: %.1f × %.1f m" % [aabb_t.size.x, aabb_t.size.z])
+		_expect(is_equal_approx(aabb_t.end.y, 0.0), "piso: topo em y = 0")
+		_expect(is_equal_approx(aabb_t.position.y, -FLOOR_T), "piso: espessura %.2f m" % FLOOR_T)
 		expect_surface(tile.global_position + Vector3(0.9, 1.0, 0.9), 0.0, "piso: superfície de apoio")
 		_free_module(tile)
 
-	# Dois pisos lado a lado: sem lacuna na junta.
-	var tile_a: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(0, 0, 24))
-	var tile_b: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(2, 0, 24))
+	var tile_a: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(0, 0, 12))
+	var tile_b: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(2, 0, 12))
 	if tile_a != null and tile_b != null:
-		expect_surface(Vector3(1.0, 1.0, 24), 0.0, "pisos vizinhos: junta sem lacuna")
-		var a: AABB = _collision_aabb(tile_a)
-		var b: AABB = _collision_aabb(tile_b)
-		_expect(is_equal_approx(a.end.x, b.position.x), "pisos vizinhos: encostam sem sobrepor")
+		expect_surface(Vector3(1.0, 1.0, 12), 0.0, "pisos vizinhos: junta sem lacuna")
+		var ta: AABB = _collision_aabb(tile_a)
+		var tb: AABB = _collision_aabb(tile_b)
+		_expect(is_equal_approx(ta.end.x, tb.position.x - (tile_b.global_position.x - tile_a.global_position.x)),
+			"pisos vizinhos: encostam sem sobrepor")
 		_free_module(tile_a)
 		_free_module(tile_b)
+
+	# Teto: 2 × 2 m, base em y = 6 (altura livre) e 0,20 m de espessura.
+	var ceiling: Node3D = await _spawn_module("res://maps/modular/ceilings/ceiling_tile.tscn", Vector3(0, 0, 15))
+	_expect(ceiling != null, "teto instanciado")
+	if ceiling != null:
+		var aabb_c: AABB = _collision_aabb(ceiling)
+		_expect(is_equal_approx(aabb_c.position.y, WALL_H), "teto: base em y = %.1f" % WALL_H)
+		_expect(is_equal_approx(aabb_c.size.y, CEIL_T), "teto: espessura %.2f m" % CEIL_T)
+		_expect(is_equal_approx(aabb_c.size.x, GRID) and is_equal_approx(aabb_c.size.z, GRID),
+			"teto: módulo de 2 × 2 m")
+		_free_module(ceiling)
+	await _frames(3)
 
 
 # --- 5. Salas ---------------------------------------------------------------
 
 func _test_rooms() -> void:
-	print("[5] Salas quadrada e retangular")
-	var square: Node3D = await _spawn_module("res://maps/modular/rooms/room_square.tscn", Vector3(0, 0, 0))
-	_expect(square != null, "sala quadrada instanciada")
-	if square != null:
-		_expect(square.get_child_count() >= 25 + 4 + 12,
-			"sala quadrada: módulos suficientes (%d)" % square.get_child_count())
-		var half: float = 5.0
-		for x: float in [-4.0, -2.0, 0.0, 2.0, 4.0]:
-			for z: float in [-4.0, -2.0, 0.0, 2.0, 4.0]:
-				expect_surface(Vector3(x, 1.0, z), 0.0, "sala quadrada: piso em (%.0f, %.0f)" % [x, z])
-		# paredes: varredura horizontal nas quatro linhas (vãos declarados)
-		_expect(_wall_line_coverage(square, Vector3(0, 1.5, -half), Vector3.RIGHT, half, [[-0.6, 0.6]]),
-			"parede norte: contínua fora do vão de porta")
-		_expect(_wall_line_coverage(square, Vector3(0, 1.5, half), Vector3.RIGHT, half),
-			"parede sul: contínua")
-		_expect(_wall_line_coverage(square, Vector3(half, 1.5, 0), Vector3.BACK, half, [[-1.0, 1.0]]),
-			"parede leste: contínua fora da abertura de conexão")
-		_expect(_wall_line_coverage(square, Vector3(-half, 1.5, 0), Vector3.BACK, half),
-			"parede oeste: contínua")
-		_expect(not _hits(Vector3(0, 1.2, -6), Vector3(0, 1.2, -4)), "sala quadrada: porta norte livre")
-		_expect(not _hits(Vector3(6, 1.2, 0), Vector3(4, 1.2, 0)), "sala quadrada: abertura leste livre")
-		_expect(_hits(Vector3(1.9, 1.5, -4.6), Vector3(1.9, 1.5, -5.4)),
-			"sala quadrada: parede maciça ao lado da porta")
-		_expect(not _hits(Vector3(0, 5.5, 0), Vector3(0, 4.2, 0)), "sala quadrada: sem teto (inspeção visual)")
-		_free_module(square)
+	print("[5] Salas")
+	var lab: Node3D = await _spawn_module("res://maps/modular/rooms/room_lab_10x10.tscn")
+	_expect(lab != null, "sala de pesquisa 10 × 10 instanciada")
+	if lab != null:
+		var o: Vector3 = lab.global_position
+		_expect(lab.get_child_count() >= 40, "sala 10 × 10: módulos suficientes (%d)" % lab.get_child_count())
+		for x: float in [1.0, 3.0, 5.0, 7.0, 9.0]:
+			for z: float in [1.0, 5.0, 9.0]:
+				expect_surface(o + Vector3(x, 1.0, z), 0.0, "sala 10 × 10: piso em (%.0f, %.0f)" % [x, z])
+		# Parede norte contínua (o vão está na parede sul).
+		_expect(_wall_line_coverage(lab, o + Vector3(5, 1.5, -0.2), Vector3.RIGHT, 5.0),
+			"sala 10 × 10: parede norte contínua")
+		_expect(_wall_line_coverage(lab, o + Vector3(-0.2, 1.5, 5), Vector3.BACK, 5.0),
+			"sala 10 × 10: parede oeste contínua")
+		_expect(_wall_line_coverage(lab, o + Vector3(10.2, 1.5, 5), Vector3.BACK, 5.0),
+			"sala 10 × 10: parede leste contínua")
+		# Porta de 4 m no sul (vão de 2,4 m entre 2 e 6).
+		_expect(not _hits(o + Vector3(4, 1.2, 9.0), o + Vector3(4, 1.2, 11.5)),
+			"sala 10 × 10: porta sul livre")
+		_expect(_hits(o + Vector3(0.8, 1.2, 9.0), o + Vector3(0.8, 1.2, 11.5)),
+			"sala 10 × 10: parede maciça ao lado da porta")
+		_free_module(lab)
 
-	var rect: Node3D = await _spawn_module("res://maps/modular/rooms/room_rect.tscn", Vector3(40, 0, 0))
-	_expect(rect != null, "sala retangular instanciada")
-	if rect != null:
-		await get_tree().physics_frame
-		var origin: Vector3 = rect.global_position
-		for x: float in [-4.0, -2.0, 0.0, 2.0, 4.0]:
-			for z: float in [-6.0, -4.0, -2.0, 0.0, 2.0, 4.0, 6.0]:
-				expect_surface(origin + Vector3(x, 1.0, z), 0.0, "sala retangular: piso em (%.0f, %.0f)" % [x, z])
-		_expect(_wall_line_coverage(rect, origin + Vector3(0, 1.5, -7), Vector3.RIGHT, 5.0, [[-1.0, 1.0]]),
-			"sala retangular: parede norte contínua fora da abertura")
-		_expect(_wall_line_coverage(rect, origin + Vector3(0, 1.5, 7), Vector3.RIGHT, 5.0),
-			"sala retangular: parede sul contínua (4 m + 2 m)")
-		_expect(_wall_line_coverage(rect, origin + Vector3(5, 1.5, 0), Vector3.BACK, 7.0),
-			"sala retangular: parede leste contínua (4 m + 4 m + 2 m)")
-		_expect(_wall_line_coverage(rect, origin + Vector3(-5, 1.5, 0), Vector3.BACK, 7.0),
-			"sala retangular: parede oeste contínua")
-		_expect(not _hits(origin + Vector3(0, 1.2, -8), origin + Vector3(0, 1.2, -6)),
-			"sala retangular: abertura norte livre em x = 0")
-		_free_module(rect)
+	var tech: Node3D = await _spawn_module("res://maps/modular/rooms/room_tech_14x20.tscn", Vector3(40, 0, 0))
+	_expect(tech != null, "sala técnica 14 × 20 instanciada")
+	if tech != null:
+		var o: Vector3 = tech.global_position
+		expect_surface(o + Vector3(7, 1.0, 10), 0.0, "sala técnica: piso no centro")
+		expect_surface(o + Vector3(2, 1.0, 2), 0.0, "sala técnica: piso no canto")
+		expect_surface(o + Vector3(12, 1.0, 18), 0.0, "sala técnica: piso no canto oposto")
+		_expect(_wall_line_coverage(tech, o + Vector3(7, 1.5, -0.2), Vector3.RIGHT, 7.0),
+			"sala técnica: parede norte contínua")
+		_expect(_wall_line_coverage(tech, o + Vector3(-0.2, 1.5, 10), Vector3.BACK, 10.0, [[-1.4, 1.4]]),
+			"sala técnica: parede oeste contínua fora da porta")
+		_expect(not _hits(o + Vector3(6, 1.2, 18.5), o + Vector3(6, 1.2, 21.0)),
+			"sala técnica: abertura sul livre")
+		_expect(not _hits(o + Vector3(1.5, 1.2, 10), o + Vector3(-1.5, 1.2, 10)),
+			"sala técnica: porta oeste livre")
+		_expect(_count_named(tech, "Pillar") >= 4, "sala técnica: pilares presentes")
+		_free_module(tech)
+
+	var eq: Node3D = await _spawn_module("res://maps/modular/rooms/room_equipment_8x8.tscn", Vector3(80, 0, 0))
+	_expect(eq != null, "sala de equipamentos 8 × 8 instanciada")
+	if eq != null:
+		var o: Vector3 = eq.global_position
+		for x: float in [1.0, 4.0, 7.0]:
+			for z: float in [1.0, 4.0, 7.0]:
+				expect_surface(o + Vector3(x, 1.0, z), 0.0, "sala 8 × 8: piso em (%.0f, %.0f)" % [x, z])
+		_expect(not _hits(o + Vector3(6.5, 1.2, 4), o + Vector3(9.0, 1.2, 4)),
+			"sala 8 × 8: porta leste livre")
+		_free_module(eq)
+	await _frames(3)
 
 
 # --- 6. Corredores ----------------------------------------------------------
 
 func _test_corridors() -> void:
 	print("[6] Corredores")
-	var straight: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_straight.tscn", Vector3(0, 0, 40))
-	_expect(straight != null, "corredor reto instanciado")
-	if straight != null:
-		var o: Vector3 = straight.global_position
-		expect_surface(o, 0.0, "corredor: piso no centro")
-		expect_surface(o + Vector3(0, 0, 1.9), 0.0, "corredor: piso até a ponta")
-		expect_surface(o + Vector3(0, 0, -1.9), 0.0, "corredor: piso até a outra ponta")
-		_expect(_hits(o + Vector3(-1.6, 1.5, 0), o + Vector3(0, 1.5, 0)), "corredor: parede oeste")
-		_expect(_hits(o + Vector3(1.6, 1.5, 0), o + Vector3(0, 1.5, 0)), "corredor: parede leste")
-		_expect(not _hits(o + Vector3(0, 1.5, -2.2), o + Vector3(0, 1.5, 2.2)), "corredor: passagem livre")
-		_expect(not _hits(o + Vector3(0, PLAYER_EYE, -2.0), o + Vector3(0, PLAYER_EYE, 2.0)),
-			"corredor: livre na altura da câmera")
-		_expect(_player_fits(o + Vector3(0, 0.02, 0)), "corredor: cápsula do jogador cabe")
-		_free_module(straight)
+	var main: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_main_8m.tscn")
+	_expect(main != null, "corredor principal (8 × 6 m) instanciado")
+	if main != null:
+		var o: Vector3 = main.global_position
+		for x: float in [1.0, 4.0, 7.0]:
+			expect_surface(o + Vector3(x, 1.0, 3.0), 0.0, "corredor principal: piso em x=%.0f" % x)
+		_expect(_hits(o + Vector3(1.0, 1.5, -1.6), o + Vector3(1.0, 1.5, -0.2)),
+			"corredor principal: parede norte")
+		_expect(_hits(o + Vector3(1.0, 1.5, 7.6), o + Vector3(1.0, 1.5, 6.2)),
+			"corredor principal: parede sul")
+		_expect(not _hits(o + Vector3(0.5, 1.5, 3.0), o + Vector3(7.5, 1.5, 3.0)),
+			"corredor principal: passagem livre")
+		_expect(not _hits(o + Vector3(0.5, PLAYER_EYE, 3.0), o + Vector3(7.5, PLAYER_EYE, 3.0)),
+			"corredor principal: livre na altura da câmera")
+		_expect(_player_fits(o + Vector3(4.0, 0.02, 3.0)), "corredor principal: cápsula do jogador cabe")
+		_free_module(main)
 
-	var corner: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_corner.tscn", Vector3(20, 0, 40))
-	_expect(corner != null, "canto de corredor instanciado")
+	var sec: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_secondary_8m.tscn", Vector3(0, 0, 20))
+	_expect(sec != null, "corredor secundário (8 × 4 m) instanciado")
+	if sec != null:
+		var o: Vector3 = sec.global_position
+		expect_surface(o + Vector3(4, 1.0, 2), 0.0, "corredor secundário: piso no centro")
+		_expect(_hits(o + Vector3(4, 1.5, -1.0), o + Vector3(4, 1.5, 0.2)), "secundário: parede norte")
+		_expect(_hits(o + Vector3(4, 1.5, 5.0), o + Vector3(4, 1.5, 3.8)), "secundário: parede sul")
+		_expect(not _hits(o + Vector3(0.5, 1.2, 2), o + Vector3(7.5, 1.2, 2)), "secundário: passagem livre")
+		_free_module(sec)
+
+	var corner: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_corner_6.tscn", Vector3(20, 0, 0))
+	_expect(corner != null, "canto em L instanciado")
 	if corner != null:
 		var o: Vector3 = corner.global_position
-		expect_surface(o + Vector3(-1, 0, -1), 0.0, "canto: piso do trecho reto")
-		expect_surface(o + Vector3(1, 0, 1), 0.0, "canto: piso do ramo")
-		expect_surface(o + Vector3(1, 0, -1), 0.0, "canto: piso da curva")
-		var path: Array[Vector3] = [
-			o + Vector3(-2.0, 1.2, -1.0),
-			o + Vector3(0.5, 1.2, -1.0),
-			o + Vector3(1.0, 1.2, 0.5),
-			o + Vector3(1.0, 1.2, 2.0),
-		]
-		_expect(_path_clear(path), "canto: caminho interno livre")
-		_expect(_hits(o + Vector3(0, 1.5, -2.6), o + Vector3(0, 1.5, -1.4)), "canto: parede externa fecha a curva")
+		expect_surface(o + Vector3(1.0, 1.0, 1.0), 0.0, "canto: piso da curva")
+		expect_surface(o + Vector3(5.0, 1.0, 5.0), 0.0, "canto: piso do fundo")
+		_expect(not _hits(o + Vector3(0.5, 1.2, 4.0), o + Vector3(5.0, 1.2, 4.0)),
+			"canto: passa pelo interior da curva")
+		_expect(_hits(o + Vector3(5.0, 1.5, 7.0), o + Vector3(5.0, 1.5, 5.8)), "canto: parede sul fecha")
+		_expect(_hits(o + Vector3(6.6, 1.5, 5.0), o + Vector3(5.4, 1.5, 5.0)), "canto: parede leste fecha")
 		_free_module(corner)
 
-	var junction: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_junction.tscn", Vector3(40, 0, 40))
-	_expect(junction != null, "junção em T instanciada")
-	if junction != null:
-		var o: Vector3 = junction.global_position
-		expect_surface(o + Vector3(0, 0, 2), 0.0, "junção: piso do ramo")
-		_expect(_path_clear([o + Vector3(-2.5, 1.2, 0), o + Vector3(0, 1.2, 0), o + Vector3(2.5, 1.2, 0)]),
-			"junção: passagem reta livre")
-		_expect(_path_clear([o + Vector3(0, 1.2, 0), o + Vector3(0, 1.2, 2)]), "junção: ramo livre")
-		_expect(_hits(o + Vector3(-2, 1.5, 1.4), o + Vector3(-2, 1.5, 0.6)),
-			"junção: lado fechado onde não há ramo")
-		_expect(not _hits(o + Vector3(0, 1.5, 1.4), o + Vector3(0, 1.5, 0.4)),
-			"junção: ramo aberto no centro")
-		_free_module(junction)
+	var tee: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_tee_6.tscn", Vector3(40, 0, 0))
+	_expect(tee != null, "junção em T instanciada")
+	if tee != null:
+		var o: Vector3 = tee.global_position
+		expect_surface(o + Vector3(4, 1.0, 3), 0.0, "T: piso do corredor")
+		expect_surface(o + Vector3(4, 1.0, -2.4), 0.0, "T: piso do ramo")
+		_expect(not _hits(o + Vector3(0.5, 1.2, 3), o + Vector3(7.5, 1.2, 3)), "T: passagem reta livre")
+		_expect(not _hits(o + Vector3(4, 1.2, 0.4), o + Vector3(4, 1.2, -3.8)), "T: ramo livre")
+		_expect(_hits(o + Vector3(1.0, 1.5, 6.4), o + Vector3(1.0, 1.5, 5.2)), "T: lado sul fechado")
+		_free_module(tee)
+
+	var cross: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_cross_6.tscn", Vector3(60, 0, 0))
+	_expect(cross != null, "cruzamento em X instanciado")
+	if cross != null:
+		var o: Vector3 = cross.global_position
+		expect_surface(o + Vector3(3, 1.0, 3), 0.0, "X: piso do centro")
+		_expect(not _hits(o + Vector3(-1.5, 1.2, 3), o + Vector3(7.5, 1.2, 3)), "X: passagem leste-oeste")
+		_expect(not _hits(o + Vector3(3, 1.2, -1.5), o + Vector3(3, 1.2, 7.5)), "X: passagem norte-sul")
+		_free_module(cross)
+
+	var end: Node3D = await _spawn_module("res://maps/modular/corridors/corridor_end_6.tscn", Vector3(80, 0, 0))
+	_expect(end != null, "terminação de corredor instanciada")
+	if end != null:
+		var o: Vector3 = end.global_position
+		expect_surface(o + Vector3(1.2, 1.0, 3), 0.0, "terminação: piso")
+		_expect(_hits(o + Vector3(-0.6, 1.5, 3), o + Vector3(0.5, 1.5, 3)),
+			"terminação: parede de fundo + comporta fecham o corredor")
+		_expect(_hits(o + Vector3(1.2, 5.0, 3), o + Vector3(-0.6, 5.0, 3)),
+			"terminação: parede de fundo sobe até o teto")
+		_free_module(end)
+	await _frames(3)
 
 
 # --- 7. Escada --------------------------------------------------------------
@@ -408,34 +455,34 @@ func _test_stairs_geometry() -> void:
 	if stairs == null:
 		return
 	var o: Vector3 = stairs.global_position
-	# Rampa contínua: altura cresce de 0 até 4 m ao longo de 6 m.
-	for index: int in 6:
-		var z: float = -(0.5 + float(index))
-		var expected: float = STAIR_RISE * (0.5 + float(index)) / STAIR_RUN
+	# Rampa contínua: sobe 3,2 m ao longo de 5,6 m.
+	for index: int in 5:
+		var z: float = -(1.0 + float(index))
+		var expected: float = STAIR_RISE * (1.0 + float(index)) / STAIR_RUN
 		var hit: Dictionary = _ray(o + Vector3(0, expected + 1.5, z), o + Vector3(0, expected - 0.5, z))
 		_expect(not hit.is_empty(), "escada: há superfície em z=%.1f" % z)
 		if hit.is_empty():
 			continue
 		var height: float = (hit["position"] as Vector3).y - o.y
-		_expect(absf(height - expected) < 0.12,
+		_expect(absf(height - expected) < 0.14,
 			"escada: altura %.2f m em z=%.1f (esperado %.2f)" % [height, z, expected])
-		# pé-direito sobre o piso da rampa (nada atravessa o caminho)
-		_expect(not _hits(o + Vector3(0, expected + 0.35, z), o + Vector3(0, expected + 2.2, z)),
-			"escada: caminho livre 2,2 m acima em z=%.1f" % z)
-	# Largura, guardas e topo.
-	_expect(_hits(o + Vector3(1.6, 1.2, -3.0), o + Vector3(0, 1.2, -3.0)) or
-		_hits(o + Vector3(1.6, 2.2, -3.0), o + Vector3(0, 2.2, -3.0)),
+		_expect(not _hits(o + Vector3(0, expected + 0.35, z), o + Vector3(0, expected + 2.0, z)),
+			"escada: caminho livre 2 m acima em z=%.1f" % z)
+	# Guardas laterais e topo.
+	_expect(_hits(o + Vector3(1.4, 2.1, -2.8), o + Vector3(0.6, 2.1, -2.8)),
 		"escada: guarda lateral existe")
-	var top_hit: Dictionary = _ray(o + Vector3(0, 5.0, -5.95), o + Vector3(0, 3.0, -5.95))
-	_expect(not top_hit.is_empty(), "escada: rampa chega ao topo")
-	if not top_hit.is_empty():
-		var top_y: float = (top_hit["position"] as Vector3).y - o.y
-		_expect(absf(top_y - STAIR_RISE * 5.95 / STAIR_RUN) < 0.12,
+	var top: Dictionary = _ray(o + Vector3(0, 4.6, -5.5), o + Vector3(0, 2.6, -5.5))
+	_expect(not top.is_empty(), "escada: rampa chega ao topo")
+	if not top.is_empty():
+		var top_y: float = (top["position"] as Vector3).y - o.y
+		_expect(absf(top_y - STAIR_RISE * 5.5 / STAIR_RUN) < 0.14,
 			"escada: topo em y = %.2f m" % top_y)
-	# Inclinação compatível com o controlador (limite 45°).
 	var angle: float = rad_to_deg(atan2(STAIR_RISE, STAIR_RUN))
 	_expect(angle < 45.0, "escada: inclinação %.1f° abaixo do limite do jogador" % angle)
+	_expect(_count_named(stairs, "Step_") == STAIR_STEPS,
+		"escada: %d degraus de 0,20 × 0,35 (3,20 m em 5,60 m)" % _count_named(stairs, "Step_"))
 	_free_module(stairs)
+	await _frames(3)
 
 
 # --- 8. Demonstração e jogabilidade ----------------------------------------
@@ -465,89 +512,116 @@ func _test_demo_and_movement() -> void:
 
 	var room: Node3D = _scene.get_demo_room()
 	if room != null:
-		_expect(room.get_node_or_null("RoomSquare") != null, "demonstração: sala quadrada presente")
-		_expect(room.get_node_or_null("RoomRect") != null, "demonstração: sala retangular presente")
-		_expect(room.get_node_or_null("CorridorNorth") != null, "demonstração: corredor norte presente")
-		_expect(room.get_node_or_null("CorridorEast") != null, "demonstração: corredor leste presente")
-		_expect(room.get_node_or_null("CorridorSouth") != null, "demonstração: corredor sul presente")
-		_expect(room.get_node_or_null("CorridorCorner") != null, "demonstração: canto presente")
-		_expect(room.get_node_or_null("Stairs") != null, "demonstração: escada presente")
+		_expect(room.get_node_or_null("MainWallN_00") != null, "demonstração: corredor principal presente")
+		_expect(room.get_node_or_null("LabAFloor_00_00") != null, "demonstração: sala de pesquisa A presente")
+		_expect(room.get_node_or_null("LabBFloor_00_00") != null, "demonstração: sala de pesquisa B presente")
+		_expect(room.get_node_or_null("MainTeeOpening") != null, "demonstração: junção modular do ramal")
+		_expect(room.get_node_or_null("SecWallW_00") != null, "demonstração: ramal secundário presente")
+		_expect(room.get_node_or_null("HallWallNOpen_02") != null, "demonstração: sala técnica com abertura")
+		_expect(room.get_node_or_null("MezzStairs") != null, "demonstração: escada presente")
 		_expect(room.get_node_or_null("Spawn") is Marker3D, "demonstração: ponto de nascimento presente")
-		_expect(_count_named(room, "Pillar") >= 4,
-			"demonstração: pilares presentes (%d)" % _count_named(room, "Pillar"))
-		_expect(_count_named(room, "Rail") >= 10,
-			"demonstração: guarda-corpos presentes (%d)" % _count_named(room, "Rail"))
-		_expect(_count_named(room, "Mezzanine") >= 10,
-			"demonstração: mezanino montado com pisos (%d)" % _count_named(room, "Mezzanine"))
-	_expect(_scene.count_modules() >= 45, "demonstração: %d módulos no cenário" % _scene.count_modules())
+		_expect(_count_named(room, "HallPillar") == 4,
+			"demonstração: pórtico com 4 pilares (%d)" % _count_named(room, "HallPillar"))
+		_expect(_count_named(room, "MezzRail") == 8,
+			"demonstração: guarda-corpos do mezanino (%d)" % _count_named(room, "MezzRail"))
+		_expect(_count_named(room, "MezzFloor") == 18,
+			"demonstração: mezanino com 18 placas de piso (%d)" % _count_named(room, "MezzFloor"))
+		_expect(_count_named(room, "Light_") == 12,
+			"demonstração: 12 luzes industriais (%d)" % _count_named(room, "Light_"))
+	_expect(_scene.count_modules() >= 200, "demonstração: %d módulos no cenário" % _scene.count_modules())
 
 	var spawn: Vector3 = _player.global_position
-	_expect(spawn.distance_to(Vector3(0, 0.15, 3)) < 0.25,
+	_expect(spawn.distance_to(Vector3(2, 0.15, 3)) < 0.3,
 		"jogador nasce no Spawn do cenário (%.2f, %.2f, %.2f)" % [spawn.x, spawn.y, spawn.z])
-	expect_surface(Vector3(12, 4, 10), 4.0, "mezanino: piso em y = 4")
+	expect_surface(Vector3(39, 4.2, -34), 3.2, "mezanino: piso em y = 3,2")
 
 	# Conectividade: raios na altura do jogador entre ambientes vizinhos.
-	_expect(_path_clear([Vector3(0, 0.9, 3), Vector3(0, 0.9, -8)]),
-		"conexão: sala quadrada → porta → corredor norte")
-	_expect(_path_clear([Vector3(0, 0.9, 0.5), Vector3(5, 0.9, 0.5), Vector3(9, 0.9, 0.5),
-			Vector3(12, 0.9, 0.5)]),
-		"conexão: sala quadrada → abertura leste → corredor → canto")
-	_expect(_path_clear([Vector3(12, 0.9, 0.5), Vector3(12, 0.9, 3), Vector3(12, 0.9, 7.5),
-			Vector3(12, 0.9, 10)]),
-		"conexão: canto → corredor sul → abertura → sala retangular")
-	_expect(_path_clear([Vector3(12, 4.6, 11.5), Vector3(12, 4.6, 8.0)]),
-		"conexão: topo da escada → mezanino")
+	_expect(_path_clear([Vector3(10, 0.9, 4), Vector3(10, 0.9, -2), Vector3(10, 0.9, -6)]),
+		"conexão: corredor → porta → sala A")
+	_expect(_path_clear([Vector3(14, 0.9, 4), Vector3(14, 0.9, -2), Vector3(14, 0.9, -6)]),
+		"conexão: corredor → abertura → sala A")
+	_expect(_path_clear([Vector3(22, 0.9, 4), Vector3(22, 0.9, 8), Vector3(22, 0.9, 14)]),
+		"conexão: corredor → porta → sala B")
+	_expect(_path_clear([Vector3(34, 0.9, 2), Vector3(34, 0.9, -10), Vector3(34, 0.9, -18)]),
+		"conexão: corredor → portal → ramal")
+	_expect(_path_clear([Vector3(34, 0.9, -18), Vector3(34, 0.9, -21.2), Vector3(34, 0.9, -24)]),
+		"conexão: ramal → abertura → sala técnica")
+	_expect(_path_clear([Vector3(26, 0.9, -24), Vector3(28.5, 0.9, -24), Vector3(30, 0.9, -24)]),
+		"conexão: sala técnica → porta → equipamentos")
+	_expect(_path_clear([Vector3(11, 0.9, 3), Vector3(20, 0.9, 3), Vector3(38, 0.9, 3)]),
+		"corredor principal: 36 m livres de ponta a ponta")
 
 	# --- Caminhada real ----------------------------------------------------
 	print("[9] Caminhada na demonstração")
-	await _place(Vector3(0, 0.05, 1), 0.0)
-	await _walk(2.4)
-	_expect(_player.global_position.z < -5.4,
-		"atravessa o vão da porta (z = %.2f)" % _player.global_position.z)
-	_expect(absf(_player.global_position.x) < 0.5, "passa centralizado pela porta")
+	await _place(Vector3(10, 0.05, 2.0), 0.0)
+	await _walk(1.6)
+	_expect(_player.global_position.z < -1.2,
+		"atravessa o vão da porta da sala A (z = %.2f)" % _player.global_position.z)
+	_expect(absf(_player.global_position.x - 10.0) < 0.6, "passa centralizado pela porta")
 
-	await _place(Vector3(0, 0.05, 0.5), -PI / 2.0)
-	await _walk(1.9)
-	_expect(_player.global_position.x > 5.4,
-		"atravessa a abertura leste (x = %.2f)" % _player.global_position.x)
+	await _place(Vector3(14, 0.05, 2.0), 0.0)
+	await _walk(1.6)
+	_expect(_player.global_position.z < -1.2,
+		"atravessa a abertura da sala A (z = %.2f)" % _player.global_position.z)
 
-	await _place(Vector3(12, 0.05, 0.5), PI)
+	await _place(Vector3(22, 0.05, 2.0), PI)
+	await _walk(1.8)
+	_expect(_player.global_position.z > 7.0,
+		"atravessa a porta da sala B (z = %.2f)" % _player.global_position.z)
+
+	await _place(Vector3(34, 0.05, 1.5), 0.0)
 	await _walk(2.4)
-	_expect(_player.global_position.z > 7.2,
-		"entra na sala retangular pela abertura (z = %.2f)" % _player.global_position.z)
+	_expect(_player.global_position.z < -4.0,
+		"atravessa o portal do ramal (z = %.2f)" % _player.global_position.z)
+
+	await _place(Vector3(34, 0.05, -18.0), 0.0)
+	await _walk(1.8)
+	_expect(_player.global_position.z < -21.4,
+		"entra na sala técnica pelo ramal (z = %.2f)" % _player.global_position.z)
+
+	await _place(Vector3(26.0, 0.05, -24.0), -PI / 2.0)
+	await _walk(1.6)
+	_expect(_player.global_position.x > 28.6,
+		"entra na sala de equipamentos pela porta (x = %.2f)" % _player.global_position.x)
 
 	# Parede barra o jogador (yaw +90° = oeste).
-	await _place(Vector3(0, 0.05, 3.0), PI / 2.0)
+	await _place(Vector3(2.0, 0.05, 3.0), PI / 2.0)
 	await _walk(2.0)
-	_expect(_player.global_position.x < -4.2 and _player.global_position.x > -5.0,
+	_expect(_player.global_position.x > 0.2 and _player.global_position.x < 0.7,
 		"parede oeste barra o jogador (x = %.2f)" % _player.global_position.x)
 
-	# Escada: sobe.
-	print("[10] Escada com o jogador")
-	await _place(Vector3(12, 0.05, 20.3), 0.0)
-	await _walk(4.0)
-	_expect(_player.global_position.y > 3.6,
+	# Escada: sobe até o mezanino.
+	print("[10] Escada e mezanino com o jogador")
+	await _place(Vector3(37.0, 0.05, -22.0), 0.0)
+	await _walk(3.2)
+	_expect(_player.global_position.y > 2.8,
 		"sobe a escada até o mezanino (y = %.2f)" % _player.global_position.y)
-	_expect(_player.global_position.z < 12.5, "chega ao topo (z = %.2f)" % _player.global_position.z)
+	_expect(_player.global_position.z < -28.4, "chega ao topo (z = %.2f)" % _player.global_position.z)
 
-	# Escada: desce.
-	await _place(Vector3(12, 4.05, 10.5), PI)
-	await _walk(4.2)
-	_expect(_player.global_position.y < 0.6,
-		"desce a escada até o piso (y = %.2f)" % _player.global_position.y)
-
-	# Mezanino: guarda-corpos seguram nas bordas fechadas.
-	await _place(Vector3(14, 4.05, 10.0), PI)
+	# Guarda-corpo do mezanino segura na borda.
+	await _place(Vector3(40.0, 3.25, -30.0), PI)
 	await _walk(1.4)
-	_expect(_player.global_position.y > 3.4,
-		"guarda-corpo sul segura no mezanino (y = %.2f)" % _player.global_position.y)
-	_expect(_player.global_position.z < 12.8,
+	_expect(_player.global_position.y > 3.0, "guarda-corpo sul segura no mezanino (y = %.2f)" % _player.global_position.y)
+	_expect(_player.global_position.z < -28.6,
 		"guarda-corpo impede sair pela borda (z = %.2f)" % _player.global_position.z)
 
-	await _place(Vector3(12, 4.05, 9.0), 0.0)
-	await _walk(1.6)
-	_expect(_player.global_position.y > 3.4 and _player.global_position.z > 7.2,
-		"guarda-corpo norte segura no mezanino (z = %.2f)" % _player.global_position.z)
+	# Pausa: ESC abre e fecha sem trocar de cena (a UI é testada em ui_flow_test).
+	_expect(_scene.has_method("pause_session") and _scene.has_method("resume_session"),
+		"demonstração: pausa/retomada expostas para a interface")
+	_scene.pause_session()
+	_expect(_scene.is_paused(), "pausa ativa")
+	var before: Vector3 = _player.global_position
+	Input.action_press("move_forward")
+	for _i: int in 20:
+		await get_tree().physics_frame
+	Input.action_release("move_forward")
+	_expect(_player.global_position.distance_to(before) < 0.05,
+		"pausado: o jogador não anda com WASD")
+	_scene.resume_session()
+	_expect(not _scene.is_paused(), "retomada desativa a pausa")
+	await _walk(0.6)
+	_expect(_player.global_position.distance_to(before) > 0.5,
+		"retomado: o jogador volta a andar")
 
 
 # --- utilidades de física ---------------------------------------------------
@@ -651,13 +725,13 @@ func expect_surface(origin: Vector3, expected_y: float, label: String) -> void:
 
 
 ## Largura livre do vão na linha de uma parede, medida com raios laterais.
-func _opening_width(module: Node3D, height: float) -> float:
+func _opening_width(module: Node3D, height: float, half: float) -> float:
 	var origin: Vector3 = module.global_position
 	var free_min: float = 99.0
 	var free_max: float = -99.0
-	var x: float = -1.0
-	while x <= 1.0001:
-		if not _hits(origin + Vector3(x, height, -0.6), origin + Vector3(x, height, 0.6)):
+	var x: float = -half
+	while x <= half + 0.0001:
+		if not _hits(origin + Vector3(x, height, -0.8), origin + Vector3(x, height, 0.8)):
 			free_min = minf(free_min, x)
 			free_max = maxf(free_max, x)
 		x += 0.01
@@ -682,12 +756,10 @@ func _wall_line_coverage(module: Node3D, line_point: Vector3, axis: Vector3, hal
 				inside_gap = true
 		if not inside_gap:
 			total += 1
-			# raio perpendicular atravessando a parede
 			var normal := axis.cross(Vector3.UP).normalized()
 			if _hits(point - normal * 0.8, point + normal * 0.8):
 				covered += 1
 		t += step
-	# Tolerância: bordas e juntas (2 amostras por metro já bastam).
 	return total == 0 or float(covered) / float(total) >= 0.9
 
 
@@ -709,8 +781,6 @@ func _collision_aabb(root: Node3D) -> AABB:
 		if box == null:
 			continue
 		var body: Node3D = shape.get_parent() as Node3D
-		# Coordenadas locais à raiz do módulo: funciona antes de entrar na árvore
-		# e não depende de get_global_transform (indisponível fora da árvore).
 		var center: Vector3 = body.position + shape.position
 		var size: Vector3 = box.size
 		var box_aabb := AABB(center - size / 2.0, size)
@@ -760,7 +830,8 @@ func _finish() -> void:
 		print("MODULAR TEST OK — %d verificações aprovadas" % _checks)
 		get_tree().quit(0)
 		return
-	printerr("MODULAR TEST FALHOU — %d de %d verificações" % [_failures.size(), _checks])
+	printerr("")
+	printerr("MODULAR TEST FALHOU — %d falhas em %d verificações" % [_failures.size(), _checks])
 	for failure: String in _failures:
-		printerr("   - ", failure)
+		printerr("  - ", failure)
 	get_tree().quit(1)

@@ -3,12 +3,13 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 11 implementada e publicada (v0.11.0), com teste manual
-> pendente — **sistema modular de salas**:
-> biblioteca de paredes, pisos, corredores, salas, pilares, guarda-corpos e uma
-> escada de 4 m que o controlador atual sobe e desce, com uma cena de
-> demonstração própria. O inventário, a interação, a stamina, a HUD, as
-> configurações e a sala de teste continuam iguais.
+> **Status:** Etapa 11 revisada e publicada (v0.11.1), com teste manual
+> pendente — **biblioteca modular industrial**: paredes de 0,40 × 6 m, portas e
+> aberturas de 4 m, pisos e tetos, corredores de 6 m e 4 m com canto, T, X e
+> terminação, salas de pesquisa e técnica, pilares, vigas, guarda-corpos e uma
+> escada de 3,2 m, com uma cena de demonstração reconstruída. ESC e SHIFT
+> corrigidos. O inventário, a interação, a stamina, a HUD, as configurações e a
+> sala de teste continuam iguais.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -24,21 +25,22 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.0-etapa11-modular-rooms/BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.1-etapa11-correcao/BlackSight-Etapa11-Correcao-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip`, 40.700.936
-bytes, SHA-256
-`cfac713045b818b5f4b6f67f04091f0d00bb5104becc1ae319876fb6c5385556`
-(release `v0.11.0-etapa11-modular-rooms`). As releases anteriores
-(`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop`, …) continuam publicadas.
+Arquivo: `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` (tamanho e SHA-256
+publicados no corpo da release `v0.11.1-etapa11-correcao`, gerados pelo build).
+A release anterior da Etapa 11 (`v0.11.0-etapa11-modular-rooms`) **continua
+publicada**, junto de `v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop` e das
+demais.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
-4. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração do sistema
-   modular (corredores, duas salas, canto, pilares e a escada até o mezanino).
+4. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração modular
+   (corredor de 40 m, duas salas de pesquisa, ramal, sala técnica com pórtico,
+   mezanino e escada). ESC abre/fecha a pausa.
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 
@@ -117,14 +119,16 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   mundo continua simulando e a interação fica bloqueada.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
-- **Sistema modular de salas** (Etapa 11): biblioteca em `maps/modular/` com
-  grade de 2 m, paredes de 2 m e 4 m, vão de porta (1,2 × 2,4 m), abertura de
-  conexão (2,0 × 2,6 m), cantos interno/externo, pilastras, pisos de 2 × 2 m,
-  pilar, guarda-corpo, corredores reto/canto/junção, sala quadrada (10 × 10 m),
-  sala retangular (10 × 14 m) e escada reta (4 m de subida, 33,7°). A cena
-  **DEMONSTRAR MÓDULOS** usa o jogador e a HUD existentes e não substitui a
-  cena de teste de movimentação. Convenções, medidas e instruções de encaixe em
-  [`docs/ETAPA-11.md`](docs/ETAPA-11.md).
+- **Biblioteca modular industrial** (Etapa 11, revisão): 25 cenas em
+  `maps/modular/` com grade de 2 m, pé-direito de 6 m, paredes de
+  0,40 × 6 m, portas de 4 m (vão 2,4 × 3,0 m), aberturas de 4 m
+  (vão 3,6 × 4,2 m), cantos, pilastras de encontro, pisos e tetos de 2 × 2 m,
+  pilar I, viga de 6 m, coluna de apoio, guarda-corpo, escada de 16 degraus
+  (3,2 m em 5,6 m, 29,7°) e corredores principal (6 m), secundário (4 m),
+  canto em L, T, X e terminação com comporta. Salas prontas de 10 × 10,
+  12 × 16, 14 × 20 e 8 × 8 m. A cena **DEMONSTRAR MÓDULOS** usa o jogador e a
+  HUD existentes e não substitui a cena de teste de movimentação. Convenções,
+  medidas e instruções de encaixe em [`docs/ETAPA-11.md`](docs/ETAPA-11.md).
 
 Ainda **não** existe: pulo, arremesso, uso/consumo de item, pilha, peso,
 equipamentos, portas funcionais (nem trancadas/chaves), geração procedural,

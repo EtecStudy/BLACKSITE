@@ -1,0 +1,73 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://maps/modular/floors/floor_tile.tscn" id="1_floor_tile"]
+[ext_resource type="PackedScene" path="res://maps/modular/ceilings/ceiling_tile.tscn" id="2_ceiling_tile"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_panel_2m.tscn" id="3_wall_panel_2m"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_corner_outer.tscn" id="4_wall_corner_outer"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/accent_material.tres" id="m_accent"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_accent")
+size = Vector3(0.3, 3.4, 2.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(0.3, 3.4, 2.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_trim")
+size = Vector3(0.1, 0.16, 2.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_4"]
+material = ExtResource("m_trim")
+size = Vector3(0.14, 0.9, 0.9)
+
+[node name="CorridorEnd6" type="Node3D"]
+[node name="Floor_00_00" parent="." instance=ExtResource("1_floor_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+
+[node name="Floor_00_01" parent="." instance=ExtResource("1_floor_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
+
+[node name="Floor_00_02" parent="." instance=ExtResource("1_floor_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 5)
+
+[node name="Ceil_00_00" parent="." instance=ExtResource("2_ceiling_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+
+[node name="Ceil_00_01" parent="." instance=ExtResource("2_ceiling_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
+
+[node name="Ceil_00_02" parent="." instance=ExtResource("2_ceiling_tile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 5)
+
+[node name="WallEnd_00" parent="." instance=ExtResource("3_wall_panel_2m")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.2, 0, 1)
+
+[node name="WallEnd_01" parent="." instance=ExtResource("3_wall_panel_2m")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.2, 0, 3)
+
+[node name="WallEnd_02" parent="." instance=ExtResource("3_wall_panel_2m")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.2, 0, 5)
+
+[node name="Corner_00" parent="." instance=ExtResource("4_wall_corner_outer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, -0.2)
+
+[node name="Corner_01" parent="." instance=ExtResource("4_wall_corner_outer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 6.2)
+
+[node name="Bulkhead" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.7, 3)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="BulkheadCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.7, 3)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="BulkheadRib" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36, 2.9, 3)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="BulkheadWheel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.9, 3)
+mesh = SubResource("BoxMesh_box_4")

@@ -1,205 +1,181 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=13 format=3]
 
-[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/stair_material.tres" id="1_stair"]
-[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="2_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/stair_material.tres" id="m_stair"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/floor_material.tres" id="m_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/panel_material.tres" id="m_panel"]
 
-[sub_resource type="BoxMesh" id="MeshBox_1"]
-material = ExtResource("1_stair")
-size = Vector3(2, 0.2, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_stair")
+size = Vector3(2, 0.2, 0.35)
 
-[sub_resource type="BoxMesh" id="MeshBox_2"]
-material = ExtResource("1_stair")
-size = Vector3(2, 0.4, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_2"]
+material = ExtResource("m_floor")
+size = Vector3(1.96, 0.18, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_3"]
-material = ExtResource("1_stair")
-size = Vector3(2, 0.6, 0.3)
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_3"]
+size = Vector3(1.96, 0.18, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_4"]
-material = ExtResource("1_stair")
-size = Vector3(2, 0.8, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_4"]
+material = ExtResource("m_trim")
+size = Vector3(0.12, 0.36, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_5"]
-material = ExtResource("1_stair")
-size = Vector3(2, 1, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_trim")
+size = Vector3(0.08, 0.1, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_6"]
-material = ExtResource("1_stair")
-size = Vector3(2, 1.2, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_6"]
+material = ExtResource("m_panel")
+size = Vector3(0.06, 0.8, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_7"]
-material = ExtResource("1_stair")
-size = Vector3(2, 1.4, 0.3)
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_7"]
+size = Vector3(0.06, 0.8, 6.549806)
 
-[sub_resource type="BoxMesh" id="MeshBox_8"]
-material = ExtResource("1_stair")
-size = Vector3(2, 1.6, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_box_8"]
+material = ExtResource("m_trim")
+size = Vector3(0.08, 1.1, 0.08)
 
-[sub_resource type="BoxMesh" id="MeshBox_9"]
-material = ExtResource("1_stair")
-size = Vector3(2, 1.8, 0.3)
+[node name="StairsStraight" type="StaticBody3D"]
+[node name="Step_00" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.175)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_10"]
-material = ExtResource("1_stair")
-size = Vector3(2, 2, 0.3)
+[node name="Step_01" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.525)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_11"]
-material = ExtResource("1_stair")
-size = Vector3(2, 2.2, 0.3)
+[node name="Step_02" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.875)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_12"]
-material = ExtResource("1_stair")
-size = Vector3(2, 2.4, 0.3)
+[node name="Step_03" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -1.225)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_13"]
-material = ExtResource("1_stair")
-size = Vector3(2, 2.6, 0.3)
+[node name="Step_04" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -1.575)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_14"]
-material = ExtResource("1_stair")
-size = Vector3(2, 2.8, 0.3)
+[node name="Step_05" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -1.925)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_15"]
-material = ExtResource("1_stair")
-size = Vector3(2, 3, 0.3)
+[node name="Step_06" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, -2.275)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_16"]
-material = ExtResource("1_stair")
-size = Vector3(2, 3.2, 0.3)
+[node name="Step_07" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2.625)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_17"]
-material = ExtResource("1_stair")
-size = Vector3(2, 3.4, 0.3)
+[node name="Step_08" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -2.975)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_18"]
-material = ExtResource("1_stair")
-size = Vector3(2, 3.6, 0.3)
+[node name="Step_09" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -3.325)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_19"]
-material = ExtResource("1_stair")
-size = Vector3(2, 3.8, 0.3)
+[node name="Step_10" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -3.675)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_20"]
-material = ExtResource("1_stair")
-size = Vector3(2, 4, 0.3)
+[node name="Step_11" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -4.025)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxShape3D" id="ShapeBox_21"]
-size = Vector3(2, 0.2, 7.211103)
+[node name="Step_12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -4.375)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_22"]
-material = ExtResource("2_trim")
-size = Vector3(0.12, 0.32, 7.211103)
+[node name="Step_13" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, -4.725)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxShape3D" id="ShapeBox_23"]
-size = Vector3(0.12, 0.32, 7.211103)
+[node name="Step_14" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, -5.075)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxMesh" id="MeshBox_24"]
-material = ExtResource("2_trim")
-size = Vector3(0.12, 0.32, 7.211103)
+[node name="Step_15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, -5.425)
+mesh = SubResource("BoxMesh_box_1")
 
-[sub_resource type="BoxShape3D" id="ShapeBox_25"]
-size = Vector3(0.12, 0.32, 7.211103)
+[node name="Ramp" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0, 1.51, -2.8)
+mesh = SubResource("BoxMesh_box_2")
 
-[node name="StairsStraight" type="Node3D"]
+[node name="RampCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0, 1.51, -2.8)
+shape = SubResource("BoxShape3D_box_3")
 
-[node name="Step01" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.15)
-mesh = SubResource("MeshBox_1")
+[node name="Stringer_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, -0.94, 1.3, -2.8)
+mesh = SubResource("BoxMesh_box_4")
 
-[node name="Step02" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.45)
-mesh = SubResource("MeshBox_2")
+[node name="Stringer_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0.94, 1.3, -2.8)
+mesh = SubResource("BoxMesh_box_4")
 
-[node name="Step03" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.75)
-mesh = SubResource("MeshBox_3")
+[node name="Guard_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, -0.95, 2.55, -2.8)
+mesh = SubResource("BoxMesh_box_5")
 
-[node name="Step04" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -1.05)
-mesh = SubResource("MeshBox_4")
+[node name="GuardPanel_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, -0.95, 2.1, -2.8)
+mesh = SubResource("BoxMesh_box_6")
 
-[node name="Step05" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.35)
-mesh = SubResource("MeshBox_5")
+[node name="GuardPanel_-1Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, -0.95, 2.1, -2.8)
+shape = SubResource("BoxShape3D_box_7")
 
-[node name="Step06" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.65)
-mesh = SubResource("MeshBox_6")
+[node name="Post_-1_00" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.55, -0.175)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step07" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, -1.95)
-mesh = SubResource("MeshBox_7")
+[node name="Post_-1_04" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 1.35, -1.575)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step08" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -2.25)
-mesh = SubResource("MeshBox_8")
+[node name="Post_-1_08" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 2.15, -2.975)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step09" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -2.55)
-mesh = SubResource("MeshBox_9")
+[node name="Post_-1_12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 2.95, -4.375)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step10" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.85)
-mesh = SubResource("MeshBox_10")
+[node name="Post_-1_15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 3.55, -5.425)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step11" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -3.15)
-mesh = SubResource("MeshBox_11")
+[node name="Guard_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0.95, 2.55, -2.8)
+mesh = SubResource("BoxMesh_box_5")
 
-[node name="Step12" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -3.45)
-mesh = SubResource("MeshBox_12")
+[node name="GuardPanel_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0.95, 2.1, -2.8)
+mesh = SubResource("BoxMesh_box_6")
 
-[node name="Step13" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, -3.75)
-mesh = SubResource("MeshBox_13")
+[node name="GuardPanel_1Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.868243, -0.496139, 0, 0.496139, 0.868243, 0.95, 2.1, -2.8)
+shape = SubResource("BoxShape3D_box_7")
 
-[node name="Step14" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -4.05)
-mesh = SubResource("MeshBox_14")
+[node name="Post_1_00" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.55, -0.175)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step15" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -4.35)
-mesh = SubResource("MeshBox_15")
+[node name="Post_1_04" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 1.35, -1.575)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step16" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -4.65)
-mesh = SubResource("MeshBox_16")
+[node name="Post_1_08" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 2.15, -2.975)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step17" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -4.95)
-mesh = SubResource("MeshBox_17")
+[node name="Post_1_12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 2.95, -4.375)
+mesh = SubResource("BoxMesh_box_8")
 
-[node name="Step18" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -5.25)
-mesh = SubResource("MeshBox_18")
-
-[node name="Step19" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -5.55)
-mesh = SubResource("MeshBox_19")
-
-[node name="Step20" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -5.85)
-mesh = SubResource("MeshBox_20")
-
-[node name="Ramp" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.83205, -0.5547, 0, 0.5547, 0.83205, 0, 1.916795, -3.05547)
-
-[node name="RampCollision" type="CollisionShape3D" parent="Ramp"]
-shape = SubResource("ShapeBox_21")
-
-[node name="CurbLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.83205, -0.5547, 0, 0.5547, 0.83205, -0.94, 2.133128, -2.911248)
-mesh = SubResource("MeshBox_22")
-
-[node name="CurbLeftCollision" type="CollisionShape3D" parent="Ramp"]
-transform = Transform3D(1, 0, 0, 0, 0.83205, -0.5547, 0, 0.5547, 0.83205, -0.94, 2.133128, -2.911248)
-shape = SubResource("ShapeBox_23")
-
-[node name="CurbRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.83205, -0.5547, 0, 0.5547, 0.83205, 0.94, 2.133128, -2.911248)
-mesh = SubResource("MeshBox_24")
-
-[node name="CurbRightCollision" type="CollisionShape3D" parent="Ramp"]
-transform = Transform3D(1, 0, 0, 0, 0.83205, -0.5547, 0, 0.5547, 0.83205, 0.94, 2.133128, -2.911248)
-shape = SubResource("ShapeBox_25")
+[node name="Post_1_15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 3.55, -5.425)
+mesh = SubResource("BoxMesh_box_8")
