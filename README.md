@@ -26,9 +26,9 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.0-etapa11-modular-rooms/BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip`, 40.700.903
+Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip`, 40.700.936
 bytes, SHA-256
-`885fee135575f43da387dc1b96d2fc41550cd097a87c2c9a2ff84f3201e7861f`
+`cfac713045b818b5f4b6f67f04091f0d00bb5104becc1ae319876fb6c5385556`
 (release `v0.11.0-etapa11-modular-rooms`). As releases anteriores
 (`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop`, …) continuam publicadas.
 

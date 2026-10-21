@@ -268,7 +268,7 @@ Grupos verificados:
 
 ### Resultados reais desta entrega
 
-Execução do CI **39524572155** (commit `3d797e3`), branch
+Execução do CI **39525356123** (commit `48a1594`), branch
 `arena/aa5e0e47-blacksite` — os dois jobs terminaram em **success**.
 
 | Suíte | Linux | Windows |
@@ -286,10 +286,10 @@ valor é o real do log, não uma estimativa. As verificações são independente
 
 | Pacote da release `v0.11.0-etapa11-modular-rooms` | Valor |
 | --- | --- |
-| Commit publicado | `3d797e36a6d1c6adc2880c25557b12c485e5330d` |
+| Commit publicado | `48a159457403847a448605bc00cb36ad809c32b5` |
 | Arquivo | `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip` |
-| Tamanho | 40.700.903 bytes |
-| SHA-256 | `885fee135575f43da387dc1b96d2fc41550cd097a87c2c9a2ff84f3201e7861f` |
+| Tamanho | 40.700.936 bytes |
+| SHA-256 | `cfac713045b818b5f4b6f67f04091f0d00bb5104becc1ae319876fb6c5385556` |
 
 O SHA-256 acima é o que o CI calculou ao empacotar o ZIP e publicou na
 página da release; o mesmo valor está no corpo da release, na seção
