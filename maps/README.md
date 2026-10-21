@@ -16,7 +16,7 @@ controlador em primeira pessoa e uma **biblioteca modular de peças** de salas.
 | `maps/modular/rooms/` | Sala quadrada 10 × 10 m e sala retangular 10 × 14 m |
 | `maps/modular/stairs/` | Escada reta: 4 m de subida em 6 m (33,7°) |
 | `maps/modular/structure/` | Pilar e guarda-corpo de 2 m |
-| `maps/modular/materials/` | Os cinco materiais compartilhados por todas as peças |
+| `maps/modular/materials/` | Os quatro materiais compartilhados por todas as peças |
 
 Convenções de grade, origens, medidas e instruções de encaixe estão em
 [`docs/ETAPA-11.md`](../docs/ETAPA-11.md).

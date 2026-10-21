@@ -27,7 +27,7 @@ const STAIR_RUN := 6.0
 const STAIR_RISE := 4.0
 const PLAYER_EYE := 1.62
 
-const DEMO_SCENE := "res://match/scenes/modular_demo_room.tscn"
+const DEMO_SCENE := "res://maps/scenes/modular_demo_room.tscn"
 const DEMO_SESSION := "res://match/scenes/modular_demo.tscn"
 
 ## Módulos obrigatórios da biblioteca (Etapa 11).
@@ -281,14 +281,14 @@ func _test_corner_and_floor() -> void:
 			"piso: %.1f × %.1f m" % [aabb.size.x, aabb.size.z])
 		_expect(is_equal_approx(aabb.end.y, 0.0), "piso: topo em y = 0")
 		_expect(is_equal_approx(aabb.position.y, -0.25), "piso: espessura 0,25 m")
-		expect_surface(tile.global_position + Vector3(0.9, 2, 0.9), 0.0, "piso: superfície de apoio")
+		expect_surface(tile.global_position + Vector3(0.9, 1.0, 0.9), 0.0, "piso: superfície de apoio")
 		_free_module(tile)
 
 	# Dois pisos lado a lado: sem lacuna na junta.
 	var tile_a: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(0, 0, 24))
 	var tile_b: Node3D = await _spawn_module("res://maps/modular/floors/floor_tile.tscn", Vector3(2, 0, 24))
 	if tile_a != null and tile_b != null:
-		expect_surface(Vector3(1.0, 2, 24), 0.0, "pisos vizinhos: junta sem lacuna")
+		expect_surface(Vector3(1.0, 1.0, 24), 0.0, "pisos vizinhos: junta sem lacuna")
 		var a: AABB = _collision_aabb(tile_a)
 		var b: AABB = _collision_aabb(tile_b)
 		_expect(is_equal_approx(a.end.x, b.position.x), "pisos vizinhos: encostam sem sobrepor")
@@ -707,7 +707,9 @@ func _collision_aabb(root: Node3D) -> AABB:
 		if box == null:
 			continue
 		var body: Node3D = shape.get_parent() as Node3D
-		var center: Vector3 = body.global_position + shape.position
+		# Coordenadas locais à raiz do módulo: funciona antes de entrar na árvore
+		# e não depende de get_global_transform (indisponível fora da árvore).
+		var center: Vector3 = body.position + shape.position
 		var size: Vector3 = box.size
 		var box_aabb := AABB(center - size / 2.0, size)
 		if first:

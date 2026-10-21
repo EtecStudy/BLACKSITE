@@ -6,41 +6,31 @@
 
 [node name="CorridorCorner" type="Node3D"]
 
-[node name="FloorCorner" type="Node3D" parent="."]
+[node name="FloorCorner" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -1)
-instance=ExtResource("1_floor")
 
-[node name="FloorOut" type="Node3D" parent="."]
+[node name="FloorOut" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -1)
-instance=ExtResource("1_floor")
 
-[node name="FloorBranch" type="Node3D" parent="."]
+[node name="FloorBranch" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
-instance=ExtResource("1_floor")
 
-[node name="WallNorthA" type="Node3D" parent="."]
+[node name="WallNorthA" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2)
-instance=ExtResource("2_wall")
 
-[node name="WallNorthB" type="Node3D" parent="."]
+[node name="WallNorthB" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -2)
-instance=ExtResource("2_wall")
 
-[node name="WallEastA" type="Node3D" parent="."]
+[node name="WallEastA" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallEastB" type="Node3D" parent="."]
+[node name="WallEastB" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 1)
-instance=ExtResource("2_wall")
 
-[node name="WallInnerX" type="Node3D" parent="."]
+[node name="WallInnerX" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
-instance=ExtResource("2_wall")
 
-[node name="WallInnerZ" type="Node3D" parent="."]
+[node name="WallInnerZ" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 1)
-instance=ExtResource("2_wall")
 
-[node name="Junction" type="Node3D" parent="."]
-instance=ExtResource("3_junction")
+[node name="Junction" parent="." instance=ExtResource("3_junction")]

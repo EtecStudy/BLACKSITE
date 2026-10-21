@@ -6,53 +6,40 @@
 
 [node name="CorridorJunction" type="Node3D"]
 
-[node name="FloorThrough1" type="Node3D" parent="."]
+[node name="FloorThrough1" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
-instance=ExtResource("1_floor")
 
-[node name="FloorThrough2" type="Node3D" parent="."]
-instance=ExtResource("1_floor")
+[node name="FloorThrough2" parent="." instance=ExtResource("1_floor")]
 
-[node name="FloorThrough3" type="Node3D" parent="."]
+[node name="FloorThrough3" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
-instance=ExtResource("1_floor")
 
-[node name="FloorBranch" type="Node3D" parent="."]
+[node name="FloorBranch" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
-instance=ExtResource("1_floor")
 
-[node name="WallSouth1" type="Node3D" parent="."]
+[node name="WallSouth1" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallSouth2" type="Node3D" parent="."]
+[node name="WallSouth2" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallSouth3" type="Node3D" parent="."]
+[node name="WallSouth3" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallNorth1" type="Node3D" parent="."]
+[node name="WallNorth1" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
-instance=ExtResource("2_wall")
 
-[node name="WallNorth2" type="Node3D" parent="."]
+[node name="WallNorth2" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
-instance=ExtResource("2_wall")
 
-[node name="WallBranchWest" type="Node3D" parent="."]
+[node name="WallBranchWest" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1, 0, 2)
-instance=ExtResource("2_wall")
 
-[node name="WallBranchEast" type="Node3D" parent="."]
+[node name="WallBranchEast" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1, 0, 2)
-instance=ExtResource("2_wall")
 
-[node name="JunctionWest" type="Node3D" parent="."]
+[node name="JunctionWest" parent="." instance=ExtResource("3_junction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 1)
-instance=ExtResource("3_junction")
 
-[node name="JunctionEast" type="Node3D" parent="."]
+[node name="JunctionEast" parent="." instance=ExtResource("3_junction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
-instance=ExtResource("3_junction")

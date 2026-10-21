@@ -5,26 +5,20 @@
 
 [node name="CorridorStraight" type="Node3D"]
 
-[node name="Floor1" type="Node3D" parent="."]
+[node name="Floor1" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
-instance=ExtResource("1_floor")
 
-[node name="Floor2" type="Node3D" parent="."]
+[node name="Floor2" parent="." instance=ExtResource("1_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-instance=ExtResource("1_floor")
 
-[node name="WallWest1" type="Node3D" parent="."]
+[node name="WallWest1" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallWest2" type="Node3D" parent="."]
+[node name="WallWest2" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1, 0, 1)
-instance=ExtResource("2_wall")
 
-[node name="WallEast1" type="Node3D" parent="."]
+[node name="WallEast1" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1, 0, -1)
-instance=ExtResource("2_wall")
 
-[node name="WallEast2" type="Node3D" parent="."]
+[node name="WallEast2" parent="." instance=ExtResource("2_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1, 0, 1)
-instance=ExtResource("2_wall")

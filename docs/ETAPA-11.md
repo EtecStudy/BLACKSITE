@@ -142,10 +142,10 @@ e `wall_opening_2m`.
 
 ### Materiais compartilhados — `maps/modular/materials/`
 
-Todos os módulos usam os mesmos cinco `StandardMaterial3D`:
-`wall_material.tres`, `floor_material.tres`, `trim_material.tres`,
-`stair_material.tres` e `light_panel_material.tres`. Nenhuma textura, modelo
-ou plugin externo foi adicionado.
+Todos os módulos usam os mesmos quatro `StandardMaterial3D`:
+`wall_material.tres`, `floor_material.tres`, `trim_material.tres` e
+`stair_material.tres`. Nenhuma textura, modelo ou plugin externo foi
+adicionado.
 
 ---
 
@@ -276,7 +276,7 @@ entrega.
 
 | Caminho | Conteúdo |
 | --- | --- |
-| `maps/modular/materials/` | 5 materiais compartilhados |
+| `maps/modular/materials/` | 4 materiais compartilhados |
 | `maps/modular/walls/` | 7 cenas de parede/canto/junção |
 | `maps/modular/floors/floor_tile.tscn` | piso 2 × 2 m |
 | `maps/modular/structure/` | pilar e guarda-corpo |

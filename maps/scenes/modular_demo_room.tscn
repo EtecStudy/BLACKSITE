@@ -21,180 +21,136 @@ tonemap_mode = 2
 
 [node name="ModularDemo" type="Node3D"]
 
-[node name="RoomSquare" type="Node3D" parent="."]
-instance=ExtResource("1_square")
+[node name="RoomSquare" parent="." instance=ExtResource("1_square")]
 
-[node name="CorridorNorth" type="Node3D" parent="."]
+[node name="CorridorNorth" parent="." instance=ExtResource("3_corridor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
-instance=ExtResource("3_corridor")
 
-[node name="CorridorCap" type="Node3D" parent="."]
+[node name="CorridorCap" parent="." instance=ExtResource("9_wall2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
-instance=ExtResource("9_wall2")
 
-[node name="CorridorCapWest" type="Node3D" parent="."]
+[node name="CorridorCapWest" parent="." instance=ExtResource("10_junction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -9)
-instance=ExtResource("10_junction")
 
-[node name="CorridorCapEast" type="Node3D" parent="."]
+[node name="CorridorCapEast" parent="." instance=ExtResource("10_junction")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -9)
-instance=ExtResource("10_junction")
 
-[node name="CorridorEast" type="Node3D" parent="."]
+[node name="CorridorEast" parent="." instance=ExtResource("3_corridor")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7, 0, 0)
-instance=ExtResource("3_corridor")
 
-[node name="CorridorCorner" type="Node3D" parent="."]
+[node name="CorridorCorner" parent="." instance=ExtResource("4_corner")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 1)
-instance=ExtResource("4_corner")
 
-[node name="CorridorSouth" type="Node3D" parent="."]
+[node name="CorridorSouth" parent="." instance=ExtResource("3_corridor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 5)
-instance=ExtResource("3_corridor")
 
-[node name="RoomRect" type="Node3D" parent="."]
+[node name="RoomRect" parent="." instance=ExtResource("2_rect")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 14)
-instance=ExtResource("2_rect")
 
-[node name="Stairs" type="Node3D" parent="."]
+[node name="Stairs" parent="." instance=ExtResource("5_stairs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 19)
-instance=ExtResource("5_stairs")
 
-[node name="Mezzanine_0_0" type="Node3D" parent="."]
+[node name="Mezzanine_0_0" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4, 8)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_0_1" type="Node3D" parent="."]
+[node name="Mezzanine_0_1" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4, 10)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_0_2" type="Node3D" parent="."]
+[node name="Mezzanine_0_2" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4, 12)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_1_0" type="Node3D" parent="."]
+[node name="Mezzanine_1_0" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 8)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_1_1" type="Node3D" parent="."]
+[node name="Mezzanine_1_1" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 10)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_1_2" type="Node3D" parent="."]
+[node name="Mezzanine_1_2" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 12)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_2_0" type="Node3D" parent="."]
+[node name="Mezzanine_2_0" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4, 8)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_2_1" type="Node3D" parent="."]
+[node name="Mezzanine_2_1" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4, 10)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_2_2" type="Node3D" parent="."]
+[node name="Mezzanine_2_2" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4, 12)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_3_0" type="Node3D" parent="."]
+[node name="Mezzanine_3_0" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 8)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_3_1" type="Node3D" parent="."]
+[node name="Mezzanine_3_1" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 10)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_3_2" type="Node3D" parent="."]
+[node name="Mezzanine_3_2" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 12)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_4_0" type="Node3D" parent="."]
+[node name="Mezzanine_4_0" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 4, 8)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_4_1" type="Node3D" parent="."]
+[node name="Mezzanine_4_1" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 4, 10)
-instance=ExtResource("6_floor")
 
-[node name="Mezzanine_4_2" type="Node3D" parent="."]
+[node name="Mezzanine_4_2" parent="." instance=ExtResource("6_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 4, 12)
-instance=ExtResource("6_floor")
 
-[node name="RailSouthW" type="Node3D" parent="."]
+[node name="RailSouthW" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4, 13)
-instance=ExtResource("7_rail")
 
-[node name="RailSouthA" type="Node3D" parent="."]
+[node name="RailSouthA" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 13)
-instance=ExtResource("7_rail")
 
-[node name="RailSouthB" type="Node3D" parent="."]
+[node name="RailSouthB" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 13)
-instance=ExtResource("7_rail")
 
-[node name="RailSouthE" type="Node3D" parent="."]
+[node name="RailSouthE" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 4, 13)
-instance=ExtResource("7_rail")
 
-[node name="RailNorthW" type="Node3D" parent="."]
+[node name="RailNorthW" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4, 7)
-instance=ExtResource("7_rail")
 
-[node name="RailNorthA" type="Node3D" parent="."]
+[node name="RailNorthA" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 7)
-instance=ExtResource("7_rail")
 
-[node name="RailNorthM" type="Node3D" parent="."]
+[node name="RailNorthM" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4, 7)
-instance=ExtResource("7_rail")
 
-[node name="RailNorthB" type="Node3D" parent="."]
+[node name="RailNorthB" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 7)
-instance=ExtResource("7_rail")
 
-[node name="RailNorthE" type="Node3D" parent="."]
+[node name="RailNorthE" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 4, 7)
-instance=ExtResource("7_rail")
 
-[node name="RailWestN" type="Node3D" parent="."]
+[node name="RailWestN" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7, 4, 8)
-instance=ExtResource("7_rail")
 
-[node name="RailWestM" type="Node3D" parent="."]
+[node name="RailWestM" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7, 4, 10)
-instance=ExtResource("7_rail")
 
-[node name="RailWestS" type="Node3D" parent="."]
+[node name="RailWestS" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7, 4, 12)
-instance=ExtResource("7_rail")
 
-[node name="RailEastN" type="Node3D" parent="."]
+[node name="RailEastN" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 4, 8)
-instance=ExtResource("7_rail")
 
-[node name="RailEastM" type="Node3D" parent="."]
+[node name="RailEastM" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 4, 10)
-instance=ExtResource("7_rail")
 
-[node name="RailEastS" type="Node3D" parent="."]
+[node name="RailEastS" parent="." instance=ExtResource("7_rail")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17, 4, 12)
-instance=ExtResource("7_rail")
 
-[node name="Pillar1" type="Node3D" parent="."]
+[node name="Pillar1" parent="." instance=ExtResource("8_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
-instance=ExtResource("8_pillar")
 
-[node name="Pillar2" type="Node3D" parent="."]
+[node name="Pillar2" parent="." instance=ExtResource("8_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
-instance=ExtResource("8_pillar")
 
-[node name="Pillar3" type="Node3D" parent="."]
+[node name="Pillar3" parent="." instance=ExtResource("8_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
-instance=ExtResource("8_pillar")
 
-[node name="Pillar4" type="Node3D" parent="."]
+[node name="Pillar4" parent="." instance=ExtResource("8_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
-instance=ExtResource("8_pillar")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
