@@ -28,8 +28,10 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.2-etapa11-rodape/BlackSight-Etapa11-Rodape-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Rodape-Windows-x86_64.zip` (tamanho e SHA-256
-publicados no corpo da release `v0.11.2-etapa11-rodape`, gerados pelo build).
+Arquivo: `BlackSight-Etapa11-Rodape-Windows-x86_64.zip`
+(40.728.233 bytes · SHA-256
+`9f4c187e2d96bc80dd8b9924491281766bde8153d04919bbe7526a2a952e9af8`,
+commit `3c62ec7`).
 
 A 0.11.2 corrige **só** o encaixe do rodapé/acabamento, que aparecia
 parcialmente dentro da parede clara (faces coplanares) em parede reta, canto,

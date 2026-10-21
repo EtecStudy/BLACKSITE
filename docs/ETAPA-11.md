@@ -475,11 +475,16 @@ sobrescrever **`v0.11.1-etapa11-correcao`** (publicada e testada) nem
 | --- | --- |
 | Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.2-etapa11-rodape> |
 | Arquivo | `BlackSight-Etapa11-Rodape-Windows-x86_64.zip` |
-| Tamanho | gerado pelo build (publicado no corpo da release) |
-| SHA-256 | gerado pelo build (publicado no corpo da release) |
+| Tamanho | 40.728.233 bytes |
+| SHA-256 | `9f4c187e2d96bc80dd8b9924491281766bde8153d04919bbe7526a2a952e9af8` |
+| Commit do build | `3c62ec7` |
+| CI (Windows real) | run `39664881723` — SUCCESS |
 
-As imagens de close dos encaixes (`ci-logs/visual/*.png`) são publicadas no
-branch `ci-windows` junto do diagnóstico do build.
+Testes automáticos desse build: 359 (fumaça), 76 (interface), 598
+(controlador/inventário/drop) e **364** (modular, 37 delas da seção [4b]).
+As 10 imagens de close dos encaixes ficam em `ci-logs/visual/` e são
+publicadas no branch `ci-windows` junto do diagnóstico do build; o passo
+`TESTE W6b` falha se menos de 10 forem geradas.
 
 O ZIP contém `BlackSight.exe` (109.193.728 bytes), `BlackSight.pck`
 (1.721.544 bytes), `LEIA-ME.txt` e `SHA256SUMS.txt`.
