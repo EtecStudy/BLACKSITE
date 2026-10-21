@@ -23,7 +23,7 @@ alterar os sistemas aprovados das etapas anteriores.
 - **Estrutura**: pilar de 0,5 m com capitel e guarda-corpo de 2 m.
 - **Escada reta**: 20 degraus de 0,20 × 0,30 m, 4 m de subida em 6 m
   (**33,7°**), rampa de colisão única e guardas laterais.
-- **Materiais compartilhados**: cinco `StandardMaterial3D`; nenhum modelo,
+- **Materiais compartilhados**: quatro `StandardMaterial3D`; nenhum modelo,
   textura ou plugin externo.
 
 ### Demonstração (`match/scenes/modular_demo.tscn`)
