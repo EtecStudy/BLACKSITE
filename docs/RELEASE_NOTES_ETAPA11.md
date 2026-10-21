@@ -1,108 +1,89 @@
-# Black Sight — Etapa 11 · Correção da biblioteca modular (v0.11.1)
+# Black Sight — Etapa 11 · Correção do rodapé (v0.11.2)
 
-**Tag:** `v0.11.1-etapa11-correcao`
-**Arquivo:** `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` (Windows x86_64)
-**Base:** `v0.11.0-etapa11-modular-rooms` (preservada, não é sobrescrita)
+**Tag:** `v0.11.2-etapa11-rodape`
+**Arquivo:** `BlackSight-Etapa11-Rodape-Windows-x86_64.zip` (Windows x86_64)
+**Base:** `v0.11.1-etapa11-correcao` (preservada) e `v0.11.0-etapa11-modular-rooms`
 
-Correção da Etapa 11: a biblioteca modular foi revisada para uma instalação
-industrial de grande escala, a cena de demonstração foi reconstruída sobre ela
-e dois bugs relatados no teste manual foram corrigidos: **ESC travava/voltava
-ao menu sem controle** e **a corrida ficava presa depois de soltar SHIFT**.
+Correção de **um único problema visual** apontado no teste manual: o
+rodapé/acabamento escuro aparecia parcialmente **dentro da parede clara** em
+alguns encaixes. Escala, planta, corredores, salas, estrutura dos módulos,
+movimentação, inventário, ESC e SHIFT **não foram alterados**.
 
-Nenhum sistema das etapas anteriores foi removido. Movimentação, stamina,
-interação, inventário e descarte continuam iguais (Etapas 5–9), assim como a
-sala de teste e a HUD aprovada.
+## Causa
 
-## O que mudou na biblioteca
+Não era posição de cena nem offset de instância. O acabamento das peças estava
+modelado pela **face**, não por um perfil de profundidade: várias caixas
+terminavam **exatamente** no plano da parede (±0,200) ou no plano da peça
+vizinha. Duas faces coplanares com a mesma normal disputam o mesmo pixel
+(z-fighting) — e, como o rodapé é escuro e a parede é clara, o acabamento
+parece atravessar a parede.
 
-- **Escala industrial:** pé-direito de **6 m**, paredes de **0,40 m** de
-  espessura, corredor principal de **6 m** e secundário de **4 m**, salas de
-  pesquisa de **10 × 10 m** e **12 × 16 m**, sala técnica de **14 × 20 m**.
-- **25 peças**: pisos e tetos de 2 × 2 m, painéis de parede de 2 m, módulos de
-  **porta (4 m, vão 2,4 × 3,0 m)** e **abertura (4 m, vão 3,6 × 4,2 m)**,
-  cantos internos/externos, pilastra de encontro, pilar I, viga de 6 m, coluna
-  de apoio, guarda-corpo, escada e seis peças de corredor (reto principal,
-  reto secundário, canto em L, T, cruzamento em X e terminação com comporta).
-- **Salas prontas**: pesquisa 10 × 10, pesquisa 12 × 16, técnica 14 × 20 e
-  equipamentos 8 × 8, todas com piso, teto e pilares.
-- **Encaixe documentado** (grade de 2 m, pivôs, eixos, alturas) e verificado:
-  paredes compartilhadas entre ambientes (sem duplicação), pisos que terminam
-  na face da parede e soleiras que emendam os pisos.
+Casos encontrados na 0.11.1:
 
-## O que mudou na demonstração
+- **parede reta:** rodapé em −0,270..**−0,200** (fundo exatamente na face da
+  parede) e o montante vertical com a **mesma profundidade** do rodapé — as
+  duas frentes em −0,270, brigando por 0,14 × 0,35 m em cada módulo;
+- **canto interno/externo:** o plinto tinha **0,400 × 0,400**, exatamente a
+  coluna — ficava inteiro dentro dela, com as quatro faces coplanares;
+- **porta:** batente e rodapé com a **mesma frente** (±0,265), e o batente
+  atravessando o rodapé;
+- **abertura:** revestimento começando na face do vão (1,800);
+- **pilastra de encontro:** faixa e rodapé/topo terminando no mesmo plano
+  (0,290).
 
-- Corredor principal de **40 m** com vigas e luminárias industriais.
-- Sala de pesquisa A (10 × 10) com **dois acessos**: porta de 2,4 m e abertura
-  de 3,6 m.
-- Sala de pesquisa B (12 × 16) com porta de 2,4 m.
-- Ramal secundário de 4 m ligando o corredor à sala técnica, com **junção
-  modular** (`wall_opening_4m`, com pilares de 0,20 m) dos dois lados.
-- Sala técnica de 14 × 20 com **pórtico de 4 pilares e 6 vigas**, mezanino em
-  `y = 3,2`, **8 guarda-corpos** e **escada de 16 degraus** com guardas.
-- Sala de equipamentos 8 × 8 ligada à sala técnica.
-- 12 luzes pontuais, ambiente com névoa e tonemap, materiais industriais.
-- **706 nós** de geometria: 257 placas de piso, 239 lajes de teto (227 cegas
-  + 12 luminárias), 137 painéis de parede, 3 portas, 3 aberturas, 14 blocos de
-  canto, 12 pilares, 10 vigas, 8 guarda-corpos, 3 colunas de apoio e 1 escada.
+## Correção (na origem, nas cenas das peças)
 
-## Correções
+Cada acabamento ganhou um **perfil de profundidade explícito** em relação ao
+eixo da parede (que ocupa ±0,200). A regra: o acabamento entra pelo menos 2 cm
+no sólido e fica pelo menos 5 cm à frente dele — nenhuma face coincide.
 
-- **ESC:** o menu de pausa agora é real (CONTINUAR / CONFIGURAÇÕES / VOLTAR AO
-  MENU). O ESC abre e fecha a pausa; a troca de cena no botão de menu é
-  agendada com `call_deferred`, fora do evento de teclado. Abrir e fechar
-  repetidamente não corrompe estado e não trava.
-- **SHIFT:** o pressionamento/soltura passa a ser registrado por evento
-  (`_input`), e não só pelo estado da ação a cada frame — o estado da ação pode
-  ficar preso no Godot 4.7.2. Soltar Shift desliga a corrida imediatamente;
-  retomar depois da pausa não herda corrida.
-- **Peças atravessadas:** painéis duplicados no mesmo plano e cantos com braços
-  invadindo a parede foram eliminados na geração; a demonstração é validada
-  sem sobreposições nem frestas.
+| Peça | Antes | Depois |
+| --- | --- | --- |
+| Rodapé da parede reta | 7 cm, fundo na face | **10 cm**, fundo 2,5 cm embutido |
+| Montante / nervura / capitel | montante e rodapé na mesma frente | frentes em 0,26 / 0,27 / 0,32 m (6 / 7 / 12 cm) |
+| Plinto de canto | 0,40 × 0,40 (igual à coluna) | **0,57 × 0,57** (envolve a coluna em 8,5 cm) |
+| Capitel de canto | 0,40 × 0,40 | 0,50 × 0,50 |
+| Faixa de canto | 0,404 | 0,44 |
+| Aresta de canto | 5 cm enterrada | 3 cm sobre a quina |
+| Batente de porta/abertura | frente igual ao rodapé | entra **1 cm no vão** e termina **sob** a travessa |
+| Pilastra de encontro | faixa e rodapé no mesmo plano | faixa 1 cm embutida; rodapé/topo 3 cm à frente |
 
-## Testes deste build (Windows e Linux, código de saída 0)
+Nenhum colisor foi criado ou removido: o número de `CollisionShape3D` por peça
+continua 1 (parede, cantos, pilastra), 4 (porta) e 4 (abertura).
 
-| Suíte | Verificações |
-| --- | --- |
-| Fumaça (`smoke_test`) | 359 |
-| Fluxo de interface (`ui_flow_test`) | 76 |
-| Controlador FPS + inventário + drop (`movement_test`) | 598 |
-| Drop junto a obstáculos (`drop_obstacle_test`) | 156 |
-| Sistema modular de salas (`modular_test`) | 327 |
+## Verificação
 
-O build também importa o projeto, executa as cenas headless, renderiza as
-cenas com Xvfb/OpenGL, exporta o `.exe` e executa o pacote exportado. **Nada
-disso substitui o teste manual abaixo** — a aprovação depende dele.
+- **Novo teste automático** (seção [4b] do `modular_test`): mede as caixas de
+  malha de cada peça de parede e exige folga ≥ 2 mm entre a face de qualquer
+  acabamento e a face do corpo, nenhum acabamento enterrado e a contagem de
+  colisores inalterada. Resultado: **0 conflitos** nas seis peças; rodando
+  contra a geometria da 0.11.1, acusa **12** — exatamente os do teste manual.
+- **Capturas de close no build** (`tools/ci/modular_visual_check.tscn`):
+  10 imagens em parede reta (duas distâncias), canto, porta, abertura, junção
+  em T, parede rotacionada 90°, lado oposto da parede, pilar do hall e
+  corredor inteiro. Ficam em `ci-logs/visual/` no branch `ci-windows`.
+- Os testes existentes (fumaça, interface, controlador, drop e modular)
+  continuam rodando e precisam passar; as contagens saem no corpo da release.
+
+**Nada disso substitui o teste manual** — a aprovação depende dele.
 
 ## Como testar manualmente
 
 1. Extraia o ZIP e mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta.
 2. Execute `BlackSight.exe` → **DEMONSTRAR MÓDULOS**.
-3. Ande e corra pelo corredor; solte SHIFT e confirme que a corrida para na
-   hora.
-4. Entre na sala de pesquisa pelos dois acessos (porta e abertura).
-5. Siga pelo ramal até a sala técnica e entre na sala de equipamentos.
-6. Suba a escada, ande pelo mezanino e encoste no guarda-corpo.
-7. Pressione **ESC** 5 vezes (abrir/fechar) e confirme que o jogador volta a
-   andar ao retomar.
-8. Abra **CONFIGURAÇÕES** pelo menu e volte; use **VOLTAR AO MENU** e entre na
-   demonstração outra vez.
-9. Confira que não há parede piscando nem fresta no piso dos corredores.
+3. Olhe o rodapé do corredor **de perto e de rasante**: nenhuma faixa escura
+   dentro do branco, nenhuma borda tremulando.
+4. Repita no **canto** oeste do corredor, na **porta** (x ≈ 10), na
+   **abertura** (x ≈ 14) e na **junção do ramal** (x ≈ 34).
+5. Vá até a sala técnica e olhe a base do pilar do pórtico.
+6. Confirme que a escala, os corredores e as salas continuam iguais.
+7. Confirme que SHIFT solta a corrida e que ESC abre/fecha a pausa (regressão).
 
 ## Controles (inalterados)
 
 `W A S D` andar · `Shift` correr · `Ctrl` agachar · `E` interagir/pegar ·
 `1 2 3` selecionar · `G` soltar item · `R` remover · `Esc` pausa ·
 `F11` tela cheia
-
-## Pacote publicado
-
-| Item | Valor |
-| --- | --- |
-| Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.1-etapa11-correcao> |
-| Arquivo | `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` |
-| Tamanho | 40.728.124 bytes |
-| SHA-256 | `876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f` |
-| Commit | `53851dc` |
 
 ## Ainda fora do escopo
 

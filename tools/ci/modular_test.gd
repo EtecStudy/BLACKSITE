@@ -13,6 +13,9 @@ extends Node
 ##      com ombreiras e verga fechando a parede;
 ##   4. encaixe entre peças: painéis vizinhos sem fresta nem sobreposição,
 ##      piso + piso, piso + teto na altura certa e canto de 0,40 m;
+##   4b. acabamentos (rodapé, batente, plinto): nenhuma face divide plano com
+##      a parede (z-fighting), nenhum acabamento enterrado e nenhum colisor
+##      novo;
 ##   5. salas: piso contínuo, paredes contínuas fora dos vãos e porta livre;
 ##   6. corredores: principais e secundários, canto em L, T, cruzamento e
 ##      terminação, todos com piso e passagem livres;
@@ -95,6 +98,7 @@ func _ready() -> void:
 	await _test_wall_dimensions()
 	await _test_openings()
 	await _test_corner_and_floor()
+	await _test_finish_fit()
 	await _test_rooms()
 	await _test_corridors()
 	await _test_stairs_geometry()
@@ -311,6 +315,183 @@ func _test_corner_and_floor() -> void:
 			"teto: módulo de 2 × 2 m")
 		_free_module(ceiling)
 	await _frames(3)
+
+
+# --- 4b. Acabamentos (rodapé, batente, plinto) ------------------------------
+
+## Peças de parede com acabamento: [nome, cena, corpos, eixos].
+##
+## `corpos` é a lista de materiais que formam o corpo da peça (o que o
+## acabamento reveste). `eixos` são os eixos em que o acabamento não pode
+## dividir plano:
+##   - `z` (2) é a espessura da parede nos módulos retos;
+##   - nos cantos o plinto envolve a coluna, então valem `x` e `z`.
+## Faces dentro do sólido da parede (|coordenada| < WALL_T/2) são emendas
+## internas, escondidas — só as faces no plano da parede ou à frente dela
+## podem produzir z-fighting.
+const FINISH_PIECES := [
+	[
+		"wall_panel_2m",
+		"res://maps/modular/walls/wall_panel_2m.tscn",
+		["wall", "panel"],
+		[2],
+	],
+	["wall_door_4m", "res://maps/modular/walls/wall_door_4m.tscn", ["wall"], [2]],
+	["wall_opening_4m", "res://maps/modular/walls/wall_opening_4m.tscn", ["wall"], [2]],
+	["wall_junction", "res://maps/modular/walls/wall_junction.tscn", ["panel"], [2]],
+	[
+		"wall_corner_inner",
+		"res://maps/modular/walls/wall_corner_inner.tscn",
+		["wall"],
+		[0, 2],
+	],
+	[
+		"wall_corner_outer",
+		"res://maps/modular/walls/wall_corner_outer.tscn",
+		["wall"],
+		[0, 2],
+	],
+]
+
+## Colisores esperados por peça de parede (o acabamento não acrescenta nenhum).
+const FINISH_COLLIDERS := {
+	"wall_panel_2m": 1,
+	"wall_door_4m": 4,
+	"wall_opening_4m": 4,
+	"wall_junction": 1,
+	"wall_corner_inner": 1,
+	"wall_corner_outer": 1,
+}
+
+## Menor folga aceitável entre duas faces visíveis no mesmo plano. Abaixo
+## disso as superfícies disputam o mesmo pixel (z-fighting) e o rodapé escuro
+## "atravessa" a parede clara.
+const FINISH_MIN_GAP := 0.002
+
+
+func _test_finish_fit() -> void:
+	print("[4b] Acabamentos não atravessam a parede")
+	for entry: Array in FINISH_PIECES:
+		var label: String = entry[0]
+		var path: String = entry[1]
+		var body_materials: Array = entry[2]
+		var axes: Array = entry[3]
+		var piece: Node3D = await _spawn_module(path, Vector3(0, 0, 40))
+		_expect(piece != null, "%s: peça instanciada para medir acabamento" % label)
+		if piece == null:
+			continue
+		var boxes: Array = _mesh_boxes(piece)
+		var finishes: Array = []
+		for box: Dictionary in boxes:
+			var mat: String = box["mat"]
+			if mat.contains("trim") or mat.contains("accent"):
+				finishes.append(box)
+		_expect(finishes.size() > 0, "%s: acabamento identificado" % label)
+
+		var shared: int = 0
+		var buried: int = 0
+		for body_mat: String in body_materials:
+			var bodies: Array = []
+			for box: Dictionary in boxes:
+				if (box["mat"] as String).contains(body_mat):
+					bodies.append(box)
+			_expect(bodies.size() > 0, "%s: corpo '%s' identificado" % [label, body_mat])
+			for body: Dictionary in bodies:
+				for finish: Dictionary in finishes:
+					if body_mat != "wall" and _box_inside(finish, body):
+						buried += 1
+					shared += _count_shared_planes(body, finish, axes,
+						"%s × %s" % [finish["name"], body["name"]])
+
+		# Dois acabamentos de materiais diferentes também não podem dividir a
+		# face da frente (ex.: batente metálico invadindo o rodapé escuro).
+		for i: int in finishes.size():
+			for j: int in range(i + 1, finishes.size()):
+				var first: Dictionary = finishes[i]
+				var second: Dictionary = finishes[j]
+				if first["mat"] == second["mat"]:
+					continue
+				shared += _count_shared_planes(first, second, axes,
+					"%s × %s" % [first["name"], second["name"]])
+
+		_expect(shared == 0,
+			"%s: nenhuma face de acabamento divide plano com a peça vizinha (%d)" % [label, shared])
+		_expect(buried == 0, "%s: nenhum acabamento escondido dentro do corpo (%d)" % [label, buried])
+
+		var colliders: int = _collision_shapes(piece).size()
+		var expected: int = FINISH_COLLIDERS[label]
+		_expect(colliders == expected,
+			"%s: %d colisores (esperado %d — acabamento não colide)" % [label, colliders, expected])
+		_free_module(piece)
+	await _frames(3)
+
+
+## Conta faces coincidentes entre duas caixas nos eixos pedidos, ignorando as
+## que ficam dentro do sólido da parede (emenda interna, não aparece).
+func _count_shared_planes(a: Dictionary, b: Dictionary, axes: Array,
+		pair_label: String) -> int:
+	var count: int = 0
+	for axis: int in axes:
+		if not _overlaps_other_axes(a, b, axis):
+			continue
+		var gap_lo: float = absf((a["lo"] as Vector3)[axis] - (b["lo"] as Vector3)[axis])
+		if gap_lo < FINISH_MIN_GAP and _is_exposed((a["lo"] as Vector3)[axis]):
+			count += 1
+			print("      plano compartilhado: %s eixo %d (fundo) em %.3f" % [pair_label, axis, gap_lo])
+		var gap_hi: float = absf((a["hi"] as Vector3)[axis] - (b["hi"] as Vector3)[axis])
+		if gap_hi < FINISH_MIN_GAP and _is_exposed((a["hi"] as Vector3)[axis]):
+			count += 1
+			print("      plano compartilhado: %s eixo %d (frente) em %.3f" % [pair_label, axis, gap_hi])
+	return count
+
+
+## A coordenada está no plano da parede ou fora dela (portanto visível)?
+func _is_exposed(coordinate: float) -> bool:
+	return absf(coordinate) >= WALL_T / 2.0 - 0.001
+
+
+## Caixas de malha da peça em coordenadas LOCAIS (as peças de parede não têm
+## rotação interna, então a origem de cada nó é a posição da caixa).
+func _mesh_boxes(root: Node3D) -> Array:
+	var boxes: Array = []
+	for node: Node in root.find_children("*", "MeshInstance3D", true, false):
+		var mesh_node := node as MeshInstance3D
+		var box: BoxMesh = mesh_node.mesh as BoxMesh
+		if box == null:
+			continue
+		var material: StandardMaterial3D = box.material as StandardMaterial3D
+		var path: String = "" if material == null else material.resource_path
+		var origin: Vector3 = mesh_node.global_position - root.global_position
+		var half: Vector3 = box.size / 2.0
+		boxes.append({
+			"name": String(mesh_node.name),
+			"mat": path.get_file(),
+			"lo": origin - half,
+			"hi": origin + half,
+		})
+	return boxes
+
+
+## As duas caixas se sobrepõem nos eixos que não são `axis`?
+func _overlaps_other_axes(a: Dictionary, b: Dictionary, axis: int) -> bool:
+	for other: int in 3:
+		if other == axis:
+			continue
+		var lo: float = maxf((a["lo"] as Vector3)[other], (b["lo"] as Vector3)[other])
+		var hi: float = minf((a["hi"] as Vector3)[other], (b["hi"] as Vector3)[other])
+		if hi - lo <= 0.001:
+			return false
+	return true
+
+
+## A caixa `inner` cabe inteira dentro de `outer` (ou seja: não aparece)?
+func _box_inside(inner: Dictionary, outer: Dictionary) -> bool:
+	for axis: int in 3:
+		if (inner["lo"] as Vector3)[axis] < (outer["lo"] as Vector3)[axis] - 0.001:
+			return false
+		if (inner["hi"] as Vector3)[axis] > (outer["hi"] as Vector3)[axis] + 0.001:
+			return false
+	return true
 
 
 # --- 5. Salas ---------------------------------------------------------------

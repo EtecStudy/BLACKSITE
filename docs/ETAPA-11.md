@@ -11,6 +11,7 @@ multiplayer.
   `maps/scenes/modular_demo_room.tscn`)
 - Botão na tela inicial: **DEMONSTRAR MÓDULOS**
 - Teste automatizado: `tools/ci/modular_test.tscn`
+- Capturas de encaixe (renderização real): `tools/ci/modular_visual_check.tscn`
 - Validador geométrico (fora do Godot, no build): contagem de sobreposições,
   frestas de piso/teto e buracos de parede em toda a demonstração
 - A sala de teste existente (`maps/scenes/test_room.tscn` +
@@ -80,6 +81,26 @@ invisível dentro do piso). Ambas estão listadas em "Limitações".
 | Pilar | **centro da seção**, base em `y = 0` | placa 0,92 × 0,92 m |
 | Viga | **centro do vão**, eixo X local | 6 m; gira 90° para vencer Z |
 | Escada | **centro do primeiro degrau**, no piso | sobe para `−Z`, topo em 3,20 m |
+
+### Perfil dos acabamentos (parede, rodapé, batente, plinto)
+
+Todas as cotas abaixo são **profundidade a partir do eixo da parede**
+(a parede ocupa ±0,200). A regra única: **nenhuma face de acabamento pode
+coincidir com a face da parede** — o acabamento entra pelo menos 2 cm no
+sólido e fica pelo menos 5 cm à frente dele.
+
+| Peça | Fundo | Frente | Situação |
+| --- | --- | --- | --- |
+| Parede / coluna | −0,200 | +0,200 | corpo |
+| Rodapé (parede reta, porta) | 0,175 | 0,275 | 2,5 cm embutido, 7,5 cm saliente |
+| Montante vertical (parede reta) | 0,190 | 0,260 | 6 cm saliente |
+| Nervura (parede reta) | 0,190 | 0,270 | 7 cm saliente |
+| Capitel / topo (parede reta) | 0,190 | 0,320 | 12 cm saliente |
+| Batente de porta/abertura | 0,190 | 0,260 | 6 cm; entra 1 cm no vão |
+| Plinto de canto | −0,285 | +0,285 | envolve a coluna (8,5 cm por lado) |
+| Faixa de canto | ±0,220 | | 2 cm saliente |
+| Pilastra de encontro (faixa) | 0,190 | 0,290 | 1 cm embutida |
+| Rodapé/topo da pilastra | 0,190 | 0,320 | 3 cm à frente da faixa |
 
 ### Regras de encaixe (obrigatórias)
 
@@ -273,21 +294,93 @@ atraso e 15 pontos/s de recuperação.
 
 ---
 
+## 5b. Correção 0.11.2 — rodapé atravessando a parede
+
+**Sintoma relatado (teste manual):** o rodapé/acabamento preto aparecia
+parcialmente *dentro* da parede clara em alguns encaixes — faixas escuras
+"cortando" a parede e bordas tremulando.
+
+**Causa real:** não era posição de cena nem offset de instância. O acabamento
+das peças foi modelado pela **face**, e não por um perfil de profundidade:
+várias caixas terminavam *exatamente* no plano da parede (±0,200) ou no plano
+da peça vizinha. Duas faces coplanares com a mesma normal disputam o mesmo
+pixel (z-fighting); como o rodapé é `trim` escuro e a parede é clara, o
+resultado é o acabamento "atravessando" a parede.
+
+Coincidências encontradas (geometria da 0.11.1):
+
+| Peça | O que dividia plano |
+| --- | --- |
+| `wall_panel_2m` | rodapé em −0,270..**−0,200** (fundo na face da parede) e o **montante** com a mesma profundidade do rodapé: as duas frentes em −0,270 (0,14 × 0,35 m de briga por módulo) |
+| `wall_corner_inner` | `CollarBase` com **0,400 × 0,400**, exatamente a coluna: plinto inteiro dentro da coluna e as quatro faces coplanares |
+| `wall_corner_outer` | mesma coisa com base e capitel |
+| `wall_door_4m` | batente e rodapé com a **mesma frente** (±0,265) e batente atravessando o rodapé |
+| `wall_junction` | faixa em 0,200..0,290 com rodapé/topo também em 0,290 |
+| `wall_opening_4m` | revestimento começando na face do vão (1,800) |
+
+**Correção (na origem, dentro das cenas das peças, não nas cenas que as
+instanciam):** o acabamento passou a ter um perfil de profundidade explícito
+(tabela da seção 2). Em resumo:
+
+- rodapé: 7 cm → **10 cm de espessura**, com 2,5 cm embutidos na parede;
+- montante, nervura e capitel deixaram de compartilhar plano: as frentes
+  ficaram em 0,26 / 0,27 / 0,32 m, contra 0,275 m do rodapé;
+- plinto do canto: 0,40 → **0,57 m** (envolve a coluna em 8,5 cm por lado);
+  capitel 0,40 → 0,50 m; faixa 0,404 → 0,44 m; aresta 5 cm → 3 cm sobre a quina;
+- batente da porta/abertura: entra **1 cm no vão** (cobre a aresta do ombreiro)
+  e passa a terminar **sob** a travessa superior;
+- pilastra de encontro: faixa embutida 1 cm e rodapé/topo 3 cm à frente dela.
+
+**O que não mudou:** escala, grade, planta da demonstração, corredores, salas,
+pórtico, mezanino, escada, movimentação, inventário, ESC e SHIFT. **Nenhum
+colisor foi criado:** o número de `CollisionShape3D` por peça de parede
+continua 1 (parede, cantos, pilastra), 4 (porta) e 4 (abertura) — o teste
+automático confere isso peça a peça.
+
+### Verificação automatizada desta correção
+
+Nova seção **[4b]** do `modular_test.gd`: para cada peça de parede, mede as
+caixas de malha (material + caixa local) e exige que:
+
+1. nenhuma face de acabamento coincida (folga < 2 mm) com a face do corpo no
+   mesmo eixo — ignorando as faces internas (|coordenada| < 0,200), que são
+   emendas escondidas dentro do sólido;
+2. nenhum acabamento de material diferente compartilhe a face da frente;
+3. nenhum acabamento fique inteiro dentro do corpo da peça;
+4. a contagem de colisores por peça seja a esperada (nada de colisor novo).
+
+Resultado: **0 conflitos** nas seis peças corrigidas. Rodando o mesmo teste
+contra a geometria da 0.11.1, ele acusa **12 conflitos** — exatamente os que o
+teste manual encontrou (rodapé × montante, batente × rodapé, plinto × coluna,
+faixa × rodapé da pilastra).
+
+### Evidência visual no build
+
+`tools/ci/modular_visual_check.tscn` abre a demonstração com câmera própria e
+salva **10 closes** em `ci-logs/visual/` (parede reta em duas distâncias,
+canto interno, porta, abertura, junção em T do ramal, parede rotacionada 90°,
+lado oposto da mesma parede, pilar do hall e corredor inteiro). As imagens são
+publicadas junto do diagnóstico do build para revisão humana — elas **não**
+substituem o teste manual.
+
 ## 6. Testes
 
 ### Automatizados (executados no build)
 
 | Suíte | O que verifica |
 | --- | --- |
-| `tools/ci/smoke_test.tscn` | configuração, cenas, versão 0.11.1, sistemas das etapas 3–9 |
+| `tools/ci/smoke_test.tscn` | configuração, cenas, versão 0.11.2, sistemas das etapas 3–9 |
 | `tools/ci/ui_flow_test.tscn` | fluxo real de telas, incluindo **menu → demonstração → ESC ×3 → pausa → menu**, duas vezes seguidas |
 | `tools/ci/movement_test.tscn` | controlador FPS, stamina, inventário, drop e o grupo **[25] soltura do SHIFT / corrida presa** |
 | `tools/ci/drop_obstacle_test.tscn` | descarte junto a obstáculos |
-| `tools/ci/modular_test.tscn` | **biblioteca nova**: catálogo, dimensões, vãos, encaixes, salas, corredores, escada, demonstração e caminhada real |
+| `tools/ci/modular_test.tscn` | **biblioteca nova**: catálogo, dimensões, vãos, encaixes, **acabamentos (seção 4b)**, salas, corredores, escada, demonstração e caminhada real |
 
 O teste modular verifica, entre outros pontos:
 
 - as 25 cenas existem, carregam, instanciam e têm colisão na camada 1;
+- **acabamentos**: em parede reta, canto, porta, abertura e pilastra, nenhuma
+  face de rodapé/batente/plinto divide plano com a parede, nenhum acabamento
+  fica enterrado e a contagem de colisores não muda (seção [4b]);
 - parede de 2 × 6 × 0,40 m, piso de 2 × 2 × 0,30 m com topo em `y = 0`,
   teto com base em `y = 6`;
 - porta com vão de 2,4 m e verga em 3,0 m; abertura com vão de 3,6 m e verga
@@ -337,7 +430,10 @@ headless, a renderização (Xvfb/OpenGL), a exportação Windows e a execução 
 8. Abra **CONFIGURAÇÕES** pelo menu, volte e retome.
 9. **VOLTAR AO MENU**: deve retornar à tela inicial sem travar.
 10. Repita a visita à demonstração; entre e saia mais duas vezes.
-11. Verifique se não há parede "piscando" (faces coplanares) nem fresta no
+11. Olhe o rodapé de perto e de rasante, encostado na parede: não pode haver
+    faixa escura "dentro" do branco nem borda tremulando (z-fighting), nem em
+    parede reta, nem no canto, nem na porta/abertura, nem na junção do ramal.
+12. Verifique se não há parede "piscando" (faces coplanares) nem fresta no
     chão ao longo dos corredores.
 
 ---
@@ -362,22 +458,28 @@ headless, a renderização (Xvfb/OpenGL), a exportação Windows e a execução 
   altura de 2,8 m — suficiente para andar, apertado para a escala industrial.
 - **Colisões**: todas as peças estruturais usam `BoxShape3D`; não há
   `ConcavePolygonShape3D` nem malhas importadas.
+- **Emendas internas**: algumas faces de acabamento continuam coincidentes
+  *dentro* do sólido da parede (|coordenada| < 0,200) — são emendas
+  escondidas, não aparecem e o teste [4b] as ignora de propósito.
 - A demonstração é um recorte de teste, **não** o laboratório definitivo.
 
 ---
 
 ## 8. Release
 
-A correção é publicada como **`v0.11.1-etapa11-correcao`**, sem sobrescrever a
-release anterior `v0.11.0-etapa11-modular-rooms`.
+A correção do rodapé é publicada como **`v0.11.2-etapa11-rodape`**, sem
+sobrescrever **`v0.11.1-etapa11-correcao`** (publicada e testada) nem
+`v0.11.0-etapa11-modular-rooms`.
 
 | Item | Valor |
 | --- | --- |
-| Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.1-etapa11-correcao> |
-| Arquivo | `BlackSight-Etapa11-Correcao-Windows-x86_64.zip` |
-| Tamanho | 40.728.124 bytes |
-| SHA-256 | `876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f` |
-| Commit do build | `53851dc` |
+| Release | <https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.11.2-etapa11-rodape> |
+| Arquivo | `BlackSight-Etapa11-Rodape-Windows-x86_64.zip` |
+| Tamanho | gerado pelo build (publicado no corpo da release) |
+| SHA-256 | gerado pelo build (publicado no corpo da release) |
+
+As imagens de close dos encaixes (`ci-logs/visual/*.png`) são publicadas no
+branch `ci-windows` junto do diagnóstico do build.
 
 O ZIP contém `BlackSight.exe` (109.193.728 bytes), `BlackSight.pck`
 (1.721.544 bytes), `LEIA-ME.txt` e `SHA256SUMS.txt`.

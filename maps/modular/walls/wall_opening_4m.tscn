@@ -28,7 +28,7 @@ size = Vector3(3.6, 0.3, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_7"]
 material = ExtResource("m_accent")
-size = Vector3(0.14, 4.2, 0.07)
+size = Vector3(0.15, 4.185, 0.07)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_8"]
 material = ExtResource("m_accent")
@@ -72,15 +72,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
 shape = SubResource("BoxShape3D_box_6")
 
 [node name="CasingLA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.73, 2.1, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.735, 2.0925, -0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingRA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73, 2.1, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.735, 2.0925, -0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingTopA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.27, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.255, -0.225)
 mesh = SubResource("BoxMesh_box_8")
 
 [node name="HeaderRibA" type="MeshInstance3D" parent="."]
@@ -88,15 +88,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -0.23)
 mesh = SubResource("BoxMesh_box_9")
 
 [node name="CasingLB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.73, 2.1, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.735, 2.0925, 0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingRB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73, 2.1, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.735, 2.0925, 0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingTopB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.27, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.255, 0.225)
 mesh = SubResource("BoxMesh_box_8")
 
 [node name="HeaderRibB" type="MeshInstance3D" parent="."]

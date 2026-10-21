@@ -14,19 +14,19 @@ size = Vector3(0.4, 6, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_3"]
 material = ExtResource("m_trim")
-size = Vector3(0.4, 0.34, 0.4)
+size = Vector3(0.57, 0.34, 0.57)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_4"]
 material = ExtResource("m_trim")
-size = Vector3(0.4, 0.24, 0.4)
+size = Vector3(0.5, 0.24, 0.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_5"]
 material = ExtResource("m_accent")
-size = Vector3(0.404, 0.12, 0.404)
+size = Vector3(0.44, 0.12, 0.44)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_6"]
 material = ExtResource("m_panel")
-size = Vector3(0.05, 5.4, 0.05)
+size = Vector3(0.03, 5.4, 0.03)
 
 [node name="WallCornerInner" type="StaticBody3D"]
 [node name="Column" type="MeshInstance3D" parent="."]
@@ -50,17 +50,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
 mesh = SubResource("BoxMesh_box_5")
 
 [node name="Edge_1_1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.175, 3, 0.175)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 3, 0.2)
 mesh = SubResource("BoxMesh_box_6")
 
 [node name="Edge_1_-1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.175, 3, -0.175)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 3, -0.2)
 mesh = SubResource("BoxMesh_box_6")
 
 [node name="Edge_-1_1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.175, 3, 0.175)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 3, 0.2)
 mesh = SubResource("BoxMesh_box_6")
 
 [node name="Edge_-1_-1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.175, 3, -0.175)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 3, -0.2)
 mesh = SubResource("BoxMesh_box_6")

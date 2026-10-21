@@ -430,34 +430,38 @@ jobs:
           guarda-corpo, salas de pesquisa e técnica e escada) e a cena
           DEMONSTRAR MÓDULOS reconstruída. Nenhum sistema anterior foi
           alterado; ESC e SHIFT foram corrigidos.
+          Correção 11.2: o rodapé/plinto deixou de dividir plano com a parede
+          (z-fighting, que fazia o acabamento escuro atravessar a parede
+          clara) em parede reta, canto, porta, abertura, junção em T e
+          módulos rotacionados.
           Stamina e controles anteriores seguem iguais.
           Ainda não há pulo, uso/arremesso/transferência de item, portas
           funcionais, geração procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versão 0.11.1 — Etapa 11, revisão (biblioteca modular industrial)
+          Versão 0.11.2 — Etapa 11, revisão (rodapé e acabamentos)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa11-Correcao-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa11-Rodape-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa11-Correcao-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa11-Correcao-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa11-Rodape-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa11-Correcao-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa11-Correcao-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa11-Correcao-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa11-Correcao-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa11-Correcao-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
           name: black-sight-etapa11-windows
           path: |
-            BlackSight-Etapa11-Correcao-Windows-x86_64.zip
+            BlackSight-Etapa11-Rodape-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
@@ -621,6 +625,7 @@ jobs:
             "tools/ci/ui_flow_test.tscn",
             "tools/ci/movement_test.tscn",
             "tools/ci/modular_test.tscn",
+            "tools/ci/modular_visual_check.tscn",
             "maps/modular/rooms/room_lab_10x10.tscn",
             "maps/modular/rooms/room_tech_14x20.tscn",
             "maps/modular/corridors/corridor_tee_6.tscn",
@@ -782,6 +787,21 @@ jobs:
           if ($alive) { Stop-Process -Id $proc.Id -Force }
           if (-not $alive) { throw "O .exe encerrou sozinho ao abrir com janela" }
 
+      - name: TESTE W6b — closes dos encaixes (renderização real)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs/visual | Out-Null
+          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/modular_visual_check.tscn *>&1 |
+            Tee-Object -FilePath ci-logs/13-visual.log
+          $code = $LASTEXITCODE
+          Write-Host "exit code das capturas de encaixe: $code"
+          $pngs = @(Get-ChildItem ci-logs/visual -Filter *.png -ErrorAction SilentlyContinue)
+          Write-Host "capturas geradas: $($pngs.Count)"
+          if ($code -ne 0) { throw "Capturas de encaixe falharam (exit $code) — ver 13-visual.log" }
+          if ($pngs.Count -lt 10) { throw "Capturas insuficientes ($($pngs.Count) de 10)" }
+
       - name: TESTE W7 — inspecionar o pacote .pck e os metadados do .exe
         shell: pwsh
         run: |
@@ -797,7 +817,7 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
-          if ($info.FileVersion -notlike "0.11.1*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+          if ($info.FileVersion -notlike "0.11.2*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
@@ -928,12 +948,15 @@ jobs:
           guarda-corpo, salas e escada) e a cena DEMONSTRAR MODULOS
           reconstruida. ESC e SHIFT corrigidos. Nenhum
           sistema anterior foi alterado.
+          Correcao 11.2: rodape e plinto deixaram de dividir plano com a
+          parede (z-fighting) em parede reta, canto, porta, abertura, juncao
+          em T e modulos rotacionados.
           Stamina e controles anteriores seguem iguais.
           Ainda nao ha pulo, uso/arremesso/transferencia de item, portas
           funcionais, geracao procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versao 0.11.1 - Etapa 11, revisao (biblioteca modular industrial)
+          Versao 0.11.2 - Etapa 11, revisao (rodape e acabamentos)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -944,7 +967,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa11-Correcao-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa11-Rodape-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -961,9 +984,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa11-windows-real
+          name: black-sight-etapa11-rodape-windows-real
           path: |
-            BlackSight-Etapa11-Correcao-Windows-x86_64.zip
+            BlackSight-Etapa11-Rodape-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -992,7 +1015,7 @@ jobs:
               Write-Host "::warning::sem linha de resumo em $($r.Log)"
             }
           }
-          $zip = "BlackSight-Etapa11-Correcao-Windows-x86_64.zip"
+          $zip = "BlackSight-Etapa11-Rodape-Windows-x86_64.zip"
           $info = Get-Item $zip
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $linhas += @("", "## Pacote verificado neste build", "", "| Item | Valor |", "| --- | --- |")
@@ -1013,7 +1036,7 @@ jobs:
           $extra = Get-Content ci-logs/release-summary.md -Encoding utf8 -Raw
           New-Item -ItemType Directory -Force -Path build | Out-Null
           ($notas + "`n" + $extra) | Out-File -FilePath build/release-notes.md -Encoding utf8
-          gh release create v0.11.1-etapa11-correcao "BlackSight-Etapa11-Correcao-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 11 - Correcao (revisao modular) - Windows x86_64" --notes-file build/release-notes.md
+          gh release create v0.11.2-etapa11-rodape "BlackSight-Etapa11-Rodape-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 11 - Rodape e acabamentos (revisao) - Windows x86_64" --notes-file build/release-notes.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)

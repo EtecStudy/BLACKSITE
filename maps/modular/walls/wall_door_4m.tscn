@@ -29,7 +29,7 @@ size = Vector3(2.4, 0.3, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_7"]
 material = ExtResource("m_accent")
-size = Vector3(0.16, 3, 0.07)
+size = Vector3(0.17, 2.635, 0.07)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_8"]
 material = ExtResource("m_accent")
@@ -37,7 +37,7 @@ size = Vector3(2.72, 0.16, 0.07)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_9"]
 material = ExtResource("m_trim")
-size = Vector3(0.8, 0.35, 0.07)
+size = Vector3(0.81, 0.35, 0.1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_10"]
 material = ExtResource("m_panel")
@@ -77,23 +77,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
 shape = SubResource("BoxShape3D_box_6")
 
 [node name="CasingLA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.28, 1.5, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.275, 1.6675, -0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingRA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.5, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.275, 1.6675, -0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingTopA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.08, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.065, -0.225)
 mesh = SubResource("BoxMesh_box_8")
 
 [node name="BaseWA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.175, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.595, 0.175, -0.225)
 mesh = SubResource("BoxMesh_box_9")
 
 [node name="BaseEA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.175, -0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.595, 0.175, -0.225)
 mesh = SubResource("BoxMesh_box_9")
 
 [node name="HeaderRibA" type="MeshInstance3D" parent="."]
@@ -101,23 +101,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.9, -0.23)
 mesh = SubResource("BoxMesh_box_10")
 
 [node name="CasingLB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.28, 1.5, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.275, 1.6675, 0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingRB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 1.5, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.275, 1.6675, 0.225)
 mesh = SubResource("BoxMesh_box_7")
 
 [node name="CasingTopB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.08, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.065, 0.225)
 mesh = SubResource("BoxMesh_box_8")
 
 [node name="BaseWB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.175, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.595, 0.175, 0.225)
 mesh = SubResource("BoxMesh_box_9")
 
 [node name="BaseEB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.175, 0.23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.595, 0.175, 0.225)
 mesh = SubResource("BoxMesh_box_9")
 
 [node name="HeaderRibB" type="MeshInstance3D" parent="."]

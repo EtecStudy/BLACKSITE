@@ -13,7 +13,7 @@ size = Vector3(2, 6, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_3"]
 material = ExtResource("m_trim")
-size = Vector3(2, 0.35, 0.07)
+size = Vector3(2, 0.35, 0.1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_box_4"]
 material = ExtResource("m_panel")
@@ -37,15 +37,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 shape = SubResource("BoxShape3D_box_2")
 
 [node name="BaseA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, -0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, -0.225)
 mesh = SubResource("BoxMesh_box_3")
 
 [node name="RibLowA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, -0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, -0.23)
 mesh = SubResource("BoxMesh_box_4")
 
 [node name="RibHighA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.95, -0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.95, -0.23)
 mesh = SubResource("BoxMesh_box_4")
 
 [node name="CapA" type="MeshInstance3D" parent="."]
@@ -53,19 +53,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.91, -0.255)
 mesh = SubResource("BoxMesh_box_5")
 
 [node name="StudA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -0.225)
 mesh = SubResource("BoxMesh_box_6")
 
 [node name="BaseB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0.225)
 mesh = SubResource("BoxMesh_box_3")
 
 [node name="RibLowB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, 0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, 0.23)
 mesh = SubResource("BoxMesh_box_4")
 
 [node name="RibHighB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.95, 0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.95, 0.23)
 mesh = SubResource("BoxMesh_box_4")
 
 [node name="CapB" type="MeshInstance3D" parent="."]
@@ -73,5 +73,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.91, 0.255)
 mesh = SubResource("BoxMesh_box_5")
 
 [node name="StudB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.235)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.225)
 mesh = SubResource("BoxMesh_box_6")

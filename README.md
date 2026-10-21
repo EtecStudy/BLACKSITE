@@ -3,12 +3,13 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 11 revisada e publicada (v0.11.1), com teste manual
+> **Status:** Etapa 11 revisada e publicada (v0.11.2), com teste manual
 > pendente — **biblioteca modular industrial**: paredes de 0,40 × 6 m, portas e
 > aberturas de 4 m, pisos e tetos, corredores de 6 m e 4 m com canto, T, X e
 > terminação, salas de pesquisa e técnica, pilares, vigas, guarda-corpos e uma
 > escada de 3,2 m, com uma cena de demonstração reconstruída. ESC e SHIFT
-> corrigidos. O inventário, a interação, a stamina, a HUD, as configurações e a
+> corrigidos. O rodapé/acabamento deixou de atravessar a parede (0.11.2).
+> O inventário, a interação, a stamina, a HUD, as configurações e a
 > sala de teste continuam iguais.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
@@ -25,15 +26,17 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.1-etapa11-correcao/BlackSight-Etapa11-Correcao-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.2-etapa11-rodape/BlackSight-Etapa11-Rodape-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Correcao-Windows-x86_64.zip`
-(40.728.124 bytes · SHA-256
-`876a5c5bde28a9a3232b5beda48323b4769713bc17e3635d0c9bc7f3df49094f`,
-commit `53851dc`).
-A release anterior da Etapa 11 (`v0.11.0-etapa11-modular-rooms`) **continua
-publicada**, junto de `v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop` e das
-demais.
+Arquivo: `BlackSight-Etapa11-Rodape-Windows-x86_64.zip` (tamanho e SHA-256
+publicados no corpo da release `v0.11.2-etapa11-rodape`, gerados pelo build).
+
+A 0.11.2 corrige **só** o encaixe do rodapé/acabamento, que aparecia
+parcialmente dentro da parede clara (faces coplanares) em parede reta, canto,
+porta, abertura e junção. Escala, planta, corredores e salas não mudaram.
+As releases anteriores da Etapa 11 — `v0.11.1-etapa11-correcao` e
+`v0.11.0-etapa11-modular-rooms` — **continuam publicadas**, junto de
+`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop` e das demais.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
@@ -121,6 +124,10 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   mundo continua simulando e a interação fica bloqueada.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
+- **Acabamentos sem z-fighting** (Etapa 11, correção 0.11.2): rodapé, batente
+  e plinto têm perfil de profundidade próprio — nenhuma face divide plano com
+  a parede. Verificado pelo teste [4b] do `modular_test` e por closes
+  renderizados no build.
 - **Biblioteca modular industrial** (Etapa 11, revisão): 25 cenas em
   `maps/modular/` com grade de 2 m, pé-direito de 6 m, paredes de
   0,40 × 6 m, portas de 4 m (vão 2,4 × 3,0 m), aberturas de 4 m
