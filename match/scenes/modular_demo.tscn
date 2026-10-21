@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://match/scripts/modular_demo.gd" id="1_session"]
+[ext_resource type="PackedScene" path="res://maps/scenes/modular_demo_room.tscn" id="2_room"]
+[ext_resource type="PackedScene" path="res://players/scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://ui/scenes/hud/player_hud.tscn" id="4_hud"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="5_font"]
+
+[node name="ModularDemoSession" type="Node3D"]
+script = ExtResource("1_session")
+
+[node name="ModularDemo" parent="." instance=ExtResource("2_room")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 2)
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="HintLabel" type="Label" parent="Interface"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 1500.0
+offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.72, 0.7, 0.64, 0.92)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 15
+text = "DEMONSTRAÇÃO MODULAR — W A S D ANDAR · SHIFT CORRER · CTRL AGACHAR · ESC VOLTAR AO MENU"
+mouse_filter = 2
+
+[node name="PlayerHud" parent="Interface" instance=ExtResource("4_hud")]
+unique_name_in_owner = true

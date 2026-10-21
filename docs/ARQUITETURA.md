@@ -16,7 +16,7 @@ BlackSight/
 ├── export_presets.cfg         # presets de exportação (Windows, Linux)
 ├── players/                   # jogador: controlador FPS + câmera
 ├── creatures/                 # criaturas e IA (estrutura)
-├── maps/                      # mapas e salas — sala de teste 3D
+├── maps/                      # mapas e salas — test_room + biblioteca modular (maps/modular/)
 ├── items/                     # itens, inventário e interação (estrutura)
 ├── objectives/                # objetivos e progressão (estrutura)
 ├── match/                     # orquestração — sessão de teste da movimentação
@@ -58,12 +58,12 @@ BlackSight/
 | --- | --- | --- |
 | `players/` | Controlador em primeira pessoa, câmera, input, visão/lanterna, atributos, detecção de interação e inventário | `scenes/player.tscn`, `scripts/player_controller.gd`, `scripts/interaction/`, `scripts/inventory/` |
 | `creatures/` | Criaturas: percepção, máquina de estados, patrulha, perseguição, spawn | apenas `README.md` |
-| `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste) |
+| `maps/` | Mapas, salas, iluminação, portas, pontos de spawn | `scenes/test_room.tscn` (sala de teste), `scenes/modular_demo_room.tscn`, `modular/` (paredes, pisos, corredores, salas, escada e estrutura) |
 | `items/` | Definição de itens, inventário, coleta e objetos interativos | apenas `README.md` |
 | `objectives/` | Objetivos, condições de conclusão e progressão | apenas `README.md` |
 | `ui/` | Menus, HUD e tela inicial | `scenes/title_screen.tscn`, `scenes/settings_screen.tscn`, `scenes/hud/player_hud.tscn` |
 | `audio/` | Áudio ambiente, efeitos sonoros e comunicação por voz | `default_bus_layout.tres`, autoload `UiAudio`, `assets/sfx/*.wav` |
-| `match/` | Estados e fluxo da partida; orquestração entre módulos | `scenes/movement_test.tscn`, `scripts/movement_test.gd` |
+| `match/` | Estados e fluxo da partida; orquestração entre módulos | `scenes/movement_test.tscn`, `scenes/modular_demo.tscn`, `scripts/movement_test.gd`, `scripts/modular_demo.gd` |
 | `shared/` | Recursos e sistemas usados por 2+ módulos | autoloads `AppInfo`/`GameSettings`, tema, fontes, texturas, `settings/` |
 
 Cada módulo tem um `README.md` próprio, com regras específicas e sugestões de
@@ -210,6 +210,11 @@ IDLE ◄─► WALKING ◄─► RUNNING
 ```
 
 - `players/` continua dependendo só de `shared/`: não conhece a sala.
+- A demonstração modular (Etapa 11) segue a mesma regra de `match/`:
+  `maps/scenes/modular_demo_room.tscn` tem só geometria e `Spawn`;
+  `match/scenes/modular_demo.tscn` adiciona jogador e HUD. As peças e as
+  convenções de grade estão em `maps/modular/` e em
+  [`ETAPA-11.md`](ETAPA-11.md).
 - `maps/` expõe geometria e um `Marker3D` de spawn; não conhece o jogador.
 - `match/` é o único que instancia os dois juntos e controla a sessão.
 - A UI da tela inicial apenas troca de cena por caminho; não importa classes de

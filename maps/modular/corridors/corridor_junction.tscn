@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://maps/modular/floors/floor_tile.tscn" id="1_floor"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_straight_2m.tscn" id="2_wall"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_junction.tscn" id="3_junction"]
+
+[node name="CorridorJunction" type="Node3D"]
+
+[node name="FloorThrough1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+instance=ExtResource("1_floor")
+
+[node name="FloorThrough2" type="Node3D" parent="."]
+instance=ExtResource("1_floor")
+
+[node name="FloorThrough3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+instance=ExtResource("1_floor")
+
+[node name="FloorBranch" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+instance=ExtResource("1_floor")
+
+[node name="WallSouth1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -1)
+instance=ExtResource("2_wall")
+
+[node name="WallSouth2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+instance=ExtResource("2_wall")
+
+[node name="WallSouth3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
+instance=ExtResource("2_wall")
+
+[node name="WallNorth1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+instance=ExtResource("2_wall")
+
+[node name="WallNorth2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+instance=ExtResource("2_wall")
+
+[node name="WallBranchWest" type="Node3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -1, 0, 2)
+instance=ExtResource("2_wall")
+
+[node name="WallBranchEast" type="Node3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1, 0, 2)
+instance=ExtResource("2_wall")
+
+[node name="JunctionWest" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 1)
+instance=ExtResource("3_junction")
+
+[node name="JunctionEast" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+instance=ExtResource("3_junction")

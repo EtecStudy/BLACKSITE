@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://maps/modular/floors/floor_tile.tscn" id="1_floor"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_straight_2m.tscn" id="2_wall"]
+[ext_resource type="PackedScene" path="res://maps/modular/walls/wall_junction.tscn" id="3_junction"]
+
+[node name="CorridorCorner" type="Node3D"]
+
+[node name="FloorCorner" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -1)
+instance=ExtResource("1_floor")
+
+[node name="FloorOut" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -1)
+instance=ExtResource("1_floor")
+
+[node name="FloorBranch" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+instance=ExtResource("1_floor")
+
+[node name="WallNorthA" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2)
+instance=ExtResource("2_wall")
+
+[node name="WallNorthB" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -2)
+instance=ExtResource("2_wall")
+
+[node name="WallEastA" type="Node3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, -1)
+instance=ExtResource("2_wall")
+
+[node name="WallEastB" type="Node3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 1)
+instance=ExtResource("2_wall")
+
+[node name="WallInnerX" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
+instance=ExtResource("2_wall")
+
+[node name="WallInnerZ" type="Node3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 1)
+instance=ExtResource("2_wall")
+
+[node name="Junction" type="Node3D" parent="."]
+instance=ExtResource("3_junction")

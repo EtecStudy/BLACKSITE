@@ -3,11 +3,11 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 9 concluída (v0.9.1) — **soltar itens no ambiente 3D** com G,
-> item físico com colisão e nome, posição validada por física e recolhimento
-> com E. A v0.9.1 corrige o bug do teste manual: itens soltos perto de caixas,
-> pilares e paredes podiam ficar apoiados só numa quina, tombar e entrar no
-> objeto. Inventário, interação, stamina, HUD e configurações continuam iguais.
+> **Status:** Etapa 11 concluída (v0.11.0) — **sistema modular de salas**:
+> biblioteca de paredes, pisos, corredores, salas, pilares, guarda-corpos e uma
+> escada de 4 m que o controlador atual sobe e desce, com uma cena de
+> demonstração própria. O inventário, a interação, a stamina, a HUD, as
+> configurações e a sala de teste continuam iguais.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -23,17 +23,20 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.9.1-etapa9-drop-fix/BlackSight-Etapa9-Drop-Fix-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.0-etapa11-modular-rooms/BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa9-Drop-Fix-Windows-x86_64.zip` (tamanho e SHA-256 na
-página da release `v0.9.1-etapa9-drop-fix`). O ZIP da v0.9.0 continua
-publicado em `v0.9.0-etapa9-drop`, mas **não** tem a correção do drop.
+Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip` (tamanho e
+SHA-256 na página da release `v0.11.0-etapa11-modular-rooms`). As releases
+anteriores (`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop`, …) continuam
+publicadas.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
+4. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração do sistema
+   modular (corredores, duas salas, canto, pilares e a escada até o mezanino).
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 
@@ -112,14 +115,23 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   mundo continua simulando e a interação fica bloqueada.
 - **Sala de teste 3D** com piso, paredes, pilares e caixas — apenas para validar
   movimentação e colisão, sem arte final.
+- **Sistema modular de salas** (Etapa 11): biblioteca em `maps/modular/` com
+  grade de 2 m, paredes de 2 m e 4 m, vão de porta (1,2 × 2,4 m), abertura de
+  conexão (2,0 × 2,6 m), cantos interno/externo, pilastras, pisos de 2 × 2 m,
+  pilar, guarda-corpo, corredores reto/canto/junção, sala quadrada (10 × 10 m),
+  sala retangular (10 × 14 m) e escada reta (4 m de subida, 33,7°). A cena
+  **DEMONSTRAR MÓDULOS** usa o jogador e a HUD existentes e não substitui a
+  cena de teste de movimentação. Convenções, medidas e instruções de encaixe em
+  [`docs/ETAPA-11.md`](docs/ETAPA-11.md).
 
 Ainda **não** existe: pulo, arremesso, uso/consumo de item, pilha, peso,
-equipamentos, transferência entre jogadores, portas, chaves, objetivos,
-criaturas, multiplayer, voz e o mapa definitivo. A HUD mostra a stamina, a
-indicação de interação e os três slots; vida, objetivos e telas de inventário
-completas vêm nas próximas etapas.
-Ver [`docs/ETAPA-9.md`](docs/ETAPA-9.md), [`docs/ETAPA-8.md`](docs/ETAPA-8.md) e
-[`docs/ETAPA-7.md`](docs/ETAPA-7.md).
+equipamentos, portas funcionais (nem trancadas/chaves), geração procedural,
+objetivos, criaturas, distribuição de itens, transferência entre jogadores,
+multiplayer, voz e o mapa definitivo. A HUD mostra a stamina, a indicação de
+interação e os três slots; vida, objetivos e telas de inventário completas vêm
+nas próximas etapas.
+Ver [`docs/ETAPA-11.md`](docs/ETAPA-11.md), [`docs/ETAPA-9.md`](docs/ETAPA-9.md),
+[`docs/ETAPA-8.md`](docs/ETAPA-8.md) e [`docs/ETAPA-7.md`](docs/ETAPA-7.md).
 
 ## Arquitetura
 
@@ -129,7 +141,7 @@ O projeto é dividido em módulos por responsabilidade. Detalhes completos em
 ```
 players/       jogador: controlador, detector de interação, inventário e drop
 creatures/     criaturas e IA (estrutura)
-maps/          mapas e salas — test_room.tscn
+maps/          mapas e salas — test_room.tscn + biblioteca modular (maps/modular/)
 items/         itens no mundo (InventoryTestItem, WorldItem) e futuros itens
 objectives/    objetivos e progressão (estrutura)
 match/         orquestração — movement_test (sala + jogador + pausa)

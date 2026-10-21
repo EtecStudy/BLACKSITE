@@ -3,13 +3,23 @@
 **Responsabilidade:** mapas, salas e ambientes — geometria, iluminação, pontos
 de spawn, portas e transições de área.
 
-**Estado atual (Etapa 6):** existe **uma sala de teste** para validar o
-controlador em primeira pessoa (movimento, colisão, agachamento e stamina).
-Não é o laboratório definitivo e não tem portas.
+**Estado atual (Etapa 11):** existe **uma sala de teste** para validar o
+controlador em primeira pessoa e uma **biblioteca modular de peças** de salas.
 
 | Caminho | O que é |
 | --- | --- |
 | `maps/scenes/test_room.tscn` | Sala 24 × 24 m: piso, paredes, pilares, caixas, luzes e `Spawn` |
+| `maps/scenes/modular_demo_room.tscn` | Cenário da demonstração modular (salas, corredores, mezanino e escada) |
+| `maps/modular/walls/` | Paredes retas (2 m/4 m), porta, abertura, cantos interno/externo e pilastra |
+| `maps/modular/floors/` | Piso 2 × 2 m com topo em `y = 0` |
+| `maps/modular/corridors/` | Corredor reto, canto e junção em T |
+| `maps/modular/rooms/` | Sala quadrada 10 × 10 m e sala retangular 10 × 14 m |
+| `maps/modular/stairs/` | Escada reta: 4 m de subida em 6 m (33,7°) |
+| `maps/modular/structure/` | Pilar e guarda-corpo de 2 m |
+| `maps/modular/materials/` | Os cinco materiais compartilhados por todas as peças |
+
+Convenções de grade, origens, medidas e instruções de encaixe estão em
+[`docs/ETAPA-11.md`](../docs/ETAPA-11.md).
 
 A sala contém **apenas geometria e colisão** — nenhum jogador é instanciado
 aqui. Quem monta sala + jogador é `match/scenes/movement_test.tscn`.

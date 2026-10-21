@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/wall_material.tres" id="1_wall"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="2_trim"]
+
+[sub_resource type="BoxMesh" id="MeshBox_1"]
+material = ExtResource("1_wall")
+size = Vector3(2, 1.4, 0.25)
+
+[sub_resource type="BoxShape3D" id="ShapeBox_2"]
+size = Vector3(2, 1.4, 0.25)
+
+[sub_resource type="BoxMesh" id="MeshBox_3"]
+material = ExtResource("2_trim")
+size = Vector3(2.02, 0.06, 0.29)
+
+[node name="WallOpening2m" type="StaticBody3D"]
+
+[node name="Lintel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0)
+mesh = SubResource("MeshBox_1")
+
+[node name="LintelCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0)
+shape = SubResource("ShapeBox_2")
+
+[node name="TrimHead" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.63, 0)
+mesh = SubResource("MeshBox_3")
