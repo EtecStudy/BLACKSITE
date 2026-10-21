@@ -5,6 +5,7 @@ extends Control
 ## Etapa 3: botão CONFIGURAÇÕES e F11 integrado às configurações salvas.
 ## Etapa 4: botão TESTAR MOVIMENTAÇÃO (cena de teste do controlador FPS).
 ## Etapa 11: botão DEMONSTRAR MÓDULOS (cena de demonstração do sistema modular).
+## Etapa 12A: botão PRIMEIRO ANDAR (planta do laboratório).
 ##
 ## Nenhuma mecânica de jogo (jogador, mapa, inventário, criaturas, etc.)
 ## pertence a esta tela.
@@ -13,6 +14,7 @@ const SETTINGS_SCENE: String = "res://ui/scenes/settings_screen.tscn"
 ## Navegação por caminho: a UI não importa classes de gameplay, apenas troca de cena.
 const MOVEMENT_TEST_SCENE: String = "res://match/scenes/movement_test.tscn"
 const MODULAR_DEMO_SCENE: String = "res://match/scenes/modular_demo.tscn"
+const LABORATORY_SCENE: String = "res://match/scenes/laboratory.tscn"
 
 const FADE_IN_DURATION: float = 1.3
 const FADE_OUT_DURATION: float = 0.55
@@ -24,6 +26,7 @@ const EMBLEM_BREATH_DURATION: float = 3.2
 @onready var _build_label: Label = %BuildLabel
 @onready var _start_button: Button = %StartButton
 @onready var _test_button: Button = %TestMovementButton
+@onready var _laboratory_button: Button = %LaboratoryButton
 @onready var _modular_button: Button = %ModularDemoButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
@@ -42,6 +45,7 @@ func _ready() -> void:
 	]
 	_start_button.disabled = true
 	_test_button.pressed.connect(_on_test_movement_pressed)
+	_laboratory_button.pressed.connect(_on_laboratory_pressed)
 	_modular_button.pressed.connect(_on_modular_demo_pressed)
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
@@ -75,6 +79,12 @@ func _play_intro() -> void:
 func _on_test_movement_pressed() -> void:
 	_play_click()
 	get_tree().change_scene_to_file(MOVEMENT_TEST_SCENE)
+
+
+## Etapa 12A: abre o primeiro andar do laboratório (planta completa).
+func _on_laboratory_pressed() -> void:
+	_play_click()
+	get_tree().change_scene_to_file(LABORATORY_SCENE)
 
 
 ## Etapa 11: abre a demonstração do sistema modular de salas.

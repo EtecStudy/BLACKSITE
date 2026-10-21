@@ -3,14 +3,14 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 11 revisada e publicada (v0.11.2), com teste manual
-> pendente — **biblioteca modular industrial**: paredes de 0,40 × 6 m, portas e
-> aberturas de 4 m, pisos e tetos, corredores de 6 m e 4 m com canto, T, X e
-> terminação, salas de pesquisa e técnica, pilares, vigas, guarda-corpos e uma
-> escada de 3,2 m, com uma cena de demonstração reconstruída. ESC e SHIFT
-> corrigidos. O rodapé/acabamento deixou de atravessar a parede (0.11.2).
-> O inventário, a interação, a stamina, a HUD, as configurações e a
-> sala de teste continuam iguais.
+> **Status:** Etapa 12A — **primeiro andar do laboratório** (v0.12.0), com
+> teste manual pendente. A planta tem 23 ambientes, 7.248 m², corredor
+> principal de 5,6 m livres, grande cruzamento central de 21,6 × 21,6 m com
+> teto de 12 m, seis setores e **duas escadas** para o subsolo, montada
+> **somente** com os módulos aprovados na Etapa 11 (nenhum módulo novo).
+> A Etapa 11 (v0.11.2) segue publicada como base. O inventário, a interação,
+> a stamina, a HUD, as configurações, a sala de teste e a demonstração modular
+> continuam iguais.
 
 ![Tela inicial do Black Sight](docs/screenshots/title_screen.png)
 
@@ -26,26 +26,30 @@
 
 ## Download do jogo (Windows)
 
-**https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.2-etapa11-rodape/BlackSight-Etapa11-Rodape-Windows-x86_64.zip**
+**https://github.com/EtecStudy/BLACKSITE/releases/tag/v0.12.0-etapa12a-primeiro-andar**
 
-Arquivo: `BlackSight-Etapa11-Rodape-Windows-x86_64.zip`
-(40.728.233 bytes · SHA-256
+Arquivo: `BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip`
+(tamanho, SHA-256 e commit são os publicados na release da Etapa 12A).
+
+A 0.12.0 adiciona o **primeiro andar do laboratório** ao menu, sem alterar
+nenhum sistema anterior nem a biblioteca modular. A versão anterior,
+`v0.11.2-etapa11-rodape` (`BlackSight-Etapa11-Rodape-Windows-x86_64.zip`,
+40.728.233 bytes, SHA-256
 `9f4c187e2d96bc80dd8b9924491281766bde8153d04919bbe7526a2a952e9af8`,
-commit `3c62ec7`).
-
-A 0.11.2 corrige **só** o encaixe do rodapé/acabamento, que aparecia
-parcialmente dentro da parede clara (faces coplanares) em parede reta, canto,
-porta, abertura e junção. Escala, planta, corredores e salas não mudaram.
-As releases anteriores da Etapa 11 — `v0.11.1-etapa11-correcao` e
-`v0.11.0-etapa11-modular-rooms` — **continuam publicadas**, junto de
-`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop` e das demais.
+commit `3c62ec7`), **continua publicada**, junto de `v0.11.1-etapa11-correcao`,
+`v0.11.0-etapa11-modular-rooms`, `v0.9.1-etapa9-drop-fix`,
+`v0.9.0-etapa9-drop` e das demais.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
-4. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração modular
+4. Clique em **PRIMEIRO ANDAR** para entrar no laboratório (recepção,
+   segurança, posto de controle, corredor principal, cruzamento central,
+   pesquisa, análises, observação, armazenamento, escritórios, arquivo,
+   funcionários, logística, elétrica, manutenção e as duas escadas).
+5. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração modular
    (corredor de 40 m, duas salas de pesquisa, ramal, sala técnica com pórtico,
    mezanino e escada). ESC abre/fecha a pausa.
 
@@ -130,6 +134,13 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   e plinto têm perfil de profundidade próprio — nenhuma face divide plano com
   a parede. Verificado pelo teste [4b] do `modular_test` e por closes
   renderizados no build.
+- **Primeiro andar do laboratório** (Etapa 12A): `maps/scenes/laboratory_first_floor.tscn`,
+  23 ambientes em 7.248 m², corredor principal de 5,6 m livres, cruzamento
+  central de 21,6 × 21,6 m com teto de 12 m, dois corredores de serviço de
+  4 m, 40 vãos (portas de 2,4 × 3,0 m, aberturas de 3,6 × 4,2 m e bocas de
+  6 m), 23 pilares, 5 vigas e duas escadas funcionais para o subsolo em
+  regiões opostas. Montado só com os módulos da Etapa 11. Ver
+  [`docs/ETAPA-12A.md`](docs/ETAPA-12A.md).
 - **Biblioteca modular industrial** (Etapa 11, revisão): 25 cenas em
   `maps/modular/` com grade de 2 m, pé-direito de 6 m, paredes de
   0,40 × 6 m, portas de 4 m (vão 2,4 × 3,0 m), aberturas de 4 m
@@ -141,13 +152,16 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   HUD existentes e não substitui a cena de teste de movimentação. Convenções,
   medidas e instruções de encaixe em [`docs/ETAPA-11.md`](docs/ETAPA-11.md).
 
-Ainda **não** existe: pulo, arremesso, uso/consumo de item, pilha, peso,
-equipamentos, portas funcionais (nem trancadas/chaves), geração procedural,
-objetivos, criaturas, distribuição de itens, transferência entre jogadores,
-multiplayer, voz e o mapa definitivo. A HUD mostra a stamina, a indicação de
+Ainda **não** existe: subsolo construído, iluminação final, móveis,
+equipamentos, pulo, arremesso, uso/consumo de item, pilha, peso, portas
+funcionais (nem trancadas/chaves), energia, geração procedural, objetivos,
+criaturas, distribuição de itens, transferência entre jogadores, multiplayer,
+voz e o mapa definitivo. O primeiro andar é estrutura: os ambientes estão
+vazios de propósito. A HUD mostra a stamina, a indicação de
 interação e os três slots; vida, objetivos e telas de inventário completas vêm
 nas próximas etapas.
-Ver [`docs/ETAPA-11.md`](docs/ETAPA-11.md), [`docs/ETAPA-9.md`](docs/ETAPA-9.md),
+Ver [`docs/ETAPA-12A.md`](docs/ETAPA-12A.md), [`docs/ETAPA-11.md`](docs/ETAPA-11.md),
+[`docs/ETAPA-9.md`](docs/ETAPA-9.md),
 [`docs/ETAPA-8.md`](docs/ETAPA-8.md) e [`docs/ETAPA-7.md`](docs/ETAPA-7.md).
 
 ## Arquitetura
@@ -158,7 +172,8 @@ O projeto é dividido em módulos por responsabilidade. Detalhes completos em
 ```
 players/       jogador: controlador, detector de interação, inventário e drop
 creatures/     criaturas e IA (estrutura)
-maps/          mapas e salas — test_room.tscn + biblioteca modular (maps/modular/)
+maps/          mapas e salas — test_room.tscn, primeiro andar do laboratório
+               (maps/scenes/laboratory_first_floor.tscn) e biblioteca modular
 items/         itens no mundo (InventoryTestItem, WorldItem) e futuros itens
 objectives/    objetivos e progressão (estrutura)
 match/         orquestração — movement_test (sala + jogador + pausa)

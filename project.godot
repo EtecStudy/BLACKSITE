@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 9: soltar itens no ambiente 3D e recolhê-los pela interação."
-config/version="0.11.2"
+config/description="Black Sight — jogo de terror em primeira pessoa. Etapa 12A: primeiro andar do laboratório construído com os módulos da Etapa 11."
+config/version="0.12.0"
 run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://shared/textures/branding/icon_1024.png"

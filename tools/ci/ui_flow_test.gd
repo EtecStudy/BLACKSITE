@@ -293,6 +293,44 @@ class FlowDriver:
 						title_again = await _wait_for_scene("TitleScreen", 1200)
 						_expect(title_again != null, "VOLTAR AO MENU retorna à tela inicial")
 
+		# 10b. Primeiro andar (Etapa 12A): o botão abre a sessão, ESC pausa e
+		#      retoma, e VOLTAR AO MENU fecha o ciclo.
+		if title_again != null:
+			var laboratory_button: Button = title_again.get_node_or_null(
+				"Content/Buttons/LaboratoryButton"
+			) as Button
+			_expect(laboratory_button != null, "botão PRIMEIRO ANDAR presente")
+			if laboratory_button != null:
+				laboratory_button.pressed.emit()
+				var lab: Node = await _wait_for_scene("LaboratorySession", 3000)
+				_expect(lab != null, "PRIMEIRO ANDAR abre a planta do laboratório")
+				if lab != null:
+					var lab_player: Node = lab.get_node_or_null("Player")
+					var lab_floor: Node = lab.get_node_or_null("FirstFloor")
+					_expect(lab_player != null and lab_floor != null,
+						"primeiro andar tem jogador e planta")
+					_expect(lab.get_node_or_null("Interface/PauseRoot") != null,
+						"primeiro andar usa o mesmo menu de pausa")
+					if lab_player != null:
+						_expect((lab_player as Node3D).global_position.x < -40.0,
+							"jogador nasce na entrada do laboratório")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					_expect(lab.is_paused(), "ESC pausa o primeiro andar")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					_expect(not lab.is_paused(), "ESC retoma o primeiro andar")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					var lab_menu: Button = lab.get_node_or_null(
+						"Interface/PauseRoot/Center/Panel/Margin/Content/MenuButton"
+					) as Button
+					_expect(lab_menu != null, "pausa do primeiro andar tem VOLTAR AO MENU")
+					if lab_menu != null:
+						lab_menu.pressed.emit()
+						title_again = await _wait_for_scene("TitleScreen", 2400)
+						_expect(title_again != null, "primeiro andar volta à tela inicial")
+
 		# 11. Demonstração modular: ESC abre a pausa, retoma e volta ao menu
 		#     (revisão da Etapa 11 — o ESC travava o jogo).
 		var cycle_ok: bool = true

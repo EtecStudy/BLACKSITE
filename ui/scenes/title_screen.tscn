@@ -137,6 +137,12 @@ custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 text = "TESTAR MOVIMENTAÇÃO"
 
+[node name="LaboratoryButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "PRIMEIRO ANDAR"
+
 [node name="ModularDemoButton" type="Button" parent="Content/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 0)
@@ -164,7 +170,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "Teste em primeira pessoa: andar, correr, agachar, interagir e guardar itens. Olhe para um item e pressione E; use 1, 2 e 3 para escolher o slot e G para soltar o item no chão. DEMONSTRAR MÓDULOS abre as peças modulares de salas e a escada."
+text = "PRIMEIRO ANDAR abre o laboratório completo da Etapa 12A (recepção, segurança, controle, cruzamento central, pesquisa, análises, observação, armazenamento, escritórios, logística, setor técnico e duas escadas). DEMONSTRAR MÓDULOS mostra as peças isoladas. TESTAR MOVIMENTAÇÃO abre a sala de teste."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]

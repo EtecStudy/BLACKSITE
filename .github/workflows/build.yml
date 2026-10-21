@@ -122,6 +122,18 @@ jobs:
             exit 1
           fi
 
+      - name: TESTE 1f — primeiro andar do laboratório (headless)
+        timeout-minutes: 12
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/first_floor_test.tscn 2>&1 | tee ci-logs/first-floor.log
+          grep -F "PRIMEIRO ANDAR OK" ci-logs/first-floor.log
+          if grep -F "✗" ci-logs/first-floor.log; then
+            echo "::error::Falhas na planta do primeiro andar"
+            exit 1
+          fi
+
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
@@ -228,6 +240,22 @@ jobs:
           test -s ci-logs/modular_demo.png
           echo "frame da demonstração modular capturado: $latest"
 
+      - name: TESTE 3g — renderizar o primeiro andar (Xvfb + OpenGL, captura)
+        run: |
+          mkdir -p ci-logs/first_floor_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://match/scenes/laboratory.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/first_floor_frames/frame.png --quit-after 60 \
+            2>&1 | tee ci-logs/render_first_floor.log
+          grep -F "Primeiro andar carregado" ci-logs/render_first_floor.log
+          latest=$(ls ci-logs/first_floor_frames/*.png | tail -1)
+          cp "$latest" ci-logs/first_floor.png
+          rm -rf ci-logs/first_floor_frames
+          test -s ci-logs/first_floor.png
+          echo "frame do primeiro andar capturado: $latest"
+
       # ------------------------------------------------------------------
       # 2. Exportações
       # ------------------------------------------------------------------
@@ -309,7 +337,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 11 (Windows x86_64 · Sistema modular de salas)
+          BLACK SIGHT — Etapa 12A (Windows x86_64 · Primeiro andar do laboratorio)
           ============================================
 
           COMO JOGAR
@@ -434,47 +462,56 @@ jobs:
           (z-fighting, que fazia o acabamento escuro atravessar a parede
           clara) em parede reta, canto, porta, abertura, junção em T e
           módulos rotacionados.
+          Etapa 12A: PRIMEIRO ANDAR — planta completa do laboratório sobre os
+          módulos da Etapa 11: vestíbulo, recepção de pé-direito duplo,
+          segurança, posto de controle, corredor principal de 5,6 m livres,
+          grande cruzamento central (21,6 x 21,6 m, teto de 12 m), pesquisa,
+          análises, observação, armazenamento, escritórios, arquivo, área de
+          funcionários, apoio logístico, elétrica, acesso à manutenção e duas
+          escadas para o subsolo (norte e sul). Sem móveis, equipamentos,
+          objetivos, criaturas ou multiplayer.
           Stamina e controles anteriores seguem iguais.
           Ainda não há pulo, uso/arremesso/transferência de item, portas
           funcionais, geração procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versão 0.11.2 — Etapa 11, revisão (rodapé e acabamentos)
+          Versão 0.12.0 — Etapa 12A (primeiro andar do laboratório)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa11-Rodape-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa11-Rodape-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
+          sha256sum BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa11-Rodape-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa11-Rodape-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa11-windows
+          name: black-sight-etapa12a-primeiro-andar-windows
           path: |
-            BlackSight-Etapa11-Rodape-Windows-x86_64.zip
+            BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
             ci-logs/inventory_hud.png
             ci-logs/drop_hud.png
             ci-logs/modular_demo.png
+            ci-logs/first_floor.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa11-logs
+          name: black-sight-etapa12a-primeiro-andar-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -500,7 +537,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 11"
+            echo "## Black Sight · Etapa 12A"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -626,6 +663,10 @@ jobs:
             "tools/ci/movement_test.tscn",
             "tools/ci/modular_test.tscn",
             "tools/ci/modular_visual_check.tscn",
+            "tools/ci/first_floor_test.tscn",
+            "tools/ci/first_floor_visual_check.tscn",
+            "maps/scenes/laboratory_first_floor.tscn",
+            "match/scenes/laboratory.tscn",
             "maps/modular/rooms/room_lab_10x10.tscn",
             "maps/modular/rooms/room_tech_14x20.tscn",
             "maps/modular/corridors/corridor_tee_6.tscn",
@@ -704,6 +745,20 @@ jobs:
           Write-Host "exit code do teste modular: $code"
           if (-not (Select-String -Path $log -SimpleMatch "MODULAR TEST OK")) {
             throw "Teste do sistema modular não passou (exit $code) — ver 05e-modular.log"
+          }
+
+      - name: TESTE W2f — primeiro andar do laboratório no Windows (headless)
+        timeout-minutes: 14
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05f-first-floor.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/first_floor_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste do primeiro andar: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "PRIMEIRO ANDAR OK")) {
+            throw "Teste do primeiro andar não passou (exit $code) — ver 05f-first-floor.log"
           }
 
       - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
@@ -802,6 +857,21 @@ jobs:
           if ($code -ne 0) { throw "Capturas de encaixe falharam (exit $code) — ver 13-visual.log" }
           if ($pngs.Count -lt 10) { throw "Capturas insuficientes ($($pngs.Count) de 10)" }
 
+      - name: TESTE W6c — capturas do primeiro andar (renderização real)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs/visual-12a | Out-Null
+          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/first_floor_visual_check.tscn *>&1 |
+            Tee-Object -FilePath ci-logs/14-visual-12a.log
+          $code = $LASTEXITCODE
+          Write-Host "exit code das capturas do primeiro andar: $code"
+          $pngs = @(Get-ChildItem ci-logs/visual-12a -Filter *.png -ErrorAction SilentlyContinue)
+          Write-Host "capturas geradas: $($pngs.Count)"
+          if ($code -ne 0) { throw "Capturas do primeiro andar falharam (exit $code) — ver 14-visual-12a.log" }
+          if ($pngs.Count -lt 14) { throw "Capturas insuficientes ($($pngs.Count) de 14)" }
+
       - name: TESTE W7 — inspecionar o pacote .pck e os metadados do .exe
         shell: pwsh
         run: |
@@ -817,14 +887,14 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
-          if ($info.FileVersion -notlike "0.11.2*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+          if ($info.FileVersion -notlike "0.12.0*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 11 (Windows x86_64 - Sistema modular de salas)
+          BLACK SIGHT - Etapa 12A (Windows x86_64 - Primeiro andar do laboratorio)
           ============================================
 
           COMO JOGAR
@@ -951,12 +1021,20 @@ jobs:
           Correcao 11.2: rodape e plinto deixaram de dividir plano com a
           parede (z-fighting) em parede reta, canto, porta, abertura, juncao
           em T e modulos rotacionados.
+          Etapa 12A: PRIMEIRO ANDAR - planta completa do laboratorio sobre os
+          modulos da Etapa 11: vestibulo, recepcao de pe-direito duplo,
+          seguranca, posto de controle, corredor principal de 5,6 m livres,
+          grande cruzamento central (21,6 x 21,6 m, teto de 12 m), pesquisa,
+          analises, observacao, armazenamento, escritorios, arquivo, area de
+          funcionarios, apoio logistico, eletrica, acesso a manutencao e duas
+          escadas para o subsolo (norte e sul). Sem moveis, equipamentos,
+          objetivos, criaturas ou multiplayer.
           Stamina e controles anteriores seguem iguais.
           Ainda nao ha pulo, uso/arremesso/transferencia de item, portas
           funcionais, geracao procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versao 0.11.2 - Etapa 11, revisao (rodape e acabamentos)
+          Versao 0.12.0 - Etapa 12A (primeiro andar do laboratorio)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -967,7 +1045,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa11-Rodape-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -984,9 +1062,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa11-rodape-windows-real
+          name: black-sight-etapa12a-primeiro-andar-windows-real
           path: |
-            BlackSight-Etapa11-Rodape-Windows-x86_64.zip
+            BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -1002,7 +1080,8 @@ jobs:
             @{ Nome = "Fumaça (smoke_test.gd)"; Log = "ci-logs/05-smoke.log" },
             @{ Nome = "Fluxo de interface (ui_flow_test.gd)"; Log = "ci-logs/05b-ui-flow.log" },
             @{ Nome = "Controlador FPS + inventário + drop (movement_test.gd)"; Log = "ci-logs/05c-movement.log" },
-            @{ Nome = "Sistema modular de salas (modular_test.gd)"; Log = "ci-logs/05e-modular.log" }
+            @{ Nome = "Sistema modular de salas (modular_test.gd)"; Log = "ci-logs/05e-modular.log" },
+            @{ Nome = "Primeiro andar do laboratório (first_floor_test.gd)"; Log = "ci-logs/05f-first-floor.log" }
           )
           $linhas = @("", "## Testes automatizados (Windows)", "", "| Suíte | Resultado |", "| --- | --- |")
           foreach ($r in $rows) {
@@ -1015,7 +1094,7 @@ jobs:
               Write-Host "::warning::sem linha de resumo em $($r.Log)"
             }
           }
-          $zip = "BlackSight-Etapa11-Rodape-Windows-x86_64.zip"
+          $zip = "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip"
           $info = Get-Item $zip
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $linhas += @("", "## Pacote verificado neste build", "", "| Item | Valor |", "| --- | --- |")
@@ -1032,11 +1111,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $notas = (Get-Content docs/RELEASE_NOTES_ETAPA11.md -Encoding utf8 -Raw).TrimEnd()
+          $notas = (Get-Content docs/RELEASE_NOTES_ETAPA12A.md -Encoding utf8 -Raw).TrimEnd()
           $extra = Get-Content ci-logs/release-summary.md -Encoding utf8 -Raw
           New-Item -ItemType Directory -Force -Path build | Out-Null
           ($notas + "`n" + $extra) | Out-File -FilePath build/release-notes.md -Encoding utf8
-          gh release create v0.11.2-etapa11-rodape "BlackSight-Etapa11-Rodape-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 11 - Rodape e acabamentos (revisao) - Windows x86_64" --notes-file build/release-notes.md
+          gh release create v0.12.0-etapa12a-primeiro-andar "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 12A - Primeiro andar do laboratorio - Windows x86_64" --notes-file build/release-notes.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -1061,7 +1140,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 11 (Windows real - Sistema modular de salas)", "")
+          $summary = @("## Black Sight - Etapa 12A (Windows real - Primeiro andar do laboratorio)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

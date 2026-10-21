@@ -1,0 +1,394 @@
+{
+  "grid_m": 2.0,
+  "spaces": [
+    {
+      "name": "Lobby",
+      "label": "Entrada (vestíbulo)",
+      "kind": "corridor",
+      "interior": [
+        -46.8,
+        -39.2,
+        -6.8,
+        6.8
+      ],
+      "size": [
+        7.6,
+        6.0,
+        13.6
+      ]
+    },
+    {
+      "name": "Reception",
+      "label": "Recepção",
+      "kind": "hall",
+      "interior": [
+        -38.8,
+        -15.2,
+        -10.8,
+        10.8
+      ],
+      "size": [
+        23.6,
+        12.0,
+        21.6
+      ]
+    },
+    {
+      "name": "Security",
+      "label": "Segurança",
+      "kind": "room",
+      "interior": [
+        -38.8,
+        -15.2,
+        -26.8,
+        -11.2
+      ],
+      "size": [
+        23.6,
+        6.0,
+        15.6
+      ]
+    },
+    {
+      "name": "Control",
+      "label": "Posto de controle",
+      "kind": "room",
+      "interior": [
+        -14.8,
+        12.8,
+        3.2,
+        22.8
+      ],
+      "size": [
+        27.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "MainCorridorWest",
+      "label": "Corredor principal (oeste)",
+      "kind": "corridor",
+      "interior": [
+        -14.8,
+        12.8,
+        -2.8,
+        2.8
+      ],
+      "size": [
+        27.6,
+        6.0,
+        5.6
+      ]
+    },
+    {
+      "name": "CentralHall",
+      "label": "Grande cruzamento central",
+      "kind": "hall",
+      "interior": [
+        13.2,
+        34.8,
+        -10.8,
+        10.8
+      ],
+      "size": [
+        21.6,
+        12.0,
+        21.6
+      ]
+    },
+    {
+      "name": "MainCorridorEast",
+      "label": "Corredor principal (leste)",
+      "kind": "corridor",
+      "interior": [
+        35.2,
+        76.8,
+        -2.8,
+        2.8
+      ],
+      "size": [
+        41.6,
+        6.0,
+        5.6
+      ]
+    },
+    {
+      "name": "Storage",
+      "label": "Armazenamento",
+      "kind": "room",
+      "interior": [
+        -14.8,
+        12.8,
+        -22.8,
+        -3.2
+      ],
+      "size": [
+        27.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "Research",
+      "label": "Pesquisa A",
+      "kind": "room",
+      "interior": [
+        13.2,
+        34.8,
+        -26.8,
+        -11.2
+      ],
+      "size": [
+        21.6,
+        6.0,
+        15.6
+      ]
+    },
+    {
+      "name": "Analysis",
+      "label": "Análises",
+      "kind": "room",
+      "interior": [
+        35.2,
+        58.8,
+        -26.8,
+        -3.2
+      ],
+      "size": [
+        23.6,
+        6.0,
+        23.6
+      ]
+    },
+    {
+      "name": "Observation",
+      "label": "Observação",
+      "kind": "room",
+      "interior": [
+        59.2,
+        72.8,
+        -26.8,
+        -3.2
+      ],
+      "size": [
+        13.6,
+        12.0,
+        23.6
+      ]
+    },
+    {
+      "name": "Offices",
+      "label": "Escritórios",
+      "kind": "room",
+      "interior": [
+        35.2,
+        58.8,
+        3.2,
+        22.8
+      ],
+      "size": [
+        23.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "Archive",
+      "label": "Arquivo",
+      "kind": "room",
+      "interior": [
+        59.2,
+        72.8,
+        3.2,
+        22.8
+      ],
+      "size": [
+        13.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "NorthService",
+      "label": "Corredor de serviço norte",
+      "kind": "corridor",
+      "interior": [
+        19.2,
+        76.8,
+        -30.8,
+        -27.2
+      ],
+      "size": [
+        57.6,
+        6.0,
+        3.6
+      ]
+    },
+    {
+      "name": "NorthLink",
+      "label": "Ligação norte",
+      "kind": "corridor",
+      "interior": [
+        73.2,
+        76.8,
+        -26.8,
+        -3.2
+      ],
+      "size": [
+        3.6,
+        6.0,
+        23.6
+      ]
+    },
+    {
+      "name": "Staff",
+      "label": "Área de funcionários",
+      "kind": "room",
+      "interior": [
+        13.2,
+        34.8,
+        11.2,
+        22.8
+      ],
+      "size": [
+        21.6,
+        6.0,
+        11.6
+      ]
+    },
+    {
+      "name": "SouthService",
+      "label": "Corredor de serviço sul",
+      "kind": "corridor",
+      "interior": [
+        13.2,
+        76.8,
+        23.2,
+        26.8
+      ],
+      "size": [
+        63.6,
+        6.0,
+        3.6
+      ]
+    },
+    {
+      "name": "SouthLink",
+      "label": "Ligação sul",
+      "kind": "corridor",
+      "interior": [
+        73.2,
+        76.8,
+        3.2,
+        22.8
+      ],
+      "size": [
+        3.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "Logistics",
+      "label": "Apoio logístico",
+      "kind": "room",
+      "interior": [
+        13.2,
+        36.8,
+        27.2,
+        46.8
+      ],
+      "size": [
+        23.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "Electrical",
+      "label": "Elétrica",
+      "kind": "room",
+      "interior": [
+        37.2,
+        48.8,
+        27.2,
+        46.8
+      ],
+      "size": [
+        11.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "Maintenance",
+      "label": "Acesso à manutenção",
+      "kind": "room",
+      "interior": [
+        49.2,
+        64.8,
+        27.2,
+        46.8
+      ],
+      "size": [
+        15.6,
+        6.0,
+        19.6
+      ]
+    },
+    {
+      "name": "StairSouthRoom",
+      "label": "Casa da escada sul",
+      "kind": "room",
+      "interior": [
+        65.2,
+        80.8,
+        27.2,
+        46.8
+      ],
+      "size": [
+        15.6,
+        12.0,
+        19.6
+      ]
+    },
+    {
+      "name": "StairNorthRoom",
+      "label": "Casa da escada norte",
+      "kind": "room",
+      "interior": [
+        19.2,
+        34.8,
+        -46.8,
+        -31.2
+      ],
+      "size": [
+        15.6,
+        12.0,
+        15.6
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "name": "StairNorth",
+      "room": "StairNorthRoom",
+      "x": 24.0,
+      "z_top": -45.0,
+      "z_bottom": -35.0
+    },
+    {
+      "name": "StairSouth",
+      "room": "StairSouthRoom",
+      "x": 68.0,
+      "z_top": 29.0,
+      "z_bottom": 39.0
+    }
+  ],
+  "spawn": [
+    -45.0,
+    0.05,
+    0.0
+  ]
+}

@@ -25,9 +25,15 @@ const SETTINGS_SCENE: String = "res://ui/scenes/settings_screen.tscn"
 const SPAWN_OFFSET := Vector3(0.0, 0.05, 0.0)
 const HINT_DURATION: float = 12.0
 
+## Caminhos do cenário e do ponto de nascimento. A demonstração modular usa os
+## padrões; o primeiro andar (Etapa 12A) aponta para a própria planta sem
+## duplicar a lógica de pausa, HUD e captura de mouse.
+@export var room_path: NodePath = ^"ModularDemo"
+@export var spawn_path: NodePath = ^"ModularDemo/Spawn"
+
 @onready var _player: PlayerController = $Player
-@onready var _room: Node3D = $ModularDemo
-@onready var _spawn: Marker3D = $ModularDemo/Spawn
+@onready var _room: Node3D = get_node_or_null(room_path) as Node3D
+@onready var _spawn: Marker3D = get_node_or_null(spawn_path) as Marker3D
 @onready var _hud: PlayerHud = %PlayerHud
 @onready var _hint: Label = %HintLabel
 @onready var _pause_root: Control = %PauseRoot
@@ -65,6 +71,16 @@ func _place_player_at_spawn() -> void:
 	_player.global_position = _spawn.global_position + SPAWN_OFFSET
 	_player.velocity = Vector3.ZERO
 	_player.set_look(_spawn.rotation.y, 0.0)
+
+
+## Quantos módulos o cenário instancia, contando a árvore inteira.
+func count_instances() -> int:
+	if _room == null:
+		return 0
+	var count: int = 0
+	for child: Node in _room.find_children("*", "", true, false):
+		count += 1
+	return count
 
 
 ## Quantos módulos diretos o cenário instancia (leitura para testes/logs).

@@ -27,6 +27,7 @@ const EXPECTED_NODES := [
 	"Content/TitleLabel",
 	"Content/Buttons/StartButton",
 	"Content/Buttons/TestMovementButton",
+	"Content/Buttons/LaboratoryButton",
 	"Content/Buttons/ModularDemoButton",
 	"Content/Buttons/SettingsButton",
 	"Content/Buttons/QuitButton",
@@ -100,6 +101,7 @@ func _ready() -> void:
 	_check_stage6()
 	_check_stage8()
 	_check_stage9()
+	_check_stage12a()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -659,6 +661,16 @@ func _check_settings_screen() -> void:
 				test_button.pressed.get_connections().size() > 0,
 				"botão TESTAR MOVIMENTAÇÃO está conectado"
 			)
+		var laboratory_button: Button = title.get_node_or_null(
+			"Content/Buttons/LaboratoryButton"
+		) as Button
+		_expect(laboratory_button != null, "botão PRIMEIRO ANDAR presente na tela inicial")
+		if laboratory_button != null:
+			_expect(
+				laboratory_button.pressed.get_connections().size() > 0,
+				"botão PRIMEIRO ANDAR está conectado"
+			)
+			_expect(laboratory_button.text == "PRIMEIRO ANDAR", "botão PRIMEIRO ANDAR rotulado")
 		var modular_button: Button = title.get_node_or_null(
 			"Content/Buttons/ModularDemoButton"
 		) as Button
@@ -978,13 +990,13 @@ func _check_stage8() -> void:
 	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
 	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.11.2",
-		"versão do projeto é 0.11.2"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.12.0",
+		"versão do projeto é 0.12.0"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Etapa 11"),
+			str(app_info.stage_label()).contains("Etapa 12"),
 			"AppInfo anuncia a etapa atual (%s)" % str(app_info.stage_label())
 		)
 
@@ -1145,13 +1157,13 @@ func _check_stage9() -> void:
 
 	# --- Versão -------------------------------------------------------------
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.11.2",
-		"versão do projeto é 0.11.2"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.12.0",
+		"versão do projeto é 0.12.0"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Etapa 11"),
+			str(app_info.stage_label()).contains("Etapa 12"),
 			"AppInfo anuncia a Etapa 11 (%s)" % str(app_info.stage_label())
 		)
 
@@ -1293,3 +1305,47 @@ func _check_stage9() -> void:
 		world_source.contains("axis_lock_angular_x = true"),
 		"item solto não tomba ao assentar (rotação travada)"
 	)
+
+
+## Etapa 12A: a planta do primeiro andar existe, tem as duas escadas e a
+## cena de sessão aponta para ela. A geometria é conferida em
+## `tools/ci/first_floor_test.tscn` (física real); aqui só se garante que o
+## recurso está no projeto e ligado ao botão da tela inicial.
+func _check_stage12a() -> void:
+	print("[26] Primeiro andar (Etapa 12A)")
+	for path: String in [
+		"res://maps/scenes/laboratory_first_floor.tscn",
+		"res://match/scenes/laboratory.tscn",
+		"res://match/scripts/first_floor_session.gd",
+		"res://tools/ci/first_floor_test.tscn",
+		"res://tools/ci/first_floor_visual_check.tscn",
+		"res://docs/ETAPA-12A.md",
+	]:
+		_expect(FileAccess.file_exists(path), "arquivo da Etapa 12A existe: %s" % path.get_file())
+	var floor_packed: PackedScene = load("res://maps/scenes/laboratory_first_floor.tscn") as PackedScene
+	_expect(floor_packed != null, "planta do primeiro andar carrega")
+	if floor_packed != null:
+		var instance: Node = floor_packed.instantiate()
+		_expect(instance != null, "planta do primeiro andar instancia")
+		if instance != null:
+			_expect(instance.get_node_or_null("STRUCTURE/Walls") != null, "planta tem paredes")
+			_expect(instance.get_node_or_null("STRUCTURE/Ceilings") != null, "planta tem tetos")
+			_expect(instance.get_node_or_null("ROOMS") != null, "planta tem salas")
+			_expect(instance.get_node_or_null("STAIRS") != null, "planta tem escadas")
+			_expect(instance.get_node_or_null("Spawn") is Marker3D, "planta tem ponto de entrada")
+			instance.free()
+	var session_packed: PackedScene = load("res://match/scenes/laboratory.tscn") as PackedScene
+	_expect(session_packed != null, "cena de sessão do primeiro andar carrega")
+	if session_packed != null:
+		var session: Node = session_packed.instantiate()
+		_expect(session.get_node_or_null("FirstFloor") != null, "sessão carrega a planta")
+		_expect(session.get_node_or_null("Player") != null, "sessão usa o jogador existente")
+		session.free()
+	var title: PackedScene = load("res://ui/scenes/title_screen.tscn") as PackedScene
+	if title != null:
+		var screen: Node = title.instantiate()
+		var button: Button = screen.get_node_or_null("Content/Buttons/LaboratoryButton") as Button
+		_expect(button != null, "botão PRIMEIRO ANDAR na tela inicial")
+		if button != null:
+			_expect(button.text == "PRIMEIRO ANDAR", "botão PRIMEIRO ANDAR rotulado")
+		screen.free()
