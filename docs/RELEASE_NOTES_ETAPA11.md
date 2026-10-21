@@ -41,9 +41,9 @@ sala de teste e a HUD aprovada.
   `y = 3,2`, **8 guarda-corpos** e **escada de 16 degraus** com guardas.
 - Sala de equipamentos 8 × 8 ligada à sala técnica.
 - 12 luzes pontuais, ambiente com névoa e tonemap, materiais industriais.
-- **706 nós** de geometria (257 pisos, 239 tetos/luminárias, 142 módulos de
-  parede entre painéis, portas e aberturas, 14 cantos, 12 pilares, 10 vigas,
-  8 guarda-corpos, 3 colunas de apoio e a escada).
+- **706 nós** de geometria: 257 placas de piso, 239 lajes de teto (227 cegas
+  + 12 luminárias), 137 painéis de parede, 3 portas, 3 aberturas, 14 blocos de
+  canto, 12 pilares, 10 vigas, 8 guarda-corpos, 3 colunas de apoio e 1 escada.
 
 ## Correções
 
