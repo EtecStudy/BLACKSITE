@@ -3,7 +3,8 @@
 **Black Sight** — jogo de terror cooperativo em primeira pessoa, desenvolvido em
 **Godot 4.7.2**.
 
-> **Status:** Etapa 11 concluída (v0.11.0) — **sistema modular de salas**:
+> **Status:** Etapa 11 implementada e publicada (v0.11.0), com teste manual
+> pendente — **sistema modular de salas**:
 > biblioteca de paredes, pisos, corredores, salas, pilares, guarda-corpos e uma
 > escada de 4 m que o controlador atual sobe e desce, com uma cena de
 > demonstração própria. O inventário, a interação, a stamina, a HUD, as
@@ -25,10 +26,11 @@
 
 **https://github.com/EtecStudy/BLACKSITE/releases/download/v0.11.0-etapa11-modular-rooms/BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip**
 
-Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip` (tamanho e
-SHA-256 na página da release `v0.11.0-etapa11-modular-rooms`). As releases
-anteriores (`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop`, …) continuam
-publicadas.
+Arquivo: `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip`, 40.700.903
+bytes, SHA-256
+`885fee135575f43da387dc1b96d2fc41550cd097a87c2c9a2ff84f3201e7861f`
+(release `v0.11.0-etapa11-modular-rooms`). As releases anteriores
+(`v0.9.1-etapa9-drop-fix`, `v0.9.0-etapa9-drop`, …) continuam publicadas.
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.

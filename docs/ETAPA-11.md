@@ -28,7 +28,7 @@ funcionais, criaturas, objetivos ou multiplayer.
 | Vão de porta | 1,2 m × 2,4 m | dentro de um módulo de 2 m (ombreiras de 0,4 m) |
 | Abertura de conexão | 2,0 m × 2,6 m | vão total do módulo, com verga acima |
 | Escada | 20 degraus de 0,20 m (espelho) × 0,30 m (piso) | 4,0 m de subida em 6,0 m → **33,7°** |
-| Guarda-corpo | 1,0 m de altura | módulo de 2 m, com colisão de 0,1 m de espessura |
+| Guarda-corpo | 1,0 m de altura | módulo de 2 m; painel visível de 0,9 m e colisão de 0,1 m de espessura |
 
 ### Origem (pivô) de cada família
 
@@ -95,7 +95,7 @@ invisível maior que a geometria.
 | Cena | Tamanho | Uso |
 | --- | --- | --- |
 | `pillar.tscn` | 0,5 × 4,0 × 0,5 (capitel 0,62 × 0,22 × 0,62 em `y = 4,11`) | pilar interno; a colisão cobre só o fuste e o capitel |
-| `railing_2m.tscn` | 2,0 × 1,0 × 0,1 | guarda-corpo de mezanino/borda; a colisão é uma barreira de 1 m |
+| `railing_2m.tscn` | 2,0 × 1,0 × 0,1 | guarda-corpo de mezanino/borda; painel de enchimento visível de 0,9 m e colisão de 1 m |
 
 ### Corredores — `maps/modular/corridors/`
 
@@ -266,9 +266,34 @@ Grupos verificados:
 10. **Escada com o jogador** — subir até `y > 3,6`, descer até o piso e
     confirmar que os guarda-corpos seguram nas bordas fechadas.
 
-Resultados reais deste build (Linux e Windows): ver
-[`RELEASE_NOTES_ETAPA11.md`](RELEASE_NOTES_ETAPA11.md) e o relatório da
-entrega.
+### Resultados reais desta entrega
+
+Execução do CI **39524572155** (commit `3d797e3`), branch
+`arena/aa5e0e47-blacksite` — os dois jobs terminaram em **success**.
+
+| Suíte | Linux | Windows |
+| --- | --- | --- |
+| `modular_test.gd` (10 grupos) | **329** verificações aprovadas | **329** |
+| `smoke_test.gd` | 359 | 359 |
+| `ui_flow_test.gd` | 53 | 53 |
+| `movement_test.gd` (controlador + inventário + drop) | 586 | 586 |
+| `drop_obstacle_test.gd` | 156 | aprovado (passo W2d) |
+| Build exportado (`.exe` + `.pck`, pacote inspecionado) | TESTE 5, 6 e 7 OK | TESTE W4–W7 OK |
+
+O teste modular imprime `MODULAR TEST OK — 329 verificações aprovadas`; o
+valor é o real do log, não uma estimativa. As verificações são independentes:
+329 no Linux e 329 no Windows.
+
+| Pacote da release `v0.11.0-etapa11-modular-rooms` | Valor |
+| --- | --- |
+| Commit publicado | `3d797e36a6d1c6adc2880c25557b12c485e5330d` |
+| Arquivo | `BlackSight-Etapa11-Modular-Rooms-Windows-x86_64.zip` |
+| Tamanho | 40.700.903 bytes |
+| SHA-256 | `885fee135575f43da387dc1b96d2fc41550cd097a87c2c9a2ff84f3201e7861f` |
+
+O SHA-256 acima é o que o CI calculou ao empacotar o ZIP e publicou na
+página da release; o mesmo valor está no corpo da release, na seção
+"Pacote verificado neste build".
 
 ---
 
