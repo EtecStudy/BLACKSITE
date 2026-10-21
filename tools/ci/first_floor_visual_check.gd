@@ -159,7 +159,13 @@ func _capture(camera: Camera3D, shot: Dictionary, dir: String) -> void:
 	else:
 		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	camera.global_position = shot["from"]
-	camera.look_at(shot["to"], Vector3.UP)
+	# Vista de cima (planta baixa): o "up" padrão fica colinear com a direção
+	# e o Godot avisa; nesse caso o norte da planta vai para cima da imagem.
+	var look: Vector3 = (shot["to"] as Vector3) - (shot["from"] as Vector3)
+	var up: Vector3 = Vector3.UP
+	if absf(look.normalized().dot(Vector3.UP)) > 0.999:
+		up = Vector3.FORWARD
+	camera.look_at(shot["to"], up)
 	for _index: int in 3:
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
