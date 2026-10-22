@@ -433,6 +433,24 @@ jobs:
             ci-logs/movement_test.png
             ci-logs/inventory_hud.png
             ci-logs/drop_hud.png
+
+      - name: Publicar release no GitHub (somente via dispatch manual)
+        if: ${{ inputs.publish_release }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.release_tag }}"
+          test -s BlackSight-Windows-x86_64.zip
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $TAG já existe — atualizando o ZIP anexo."
+            gh release upload "$TAG" BlackSight-Windows-x86_64.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --title "Black Sight $TAG — Reconstrução 3D" \
+              --notes "Reconstrução 3D da cozinha da imagem de referência, navegável em primeira pessoa (menu RECONSTRUÇÃO 3D). ZIP do Windows validado pelo CI (Linux + Windows): baixe, extraia e execute BlackSight.exe." \
+              BlackSight-Windows-x86_64.zip
+          fi
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url,name -q '.url + " · " + .name'
           if-no-files-found: warn
 
       - name: Publicar logs
