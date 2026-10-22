@@ -7,7 +7,7 @@
 
 [resource]
 albedo_texture = ExtResource("tex_albedo")
-albedo_color = Color(0.48, 0.52, 0.52, 1)
+albedo_color = Color(0.6, 0.64, 0.64, 1)
 roughness_texture = ExtResource("tex_roughness")
 normal_enabled = true
 normal_texture = ExtResource("tex_normal")

@@ -7,7 +7,7 @@
 
 [resource]
 albedo_texture = ExtResource("tex_albedo")
-albedo_color = Color(0.42, 0.46, 0.48, 1)
+albedo_color = Color(0.56, 0.6, 0.61, 1)
 roughness_texture = ExtResource("tex_roughness")
 normal_enabled = true
 normal_texture = ExtResource("tex_normal")
@@ -15,4 +15,4 @@ normal_scale = 0.35
 ao_enabled = true
 ao_texture = ExtResource("tex_ao")
 ao_light_affect = 0.35
-metallic = 0.55
+metallic = 0.38

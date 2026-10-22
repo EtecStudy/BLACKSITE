@@ -189,7 +189,7 @@ def generate_textures() -> None:
             n = noise[y][x]
             speck = hash2(x, y, 909)
             h = 0.5 + (n - 0.5) * 0.075
-            r0, g0, b0 = 103, 110, 108
+            r0, g0, b0 = 116, 123, 121
             tone = 0.88 + (n - 0.5) * 0.22
             if speck > 0.992:
                 r0, g0, b0 = 174, 178, 171
@@ -218,9 +218,9 @@ def generate_textures() -> None:
         rrow = bytearray()
         for x in range(size):
             n = noise[y][x]
-            hole = 0.30 if ((x % 18) - 9) ** 2 + ((y % 18) - 9) ** 2 < 5 else 0.0
+            hole = 0.16 if ((x % 18) - 9) ** 2 + ((y % 18) - 9) ** 2 < 5 else 0.0
             h = 0.55 + (n - 0.5) * 0.06 - hole
-            tone = 0.94 + (n - 0.5) * 0.08 - hole * 0.5
+            tone = 0.94 + (n - 0.5) * 0.08 - hole * 0.28
             arow.extend((clamp_byte(203 * tone), clamp_byte(207 * tone), clamp_byte(205 * tone)))
             rv = clamp_byte((0.58 + (n - 0.5) * 0.1 + hole * 0.2) * 255)
             rrow.extend((rv, rv, rv))
@@ -233,7 +233,7 @@ def generate_textures() -> None:
     # Metal escovado e tampo de bancada.
     for name, base, rough_base, seed, horizontal in [
         ("brushed_metal", (142, 148, 150), 0.36, 404, True),
-        ("bench_top", (37, 40, 41), 0.52, 505, False),
+        ("bench_top", (45, 48, 49), 0.52, 505, False),
     ]:
         noise = combined_noise(size, seed)
         height = []
@@ -267,20 +267,20 @@ def generate_textures() -> None:
 
 MATERIALS: dict[str, dict[str, object]] = {
     "wall_panel": {"texture": "wall_panel", "metallic": 0.06, "normal_scale": 0.65},
-    "wall_lower": {"texture": "wall_panel", "color": (0.48, 0.52, 0.52, 1), "metallic": 0.10, "normal_scale": 0.5},
-    "service_metal": {"texture": "brushed_metal", "color": (0.42, 0.46, 0.48, 1), "metallic": 0.55, "normal_scale": 0.35},
+    "wall_lower": {"texture": "wall_panel", "color": (0.60, 0.64, 0.64, 1), "metallic": 0.10, "normal_scale": 0.5},
+    "service_metal": {"texture": "brushed_metal", "color": (0.56, 0.60, 0.61, 1), "metallic": 0.38, "normal_scale": 0.35},
     "floor_epoxy": {"texture": "floor_epoxy", "metallic": 0.02, "normal_scale": 0.45},
     "floor_alt": {"texture": "floor_epoxy", "color": (0.88, 0.92, 0.94, 1), "metallic": 0.02, "normal_scale": 0.45},
     "ceiling_panel": {"texture": "ceiling_panel", "metallic": 0.12, "normal_scale": 0.55},
     "brushed_metal": {"texture": "brushed_metal", "metallic": 0.72, "normal_scale": 0.3},
     "bench_top": {"texture": "bench_top", "metallic": 0.05, "normal_scale": 0.35},
-    "dark_metal": {"color": (0.055, 0.06, 0.066, 1), "metallic": 0.62, "roughness": 0.48},
-    "frame_metal": {"color": (0.16, 0.18, 0.19, 1), "metallic": 0.72, "roughness": 0.38},
+    "dark_metal": {"color": (0.10, 0.11, 0.12, 1), "metallic": 0.55, "roughness": 0.50},
+    "frame_metal": {"color": (0.23, 0.26, 0.27, 1), "metallic": 0.65, "roughness": 0.42},
     "stainless": {"color": (0.58, 0.62, 0.63, 1), "metallic": 0.86, "roughness": 0.30},
     "cabinet": {"color": (0.58, 0.62, 0.62, 1), "metallic": 0.18, "roughness": 0.58},
-    "cabinet_dark": {"color": (0.20, 0.25, 0.26, 1), "metallic": 0.22, "roughness": 0.62},
-    "cabinet_teal": {"color": (0.16, 0.34, 0.36, 1), "metallic": 0.16, "roughness": 0.60},
-    "plastic_black": {"color": (0.025, 0.027, 0.03, 1), "metallic": 0.05, "roughness": 0.72},
+    "cabinet_dark": {"color": (0.29, 0.35, 0.36, 1), "metallic": 0.20, "roughness": 0.62},
+    "cabinet_teal": {"color": (0.21, 0.41, 0.43, 1), "metallic": 0.16, "roughness": 0.60},
+    "plastic_black": {"color": (0.045, 0.048, 0.052, 1), "metallic": 0.05, "roughness": 0.72},
     "plastic_white": {"color": (0.78, 0.80, 0.78, 1), "metallic": 0.02, "roughness": 0.64},
     "glass": {"color": (0.36, 0.55, 0.60, 0.30), "metallic": 0.05, "roughness": 0.08, "transparency": 1},
     "glass_dark": {"color": (0.08, 0.13, 0.15, 0.52), "metallic": 0.05, "roughness": 0.12, "transparency": 1},
@@ -632,7 +632,7 @@ def floor_and_ceiling() -> None:
             x = -4 + ix * 2.0
             z = -5 + iz * 2.0
             mat = "floor_alt" if rnd.random() < 0.22 else "floor_epoxy"
-            B.box("FloorPanel", floor, (x, 0.012, z), (1.94, 0.024, 1.94), mat)
+            B.box("FloorPanel", floor, (x, 0.012, z), (2.0, 0.024, 2.0), mat)
     B.box("DoorThreshold", floor, (-2.2, 0.026, 5.82), (1.65, 0.018, 0.28), "brushed_metal")
     B.cyl("FloorDrain", floor, (-4.15, 0.027, 0.72), 0.09, 0.008, "dark_metal", segments=28)
     # Linhas discretas de circulação/segurança, gastas e sem neon.
@@ -648,13 +648,12 @@ def floor_and_ceiling() -> None:
         B.box("CeilingSoffit", ceiling, (x, 4.98, 0), (0.55, 0.20, 12.0), "service_metal")
     for z in (-5.72, 5.72):
         B.box("CeilingSoffit", ceiling, (0, 4.98, z), (10.0, 0.20, 0.55), "service_metal")
-    B.box("MainDuct", ceiling, (0, 4.83, 0), (0.95, 0.42, 10.9), "brushed_metal")
-    B.box("CableTray", ceiling, (0.78, 4.78, 0), (0.34, 0.10, 10.9), "dark_metal")
+    B.box("MainDuct", ceiling, (0, 4.94, 0), (0.82, 0.26, 10.9), "service_metal")
+    B.box("CableTray", ceiling, (0.72, 4.86, 0), (0.30, 0.08, 10.9), "frame_metal")
     B.cyl("PipeWater", ceiling, (-0.78, 4.90, 0), 0.055, 10.9, "stainless", (math.pi / 2, 0, 0), 18)
-    B.cyl("PipeAir", ceiling, (-0.98, 4.76, 0), 0.038, 10.9, "container_blue", (math.pi / 2, 0, 0), 16)
+    B.cyl("PipeAir", ceiling, (-0.92, 4.84, 0), 0.038, 10.9, "frame_metal", (math.pi / 2, 0, 0), 16)
     for z in (-3.6, 0.0, 3.6):
-        B.box("CeilingBeam", ceiling, (0, 5.03, z), (10.0, 0.24, 0.24), "frame_metal")
-        B.cyl("DuctDrop", ceiling, (-2.3, 4.47, z), 0.16, 0.55, "brushed_metal", segments=20)
+        B.box("CeilingBeam", ceiling, (0, 5.03, z), (10.0, 0.24, 0.24), "service_metal")
     for x in (-2.3, 2.3):
         for z in (-4.5, -1.5, 1.5, 4.5):
             B.box("LightHousing", ceiling, (x, 5.13, z), (1.78, 0.09, 0.36), "frame_metal")
@@ -664,7 +663,7 @@ def floor_and_ceiling() -> None:
             B.box("Diffuser", ceiling, (x, 5.12, z), (0.78, 0.05, 0.28), "dark_metal")
             for i in range(4):
                 B.box("DiffuserSlat", ceiling, (x - 0.27 + i * 0.18, 5.085, z), (0.07, 0.018, 0.24), "stainless")
-    B.cyl("SprinklerPipe", ceiling, (0, 5.02, -5.45), 0.026, 9.4, "safety_red", (0, 0, math.pi / 2), 14)
+    B.cyl("SprinklerPipe", ceiling, (0, 5.02, -5.45), 0.026, 9.4, "frame_metal", (0, 0, math.pi / 2), 14)
     for x in (-4.0, -2.0, 0.0, 2.0, 4.0):
         B.cyl("SprinklerHead", ceiling, (x, 4.94, -5.45), 0.018, 0.11, "brushed_metal", segments=10)
     for x, z in [(-4.2, -5.2), (4.2, 5.2)]:
@@ -705,7 +704,7 @@ def door_and_window() -> None:
     B.box("WindowGlassA", window, (4.955, 1.80, -1.97), (0.025, 1.48, 1.78), "glass")
     B.box("WindowGlassB", window, (4.955, 1.80, -0.03), (0.025, 1.48, 1.78), "glass")
     B.box("WindowSignPlate", window, (4.90, 2.88, -1.0), (0.025, 0.24, 0.78), "plastic_white")
-    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", -math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
+    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
     # Painéis de fechamento acima dos vãos, no mesmo plano dos painéis principais.
     B.box("DoorTransomPanel", door, (-2.2, 3.02, 5.965), (1.58, 0.58, 0.07), "wall_panel")
     B.box("WindowTransomPanel", window, (4.965, 3.00, -1.0), (0.07, 0.62, 3.82), "wall_panel")
@@ -716,7 +715,12 @@ def door_and_window() -> None:
     B.box("ObsCeiling", outside, (6.45, 3.20, -1.0), (2.9, 0.16, 5.6), "outside_dark")
     B.box("ObsSideA", outside, (6.45, 1.55, -3.85), (2.9, 3.3, 0.18), "outside_dark")
     B.box("ObsSideB", outside, (6.45, 1.55, 1.85), (2.9, 3.3, 0.18), "outside_dark")
+    B.box("ObsBackPanel", outside, (7.72, 1.55, -1.0), (0.05, 2.60, 4.80), "cabinet_dark")
     B.box("ObsDesk", outside, (7.05, 0.78, -1.0), (0.75, 0.06, 2.6), "cabinet_dark")
+    B.box("ObsDeskLegA", outside, (7.05, 0.38, -2.15), (0.58, 0.76, 0.06), "frame_metal")
+    B.box("ObsDeskLegB", outside, (7.05, 0.38, 0.15), (0.58, 0.76, 0.06), "frame_metal")
+    B.box("ObsChairSeat", outside, (6.55, 0.52, -0.55), (0.48, 0.06, 0.46), "plastic_black")
+    B.box("ObsChairBack", outside, (6.82, 0.88, -0.55), (0.06, 0.58, 0.44), "plastic_black")
     B.box("ObsConsole", outside, (6.82, 1.25, -1.45), (0.48, 0.42, 0.08), "plastic_black", (0, 0, -0.18))
     B.box("ObsScreen", outside, (6.79, 1.26, -1.45), (0.42, 0.34, 0.015), "screen_dim", (0, 0, -0.18))
     B.box("ObsLightStrip", outside, (6.45, 3.08, -1.0), (1.8, 0.035, 0.18), "task_light")
@@ -830,7 +834,12 @@ def equipment() -> None:
     B.box("HoodLeftPost", hood, (-3.48, 1.83, -5.48), (0.14, 1.78, 0.86), "stainless")
     B.box("HoodRightPost", hood, (-1.12, 1.83, -5.48), (0.14, 1.78, 0.86), "stainless")
     B.box("HoodTop", hood, (-2.3, 2.78, -5.48), (2.55, 0.28, 0.92), "cabinet")
-    B.box("HoodInterior", hood, (-2.3, 1.82, -5.72), (2.18, 1.62, 0.38), "outside_dark")
+    B.box("HoodInterior", hood, (-2.3, 1.82, -5.72), (2.18, 1.62, 0.38), "cabinet_dark")
+    B.box("HoodBackPanel", hood, (-2.3, 1.82, -5.90), (2.02, 1.48, 0.035), "plastic_white")
+    B.box("HoodSidePanel", hood, (-3.36, 1.82, -5.50), (0.035, 1.48, 0.72), "cabinet")
+    B.box("HoodBottleA", hood, (-2.85, 1.06, -5.55), (0.16, 0.22, 0.16), "container_blue")
+    B.box("HoodBottleB", hood, (-2.58, 1.04, -5.48), (0.13, 0.18, 0.13), "plastic_white")
+    B.box("HoodSampleTray", hood, (-1.75, 1.005, -5.45), (0.52, 0.035, 0.34), "stainless")
     B.box("HoodSashGlass", hood, (-2.3, 2.12, -5.08), (2.18, 0.72, 0.025), "glass")
     B.box("HoodSashBar", hood, (-2.3, 1.72, -5.065), (2.22, 0.07, 0.035), "frame_metal")
     B.cyl("HoodDuct", hood, (-2.3, 3.65, -5.55), 0.19, 1.55, "brushed_metal", segments=24)
@@ -841,7 +850,10 @@ def equipment() -> None:
     B.box("BscBody", bsc, (3.75, 1.55, -5.48), (1.55, 2.05, 0.82), "stainless")
     B.box("BscWork", bsc, (3.75, 0.91, -5.48), (1.42, 0.07, 0.76), "bench_top")
     B.box("BscGlass", bsc, (3.75, 1.72, -5.10), (1.28, 0.72, 0.025), "glass", (-0.10, 0, 0))
-    B.box("BscInterior", bsc, (3.75, 1.48, -5.68), (1.30, 0.95, 0.34), "outside_dark")
+    B.box("BscInterior", bsc, (3.75, 1.48, -5.68), (1.30, 0.95, 0.34), "cabinet_dark")
+    B.box("BscBackPanel", bsc, (3.75, 1.48, -5.82), (1.18, 0.86, 0.03), "plastic_white")
+    B.box("BscTray", bsc, (3.48, 0.985, -5.48), (0.42, 0.03, 0.30), "stainless")
+    B.box("BscContainer", bsc, (3.98, 1.06, -5.52), (0.20, 0.14, 0.18), "container_blue")
     B.box("BscGrille", bsc, (3.75, 1.02, -5.13), (1.28, 0.13, 0.018), "dark_metal")
     B.box("BscDisplay", bsc, (4.38, 2.22, -5.08), (0.22, 0.12, 0.02), "screen")
 
@@ -958,15 +970,17 @@ def props_and_details() -> None:
     B.cyl("FireExtinguisher", details, (-4.72, 0.78, 3.72), 0.085, 0.48, "safety_red", segments=20)
     B.cyl("ExtinguisherNozzle", details, (-4.66, 1.08, 3.72), 0.016, 0.22, "plastic_black", (0, 0, 0.7), 10)
     B.box("ExtinguisherSign", details, (-4.91, 1.48, 3.72), (0.025, 0.30, 0.24), "safety_red")
-    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
+    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", -math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
     B.box("FirstAidBox", details, (-4.91, 1.62, 4.38), (0.07, 0.32, 0.42), "plastic_white")
     B.box("FirstAidCrossV", details, (-4.868, 1.62, 4.38), (0.012, 0.20, 0.055), "safety_red")
     B.box("FirstAidCrossH", details, (-4.868, 1.62, 4.38), (0.012, 0.055, 0.20), "safety_red")
     B.box("SafetySignPlate", details, (-4.91, 2.05, 1.55), (0.025, 0.34, 0.58), "safety_yellow")
-    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
+    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", -math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
     B.cyl("EyewashPipe", details, (-4.82, 2.15, 2.45), 0.022, 1.05, "stainless", segments=12)
     B.cyl("EyewashArm", details, (-4.62, 2.64, 2.45), 0.018, 0.42, "stainless", (0, 0, math.pi / 2), 12)
-    B.cyl("EyewashBowl", details, (-4.48, 2.20, 2.45), 0.16, 0.07, "safety_green", segments=24)
+    B.cyl("EyewashDrop", details, (-4.48, 2.52, 2.45), 0.016, 0.24, "stainless", segments=10)
+    B.cyl("EyewashBowl", details, (-4.48, 2.38, 2.45), 0.16, 0.07, "safety_green", segments=24)
+    B.box("EyewashDrain", details, (-4.48, 2.30, 2.45), (0.20, 0.035, 0.20), "frame_metal")
     # Câmera, sensor e interruptor junto à porta.
     B.sphere("DoorCamera", details, (-4.45, 4.78, 5.55), 0.075, "glass_dark")
     B.cyl("PirSensor", details, (4.55, 4.72, 5.55), 0.055, 0.035, "plastic_white", segments=16)
@@ -986,11 +1000,12 @@ def lights_and_collisions() -> None:
     light_index = 0
     for x in (-2.3, 2.3):
         for z in (-3.0, 3.0):
-            B.omni(f"MainLight{light_index}", lights, (x, 4.62, z), (0.92, 0.96, 1.0), 1.15, 8.5, 1.2, False)
+            B.omni(f"MainLight{light_index}", lights, (x, 4.62, z), (0.92, 0.96, 1.0), 1.55, 9.5, 1.2, False)
             light_index += 1
     B.spot("IslandTaskLight", lights, (0, 4.95, -0.55), (0.96, 0.98, 0.94), 1.7, 7.0, 52, True)
     B.spot("WestTaskLight", lights, (-4.35, 4.95, -1.4), (0.96, 0.98, 0.94), 1.25, 6.5, 48, False)
-    B.omni("ObservationLight", lights, (6.45, 2.65, -1.0), (0.55, 0.68, 0.78), 0.55, 4.5, 1.2, False)
+    B.omni("ObservationLight", lights, (6.45, 2.65, -1.0), (0.55, 0.68, 0.78), 0.95, 5.0, 1.2, False)
+    B.omni("HoodWorkLight", lights, (-2.3, 2.35, -4.95), (0.94, 0.97, 0.94), 0.55, 2.6, 1.25, False)
     B.omni("DoorEmergencyLight", lights, (-2.2, 3.15, 5.55), (1.0, 0.18, 0.10), 0.35, 3.2, 1.3, False)
     B.box("EmergencyFixture", lights, (-2.2, 3.18, 5.88), (0.34, 0.09, 0.06), "indicator_red")
 
@@ -1045,7 +1060,7 @@ background_mode = 1
 background_color = Color(0.008, 0.010, 0.014, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.38, 0.43, 0.50, 1)
-ambient_light_energy = 0.34
+ambient_light_energy = 0.48
 tonemap_mode = 2"""
     world = "[node name=\"WorldEnvironment\" type=\"WorldEnvironment\" parent=\".\"]\nenvironment = SubResource(\"Env_pilot\")"
     load_steps = len(MATERIALS) + len(B.subresources) + 2

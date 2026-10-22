@@ -243,6 +243,7 @@ func _check_player_route() -> void:
 
 func _finish() -> void:
 	print("[PILOT] %d/%d verificações passaram" % [_checks - _failures, _checks])
+	print("[PILOT] %d verificações aprovadas" % (_checks - _failures))
 	if _failures == 0:
 		print("[PILOT] TESTE DA SALA-PILOTO PASSOU")
 		get_tree().quit(0)
