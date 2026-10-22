@@ -3708,7 +3708,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, -0, 1, 4.9, 2.88, -1)
 mesh = SubResource("Mesh_194")
 
 [node name="WindowSign" type="Label3D" parent="Architecture/ObservationWindow"]
-transform = Transform3D(0, 0, 1, -0, 1, 0, -1, -0, 0, 4.875, 2.88, -1)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, -0, 0, 4.875, 2.88, -1)
 pixel_size = 0.0016
 modulate = Color(0.08, 0.1, 0.11, 1)
 outline_size = 4
@@ -5520,7 +5520,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, -0, 1, -4.91, 1.48, 3.72)
 mesh = SubResource("Mesh_428")
 
 [node name="ExtinguisherLabel" type="Label3D" parent="TechnicalDetails"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, -0, 0, -4.895, 1.48, 3.72)
+transform = Transform3D(0, 0, 1, -0, 1, 0, -1, -0, 0, -4.895, 1.48, 3.72)
 pixel_size = 0.0014
 modulate = Color(0.96, 0.96, 0.94, 1)
 outline_size = 4
@@ -5546,7 +5546,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, -0, 1, -4.91, 2.05, 1.55)
 mesh = SubResource("Mesh_432")
 
 [node name="SafetySign" type="Label3D" parent="TechnicalDetails"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, -0, 0, -4.895, 2.08, 1.55)
+transform = Transform3D(0, 0, 1, -0, 1, 0, -1, -0, 0, -4.895, 2.08, 1.55)
 pixel_size = 0.0015
 modulate = Color(0.05, 0.05, 0.04, 1)
 outline_size = 4

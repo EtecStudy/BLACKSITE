@@ -865,7 +865,7 @@ def door_and_window() -> None:
     for i in range(5):
         B.box("WindowBlindSlat", window, (4.995, 2.34 - i * 0.09, -1.0), (0.012, 0.018, 3.55), "frame_metal", (0, 0, 0.35))
     B.box("WindowSignPlate", window, (4.90, 2.88, -1.0), (0.025, 0.24, 0.78), "plastic_white")
-    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", -math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
+    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
     # Painéis de fechamento acima dos vãos, no mesmo plano dos painéis principais.
     B.box("DoorTransomPanel", door, (-2.2, 2.94, 5.965), (1.58, 0.50, 0.07), "wall_panel")
     B.box("WindowTransomPanel", window, (4.965, 2.92, -1.0), (0.07, 0.52, 3.82), "wall_panel")
@@ -1220,12 +1220,12 @@ def props_and_details() -> None:
     B.cyl("FireExtinguisher", details, (-4.72, 0.78, 3.72), 0.085, 0.48, "safety_red", segments=20)
     B.cyl("ExtinguisherNozzle", details, (-4.66, 1.08, 3.72), 0.016, 0.22, "plastic_black", (0, 0, 0.7), 10)
     B.box("ExtinguisherSign", details, (-4.91, 1.48, 3.72), (0.025, 0.30, 0.24), "safety_red")
-    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
+    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", -math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
     B.box("FirstAidBox", details, (-4.91, 1.62, 4.38), (0.07, 0.32, 0.42), "plastic_white")
     B.box("FirstAidCrossV", details, (-4.868, 1.62, 4.38), (0.012, 0.20, 0.055), "safety_red")
     B.box("FirstAidCrossH", details, (-4.868, 1.62, 4.38), (0.012, 0.055, 0.20), "safety_red")
     B.box("SafetySignPlate", details, (-4.91, 2.05, 1.55), (0.025, 0.34, 0.58), "safety_yellow")
-    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
+    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", -math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
     B.cyl("EyewashPipe", details, (-4.82, 2.15, 2.45), 0.022, 1.05, "stainless", segments=12)
     B.cyl("EyewashArm", details, (-4.62, 2.64, 2.45), 0.018, 0.42, "stainless", (0, 0, math.pi / 2), 12)
     B.cyl("EyewashDrop", details, (-4.48, 2.52, 2.45), 0.016, 0.24, "stainless", segments=10)
