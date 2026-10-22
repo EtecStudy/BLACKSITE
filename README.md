@@ -43,7 +43,9 @@ commit `3c62ec7`), **continua publicada**, junto de `v0.11.1-etapa11-correcao`,
 
 1. Baixe e extraia o ZIP (mantenha `BlackSight.exe` e `BlackSight.pck` na mesma pasta).
 2. Duplo clique em **BlackSight.exe**.
-3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
+3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D, ou em
+   **SALA DE EXIBIÇÃO** para avaliar o kit visual (piso, parede e teto de
+   teste) no showroom temporário. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
 

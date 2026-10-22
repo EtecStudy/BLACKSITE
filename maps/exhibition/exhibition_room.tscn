@@ -1,0 +1,756 @@
+[gd_scene load_steps=52 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/showroom_floor.tres" id="mat_showroom_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/showroom_wall.tres" id="mat_showroom_wall"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/showroom_ceiling.tres" id="mat_showroom_ceiling"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_floor.tres" id="mat_kit_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_wall.tres" id="mat_kit_wall"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_wall_b.tres" id="mat_kit_wall_b"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_wall_c.tres" id="mat_kit_wall_c"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_joint.tres" id="mat_kit_joint"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_skirt.tres" id="mat_kit_skirt"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/kit_ceiling.tres" id="mat_kit_ceiling"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/alu_profile.tres" id="mat_alu_profile"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/steel_dark.tres" id="mat_steel_dark"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/edge_trim.tres" id="mat_edge_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/light_panel.tres" id="mat_light_panel"]
+[ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/light_panel_off.tres" id="mat_light_panel_off"]
+
+[sub_resource type="Environment" id="Env_gallery"]
+background_mode = 1
+background_color = Color(0.055, 0.058, 0.062, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.62, 0.64, 0.67, 1)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+adjustment_enabled = true
+adjustment_brightness = 1.0
+adjustment_contrast = 1.02
+adjustment_saturation = 0.95
+
+[sub_resource type="BoxMesh" id="Mesh_1"]
+material = ExtResource("mat_showroom_floor")
+size = Vector3(32.3, 0.12, 14.3)
+
+[sub_resource type="BoxMesh" id="Mesh_2"]
+material = ExtResource("mat_showroom_ceiling")
+size = Vector3(32.3, 0.12, 14.3)
+
+[sub_resource type="BoxMesh" id="Mesh_3"]
+material = ExtResource("mat_showroom_wall")
+size = Vector3(32.3, 5, 0.15)
+
+[sub_resource type="BoxMesh" id="Mesh_4"]
+material = ExtResource("mat_showroom_wall")
+size = Vector3(0.15, 5, 14.3)
+
+[sub_resource type="BoxMesh" id="Mesh_5"]
+material = ExtResource("mat_steel_dark")
+size = Vector3(32, 0.1, 0.04)
+
+[sub_resource type="BoxMesh" id="Mesh_6"]
+material = ExtResource("mat_steel_dark")
+size = Vector3(0.04, 0.1, 13.8)
+
+[sub_resource type="BoxMesh" id="Mesh_7"]
+material = ExtResource("mat_kit_floor")
+size = Vector3(6, 0.04, 4)
+
+[sub_resource type="BoxMesh" id="Mesh_8"]
+material = ExtResource("mat_edge_trim")
+size = Vector3(6.06, 0.008, 0.03)
+
+[sub_resource type="BoxMesh" id="Mesh_9"]
+material = ExtResource("mat_edge_trim")
+size = Vector3(0.03, 0.008, 4.06)
+
+[sub_resource type="BoxMesh" id="Mesh_10"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(6.06, 0.006, 0.14)
+
+[sub_resource type="BoxMesh" id="Mesh_11"]
+material = ExtResource("mat_kit_joint")
+size = Vector3(6.02, 2.8, 0.1)
+
+[sub_resource type="BoxMesh" id="Mesh_12"]
+material = ExtResource("mat_kit_wall")
+size = Vector3(1.185, 2.66, 0.024)
+
+[sub_resource type="BoxMesh" id="Mesh_13"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(1.185, 0.03, 0.148)
+
+[sub_resource type="BoxMesh" id="Mesh_14"]
+material = ExtResource("mat_kit_wall_b")
+size = Vector3(1.185, 2.66, 0.024)
+
+[sub_resource type="BoxMesh" id="Mesh_15"]
+material = ExtResource("mat_kit_wall_c")
+size = Vector3(1.185, 2.66, 0.024)
+
+[sub_resource type="BoxMesh" id="Mesh_16"]
+material = ExtResource("mat_kit_skirt")
+size = Vector3(6, 0.15, 0.03)
+
+[sub_resource type="BoxMesh" id="Mesh_17"]
+material = ExtResource("mat_kit_skirt")
+size = Vector3(6, 0.018, 0.036)
+
+[sub_resource type="BoxMesh" id="Mesh_18"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(6.1, 0.04, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_19"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(4.86, 0.07, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_20"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(0.05, 0.07, 3.66)
+
+[sub_resource type="BoxMesh" id="Mesh_21"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(0.035, 0.045, 3.6)
+
+[sub_resource type="BoxMesh" id="Mesh_22"]
+material = ExtResource("mat_alu_profile")
+size = Vector3(4.8, 0.045, 0.035)
+
+[sub_resource type="BoxMesh" id="Mesh_23"]
+material = ExtResource("mat_kit_ceiling")
+size = Vector3(0.58, 0.025, 0.58)
+
+[sub_resource type="BoxMesh" id="Mesh_24"]
+material = ExtResource("mat_light_panel_off")
+size = Vector3(0.58, 0.03, 0.58)
+
+[sub_resource type="BoxMesh" id="Mesh_25"]
+material = ExtResource("mat_steel_dark")
+size = Vector3(0.6, 0.012, 0.6)
+
+[sub_resource type="CylinderMesh" id="Mesh_26"]
+material = ExtResource("mat_steel_dark")
+top_radius = 0.006
+bottom_radius = 0.006
+height = 1.96
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="Mesh_27"]
+material = ExtResource("mat_steel_dark")
+size = Vector3(0.05, 0.06, 0.05)
+
+[sub_resource type="BoxMesh" id="Mesh_28"]
+material = ExtResource("mat_light_panel")
+size = Vector3(2.6, 0.05, 0.5)
+
+[sub_resource type="BoxMesh" id="Mesh_29"]
+material = ExtResource("mat_light_panel_off")
+size = Vector3(2.6, 0.05, 0.5)
+
+[sub_resource type="BoxShape3D" id="Shape_30"]
+size = Vector3(32.4, 0.24, 14.4)
+
+[sub_resource type="BoxShape3D" id="Shape_31"]
+size = Vector3(32.4, 0.3, 14.4)
+
+[sub_resource type="BoxShape3D" id="Shape_32"]
+size = Vector3(32.4, 5, 0.3)
+
+[sub_resource type="BoxShape3D" id="Shape_33"]
+size = Vector3(0.3, 5, 14.4)
+
+[sub_resource type="BoxShape3D" id="Shape_34"]
+size = Vector3(6.15, 2.9, 0.35)
+
+[sub_resource type="BoxShape3D" id="Shape_35"]
+size = Vector3(4.95, 0.14, 3.75)
+
+[node name="ExhibitionRoom" type="Node3D"]
+
+[node name="Gallery" type="Node3D" parent="."]
+
+[node name="Floor" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0)
+mesh = SubResource("Mesh_1")
+
+[node name="Ceiling" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.06, 0)
+mesh = SubResource("Mesh_2")
+
+[node name="WallNorth" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -7)
+mesh = SubResource("Mesh_3")
+
+[node name="WallSouth" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 7)
+mesh = SubResource("Mesh_3")
+
+[node name="WallWest" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 2.5, 0)
+mesh = SubResource("Mesh_4")
+
+[node name="WallEast" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 2.5, 0)
+mesh = SubResource("Mesh_4")
+
+[node name="BaseN" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -6.9)
+mesh = SubResource("Mesh_5")
+
+[node name="BaseS" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 6.9)
+mesh = SubResource("Mesh_5")
+
+[node name="BaseW" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.9, 0.05, 0)
+mesh = SubResource("Mesh_6")
+
+[node name="BaseE" type="MeshInstance3D" parent="Gallery"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.9, 0.05, 0)
+mesh = SubResource("Mesh_6")
+
+[node name="KitFloor" type="Node3D" parent="."]
+
+[node name="FloorSlab" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -0.018, 0)
+mesh = SubResource("Mesh_7")
+
+[node name="EdgeN" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.004, -2.01)
+mesh = SubResource("Mesh_8")
+
+[node name="EdgeS" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.004, 2.01)
+mesh = SubResource("Mesh_8")
+
+[node name="EdgeW" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.01, 0.004, 0)
+mesh = SubResource("Mesh_9")
+
+[node name="EdgeE" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.99, 0.004, 0)
+mesh = SubResource("Mesh_9")
+
+[node name="RampS" type="MeshInstance3D" parent="KitFloor"]
+transform = Transform3D(1, 0, 0, 0, 0.995, -0.09983, 0, 0.09983, 0.995, -9, 0.002, 2.09)
+mesh = SubResource("Mesh_10")
+
+[node name="KitWall" type="Node3D" parent="."]
+
+[node name="WallCore" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.2)
+mesh = SubResource("Mesh_11")
+
+[node name="PanelF" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.46, -1.138)
+mesh = SubResource("Mesh_12")
+
+[node name="PanelB" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.46, -1.262)
+mesh = SubResource("Mesh_12")
+
+[node name="PanelTop" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 2.815, -1.2)
+mesh = SubResource("Mesh_13")
+
+[node name="PanelF2" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.46, -1.138)
+mesh = SubResource("Mesh_14")
+
+[node name="PanelB2" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.46, -1.262)
+mesh = SubResource("Mesh_14")
+
+[node name="PanelTop2" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 2.815, -1.2)
+mesh = SubResource("Mesh_13")
+
+[node name="PanelF3" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46, -1.138)
+mesh = SubResource("Mesh_12")
+
+[node name="PanelB3" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46, -1.262)
+mesh = SubResource("Mesh_12")
+
+[node name="PanelTop3" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.815, -1.2)
+mesh = SubResource("Mesh_13")
+
+[node name="PanelF4" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.46, -1.138)
+mesh = SubResource("Mesh_15")
+
+[node name="PanelB4" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.46, -1.262)
+mesh = SubResource("Mesh_15")
+
+[node name="PanelTop4" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 2.815, -1.2)
+mesh = SubResource("Mesh_13")
+
+[node name="PanelF5" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.46, -1.138)
+mesh = SubResource("Mesh_14")
+
+[node name="PanelB5" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.46, -1.262)
+mesh = SubResource("Mesh_14")
+
+[node name="PanelTop5" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 2.815, -1.2)
+mesh = SubResource("Mesh_13")
+
+[node name="Skirt" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, -1.125)
+mesh = SubResource("Mesh_16")
+
+[node name="SkirtChamfer" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 0.82534, -0.56464, 0, 0.56464, 0.82534, 0, 0.158, -1.117)
+mesh = SubResource("Mesh_17")
+
+[node name="Skirt2" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, -1.275)
+mesh = SubResource("Mesh_16")
+
+[node name="SkirtChamfer2" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 0.82534, 0.56464, 0, -0.56464, 0.82534, 0, 0.158, -1.283)
+mesh = SubResource("Mesh_17")
+
+[node name="WallCoping" type="MeshInstance3D" parent="KitWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.845, -1.2)
+mesh = SubResource("Mesh_18")
+
+[node name="KitCeiling" type="Node3D" parent="."]
+
+[node name="FrameN" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.02, -1.8)
+mesh = SubResource("Mesh_19")
+
+[node name="FrameS" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.02, 1.8)
+mesh = SubResource("Mesh_19")
+
+[node name="FrameW" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 3.02, 0)
+mesh = SubResource("Mesh_20")
+
+[node name="FrameE" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.02, 0)
+mesh = SubResource("Mesh_20")
+
+[node name="MainT" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT2" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.4, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT3" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT4" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT5" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT6" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="MainT7" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 3.008, 0)
+mesh = SubResource("Mesh_21")
+
+[node name="CrossT" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, -1.2)
+mesh = SubResource("Mesh_22")
+
+[node name="CrossT2" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, -0.6)
+mesh = SubResource("Mesh_22")
+
+[node name="CrossT3" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, 0)
+mesh = SubResource("Mesh_22")
+
+[node name="CrossT4" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, 0.6)
+mesh = SubResource("Mesh_22")
+
+[node name="CrossT5" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.008, 1.2)
+mesh = SubResource("Mesh_22")
+
+[node name="CeilingTile" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile2" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile3" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile4" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile5" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile6" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile7" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile8" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile9" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile10" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile11" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile12" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile13" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile14" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile15" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile16" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingLightTile" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, 0.9)
+mesh = SubResource("Mesh_24")
+
+[node name="CeilingLightFrame" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.016, 0.9)
+mesh = SubResource("Mesh_25")
+
+[node name="CeilingTile17" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.7, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile18" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile19" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile20" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile21" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile22" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile23" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.3, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile24" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile25" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile26" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile27" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile28" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile29" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.9, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile30" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile31" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile32" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile33" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile34" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile35" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile36" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile37" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile38" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile39" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile40" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.1, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile41" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, -1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile42" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, -0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile43" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, -0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile44" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, 0.3)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile45" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, 0.9)
+mesh = SubResource("Mesh_23")
+
+[node name="CeilingTile46" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 3.032, 1.5)
+mesh = SubResource("Mesh_23")
+
+[node name="Hanger" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8, 4.03, -1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8, 3.08, -1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Hanger2" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8, 4.03, 1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip2" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8, 3.08, 1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Hanger3" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 4.03, -1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip3" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.08, -1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Hanger4" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 4.03, 1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip4" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.08, 1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Hanger5" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 4.03, -1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip5" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 3.08, -1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Hanger6" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 4.03, 1.2)
+mesh = SubResource("Mesh_26")
+
+[node name="HangerClip6" type="MeshInstance3D" parent="KitCeiling"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 3.08, 1.2)
+mesh = SubResource("Mesh_27")
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="GalleryLightPanel" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 4.94, 0)
+mesh = SubResource("Mesh_28")
+
+[node name="GalleryLightPanel2" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 4.94, 0.55)
+mesh = SubResource("Mesh_29")
+
+[node name="GallerySpot0" type="SpotLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -12, 4.86, 0)
+light_color = Color(0.98, 0.99, 1, 1)
+light_energy = 2.6
+spot_range = 12
+spot_angle = 68
+spot_attenuation = 1
+shadow_enabled = false
+
+[node name="GalleryLightPanel2" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4.94, 0)
+mesh = SubResource("Mesh_28")
+
+[node name="GalleryLightPanel22" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4.94, 0.55)
+mesh = SubResource("Mesh_29")
+
+[node name="GallerySpot1" type="SpotLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -4, 4.86, 0)
+light_color = Color(0.98, 0.99, 1, 1)
+light_energy = 2.6
+spot_range = 12
+spot_angle = 68
+spot_attenuation = 1
+shadow_enabled = true
+
+[node name="GalleryLightPanel3" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4.94, 0)
+mesh = SubResource("Mesh_28")
+
+[node name="GalleryLightPanel23" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4.94, 0.55)
+mesh = SubResource("Mesh_29")
+
+[node name="GallerySpot2" type="SpotLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 4, 4.86, 0)
+light_color = Color(0.98, 0.99, 1, 1)
+light_energy = 2.6
+spot_range = 12
+spot_angle = 68
+spot_attenuation = 1
+shadow_enabled = true
+
+[node name="GalleryLightPanel4" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4.94, 0)
+mesh = SubResource("Mesh_28")
+
+[node name="GalleryLightPanel24" type="MeshInstance3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4.94, 0.55)
+mesh = SubResource("Mesh_29")
+
+[node name="GallerySpot3" type="SpotLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 12, 4.86, 0)
+light_color = Color(0.98, 0.99, 1, 1)
+light_energy = 2.6
+spot_range = 12
+spot_angle = 68
+spot_attenuation = 1
+shadow_enabled = false
+
+[node name="GalleryFillA" type="OmniLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4.4, 0)
+light_color = Color(0.96, 0.97, 1, 1)
+light_energy = 0.5
+omni_range = 14
+omni_attenuation = 1
+shadow_enabled = false
+
+[node name="GalleryFillB" type="OmniLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 4.4, 0)
+light_color = Color(0.96, 0.97, 1, 1)
+light_energy = 0.5
+omni_range = 14
+omni_attenuation = 1
+shadow_enabled = false
+
+[node name="Collision" type="Node3D" parent="."]
+
+[node name="StaticBodies" type="StaticBody3D" parent="Collision"]
+
+[node name="Floor" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+shape = SubResource("Shape_30")
+
+[node name="Ceiling" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, 0)
+shape = SubResource("Shape_31")
+
+[node name="WallNorth" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -7.15)
+shape = SubResource("Shape_32")
+
+[node name="WallSouth" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 7.15)
+shape = SubResource("Shape_32")
+
+[node name="WallWest" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.15, 2.5, 0)
+shape = SubResource("Shape_33")
+
+[node name="WallEast" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.15, 2.5, 0)
+shape = SubResource("Shape_33")
+
+[node name="KitWall" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.2)
+shape = SubResource("Shape_34")
+
+[node name="KitCeiling" type="CollisionShape3D" parent="Collision/StaticBodies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.06, 0)
+shape = SubResource("Shape_35")
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.5, 0.05, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_gallery")
