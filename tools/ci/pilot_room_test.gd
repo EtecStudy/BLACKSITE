@@ -154,7 +154,7 @@ func _space_free(room: Node3D, point: Vector3) -> bool:
 
 func _check_free_space(room: Node3D) -> void:
 	for point in [
-		Vector3(0, 0.95, 0.8), Vector3(-2.6, 0.95, 4.35), Vector3(3.3, 0.95, -3.4),
+		Vector3(0, 0.95, 1.1), Vector3(-2.6, 0.95, 4.35), Vector3(3.3, 0.95, -3.4),
 		Vector3(0, 0.95, -3.8), Vector3(-3.8, 0.95, -3.4), Vector3(2.8, 0.95, 3.4),
 	]:
 		_check(_space_free(room, point), "Ponto de circulação livre em %s" % point)
