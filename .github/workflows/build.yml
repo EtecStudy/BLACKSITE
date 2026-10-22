@@ -434,12 +434,18 @@ jobs:
             ci-logs/inventory_hud.png
             ci-logs/drop_hud.png
 
-      - name: Publicar release no GitHub (somente via dispatch manual)
-        if: ${{ inputs.publish_release }}
+      - name: Publicar release no GitHub (dispatch manual ou [release TAG] no commit)
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_release) || contains(github.event.head_commit.message, '[release ') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="${{ inputs.release_tag }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.release_tag }}"
+          else
+            TAG=$(printf '%s' "${{ github.event.head_commit.message }}" | sed -n 's/.*\[release \([^]]*\)\].*/\1/p' | head -1)
+          fi
+          echo "Publicando release: $TAG"
+          test -n "$TAG"
           test -s BlackSight-Windows-x86_64.zip
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "Release $TAG já existe — atualizando o ZIP anexo."
