@@ -992,8 +992,8 @@ func _check_stage8() -> void:
 	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
 	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.0",
-		"versão do projeto é 0.13.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.1",
+		"versão do projeto é 0.13.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
@@ -1159,8 +1159,8 @@ func _check_stage9() -> void:
 
 	# --- Versão -------------------------------------------------------------
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.0",
-		"versão do projeto é 0.13.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.1",
+		"versão do projeto é 0.13.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
