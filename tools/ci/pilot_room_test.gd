@@ -129,10 +129,10 @@ func _check_dimensions(room: Node3D) -> void:
 	_check(not ceiling_hit.is_empty() and (ceiling_hit["position"] as Vector3).y > 3.0,
 		"Teto técnico físico está próximo de y=3,2")
 	var window_sign := room.get_node_or_null("Architecture/ObservationWindow/WindowSign") as Label3D
-	_check(window_sign != null and absf(window_sign.rotation.y + PI / 2.0) < 0.01,
+	_check(window_sign != null and window_sign.global_transform.basis.z.dot(Vector3.LEFT) > 0.99,
 		"Rótulo da janela está voltado para o interior da sala")
 	var safety_sign := room.get_node_or_null("TechnicalDetails/SafetySign") as Label3D
-	_check(safety_sign != null and absf(safety_sign.rotation.y - PI / 2.0) < 0.01,
+	_check(safety_sign != null and safety_sign.global_transform.basis.z.dot(Vector3.RIGHT) > 0.99,
 		"Rótulo de EPI da parede oeste está voltado para o interior da sala")
 	var main_light := room.get_node_or_null("Lighting/MainLight0") as SpotLight3D
 	_check(main_light != null and main_light.position.y > 2.9,
