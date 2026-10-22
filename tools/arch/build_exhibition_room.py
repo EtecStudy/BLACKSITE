@@ -208,7 +208,7 @@ def tex_showroom_floor(size: int = 512) -> None:
 def tex_showroom_wall(size: int = 512) -> None:
     """Parede neutra da galeria: pintura lisa cinza-clara."""
     rnd = random.Random(21)
-    rows, height = tint_noise(size, (0.55, 0.56, 0.57), 0.035, 21)
+    rows, height = tint_noise(size, (0.60, 0.61, 0.62), 0.035, 21)
     speckle(rows, height, rnd, 900, (0.4, 0.4, 0.41), 0.2, 1.4)
     save_maps("showroom_wall", rows, height, rough_from(height, 0.9, 0.08, 23), 0.6)
 
@@ -241,17 +241,28 @@ def tex_kit_floor(size: int = 1024) -> None:
     for sx in (size // 3, 2 * size // 3):
         for y in range(size):
             for dx in (-1, 0, 1):
-                blend_px(rows, sx + dx, y, (0.36, 0.365, 0.35), 0.55 if dx == 0 else 0.3)
-                height[y][sx + dx] -= 0.10
+                blend_px(rows, sx + dx, y, (0.335, 0.34, 0.325), 0.8 if dx == 0 else 0.45)
+                height[y][sx + dx] -= 0.16
     for x in range(size):
-        blend_px(rows, x, size // 2, (0.36, 0.365, 0.35), 0.4)
-        height[size // 2][x] -= 0.08
+        blend_px(rows, x, size // 2, (0.335, 0.34, 0.325), 0.6)
+        height[size // 2][x] -= 0.13
     # Desgaste leve no centro (tráfego).
     for _ in range(7000):
         x = int(size / 2 + rnd.gauss(0, size * 0.16))
         y = int(size / 2 + rnd.gauss(0, size * 0.16))
         blend_px(rows, x, y, (0.44, 0.445, 0.43), 0.10)
     rough = rough_from(height, 0.34, 0.16, 33)
+    # Solda levemente mais lisa que o campo: linha de brilho nas costuras.
+    for sx in (size // 3, 2 * size // 3):
+        for y in range(size):
+            for dx in (-1, 0, 1):
+                i = (sx + dx) * 3
+                v = clamp_byte(0.22 * 255)
+                rough[y][i:i + 3] = bytes((v, v, v))
+    for x in range(size):
+        i = x * 3
+        v = clamp_byte(0.24 * 255)
+        rough[size // 2][i:i + 3] = bytes((v, v, v))
     save_maps("kit_floor", rows, height, rough, 1.2)
 
 
@@ -315,7 +326,7 @@ def generate_textures() -> None:
 MATERIALS: dict[str, dict[str, object]] = {
     "showroom_floor": {"texture": "showroom_floor", "roughness": 0.85, "normal_scale": 0.4},
     "showroom_wall": {"texture": "showroom_wall", "roughness": 0.9, "normal_scale": 0.3},
-    "showroom_ceiling": {"color": (0.36, 0.37, 0.38, 1), "roughness": 0.92},
+    "showroom_ceiling": {"color": (0.46, 0.47, 0.48, 1), "roughness": 0.92},
     "kit_floor": {"texture": "kit_floor", "roughness": 0.36, "normal_scale": 0.55},
     "kit_wall": {"texture": "kit_wall", "roughness": 0.46, "normal_scale": 0.45},
     "kit_wall_b": {"texture": "kit_wall", "color": (0.965, 0.97, 0.965, 1), "roughness": 0.46, "normal_scale": 0.45},
@@ -602,9 +613,9 @@ def lighting_and_collisions() -> None:
     # Trilho neutro de avaliação: 4 conjuntos de painéis emissivos + spots.
     for i, lx in enumerate((-12.0, -4.0, 4.0, 12.0)):
         B.box("GalleryLightPanel", lights, (lx, 4.94, 0), (2.6, 0.05, 0.5), "light_panel")
-        B.box("GalleryLightPanel2", lights, (lx, 4.94, 0.55), (2.6, 0.05, 0.5), "light_panel_off")
+        B.box("GalleryLightPanel2", lights, (lx, 4.94, 0.55), (2.6, 0.05, 0.5), "light_panel")
         B.spot(f"GallerySpot{i}", lights, (lx, 4.86, 0), (0.98, 0.99, 1.0),
-               2.6, 12.0, 68, i in (1, 2), 1.0)
+               3.1, 13.0, 68, i in (1, 2), 1.0)
     B.omni("GalleryFillA", lights, (-8.0, 4.4, 0), (0.96, 0.97, 1.0), 0.5, 14.0, 1.0, False)
     B.omni("GalleryFillB", lights, (8.0, 4.4, 0), (0.96, 0.97, 1.0), 0.5, 14.0, 1.0, False)
 
@@ -643,7 +654,7 @@ background_mode = 1
 background_color = Color(0.055, 0.058, 0.062, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.62, 0.64, 0.67, 1)
-ambient_light_energy = 0.55
+ambient_light_energy = 0.72
 tonemap_mode = 2
 adjustment_enabled = true
 adjustment_brightness = 1.0

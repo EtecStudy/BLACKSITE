@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3]
+[gd_scene load_steps=51 format=3]
 
 [ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/showroom_floor.tres" id="mat_showroom_floor"]
 [ext_resource type="StandardMaterial3D" path="res://maps/exhibition/materials/showroom_wall.tres" id="mat_showroom_wall"]
@@ -21,7 +21,7 @@ background_mode = 1
 background_color = Color(0.055, 0.058, 0.062, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.62, 0.64, 0.67, 1)
-ambient_light_energy = 0.55
+ambient_light_energy = 0.72
 tonemap_mode = 2
 adjustment_enabled = true
 adjustment_brightness = 1.0
@@ -143,26 +143,22 @@ size = Vector3(0.05, 0.06, 0.05)
 material = ExtResource("mat_light_panel")
 size = Vector3(2.6, 0.05, 0.5)
 
-[sub_resource type="BoxMesh" id="Mesh_29"]
-material = ExtResource("mat_light_panel_off")
-size = Vector3(2.6, 0.05, 0.5)
-
-[sub_resource type="BoxShape3D" id="Shape_30"]
+[sub_resource type="BoxShape3D" id="Shape_29"]
 size = Vector3(32.4, 0.24, 14.4)
 
-[sub_resource type="BoxShape3D" id="Shape_31"]
+[sub_resource type="BoxShape3D" id="Shape_30"]
 size = Vector3(32.4, 0.3, 14.4)
 
-[sub_resource type="BoxShape3D" id="Shape_32"]
+[sub_resource type="BoxShape3D" id="Shape_31"]
 size = Vector3(32.4, 5, 0.3)
 
-[sub_resource type="BoxShape3D" id="Shape_33"]
+[sub_resource type="BoxShape3D" id="Shape_32"]
 size = Vector3(0.3, 5, 14.4)
 
-[sub_resource type="BoxShape3D" id="Shape_34"]
+[sub_resource type="BoxShape3D" id="Shape_33"]
 size = Vector3(6.15, 2.9, 0.35)
 
-[sub_resource type="BoxShape3D" id="Shape_35"]
+[sub_resource type="BoxShape3D" id="Shape_34"]
 size = Vector3(4.95, 0.14, 3.75)
 
 [node name="ExhibitionRoom" type="Node3D"]
@@ -635,13 +631,13 @@ mesh = SubResource("Mesh_28")
 
 [node name="GalleryLightPanel2" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 4.94, 0.55)
-mesh = SubResource("Mesh_29")
+mesh = SubResource("Mesh_28")
 
 [node name="GallerySpot0" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -12, 4.86, 0)
 light_color = Color(0.98, 0.99, 1, 1)
-light_energy = 2.6
-spot_range = 12
+light_energy = 3.1
+spot_range = 13
 spot_angle = 68
 spot_attenuation = 1
 shadow_enabled = false
@@ -652,13 +648,13 @@ mesh = SubResource("Mesh_28")
 
 [node name="GalleryLightPanel22" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4.94, 0.55)
-mesh = SubResource("Mesh_29")
+mesh = SubResource("Mesh_28")
 
 [node name="GallerySpot1" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -4, 4.86, 0)
 light_color = Color(0.98, 0.99, 1, 1)
-light_energy = 2.6
-spot_range = 12
+light_energy = 3.1
+spot_range = 13
 spot_angle = 68
 spot_attenuation = 1
 shadow_enabled = true
@@ -669,13 +665,13 @@ mesh = SubResource("Mesh_28")
 
 [node name="GalleryLightPanel23" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4.94, 0.55)
-mesh = SubResource("Mesh_29")
+mesh = SubResource("Mesh_28")
 
 [node name="GallerySpot2" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 4, 4.86, 0)
 light_color = Color(0.98, 0.99, 1, 1)
-light_energy = 2.6
-spot_range = 12
+light_energy = 3.1
+spot_range = 13
 spot_angle = 68
 spot_attenuation = 1
 shadow_enabled = true
@@ -686,13 +682,13 @@ mesh = SubResource("Mesh_28")
 
 [node name="GalleryLightPanel24" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 4.94, 0.55)
-mesh = SubResource("Mesh_29")
+mesh = SubResource("Mesh_28")
 
 [node name="GallerySpot3" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 12, 4.86, 0)
 light_color = Color(0.98, 0.99, 1, 1)
-light_energy = 2.6
-spot_range = 12
+light_energy = 3.1
+spot_range = 13
 spot_angle = 68
 spot_attenuation = 1
 shadow_enabled = false
@@ -719,35 +715,35 @@ shadow_enabled = false
 
 [node name="Floor" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
-shape = SubResource("Shape_30")
+shape = SubResource("Shape_29")
 
 [node name="Ceiling" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, 0)
-shape = SubResource("Shape_31")
+shape = SubResource("Shape_30")
 
 [node name="WallNorth" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -7.15)
-shape = SubResource("Shape_32")
+shape = SubResource("Shape_31")
 
 [node name="WallSouth" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 7.15)
-shape = SubResource("Shape_32")
+shape = SubResource("Shape_31")
 
 [node name="WallWest" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.15, 2.5, 0)
-shape = SubResource("Shape_33")
+shape = SubResource("Shape_32")
 
 [node name="WallEast" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.15, 2.5, 0)
-shape = SubResource("Shape_33")
+shape = SubResource("Shape_32")
 
 [node name="KitWall" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.2)
-shape = SubResource("Shape_34")
+shape = SubResource("Shape_33")
 
 [node name="KitCeiling" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, 3.06, 0)
-shape = SubResource("Shape_35")
+shape = SubResource("Shape_34")
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.5, 0.05, 0)
