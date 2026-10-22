@@ -6,4 +6,4 @@ roughness = 0.5
 metallic = 0
 emission_enabled = true
 emission = Color(0.95, 1, 0.82, 1)
-emission_energy_multiplier = 2.4
+emission_energy_multiplier = 1.9

@@ -246,7 +246,7 @@ def tint_noise(size: int, base: tuple[float, float, float], amp: float, seed: in
 
 def tex_wall(size: int, seed: int, heavy: bool) -> None:
     rnd = random.Random(seed)
-    rows, height = tint_noise(size, (0.60, 0.585, 0.52), 0.10, seed)
+    rows, height = tint_noise(size, (0.50, 0.49, 0.435), 0.10, seed)
     # Manchas de umidade descendo do teto e subindo do rodapé.
     for _ in range(9 if heavy else 6):
         streak(rows, rnd.randrange(size), 0, rnd.randrange(size // 3, size // 2),
@@ -256,7 +256,7 @@ def tex_wall(size: int, seed: int, heavy: bool) -> None:
         cx = rnd.uniform(0, size)
         cy = rnd.uniform(size * 0.25, size) if rnd.random() < 0.6 else rnd.uniform(0, size)
         blotch(rows, height, cx, cy, rnd.uniform(14, 62 if heavy else 44),
-               (0.10, 0.085, 0.065), rnd.uniform(0.35, 0.75), rnd, depth=0.25)
+               (0.11, 0.095, 0.07), rnd.uniform(0.30, 0.58), rnd, depth=0.25)
     for _ in range(blotches // 2):
         blotch(rows, height, rnd.uniform(0, size), rnd.uniform(0, size),
                rnd.uniform(8, 26), (0.20, 0.16, 0.10), 0.5, rnd, depth=0.15)
@@ -264,7 +264,7 @@ def tex_wall(size: int, seed: int, heavy: bool) -> None:
     for _ in range(12 if heavy else 7):
         cx, cy = rnd.uniform(0, size), rnd.uniform(0, size)
         blotch(rows, height, cx, cy, rnd.uniform(8, 22), (0.68, 0.65, 0.58), 0.4, rnd, depth=-0.1)
-    speckle(rows, height, rnd, 2600, (0.08, 0.07, 0.06), 0.5)
+    speckle(rows, height, rnd, 1400, (0.08, 0.07, 0.06), 0.32, 1.6)
     speckle(rows, height, rnd, 900, (0.75, 0.72, 0.64), 0.35)
     save_maps("wall_heavy" if heavy else "wall", rows, height,
               rough_from(height, 0.88, 0.16, seed + 5), 1.6)
@@ -272,7 +272,7 @@ def tex_wall(size: int, seed: int, heavy: bool) -> None:
 
 def tex_ceiling(size: int = 512) -> None:
     rnd = random.Random(41)
-    rows, height = tint_noise(size, (0.66, 0.65, 0.60), 0.05, 41)
+    rows, height = tint_noise(size, (0.55, 0.545, 0.50), 0.05, 41)
     for _ in range(5):  # anéis de infiltração
         cx, cy = rnd.uniform(0, size), rnd.uniform(0, size)
         for ring in range(3):
@@ -281,13 +281,13 @@ def tex_ceiling(size: int = 512) -> None:
                 a = t / 90 * math.tau
                 blend_px(rows, int(cx + math.cos(a) * r), int(cy + math.sin(a) * r),
                          (0.45, 0.38, 0.28), 0.28)
-    speckle(rows, height, rnd, 1500, (0.2, 0.18, 0.15), 0.3)
+    speckle(rows, height, rnd, 700, (0.2, 0.18, 0.15), 0.18, 1.5)
     save_maps("ceiling", rows, height, rough_from(height, 0.9, 0.1, 46), 0.8)
 
 
 def tex_carpet(size: int = 1024) -> None:
     rnd = random.Random(97)
-    rows, height = tint_noise(size, (0.335, 0.30, 0.255), 0.07, 97)
+    rows, height = tint_noise(size, (0.265, 0.24, 0.205), 0.07, 97)
     # Fibras: ruído fino denso em dois tons.
     for _ in range(26000):
         x, y = rnd.randrange(size), rnd.randrange(size)
@@ -295,7 +295,7 @@ def tex_carpet(size: int = 1024) -> None:
         blend_px(rows, x, y, tone, 0.5)
     for _ in range(16):  # desgaste e manchas de tráfego
         blotch(rows, height, rnd.uniform(0, size), rnd.uniform(0, size),
-               rnd.uniform(30, 95), (0.16, 0.145, 0.12), rnd.uniform(0.2, 0.42), rnd)
+               rnd.uniform(30, 95), (0.13, 0.12, 0.10), rnd.uniform(0.25, 0.5), rnd)
     for _ in range(5):
         blotch(rows, height, rnd.uniform(0, size), rnd.uniform(0, size),
                rnd.uniform(16, 40), (0.23, 0.10, 0.07), 0.35, rnd)  # manchas avermelhadas fracas
@@ -304,7 +304,7 @@ def tex_carpet(size: int = 1024) -> None:
 
 def tex_cabinet(size: int = 512) -> None:
     rnd = random.Random(123)
-    rows, height = tint_noise(size, (0.565, 0.585, 0.545), 0.07, 123)
+    rows, height = tint_noise(size, (0.50, 0.525, 0.485), 0.07, 123)
     for _ in range(16):
         streak(rows, rnd.randrange(size), rnd.randrange(size // 2), rnd.randrange(40, 160),
                rnd.randrange(2, 6), (0.23, 0.24, 0.20), 0.3, rnd)
@@ -315,7 +315,7 @@ def tex_cabinet(size: int = 512) -> None:
 
 def tex_enamel(size: int, seed: int, name: str, blood: bool) -> None:
     rnd = random.Random(seed)
-    rows, height = tint_noise(size, (0.78, 0.78, 0.75), 0.05, seed)
+    rows, height = tint_noise(size, (0.70, 0.70, 0.675), 0.05, seed)
     speckle(rows, height, rnd, 1500, (0.25, 0.23, 0.19), 0.4)
     for _ in range(10):
         streak(rows, rnd.randrange(size), rnd.randrange(size // 2), rnd.randrange(30, 120),
@@ -347,7 +347,7 @@ def tex_door_paint(size: int = 512) -> None:
 
 def tex_tile(size: int = 512) -> None:
     rnd = random.Random(55)
-    rows, height = tint_noise(size, (0.55, 0.53, 0.45), 0.08, 55)
+    rows, height = tint_noise(size, (0.465, 0.45, 0.38), 0.08, 55)
     tiles = 6
     step = size // tiles
     for ty in range(tiles):
@@ -464,12 +464,13 @@ MATERIALS: dict[str, dict[str, object]] = {
     "ceiling": {"texture": "ceiling", "roughness": 0.92, "normal_scale": 0.4},
     "carpet": {"texture": "carpet", "roughness": 0.97, "normal_scale": 0.5},
     "cabinet": {"texture": "cabinet", "roughness": 0.62, "normal_scale": 0.6},
-    "cabinet_dark": {"texture": "cabinet", "color": (0.30, 0.33, 0.31, 1), "roughness": 0.62, "normal_scale": 0.6},
-    "counter": {"texture": "counter", "roughness": 0.38, "metallic": 0.05, "normal_scale": 0.5},
+    "cabinet_dark": {"texture": "cabinet", "color": (0.42, 0.45, 0.42, 1), "roughness": 0.62, "normal_scale": 0.6},
+    "counter": {"texture": "counter", "roughness": 0.55, "metallic": 0.02, "normal_scale": 0.5},
     "tile": {"texture": "tile", "roughness": 0.4, "normal_scale": 0.8},
-    "fridge_door": {"texture": "fridge_door", "roughness": 0.32, "normal_scale": 0.4},
+    "fridge_door": {"texture": "fridge_door", "color": (0.88, 0.88, 0.85, 1), "roughness": 0.32, "normal_scale": 0.4},
     "enamel": {"texture": "enamel", "roughness": 0.34, "normal_scale": 0.4},
     "door_paint": {"texture": "door_paint", "roughness": 0.55, "normal_scale": 0.5},
+    "door_panel": {"texture": "door_paint", "color": (0.78, 0.77, 0.72, 1), "roughness": 0.58, "normal_scale": 0.5},
     "trim": {"texture": "door_paint", "color": (0.88, 0.86, 0.80, 1), "roughness": 0.5, "normal_scale": 0.4},
     "rust": {"texture": "rust", "roughness": 0.62, "metallic": 0.45, "normal_scale": 0.9},
     "wood": {"texture": "wood", "roughness": 0.8, "normal_scale": 0.6},
@@ -481,13 +482,13 @@ MATERIALS: dict[str, dict[str, object]] = {
     "glass_dark": {"color": (0.02, 0.025, 0.03, 1), "metallic": 0.2, "roughness": 0.08},
     "ceramic": {"color": (0.87, 0.86, 0.82, 1), "roughness": 0.28},
     "sticky": {"color": (0.85, 0.72, 0.25, 1), "roughness": 0.7},
-    "skin": {"color": (0.64, 0.45, 0.36, 1), "roughness": 0.55},
+    "skin": {"color": (0.55, 0.385, 0.30, 1), "roughness": 0.55},
     "blood": {"color": (0.26, 0.03, 0.02, 1), "roughness": 0.3},
     "coffee": {"color": (0.15, 0.08, 0.035, 1), "roughness": 0.15},
     "void": {"color": (0.004, 0.004, 0.005, 1), "roughness": 1.0},
     "diffuser_warm": {"color": (0.95, 0.88, 0.72, 1), "emission": (1.0, 0.84, 0.58, 1), "emission_energy": 2.6, "roughness": 0.5},
     "diffuser_cool": {"color": (0.90, 0.94, 1.0, 1), "emission": (0.84, 0.91, 1.0, 1), "emission_energy": 3.4, "roughness": 0.5},
-    "strip_light": {"color": (0.92, 0.94, 0.86, 1), "emission": (0.95, 1.0, 0.82, 1), "emission_energy": 2.4, "roughness": 0.5},
+    "strip_light": {"color": (0.92, 0.94, 0.86, 1), "emission": (0.95, 1.0, 0.82, 1), "emission_energy": 1.9, "roughness": 0.5},
     "red_hot": {"color": (0.20, 0.02, 0.01, 1), "emission": (1.0, 0.14, 0.03, 1), "emission_energy": 2.0, "roughness": 0.5},
     "board_pink": {"color": (0.60, 0.37, 0.32, 1), "roughness": 0.6},
     "stain": {"texture_alpha": "stain_alpha", "roughness": 0.35},
@@ -728,7 +729,7 @@ def chain(parent: str, p0: tuple[float, float, float], p1: tuple[float, float, f
           sag: float, name: str = "ChainLink") -> None:
     """Corrente de elos (toros alternados) entre dois pontos, com flecha."""
     dist = math.dist(p0, p1)
-    steps = max(3, int(dist / 0.046))
+    steps = max(3, int(dist / 0.05))
     yaw = math.atan2(-(p1[0] - p0[0]), -(p1[2] - p0[2])) if abs(p1[0] - p0[0]) + abs(p1[2] - p0[2]) > 1e-6 else 0.0
     for i in range(steps + 1):
         t = i / steps
@@ -736,7 +737,7 @@ def chain(parent: str, p0: tuple[float, float, float], p1: tuple[float, float, f
         y = p0[1] + (p1[1] - p0[1]) * t - math.sin(t * math.pi) * sag
         z = p0[2] + (p1[2] - p0[2]) * t
         roll = (math.pi / 2) if i % 2 else 0.0
-        B.torus(name, parent, (x, y, z), 0.013, 0.031, "rust", (roll, yaw, 0.0))
+        B.torus(name, parent, (x, y, z), 0.012, 0.037, "rust", (roll, yaw, 0.0))
 
 
 def padlock(parent: str, pos: tuple[float, float, float]) -> None:
@@ -799,9 +800,9 @@ def architecture() -> None:
     B.box("DoorHead", door, (-3.55, 2.19, -0.8), (0.1, 0.09, 1.21), "trim")
     B.box("DoorSlab", door, (-3.56, 1.08, -0.8), (0.055, 2.16, 1.04), "door_paint")
     B.box("DoorPanelTop", door, (-3.52, 1.52, -0.8), (0.02, 0.86, 0.74), "door_paint")
-    B.box("DoorPanelTopIn", door, (-3.515, 1.52, -0.8), (0.012, 0.68, 0.58), "door_paint")
+    B.box("DoorPanelTopIn", door, (-3.512, 1.52, -0.8), (0.018, 0.68, 0.58), "door_panel")
     B.box("DoorPanelBottom", door, (-3.52, 0.52, -0.8), (0.02, 0.72, 0.74), "door_paint")
-    B.box("DoorPanelBottomIn", door, (-3.515, 0.52, -0.8), (0.012, 0.54, 0.58), "door_paint")
+    B.box("DoorPanelBottomIn", door, (-3.512, 0.52, -0.8), (0.018, 0.54, 0.58), "door_panel")
     # Maçaneta esférica de latão e dobradiças.
     B.cyl("KnobStem", door, (-3.50, 1.02, -0.36), 0.011, 0.05, "brass", (0, 0, math.pi / 2), 12)
     B.sphere("Knob", door, (-3.465, 1.02, -0.36), 0.033, "brass", segments=16)
@@ -885,18 +886,18 @@ def kitchen() -> None:
     wall_units = [(-1.02, 0.0), (0.0, 1.03), (1.03, 2.13), (2.88, 3.42)]
     for x0, x1 in wall_units:
         cx, w = (x0 + x1) / 2, x1 - x0
-        B.box("WallCabinet", run, (cx, 1.98, -3.19), (w - 0.02, 0.92, 0.38), "cabinet_dark")
-        cabinet_door(run, cx - w / 4 + 0.01, 1.98, w / 2 - 0.03, 0.86, -2.995)
-        cabinet_door(run, cx + w / 4 - 0.01, 1.98, w / 2 - 0.03, 0.86, -2.995)
-    B.box("WallCabinetStove", run, (2.505, 2.11, -3.19), (0.73, 0.66, 0.38), "cabinet_dark")
-    cabinet_door(run, 2.32, 2.11, 0.33, 0.60, -2.995)
-    cabinet_door(run, 2.69, 2.11, 0.33, 0.60, -2.995)
+        B.box("WallCabinet", run, (cx, 2.05, -3.19), (w - 0.02, 0.92, 0.38), "cabinet_dark")
+        cabinet_door(run, cx - w / 4 + 0.01, 2.05, w / 2 - 0.03, 0.86, -2.995)
+        cabinet_door(run, cx + w / 4 - 0.01, 2.05, w / 2 - 0.03, 0.86, -2.995)
+    B.box("WallCabinetStove", run, (2.505, 2.15, -3.19), (0.73, 0.66, 0.38), "cabinet_dark")
+    cabinet_door(run, 2.32, 2.15, 0.33, 0.60, -2.995)
+    cabinet_door(run, 2.69, 2.15, 0.33, 0.60, -2.995)
     # Fita de luz sob o armário da pia.
-    B.box("SinkLightStrip", run, (0.50, 1.505, -3.10), (0.95, 0.02, 0.06), "strip_light")
+    B.box("SinkLightStrip", run, (0.50, 1.575, -3.10), (0.95, 0.02, 0.06), "strip_light")
     # Trilho com ganchos sob os armários (à direita da pia).
-    B.cyl("HookRail", run, (2.45, 1.46, -3.28), 0.008, 0.80, "steel_dark", (0, 0, math.pi / 2), 8)
+    B.cyl("HookRail", run, (2.45, 1.53, -3.28), 0.008, 0.80, "steel_dark", (0, 0, math.pi / 2), 8)
     for hx in (2.20, 2.45, 2.70):
-        B.torus("Hook", run, (hx, 1.415, -3.28), 0.012, 0.030, "steel_dark", (0, 0, 0))
+        B.torus("Hook", run, (hx, 1.485, -3.28), 0.012, 0.030, "steel_dark", (0, 0, 0))
 
     # Geladeira: corpo, frente única com textura (sangue), divisão e puxadores.
     fridge = B.group("Refrigerator", kit)
@@ -981,16 +982,16 @@ def island_and_props() -> None:
         B.capsule("Finger", arm, (0.47 + fx, 0.026, 1.685), 0.0105, fl, "skin",
                   (1.25, 0.65, fx * 2.0), )
     B.capsule("Thumb", arm, (0.415, 0.026, 1.76), 0.010, 0.05, "skin", (0.9, 0.65, 0.8))
-    B.cyl("BloodStain", arm, (0.30, 0.006, 1.95), 0.21, 0.004, "stain", segments=24)
+    B.cyl("BloodStain", arm, (0.30, 0.008, 1.95), 0.27, 0.004, "stain", segments=24)
     # Moscas paradas no ar (pontos escuros perto das luzes).
     flies = B.group("Flies")
     rnd = random.Random(4)
     for _ in range(9):
         B.sphere("Fly", flies, (rnd.uniform(-3.1, -1.8), rnd.uniform(1.9, 2.6),
-                                rnd.uniform(-1.5, 0.1)), 0.0075, "iron_black", segments=8)
+                                rnd.uniform(-1.5, 0.1)), 0.0095, "iron_black", segments=8)
     for _ in range(7):
         B.sphere("Fly", flies, (rnd.uniform(0.4, 2.1), rnd.uniform(2.1, 2.6),
-                                rnd.uniform(-1.4, -0.2)), 0.0075, "iron_black", segments=8)
+                                rnd.uniform(-1.4, -0.2)), 0.0095, "iron_black", segments=8)
 
 
 def lights_and_collisions() -> None:
@@ -999,14 +1000,14 @@ def lights_and_collisions() -> None:
     B.cyl("WarmFixtureBase", lights, (-2.45, 2.735, -0.75), 0.15, 0.035, "steel_dark", segments=24)
     B.sphere("WarmDome", lights, (-2.45, 2.715, -0.75), 0.125, "diffuser_warm",
              scale=(1.0, 0.55, 1.0), segments=24)
-    B.omni("WarmCeilingLight", lights, (-2.45, 2.38, -0.75), (1.0, 0.82, 0.58), 1.5, 7.5, 1.1, False)
+    B.omni("WarmCeilingLight", lights, (-2.45, 2.38, -0.75), (1.0, 0.82, 0.58), 1.25, 7.5, 1.3, False)
     # Painel fluorescente frio sobre a cozinha.
     B.box("FluoroHousing", lights, (1.25, 2.725, -0.85), (1.34, 0.06, 0.38), "iron_black")
     B.box("FluoroPanel", lights, (1.25, 2.69, -0.85), (1.26, 0.025, 0.31), "diffuser_cool")
     B.spot("FluoroLight", lights, (1.25, 2.58, -0.85), (0.82, 0.90, 1.0), 3.4, 8.5, 76, True, 0.9)
-    B.omni("FluoroFill", lights, (1.25, 2.42, -0.85), (0.82, 0.90, 1.0), 0.55, 6.5, 1.1, False)
+    B.omni("FluoroFill", lights, (1.25, 2.42, -0.85), (0.82, 0.90, 1.0), 0.45, 6.5, 1.2, False)
     # Luz de trabalho da pia.
-    B.spot("SinkLight", lights, (0.50, 1.48, -2.92), (0.92, 1.0, 0.84), 1.15, 2.8, 58, False, 1.0)
+    B.spot("SinkLight", lights, (0.50, 1.55, -2.92), (0.92, 1.0, 0.84), 0.9, 2.8, 58, False, 1.0)
 
     collision = B.group("Collision")
     B.nodes.append("[node name=\"StaticBodies\" type=\"StaticBody3D\" parent=\"Collision\"]")
@@ -1045,12 +1046,12 @@ background_mode = 1
 background_color = Color(0.008, 0.008, 0.010, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.30, 0.33, 0.38, 1)
-ambient_light_energy = 0.38
+ambient_light_energy = 0.24
 tonemap_mode = 2
 adjustment_enabled = true
 adjustment_brightness = 0.94
 adjustment_contrast = 1.07
-adjustment_saturation = 0.80"""
+adjustment_saturation = 0.74"""
     world = "[node name=\"WorldEnvironment\" type=\"WorldEnvironment\" parent=\".\"]\nenvironment = SubResource(\"Env_kitchen\")"
     load_steps = len(MATERIALS) + len(B.subresources) + 2
     header = f"[gd_scene load_steps={load_steps} format=3]\n\n" + "\n".join(ext_lines) + "\n\n" + env + "\n\n" + "\n\n".join(B.subresources)

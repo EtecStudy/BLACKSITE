@@ -1,4 +1,4 @@
-[gd_scene load_steps=202 format=3]
+[gd_scene load_steps=203 format=3]
 
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/wall.tres" id="mat_wall"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/wall_heavy.tres" id="mat_wall_heavy"]
@@ -11,6 +11,7 @@
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/fridge_door.tres" id="mat_fridge_door"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/enamel.tres" id="mat_enamel"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/door_paint.tres" id="mat_door_paint"]
+[ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/door_panel.tres" id="mat_door_panel"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/trim.tres" id="mat_trim"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/rust.tres" id="mat_rust"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/wood.tres" id="mat_wood"]
@@ -38,12 +39,12 @@ background_mode = 1
 background_color = Color(0.008, 0.008, 0.010, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.30, 0.33, 0.38, 1)
-ambient_light_energy = 0.38
+ambient_light_energy = 0.24
 tonemap_mode = 2
 adjustment_enabled = true
 adjustment_brightness = 0.94
 adjustment_contrast = 1.07
-adjustment_saturation = 0.80
+adjustment_saturation = 0.74
 
 [sub_resource type="BoxMesh" id="Mesh_1"]
 material = ExtResource("mat_carpet")
@@ -162,16 +163,16 @@ material = ExtResource("mat_door_paint")
 size = Vector3(0.02, 0.86, 0.74)
 
 [sub_resource type="BoxMesh" id="Mesh_30"]
-material = ExtResource("mat_door_paint")
-size = Vector3(0.012, 0.68, 0.58)
+material = ExtResource("mat_door_panel")
+size = Vector3(0.018, 0.68, 0.58)
 
 [sub_resource type="BoxMesh" id="Mesh_31"]
 material = ExtResource("mat_door_paint")
 size = Vector3(0.02, 0.72, 0.74)
 
 [sub_resource type="BoxMesh" id="Mesh_32"]
-material = ExtResource("mat_door_paint")
-size = Vector3(0.012, 0.54, 0.58)
+material = ExtResource("mat_door_panel")
+size = Vector3(0.018, 0.54, 0.58)
 
 [sub_resource type="CylinderMesh" id="Mesh_33"]
 material = ExtResource("mat_brass")
@@ -204,8 +205,8 @@ radial_segments = 10
 
 [sub_resource type="TorusMesh" id="Mesh_38"]
 material = ExtResource("mat_rust")
-inner_radius = 0.013
-outer_radius = 0.031
+inner_radius = 0.012
+outer_radius = 0.037
 rings = 12
 ring_segments = 6
 
@@ -784,15 +785,15 @@ rings = 8
 
 [sub_resource type="CylinderMesh" id="Mesh_153"]
 material = ExtResource("mat_stain")
-top_radius = 0.21
-bottom_radius = 0.21
+top_radius = 0.27
+bottom_radius = 0.27
 height = 0.004
 radial_segments = 24
 
 [sub_resource type="SphereMesh" id="Mesh_154"]
 material = ExtResource("mat_iron_black")
-radius = 0.0075
-height = 0.015
+radius = 0.0095
+height = 0.019
 radial_segments = 8
 rings = 4
 
@@ -997,7 +998,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 1.52, -0.8)
 mesh = SubResource("Mesh_29")
 
 [node name="DoorPanelTopIn" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.515, 1.52, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.512, 1.52, -0.8)
 mesh = SubResource("Mesh_30")
 
 [node name="DoorPanelBottom" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
@@ -1005,7 +1006,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 0.52, -0.8)
 mesh = SubResource("Mesh_31")
 
 [node name="DoorPanelBottomIn" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.515, 0.52, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.512, 0.52, -0.8)
 mesh = SubResource("Mesh_32")
 
 [node name="KnobStem" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
@@ -1085,314 +1086,290 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.8, -1.55)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink2" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.77299, -1.50438)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.76918, -1.49786)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink3" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.74673, -1.45875)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.73947, -1.44571)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink4" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.72194, -1.41312)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.71194, -1.39357)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink5" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.69929, -1.3675)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68753, -1.34143)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink6" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.67935, -1.32187)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66705, -1.28929)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink7" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.66261, -1.27625)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65108, -1.23714)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink8" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64942, -1.23063)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64, -1.185)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink9" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.64, -1.185)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63394, -1.13286)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink10" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.63442, -1.13938)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.63276, -1.08071)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink11" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63261, -1.09375)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6361, -1.02857)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink12" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.63435, -1.04812)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64337, -0.97643)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink13" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63929, -1.0025)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65375, -0.92429)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink14" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64694, -0.95687)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66632, -0.87214)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink15" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65673, -0.91125)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink16" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66799, -0.86562)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink17" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66529, -0.76867)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink18" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65139, -0.71733)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink19" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66619, -0.77187)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.6391, -0.666)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink20" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65306, -0.72375)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.62912, -0.61467)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink21" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64125, -0.67562)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.62206, -0.56333)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink22" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63136, -0.6275)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6184, -0.512)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink23" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.62392, -0.57937)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.61849, -0.46067)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink24" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.61935, -0.53125)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.62249, -0.40933)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink25" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.61798, -0.48312)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.6304, -0.358)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink26" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.62, -0.435)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.64206, -0.30667)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink27" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.62548, -0.38688)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.65712, -0.25533)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink28" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63435, -0.33875)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6751, -0.204)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink29" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64642, -0.29063)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.69539, -0.15267)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink30" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.66136, -0.2425)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.71729, -0.10133)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink31" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.67875, -0.19438)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.74, -0.05)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink32" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.69806, -0.14625)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink33" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.71869, -0.09813)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink34" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.74, -0.05)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink35" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.16, -1.04)
 mesh = SubResource("Mesh_38")
 
+[node name="ChainLink33" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.09302, -1)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink34" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.02833, -0.96)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink35" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.96808, -0.92)
+mesh = SubResource("Mesh_38")
+
 [node name="ChainLink36" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.09812, -1.00308)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.91408, -0.88)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink37" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.03805, -0.96615)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.86776, -0.84)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink38" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.98149, -0.92923)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.83, -0.8)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink39" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.92994, -0.89231)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.8011, -0.76)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink40" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.8846, -0.85538)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.78075, -0.72)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink41" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.84633, -0.81846)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.76808, -0.68)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink42" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.81556, -0.78154)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76167, -0.64)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink43" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.79229, -0.74462)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.75969, -0.6)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink44" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.77609, -0.70769)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76, -0.56)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink45" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.7661, -0.67077)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink46" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.76112, -0.63385)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink47" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.75966, -0.59692)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink48" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.76, -0.56)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink49" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.98, -1.58)
 mesh = SubResource("Mesh_38")
 
+[node name="ChainLink46" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.94249, -1.53357)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink47" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.90519, -1.48714)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink48" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.86832, -1.44071)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink49" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.83206, -1.39429)
+mesh = SubResource("Mesh_38")
+
 [node name="ChainLink50" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.94499, -1.53667)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.79662, -1.34786)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink51" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.91015, -1.49333)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76219, -1.30143)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink52" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.87565, -1.45)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.72893, -1.255)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink53" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.84166, -1.40667)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.69701, -1.20857)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink54" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.80833, -1.36333)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.66656, -1.16214)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink55" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.77583, -1.32)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.63771, -1.11571)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink56" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.7443, -1.27667)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.61056, -1.06929)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink57" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.71386, -1.23333)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.58519, -1.02286)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink58" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.68465, -1.19)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.56166, -0.97643)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink59" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.65676, -1.14667)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.54, -0.93)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink60" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.6303, -1.10333)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.52023, -0.88357)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink61" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.60534, -1.06)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.50233, -0.83714)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink62" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.58194, -1.01667)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.48627, -0.79071)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink63" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.56016, -0.97333)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.472, -0.74429)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink64" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.54, -0.93)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.45942, -0.69786)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink65" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.52149, -0.88667)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.44844, -0.65143)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink66" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.50461, -0.84333)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.43893, -0.605)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink67" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.48934, -0.8)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.43076, -0.55857)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink68" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.47563, -0.75667)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.42377, -0.51214)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink69" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.46343, -0.71333)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.41777, -0.46571)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink70" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.45265, -0.67)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.4126, -0.41929)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink71" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.44319, -0.62667)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.40805, -0.37286)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink72" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.43496, -0.58333)
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.40392, -0.32643)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink73" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.42783, -0.54)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink74" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.42167, -0.49667)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink75" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.41632, -0.45333)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink76" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.41165, -0.41)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink77" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.40748, -0.36667)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink78" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.40365, -0.32333)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink79" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.4, -0.28)
 mesh = SubResource("Mesh_38")
 
@@ -1416,72 +1393,68 @@ mesh = SubResource("Mesh_40")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.17, 2, -3)
 mesh = SubResource("Mesh_41")
 
-[node name="ChainLink80" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+[node name="ChainLink74" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.98, -3)
 mesh = SubResource("Mesh_38")
 
+[node name="ChainLink75" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.92933, -3)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink76" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.87867, -3)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink77" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.828, -3)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink78" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.77733, -3)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink79" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.72667, -3)
+mesh = SubResource("Mesh_38")
+
+[node name="ChainLink80" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.676, -3)
+mesh = SubResource("Mesh_38")
+
 [node name="ChainLink81" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.9325, -3)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.62533, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink82" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.885, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.57467, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink83" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.8375, -3)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.524, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink84" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.79, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.47333, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink85" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.7425, -3)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.42267, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink86" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.695, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.372, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink87" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.6475, -3)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.32133, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink88" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.6, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.27067, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="ChainLink89" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.5525, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink90" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.505, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink91" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.4575, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink92" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.41, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink93" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.3625, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink94" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.315, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink95" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.2675, -3)
-mesh = SubResource("Mesh_38")
-
-[node name="ChainLink96" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.22, -3)
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.22, -3)
 mesh = SubResource("Mesh_38")
 
 [node name="SwitchPlate" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
@@ -1697,163 +1670,163 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.56, 1.02, -3.27)
 mesh = SubResource("Mesh_74")
 
 [node name="WallCabinet" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.51, 1.98, -3.19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.51, 2.05, -3.19)
 mesh = SubResource("Mesh_75")
 
 [node name="CabinetDoor9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 2.05, -2.995)
 mesh = SubResource("Mesh_76")
 
 [node name="CabinetDoorPanel9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 2.05, -2.987)
 mesh = SubResource("Mesh_77")
 
 [node name="DoorHandle9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="CabinetDoor10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 2.05, -2.995)
 mesh = SubResource("Mesh_76")
 
 [node name="CabinetDoorPanel10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 2.05, -2.987)
 mesh = SubResource("Mesh_77")
 
 [node name="DoorHandle10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="WallCabinet2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.515, 1.98, -3.19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.515, 2.05, -3.19)
 mesh = SubResource("Mesh_78")
 
 [node name="CabinetDoor11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 2.05, -2.995)
 mesh = SubResource("Mesh_79")
 
 [node name="CabinetDoorPanel11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 2.05, -2.987)
 mesh = SubResource("Mesh_80")
 
 [node name="DoorHandle11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.465, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.465, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="CabinetDoor12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 2.05, -2.995)
 mesh = SubResource("Mesh_79")
 
 [node name="CabinetDoorPanel12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 2.05, -2.987)
 mesh = SubResource("Mesh_80")
 
 [node name="DoorHandle12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="WallCabinet3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.58, 1.98, -3.19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.58, 2.05, -3.19)
 mesh = SubResource("Mesh_81")
 
 [node name="CabinetDoor13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 2.05, -2.995)
 mesh = SubResource("Mesh_82")
 
 [node name="CabinetDoorPanel13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 2.05, -2.987)
 mesh = SubResource("Mesh_83")
 
 [node name="DoorHandle13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.53, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.53, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="CabinetDoor14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 2.05, -2.995)
 mesh = SubResource("Mesh_82")
 
 [node name="CabinetDoorPanel14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 2.05, -2.987)
 mesh = SubResource("Mesh_83")
 
 [node name="DoorHandle14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.06, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.06, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="WallCabinet4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 1.98, -3.19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 2.05, -3.19)
 mesh = SubResource("Mesh_84")
 
 [node name="CabinetDoor15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 2.05, -2.995)
 mesh = SubResource("Mesh_85")
 
 [node name="CabinetDoorPanel15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 2.05, -2.987)
 mesh = SubResource("Mesh_86")
 
 [node name="DoorHandle15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="CabinetDoor16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 1.98, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 2.05, -2.995)
 mesh = SubResource("Mesh_85")
 
 [node name="CabinetDoorPanel16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 1.98, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 2.05, -2.987)
 mesh = SubResource("Mesh_86")
 
 [node name="DoorHandle16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 2.34, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="WallCabinetStove" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 2.11, -3.19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 2.15, -3.19)
 mesh = SubResource("Mesh_87")
 
 [node name="CabinetDoor17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.11, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.15, -2.995)
 mesh = SubResource("Mesh_88")
 
 [node name="CabinetDoorPanel17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.11, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.15, -2.987)
 mesh = SubResource("Mesh_89")
 
 [node name="DoorHandle17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.44, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.44, 2.31, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="CabinetDoor18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.11, -2.995)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.15, -2.995)
 mesh = SubResource("Mesh_88")
 
 [node name="CabinetDoorPanel18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.11, -2.987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.15, -2.987)
 mesh = SubResource("Mesh_89")
 
 [node name="DoorHandle18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81, 2.27, -2.965)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81, 2.31, -2.965)
 mesh = SubResource("Mesh_50")
 
 [node name="SinkLightStrip" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.505, -3.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.575, -3.1)
 mesh = SubResource("Mesh_90")
 
 [node name="HookRail" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 2.45, 1.46, -3.28)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 2.45, 1.53, -3.28)
 mesh = SubResource("Mesh_91")
 
 [node name="Hook" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1.415, -3.28)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1.485, -3.28)
 mesh = SubResource("Mesh_92")
 
 [node name="Hook2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.415, -3.28)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.485, -3.28)
 mesh = SubResource("Mesh_92")
 
 [node name="Hook3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.415, -3.28)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.485, -3.28)
 mesh = SubResource("Mesh_92")
 
 [node name="Refrigerator" type="Node3D" parent="Kitchen"]
@@ -2157,7 +2130,7 @@ transform = Transform3D(0.89471, -0.2408, 0.37619, 0.44592, 0.43308, -0.78333, 0
 mesh = SubResource("Mesh_152")
 
 [node name="BloodStain" type="MeshInstance3D" parent="ArmOnFloor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.006, 1.95)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.008, 1.95)
 mesh = SubResource("Mesh_153")
 
 [node name="Flies" type="Node3D" parent="."]
@@ -2239,9 +2212,9 @@ mesh = SubResource("Mesh_156")
 [node name="WarmCeilingLight" type="OmniLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.45, 2.38, -0.75)
 light_color = Color(1, 0.82, 0.58, 1)
-light_energy = 1.5
+light_energy = 1.25
 omni_range = 7.5
-omni_attenuation = 1.1
+omni_attenuation = 1.3
 shadow_enabled = false
 
 [node name="FluoroHousing" type="MeshInstance3D" parent="Lighting"]
@@ -2264,15 +2237,15 @@ shadow_enabled = true
 [node name="FluoroFill" type="OmniLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 2.42, -0.85)
 light_color = Color(0.82, 0.9, 1, 1)
-light_energy = 0.55
+light_energy = 0.45
 omni_range = 6.5
-omni_attenuation = 1.1
+omni_attenuation = 1.2
 shadow_enabled = false
 
 [node name="SinkLight" type="SpotLight3D" parent="Lighting"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 1.48, -2.92)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 1.55, -2.92)
 light_color = Color(0.92, 1, 0.84, 1)
-light_energy = 1.15
+light_energy = 0.9
 spot_range = 2.8
 spot_angle = 58
 spot_attenuation = 1
@@ -2327,7 +2300,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.48, 1.05)
 shape = SubResource("Shape_168")
 
 [node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(0.694, 0, -0.720, 0, 1, 0, 0.720, 0, 0.694, 2.95, 0.05, 2.70)
+transform = Transform3D(0.718, 0, 0.696, 0, 1, 0, -0.696, 0, 0.718, 2.95, 0.05, 2.70)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env_kitchen")

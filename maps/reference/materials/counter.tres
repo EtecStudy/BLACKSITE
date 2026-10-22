@@ -8,11 +8,11 @@
 [resource]
 albedo_texture = ExtResource("tex_albedo")
 roughness_texture = ExtResource("tex_roughness")
-roughness = 0.38
+roughness = 0.55
 normal_enabled = true
 normal_texture = ExtResource("tex_normal")
 normal_scale = 0.5
 ao_enabled = true
 ao_texture = ExtResource("tex_ao")
 ao_light_affect = 0.35
-metallic = 0.05
+metallic = 0.02
