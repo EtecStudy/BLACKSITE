@@ -1,4 +1,4 @@
-[gd_scene load_steps=203 format=3]
+[gd_scene load_steps=204 format=3]
 
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/wall.tres" id="mat_wall"]
 [ext_resource type="StandardMaterial3D" path="res://maps/reference/materials/wall_heavy.tres" id="mat_wall_heavy"]
@@ -96,757 +96,761 @@ size = Vector3(1.7, 0.06, 2.6)
 
 [sub_resource type="BoxMesh" id="Mesh_13"]
 material = ExtResource("mat_trim")
-size = Vector3(0.1, 2.2, 1.1)
+size = Vector3(0.12, 2.15, 0.09)
 
 [sub_resource type="BoxMesh" id="Mesh_14"]
+material = ExtResource("mat_trim")
+size = Vector3(0.12, 0.09, 1.15)
+
+[sub_resource type="BoxMesh" id="Mesh_15"]
 material = ExtResource("mat_wall_heavy")
 size = Vector3(0.66, 2.75, 0.68)
 
-[sub_resource type="BoxMesh" id="Mesh_15"]
+[sub_resource type="BoxMesh" id="Mesh_16"]
 material = ExtResource("mat_trim")
 size = Vector3(0.025, 0.13, 5.6)
 
-[sub_resource type="BoxMesh" id="Mesh_16"]
+[sub_resource type="BoxMesh" id="Mesh_17"]
 material = ExtResource("mat_trim")
 size = Vector3(6.9, 0.13, 0.025)
 
-[sub_resource type="BoxMesh" id="Mesh_17"]
+[sub_resource type="BoxMesh" id="Mesh_18"]
 material = ExtResource("mat_trim")
 size = Vector3(0.025, 0.13, 4.6)
 
-[sub_resource type="BoxMesh" id="Mesh_18"]
+[sub_resource type="BoxMesh" id="Mesh_19"]
 material = ExtResource("mat_trim")
 size = Vector3(7.2, 0.13, 0.025)
 
-[sub_resource type="BoxMesh" id="Mesh_19"]
+[sub_resource type="BoxMesh" id="Mesh_20"]
 material = ExtResource("mat_trim")
 size = Vector3(0.025, 0.13, 0.68)
 
-[sub_resource type="BoxMesh" id="Mesh_20"]
+[sub_resource type="BoxMesh" id="Mesh_21"]
 material = ExtResource("mat_trim")
 size = Vector3(0.66, 0.13, 0.025)
 
-[sub_resource type="BoxMesh" id="Mesh_21"]
+[sub_resource type="BoxMesh" id="Mesh_22"]
 material = ExtResource("mat_trim")
 size = Vector3(0.09, 0.11, 6.4)
 
-[sub_resource type="BoxMesh" id="Mesh_22"]
+[sub_resource type="BoxMesh" id="Mesh_23"]
 material = ExtResource("mat_trim")
 size = Vector3(0.05, 0.07, 6.4)
 
-[sub_resource type="BoxMesh" id="Mesh_23"]
+[sub_resource type="BoxMesh" id="Mesh_24"]
 material = ExtResource("mat_trim")
 size = Vector3(7.2, 0.11, 0.09)
 
-[sub_resource type="BoxMesh" id="Mesh_24"]
+[sub_resource type="BoxMesh" id="Mesh_25"]
 material = ExtResource("mat_trim")
 size = Vector3(7.2, 0.07, 0.05)
 
-[sub_resource type="BoxMesh" id="Mesh_25"]
+[sub_resource type="BoxMesh" id="Mesh_26"]
 material = ExtResource("mat_trim")
 size = Vector3(0.74, 0.11, 0.76)
 
-[sub_resource type="BoxMesh" id="Mesh_26"]
+[sub_resource type="BoxMesh" id="Mesh_27"]
 material = ExtResource("mat_trim")
 size = Vector3(0.1, 2.16, 0.09)
 
-[sub_resource type="BoxMesh" id="Mesh_27"]
+[sub_resource type="BoxMesh" id="Mesh_28"]
 material = ExtResource("mat_trim")
 size = Vector3(0.1, 0.09, 1.21)
 
-[sub_resource type="BoxMesh" id="Mesh_28"]
+[sub_resource type="BoxMesh" id="Mesh_29"]
 material = ExtResource("mat_door_paint")
 size = Vector3(0.055, 2.16, 1.04)
 
-[sub_resource type="BoxMesh" id="Mesh_29"]
+[sub_resource type="BoxMesh" id="Mesh_30"]
 material = ExtResource("mat_door_paint")
 size = Vector3(0.02, 0.86, 0.74)
 
-[sub_resource type="BoxMesh" id="Mesh_30"]
+[sub_resource type="BoxMesh" id="Mesh_31"]
 material = ExtResource("mat_door_panel")
 size = Vector3(0.018, 0.68, 0.58)
 
-[sub_resource type="BoxMesh" id="Mesh_31"]
+[sub_resource type="BoxMesh" id="Mesh_32"]
 material = ExtResource("mat_door_paint")
 size = Vector3(0.02, 0.72, 0.74)
 
-[sub_resource type="BoxMesh" id="Mesh_32"]
+[sub_resource type="BoxMesh" id="Mesh_33"]
 material = ExtResource("mat_door_panel")
 size = Vector3(0.018, 0.54, 0.58)
 
-[sub_resource type="CylinderMesh" id="Mesh_33"]
+[sub_resource type="CylinderMesh" id="Mesh_34"]
 material = ExtResource("mat_brass")
 top_radius = 0.011
 bottom_radius = 0.011
 height = 0.05
 radial_segments = 12
 
-[sub_resource type="SphereMesh" id="Mesh_34"]
+[sub_resource type="SphereMesh" id="Mesh_35"]
 material = ExtResource("mat_brass")
 radius = 0.033
 height = 0.066
 radial_segments = 16
 rings = 8
 
-[sub_resource type="BoxMesh" id="Mesh_35"]
+[sub_resource type="BoxMesh" id="Mesh_36"]
 material = ExtResource("mat_steel_dark")
 size = Vector3(0.015, 0.11, 0.03)
 
-[sub_resource type="BoxMesh" id="Mesh_36"]
+[sub_resource type="BoxMesh" id="Mesh_37"]
 material = ExtResource("mat_rust")
 size = Vector3(0.045, 0.17, 0.17)
 
-[sub_resource type="CylinderMesh" id="Mesh_37"]
+[sub_resource type="CylinderMesh" id="Mesh_38"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.016
 bottom_radius = 0.016
 height = 0.03
 radial_segments = 10
 
-[sub_resource type="TorusMesh" id="Mesh_38"]
+[sub_resource type="TorusMesh" id="Mesh_39"]
 material = ExtResource("mat_rust")
 inner_radius = 0.012
 outer_radius = 0.037
 rings = 12
 ring_segments = 6
 
-[sub_resource type="BoxMesh" id="Mesh_39"]
+[sub_resource type="BoxMesh" id="Mesh_40"]
 material = ExtResource("mat_brass")
 size = Vector3(0.075, 0.095, 0.032)
 
-[sub_resource type="TorusMesh" id="Mesh_40"]
+[sub_resource type="TorusMesh" id="Mesh_41"]
 material = ExtResource("mat_steel_dark")
 inner_radius = 0.016
 outer_radius = 0.034
 rings = 12
 ring_segments = 6
 
-[sub_resource type="BoxMesh" id="Mesh_41"]
+[sub_resource type="BoxMesh" id="Mesh_42"]
 material = ExtResource("mat_rust")
 size = Vector3(0.045, 0.15, 0.15)
 
-[sub_resource type="BoxMesh" id="Mesh_42"]
+[sub_resource type="BoxMesh" id="Mesh_43"]
 material = ExtResource("mat_ceramic")
 size = Vector3(0.018, 0.125, 0.08)
 
-[sub_resource type="BoxMesh" id="Mesh_43"]
+[sub_resource type="BoxMesh" id="Mesh_44"]
 material = ExtResource("mat_ceramic")
 size = Vector3(0.012, 0.035, 0.02)
 
-[sub_resource type="BoxMesh" id="Mesh_44"]
+[sub_resource type="BoxMesh" id="Mesh_45"]
 material = ExtResource("mat_counter")
 size = Vector3(4.44, 0.05, 0.68)
 
-[sub_resource type="BoxMesh" id="Mesh_45"]
+[sub_resource type="BoxMesh" id="Mesh_46"]
 material = ExtResource("mat_tile")
 size = Vector3(4.44, 0.55, 0.03)
 
-[sub_resource type="BoxMesh" id="Mesh_46"]
+[sub_resource type="BoxMesh" id="Mesh_47"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.98, 0.82, 0.62)
 
-[sub_resource type="BoxMesh" id="Mesh_47"]
+[sub_resource type="BoxMesh" id="Mesh_48"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.94, 0.09, 0.52)
 
-[sub_resource type="BoxMesh" id="Mesh_48"]
+[sub_resource type="BoxMesh" id="Mesh_49"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.47, 0.74, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_49"]
+[sub_resource type="BoxMesh" id="Mesh_50"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.38, 0.65, 0.012)
 
-[sub_resource type="CylinderMesh" id="Mesh_50"]
+[sub_resource type="CylinderMesh" id="Mesh_51"]
 material = ExtResource("mat_brass")
 top_radius = 0.008
 bottom_radius = 0.008
 height = 0.15
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_51"]
+[sub_resource type="BoxMesh" id="Mesh_52"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(1.03, 0.82, 0.62)
 
-[sub_resource type="BoxMesh" id="Mesh_52"]
+[sub_resource type="BoxMesh" id="Mesh_53"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.99, 0.09, 0.52)
 
-[sub_resource type="BoxMesh" id="Mesh_53"]
+[sub_resource type="BoxMesh" id="Mesh_54"]
 material = ExtResource("mat_cabinet")
 size = Vector3(1, 0.42, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_54"]
+[sub_resource type="BoxMesh" id="Mesh_55"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.495, 0.3, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_55"]
+[sub_resource type="BoxMesh" id="Mesh_56"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.405, 0.21, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_56"]
+[sub_resource type="BoxMesh" id="Mesh_57"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.53, 0.82, 0.62)
 
-[sub_resource type="BoxMesh" id="Mesh_57"]
+[sub_resource type="BoxMesh" id="Mesh_58"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.49, 0.09, 0.52)
-
-[sub_resource type="BoxMesh" id="Mesh_58"]
-material = ExtResource("mat_cabinet")
-size = Vector3(0.245, 0.74, 0.022)
 
 [sub_resource type="BoxMesh" id="Mesh_59"]
 material = ExtResource("mat_cabinet")
-size = Vector3(0.155, 0.65, 0.012)
+size = Vector3(0.245, 0.74, 0.022)
 
 [sub_resource type="BoxMesh" id="Mesh_60"]
+material = ExtResource("mat_cabinet")
+size = Vector3(0.155, 0.65, 0.012)
+
+[sub_resource type="BoxMesh" id="Mesh_61"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.53, 0.82, 0.62)
 
-[sub_resource type="BoxMesh" id="Mesh_61"]
+[sub_resource type="BoxMesh" id="Mesh_62"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.49, 0.09, 0.52)
 
-[sub_resource type="BoxMesh" id="Mesh_62"]
+[sub_resource type="BoxMesh" id="Mesh_63"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.5, 0.21, 0.022)
 
-[sub_resource type="CylinderMesh" id="Mesh_63"]
+[sub_resource type="CylinderMesh" id="Mesh_64"]
 material = ExtResource("mat_brass")
 top_radius = 0.009
 bottom_radius = 0.009
 height = 0.17
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_64"]
+[sub_resource type="BoxMesh" id="Mesh_65"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.52, 0.82, 0.62)
 
-[sub_resource type="BoxMesh" id="Mesh_65"]
+[sub_resource type="BoxMesh" id="Mesh_66"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.48, 0.09, 0.52)
 
-[sub_resource type="BoxMesh" id="Mesh_66"]
+[sub_resource type="BoxMesh" id="Mesh_67"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.24, 0.74, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_67"]
+[sub_resource type="BoxMesh" id="Mesh_68"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.15, 0.65, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_68"]
+[sub_resource type="BoxMesh" id="Mesh_69"]
 material = ExtResource("mat_steel_dark")
 size = Vector3(0.86, 0.13, 0.46)
 
-[sub_resource type="BoxMesh" id="Mesh_69"]
+[sub_resource type="BoxMesh" id="Mesh_70"]
 material = ExtResource("mat_chrome")
 size = Vector3(0.92, 0.012, 0.52)
 
-[sub_resource type="CylinderMesh" id="Mesh_70"]
+[sub_resource type="CylinderMesh" id="Mesh_71"]
 material = ExtResource("mat_chrome")
 top_radius = 0.026
 bottom_radius = 0.026
 height = 0.05
 radial_segments = 16
 
-[sub_resource type="CylinderMesh" id="Mesh_71"]
+[sub_resource type="CylinderMesh" id="Mesh_72"]
 material = ExtResource("mat_chrome")
 top_radius = 0.015
 bottom_radius = 0.015
 height = 0.22
 radial_segments = 12
 
-[sub_resource type="TorusMesh" id="Mesh_72"]
+[sub_resource type="TorusMesh" id="Mesh_73"]
 material = ExtResource("mat_chrome")
 inner_radius = 0.062
 outer_radius = 0.094
 rings = 12
 ring_segments = 6
 
-[sub_resource type="CylinderMesh" id="Mesh_73"]
+[sub_resource type="CylinderMesh" id="Mesh_74"]
 material = ExtResource("mat_chrome")
 top_radius = 0.011
 bottom_radius = 0.011
 height = 0.07
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_74"]
+[sub_resource type="BoxMesh" id="Mesh_75"]
 material = ExtResource("mat_chrome")
 size = Vector3(0.09, 0.015, 0.03)
 
-[sub_resource type="BoxMesh" id="Mesh_75"]
+[sub_resource type="BoxMesh" id="Mesh_76"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(1, 0.92, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_76"]
+[sub_resource type="BoxMesh" id="Mesh_77"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.48, 0.86, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_77"]
+[sub_resource type="BoxMesh" id="Mesh_78"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.39, 0.77, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_78"]
+[sub_resource type="BoxMesh" id="Mesh_79"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(1.01, 0.92, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_79"]
+[sub_resource type="BoxMesh" id="Mesh_80"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.485, 0.86, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_80"]
+[sub_resource type="BoxMesh" id="Mesh_81"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.395, 0.77, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_81"]
+[sub_resource type="BoxMesh" id="Mesh_82"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(1.08, 0.92, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_82"]
+[sub_resource type="BoxMesh" id="Mesh_83"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.52, 0.86, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_83"]
+[sub_resource type="BoxMesh" id="Mesh_84"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.43, 0.77, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_84"]
+[sub_resource type="BoxMesh" id="Mesh_85"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.52, 0.92, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_85"]
+[sub_resource type="BoxMesh" id="Mesh_86"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.24, 0.86, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_86"]
+[sub_resource type="BoxMesh" id="Mesh_87"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.15, 0.77, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_87"]
+[sub_resource type="BoxMesh" id="Mesh_88"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.73, 0.66, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_88"]
+[sub_resource type="BoxMesh" id="Mesh_89"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.33, 0.6, 0.022)
 
-[sub_resource type="BoxMesh" id="Mesh_89"]
+[sub_resource type="BoxMesh" id="Mesh_90"]
 material = ExtResource("mat_cabinet")
 size = Vector3(0.24, 0.51, 0.012)
 
-[sub_resource type="BoxMesh" id="Mesh_90"]
+[sub_resource type="BoxMesh" id="Mesh_91"]
 material = ExtResource("mat_strip_light")
 size = Vector3(0.95, 0.02, 0.06)
 
-[sub_resource type="CylinderMesh" id="Mesh_91"]
+[sub_resource type="CylinderMesh" id="Mesh_92"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.008
 bottom_radius = 0.008
 height = 0.8
 radial_segments = 8
 
-[sub_resource type="TorusMesh" id="Mesh_92"]
+[sub_resource type="TorusMesh" id="Mesh_93"]
 material = ExtResource("mat_steel_dark")
 inner_radius = 0.012
 outer_radius = 0.03
 rings = 12
 ring_segments = 6
 
-[sub_resource type="BoxMesh" id="Mesh_93"]
+[sub_resource type="BoxMesh" id="Mesh_94"]
 material = ExtResource("mat_enamel")
 size = Vector3(0.96, 1.94, 0.78)
 
-[sub_resource type="BoxMesh" id="Mesh_94"]
+[sub_resource type="BoxMesh" id="Mesh_95"]
 material = ExtResource("mat_fridge_door")
 size = Vector3(0.92, 1.88, 0.02)
 
-[sub_resource type="BoxMesh" id="Mesh_95"]
+[sub_resource type="BoxMesh" id="Mesh_96"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.92, 0.016, 0.008)
 
-[sub_resource type="CylinderMesh" id="Mesh_96"]
+[sub_resource type="CylinderMesh" id="Mesh_97"]
 material = ExtResource("mat_chrome")
 top_radius = 0.011
 bottom_radius = 0.011
 height = 0.34
 radial_segments = 10
 
-[sub_resource type="CylinderMesh" id="Mesh_97"]
+[sub_resource type="CylinderMesh" id="Mesh_98"]
 material = ExtResource("mat_chrome")
 top_radius = 0.011
 bottom_radius = 0.011
 height = 0.52
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_98"]
+[sub_resource type="BoxMesh" id="Mesh_99"]
 material = ExtResource("mat_paper")
 size = Vector3(0.1, 0.13, 0.004)
 
-[sub_resource type="BoxMesh" id="Mesh_99"]
+[sub_resource type="BoxMesh" id="Mesh_100"]
 material = ExtResource("mat_sticky")
 size = Vector3(0.075, 0.075, 0.004)
 
-[sub_resource type="BoxMesh" id="Mesh_100"]
+[sub_resource type="BoxMesh" id="Mesh_101"]
 material = ExtResource("mat_sticky")
 size = Vector3(0.07, 0.07, 0.004)
 
-[sub_resource type="CylinderMesh" id="Mesh_101"]
+[sub_resource type="CylinderMesh" id="Mesh_102"]
 material = ExtResource("mat_red_hot")
 top_radius = 0.012
 bottom_radius = 0.012
 height = 0.008
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_102"]
+[sub_resource type="BoxMesh" id="Mesh_103"]
 material = ExtResource("mat_board_pink")
 size = Vector3(0.42, 0.17, 0.3)
 
-[sub_resource type="BoxMesh" id="Mesh_103"]
-material = ExtResource("mat_steel_dark")
-size = Vector3(0.44, 0.025, 0.32)
-
 [sub_resource type="BoxMesh" id="Mesh_104"]
+material = ExtResource("mat_steel_dark")
+size = Vector3(0.44, 0.02, 0.32)
+
+[sub_resource type="BoxMesh" id="Mesh_105"]
 material = ExtResource("mat_enamel")
 size = Vector3(0.75, 0.86, 0.66)
 
-[sub_resource type="BoxMesh" id="Mesh_105"]
+[sub_resource type="BoxMesh" id="Mesh_106"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.75, 0.025, 0.66)
 
-[sub_resource type="BoxMesh" id="Mesh_106"]
+[sub_resource type="BoxMesh" id="Mesh_107"]
 material = ExtResource("mat_enamel")
 size = Vector3(0.75, 0.13, 0.02)
 
-[sub_resource type="CylinderMesh" id="Mesh_107"]
+[sub_resource type="CylinderMesh" id="Mesh_108"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.027
 bottom_radius = 0.027
 height = 0.025
 radial_segments = 14
 
-[sub_resource type="BoxMesh" id="Mesh_108"]
+[sub_resource type="BoxMesh" id="Mesh_109"]
 material = ExtResource("mat_red_hot")
 size = Vector3(0.018, 0.018, 0.008)
 
-[sub_resource type="BoxMesh" id="Mesh_109"]
+[sub_resource type="BoxMesh" id="Mesh_110"]
 material = ExtResource("mat_enamel")
 size = Vector3(0.68, 0.56, 0.025)
 
-[sub_resource type="BoxMesh" id="Mesh_110"]
+[sub_resource type="BoxMesh" id="Mesh_111"]
 material = ExtResource("mat_glass_dark")
 size = Vector3(0.52, 0.3, 0.012)
 
-[sub_resource type="CylinderMesh" id="Mesh_111"]
+[sub_resource type="CylinderMesh" id="Mesh_112"]
 material = ExtResource("mat_chrome")
 top_radius = 0.013
 bottom_radius = 0.013
 height = 0.62
 radial_segments = 12
 
-[sub_resource type="CylinderMesh" id="Mesh_112"]
+[sub_resource type="CylinderMesh" id="Mesh_113"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.095
 bottom_radius = 0.095
 height = 0.018
 radial_segments = 20
 
-[sub_resource type="CylinderMesh" id="Mesh_113"]
+[sub_resource type="CylinderMesh" id="Mesh_114"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.075
 bottom_radius = 0.075
 height = 0.018
 radial_segments = 20
 
-[sub_resource type="CylinderMesh" id="Mesh_114"]
+[sub_resource type="CylinderMesh" id="Mesh_115"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.09
 bottom_radius = 0.09
 height = 0.018
 radial_segments = 20
 
-[sub_resource type="CylinderMesh" id="Mesh_115"]
+[sub_resource type="CylinderMesh" id="Mesh_116"]
 material = ExtResource("mat_red_hot")
 top_radius = 0.062
 bottom_radius = 0.062
 height = 0.008
 radial_segments = 20
 
-[sub_resource type="SphereMesh" id="Mesh_116"]
+[sub_resource type="SphereMesh" id="Mesh_117"]
 material = ExtResource("mat_steel_dark")
-radius = 0.088
-height = 0.176
+radius = 0.098
+height = 0.196
 radial_segments = 20
 rings = 10
 
-[sub_resource type="CylinderMesh" id="Mesh_117"]
+[sub_resource type="CylinderMesh" id="Mesh_118"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.035
 bottom_radius = 0.035
 height = 0.02
 radial_segments = 14
 
-[sub_resource type="CylinderMesh" id="Mesh_118"]
+[sub_resource type="CylinderMesh" id="Mesh_119"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.013
 bottom_radius = 0.013
 height = 0.09
 radial_segments = 10
 
-[sub_resource type="TorusMesh" id="Mesh_119"]
+[sub_resource type="TorusMesh" id="Mesh_120"]
 material = ExtResource("mat_iron_black")
 inner_radius = 0.038
 outer_radius = 0.058
 rings = 12
 ring_segments = 6
 
-[sub_resource type="BoxMesh" id="Mesh_120"]
+[sub_resource type="BoxMesh" id="Mesh_121"]
 material = ExtResource("mat_enamel")
 size = Vector3(0.57, 0.35, 0.4)
 
-[sub_resource type="BoxMesh" id="Mesh_121"]
+[sub_resource type="BoxMesh" id="Mesh_122"]
 material = ExtResource("mat_glass_dark")
 size = Vector3(0.36, 0.27, 0.015)
 
-[sub_resource type="BoxMesh" id="Mesh_122"]
+[sub_resource type="BoxMesh" id="Mesh_123"]
 material = ExtResource("mat_steel_dark")
 size = Vector3(0.13, 0.27, 0.015)
 
-[sub_resource type="BoxMesh" id="Mesh_123"]
+[sub_resource type="BoxMesh" id="Mesh_124"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.07, 0.018, 0.008)
 
-[sub_resource type="BoxMesh" id="Mesh_124"]
+[sub_resource type="BoxMesh" id="Mesh_125"]
 material = ExtResource("mat_steel_dark")
 size = Vector3(0.27, 0.17, 0.26)
 
-[sub_resource type="BoxMesh" id="Mesh_125"]
+[sub_resource type="BoxMesh" id="Mesh_126"]
 material = ExtResource("mat_iron_black")
 size = Vector3(0.2, 0.012, 0.05)
 
-[sub_resource type="BoxMesh" id="Mesh_126"]
+[sub_resource type="BoxMesh" id="Mesh_127"]
 material = ExtResource("mat_steel_dark")
 size = Vector3(0.44, 0.23, 0.34)
 
-[sub_resource type="BoxMesh" id="Mesh_127"]
+[sub_resource type="BoxMesh" id="Mesh_128"]
 material = ExtResource("mat_glass_dark")
 size = Vector3(0.38, 0.16, 0.015)
 
-[sub_resource type="BoxMesh" id="Mesh_128"]
+[sub_resource type="BoxMesh" id="Mesh_129"]
 material = ExtResource("mat_red_hot")
 size = Vector3(0.3, 0.012, 0.006)
 
-[sub_resource type="CylinderMesh" id="Mesh_129"]
+[sub_resource type="CylinderMesh" id="Mesh_130"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.055
 bottom_radius = 0.055
 height = 0.23
 radial_segments = 16
 
-[sub_resource type="CylinderMesh" id="Mesh_130"]
+[sub_resource type="CylinderMesh" id="Mesh_131"]
 material = ExtResource("mat_iron_black")
 top_radius = 0.048
 bottom_radius = 0.048
 height = 0.17
 radial_segments = 16
 
-[sub_resource type="CylinderMesh" id="Mesh_131"]
+[sub_resource type="CylinderMesh" id="Mesh_132"]
 material = ExtResource("mat_ceramic")
 top_radius = 0.115
 bottom_radius = 0.115
 height = 0.016
 radial_segments = 24
 
-[sub_resource type="BoxMesh" id="Mesh_132"]
+[sub_resource type="BoxMesh" id="Mesh_133"]
 material = ExtResource("mat_board_pink")
-size = Vector3(0.25, 0.33, 0.016)
+size = Vector3(0.22, 0.28, 0.016)
 
-[sub_resource type="CylinderMesh" id="Mesh_133"]
+[sub_resource type="CylinderMesh" id="Mesh_134"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.07
 bottom_radius = 0.07
 height = 0.012
 radial_segments = 18
 
-[sub_resource type="CylinderMesh" id="Mesh_134"]
+[sub_resource type="CylinderMesh" id="Mesh_135"]
 material = ExtResource("mat_ceramic")
 top_radius = 0.056
 bottom_radius = 0.056
 height = 0.27
 radial_segments = 20
 
-[sub_resource type="BoxMesh" id="Mesh_135"]
+[sub_resource type="BoxMesh" id="Mesh_136"]
 material = ExtResource("mat_iron_black")
 size = Vector3(2.34, 0.09, 0.84)
 
-[sub_resource type="BoxMesh" id="Mesh_136"]
+[sub_resource type="BoxMesh" id="Mesh_137"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(2.5, 0.82, 0.98)
 
-[sub_resource type="BoxMesh" id="Mesh_137"]
+[sub_resource type="BoxMesh" id="Mesh_138"]
 material = ExtResource("mat_cabinet_dark")
 size = Vector3(0.72, 0.66, 0.02)
 
-[sub_resource type="CylinderMesh" id="Mesh_138"]
+[sub_resource type="CylinderMesh" id="Mesh_139"]
 material = ExtResource("mat_brass")
 top_radius = 0.008
 bottom_radius = 0.008
 height = 0.13
 radial_segments = 10
 
-[sub_resource type="BoxMesh" id="Mesh_139"]
+[sub_resource type="BoxMesh" id="Mesh_140"]
 material = ExtResource("mat_counter")
 size = Vector3(2.68, 0.055, 1.16)
 
-[sub_resource type="CylinderMesh" id="Mesh_140"]
+[sub_resource type="CylinderMesh" id="Mesh_141"]
 material = ExtResource("mat_ceramic")
 top_radius = 0.036
 bottom_radius = 0.036
 height = 0.095
 radial_segments = 20
 
-[sub_resource type="CylinderMesh" id="Mesh_141"]
+[sub_resource type="CylinderMesh" id="Mesh_142"]
 material = ExtResource("mat_coffee")
 top_radius = 0.03
 bottom_radius = 0.03
 height = 0.006
 radial_segments = 20
 
-[sub_resource type="TorusMesh" id="Mesh_142"]
+[sub_resource type="TorusMesh" id="Mesh_143"]
 material = ExtResource("mat_ceramic")
 inner_radius = 0.01
 outer_radius = 0.024
 rings = 12
 ring_segments = 6
 
-[sub_resource type="CylinderMesh" id="Mesh_143"]
+[sub_resource type="CylinderMesh" id="Mesh_144"]
 material = ExtResource("mat_coffee")
 top_radius = 0.085
 bottom_radius = 0.085
 height = 0.004
 radial_segments = 24
 
-[sub_resource type="BoxMesh" id="Mesh_144"]
+[sub_resource type="BoxMesh" id="Mesh_145"]
 material = ExtResource("mat_paper")
 size = Vector3(0.21, 0.003, 0.297)
 
-[sub_resource type="CapsuleMesh" id="Mesh_145"]
+[sub_resource type="CapsuleMesh" id="Mesh_146"]
 material = ExtResource("mat_skin")
 radius = 0.042
 height = 0.3
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CylinderMesh" id="Mesh_146"]
+[sub_resource type="CylinderMesh" id="Mesh_147"]
 material = ExtResource("mat_blood")
 top_radius = 0.043
 bottom_radius = 0.043
 height = 0.012
 radial_segments = 16
 
-[sub_resource type="BoxMesh" id="Mesh_147"]
+[sub_resource type="BoxMesh" id="Mesh_148"]
 material = ExtResource("mat_skin")
 size = Vector3(0.085, 0.024, 0.175)
 
-[sub_resource type="CapsuleMesh" id="Mesh_148"]
+[sub_resource type="CapsuleMesh" id="Mesh_149"]
 material = ExtResource("mat_skin")
 radius = 0.0105
 height = 0.062
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CapsuleMesh" id="Mesh_149"]
+[sub_resource type="CapsuleMesh" id="Mesh_150"]
 material = ExtResource("mat_skin")
 radius = 0.0105
 height = 0.075
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CapsuleMesh" id="Mesh_150"]
+[sub_resource type="CapsuleMesh" id="Mesh_151"]
 material = ExtResource("mat_skin")
 radius = 0.0105
 height = 0.072
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CapsuleMesh" id="Mesh_151"]
+[sub_resource type="CapsuleMesh" id="Mesh_152"]
 material = ExtResource("mat_skin")
 radius = 0.0105
 height = 0.058
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CapsuleMesh" id="Mesh_152"]
+[sub_resource type="CapsuleMesh" id="Mesh_153"]
 material = ExtResource("mat_skin")
 radius = 0.01
 height = 0.05
 radial_segments = 16
 rings = 8
 
-[sub_resource type="CylinderMesh" id="Mesh_153"]
+[sub_resource type="CylinderMesh" id="Mesh_154"]
 material = ExtResource("mat_stain")
 top_radius = 0.27
 bottom_radius = 0.27
 height = 0.004
 radial_segments = 24
 
-[sub_resource type="SphereMesh" id="Mesh_154"]
+[sub_resource type="SphereMesh" id="Mesh_155"]
 material = ExtResource("mat_iron_black")
 radius = 0.0095
 height = 0.019
 radial_segments = 8
 rings = 4
 
-[sub_resource type="CylinderMesh" id="Mesh_155"]
+[sub_resource type="CylinderMesh" id="Mesh_156"]
 material = ExtResource("mat_steel_dark")
 top_radius = 0.15
 bottom_radius = 0.15
 height = 0.035
 radial_segments = 24
 
-[sub_resource type="SphereMesh" id="Mesh_156"]
+[sub_resource type="SphereMesh" id="Mesh_157"]
 material = ExtResource("mat_diffuser_warm")
 radius = 0.125
 height = 0.25
 radial_segments = 24
 rings = 12
 
-[sub_resource type="BoxMesh" id="Mesh_157"]
+[sub_resource type="BoxMesh" id="Mesh_158"]
 material = ExtResource("mat_iron_black")
 size = Vector3(1.34, 0.06, 0.38)
 
-[sub_resource type="BoxMesh" id="Mesh_158"]
+[sub_resource type="BoxMesh" id="Mesh_159"]
 material = ExtResource("mat_diffuser_cool")
 size = Vector3(1.26, 0.025, 0.31)
 
-[sub_resource type="BoxShape3D" id="Shape_159"]
+[sub_resource type="BoxShape3D" id="Shape_160"]
 size = Vector3(7.35, 0.22, 6.55)
 
-[sub_resource type="BoxShape3D" id="Shape_160"]
+[sub_resource type="BoxShape3D" id="Shape_161"]
 size = Vector3(7.35, 0.2, 6.55)
 
-[sub_resource type="BoxShape3D" id="Shape_161"]
+[sub_resource type="BoxShape3D" id="Shape_162"]
 size = Vector3(0.3, 2.8, 6.55)
 
-[sub_resource type="BoxShape3D" id="Shape_162"]
+[sub_resource type="BoxShape3D" id="Shape_163"]
 size = Vector3(7.35, 2.8, 0.3)
 
-[sub_resource type="BoxShape3D" id="Shape_163"]
+[sub_resource type="BoxShape3D" id="Shape_164"]
 size = Vector3(0.3, 2.8, 4.7)
 
-[sub_resource type="BoxShape3D" id="Shape_164"]
+[sub_resource type="BoxShape3D" id="Shape_165"]
 size = Vector3(0.3, 2.8, 0.8)
 
-[sub_resource type="BoxShape3D" id="Shape_165"]
+[sub_resource type="BoxShape3D" id="Shape_166"]
 size = Vector3(0.7, 2.8, 0.72)
 
-[sub_resource type="BoxShape3D" id="Shape_166"]
+[sub_resource type="BoxShape3D" id="Shape_167"]
 size = Vector3(1, 1.94, 0.82)
 
-[sub_resource type="BoxShape3D" id="Shape_167"]
+[sub_resource type="BoxShape3D" id="Shape_168"]
 size = Vector3(4.5, 0.94, 0.7)
 
-[sub_resource type="BoxShape3D" id="Shape_168"]
+[sub_resource type="BoxShape3D" id="Shape_169"]
 size = Vector3(2.56, 0.96, 1.04)
 
 [node name="KitchenReference" type="Node3D"]
@@ -915,555 +919,563 @@ mesh = SubResource("Mesh_12")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 2.78, 1.75)
 mesh = SubResource("Mesh_12")
 
-[node name="DarkDoorFrame" type="MeshInstance3D" parent="Architecture"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.58, 1.1, 1.75)
+[node name="DarkDoorJambA" type="MeshInstance3D" parent="Architecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.58, 1.075, 1.22)
 mesh = SubResource("Mesh_13")
+
+[node name="DarkDoorJambB" type="MeshInstance3D" parent="Architecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.58, 1.075, 2.28)
+mesh = SubResource("Mesh_13")
+
+[node name="DarkDoorHead" type="MeshInstance3D" parent="Architecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.58, 2.17, 1.75)
+mesh = SubResource("Mesh_14")
 
 [node name="Column" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52, 1.375, -3.06)
-mesh = SubResource("Mesh_14")
+mesh = SubResource("Mesh_15")
 
 [node name="BaseWest" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.51, 0.065, 0.3)
-mesh = SubResource("Mesh_15")
+mesh = SubResource("Mesh_16")
 
 [node name="BaseNorth" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.065, -3.31)
-mesh = SubResource("Mesh_16")
+mesh = SubResource("Mesh_17")
 
 [node name="BaseEast" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.51, 0.065, -0.6)
-mesh = SubResource("Mesh_17")
+mesh = SubResource("Mesh_18")
 
 [node name="BaseSouth" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.065, 2.91)
-mesh = SubResource("Mesh_18")
+mesh = SubResource("Mesh_19")
 
 [node name="BaseColumnA" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18, 0.065, -3.06)
-mesh = SubResource("Mesh_19")
+mesh = SubResource("Mesh_20")
 
 [node name="BaseColumnB" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52, 0.065, -2.71)
-mesh = SubResource("Mesh_20")
+mesh = SubResource("Mesh_21")
 
 [node name="CrownWest" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.53, 2.6, -0.2)
-mesh = SubResource("Mesh_21")
+mesh = SubResource("Mesh_22")
 
 [node name="CrownWestTop" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.55, 2.7, -0.2)
-mesh = SubResource("Mesh_22")
+mesh = SubResource("Mesh_23")
 
 [node name="CrownNorth" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -3.33)
-mesh = SubResource("Mesh_23")
+mesh = SubResource("Mesh_24")
 
 [node name="CrownNorthTop" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, -3.35)
-mesh = SubResource("Mesh_24")
+mesh = SubResource("Mesh_25")
 
 [node name="CrownEast" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.53, 2.6, -0.2)
-mesh = SubResource("Mesh_21")
+mesh = SubResource("Mesh_22")
 
 [node name="CrownSouth" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 2.93)
-mesh = SubResource("Mesh_23")
+mesh = SubResource("Mesh_24")
 
 [node name="CrownColumn" type="MeshInstance3D" parent="Architecture"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52, 2.6, -3.06)
-mesh = SubResource("Mesh_25")
+mesh = SubResource("Mesh_26")
 
 [node name="ChainedDoor" type="Node3D" parent="Architecture"]
 
 [node name="DoorJambA" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.55, 1.08, -1.36)
-mesh = SubResource("Mesh_26")
+mesh = SubResource("Mesh_27")
 
 [node name="DoorJambB" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.55, 1.08, -0.24)
-mesh = SubResource("Mesh_26")
+mesh = SubResource("Mesh_27")
 
 [node name="DoorHead" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.55, 2.19, -0.8)
-mesh = SubResource("Mesh_27")
+mesh = SubResource("Mesh_28")
 
 [node name="DoorSlab" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.56, 1.08, -0.8)
-mesh = SubResource("Mesh_28")
+mesh = SubResource("Mesh_29")
 
 [node name="DoorPanelTop" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 1.52, -0.8)
-mesh = SubResource("Mesh_29")
+mesh = SubResource("Mesh_30")
 
 [node name="DoorPanelTopIn" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.512, 1.52, -0.8)
-mesh = SubResource("Mesh_30")
+mesh = SubResource("Mesh_31")
 
 [node name="DoorPanelBottom" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 0.52, -0.8)
-mesh = SubResource("Mesh_31")
+mesh = SubResource("Mesh_32")
 
 [node name="DoorPanelBottomIn" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.512, 0.52, -0.8)
-mesh = SubResource("Mesh_32")
+mesh = SubResource("Mesh_33")
 
 [node name="KnobStem" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.5, 1.02, -0.36)
-mesh = SubResource("Mesh_33")
+mesh = SubResource("Mesh_34")
 
 [node name="Knob" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.465, 1.02, -0.36)
-mesh = SubResource("Mesh_34")
+mesh = SubResource("Mesh_35")
 
 [node name="HingeA" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 1.72, -1.3)
-mesh = SubResource("Mesh_35")
+mesh = SubResource("Mesh_36")
 
 [node name="HingeB" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.52, 0.48, -1.3)
-mesh = SubResource("Mesh_35")
+mesh = SubResource("Mesh_36")
 
 [node name="AnchorWallN" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 1.8, -1.55)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 1.8, -1.55)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorDoorTop" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 1.68, -0.82)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt2" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 1.68, -0.82)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorWallS" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 1.74, -0.05)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt3" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 1.74, -0.05)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorDoorMid" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 1.16, -1.04)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt4" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 1.16, -1.04)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorDoorLow" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 0.76, -0.56)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt5" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 0.76, -0.56)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorWallLow" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 0.98, -1.58)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt6" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 0.98, -1.58)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="AnchorDoorBottom" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.49, 0.4, -0.28)
-mesh = SubResource("Mesh_36")
+mesh = SubResource("Mesh_37")
 
 [node name="AnchorBolt7" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -3.46, 0.4, -0.28)
-mesh = SubResource("Mesh_37")
+mesh = SubResource("Mesh_38")
 
 [node name="ChainLink" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.8, -1.55)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink2" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.76918, -1.49786)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink3" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.73947, -1.44571)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink4" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.71194, -1.39357)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink5" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68753, -1.34143)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink6" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66705, -1.28929)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink7" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65108, -1.23714)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink8" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64, -1.185)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink9" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.63394, -1.13286)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink10" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.63276, -1.08071)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink11" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6361, -1.02857)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink12" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.64337, -0.97643)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink13" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65375, -0.92429)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink14" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66632, -0.87214)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink15" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink16" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.68, -0.82)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink17" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.66529, -0.76867)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink18" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.65139, -0.71733)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink19" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.6391, -0.666)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink20" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.62912, -0.61467)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink21" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.62206, -0.56333)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink22" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6184, -0.512)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink23" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.61849, -0.46067)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink24" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.62249, -0.40933)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink25" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.6304, -0.358)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink26" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.64206, -0.30667)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink27" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.65712, -0.25533)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink28" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.6751, -0.204)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink29" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.69539, -0.15267)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink30" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.71729, -0.10133)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink31" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.74, -0.05)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink32" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.16, -1.04)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink33" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 1.09302, -1)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink34" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 1.02833, -0.96)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink35" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.96808, -0.92)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink36" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.91408, -0.88)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink37" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.86776, -0.84)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink38" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.83, -0.8)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink39" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.8011, -0.76)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink40" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.78075, -0.72)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink41" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.76808, -0.68)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink42" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76167, -0.64)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink43" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.75969, -0.6)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink44" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76, -0.56)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink45" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.98, -1.58)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink46" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.94249, -1.53357)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink47" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.90519, -1.48714)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink48" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.86832, -1.44071)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink49" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.83206, -1.39429)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink50" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.79662, -1.34786)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink51" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.76219, -1.30143)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink52" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.72893, -1.255)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink53" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.69701, -1.20857)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink54" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.66656, -1.16214)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink55" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.63771, -1.11571)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink56" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.61056, -1.06929)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink57" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.58519, -1.02286)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink58" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.56166, -0.97643)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink59" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.54, -0.93)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink60" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.52023, -0.88357)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink61" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.50233, -0.83714)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink62" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.48627, -0.79071)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink63" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.472, -0.74429)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink64" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.45942, -0.69786)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink65" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.44844, -0.65143)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink66" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.43893, -0.605)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink67" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.43076, -0.55857)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink68" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.42377, -0.51214)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink69" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.41777, -0.46571)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink70" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.4126, -0.41929)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink71" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.40805, -0.37286)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink72" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -3.44, 0.40392, -0.32643)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink73" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.44, 0.4, -0.28)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="PadlockBody" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.42, 1.02, -1.04)
-mesh = SubResource("Mesh_39")
+mesh = SubResource("Mesh_40")
 
 [node name="PadlockShackle" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.42, 1.085, -1.04)
-mesh = SubResource("Mesh_40")
+mesh = SubResource("Mesh_41")
 
 [node name="PadlockBody2" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.42, 0.62, -0.56)
-mesh = SubResource("Mesh_39")
+mesh = SubResource("Mesh_40")
 
 [node name="PadlockShackle2" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.42, 0.685, -0.56)
-mesh = SubResource("Mesh_40")
+mesh = SubResource("Mesh_41")
 
 [node name="AnchorColumn" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.17, 2, -3)
-mesh = SubResource("Mesh_41")
+mesh = SubResource("Mesh_42")
 
 [node name="ChainLink74" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.98, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink75" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.92933, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink76" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.87867, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink77" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.828, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink78" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.77733, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink79" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.72667, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink80" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.676, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink81" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.62533, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink82" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.57467, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink83" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.524, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink84" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.47333, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink85" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.42267, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink86" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.372, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink87" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.32133, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink88" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.14, 1.27067, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="ChainLink89" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -2.14, 1.22, -3)
-mesh = SubResource("Mesh_38")
+mesh = SubResource("Mesh_39")
 
 [node name="SwitchPlate" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.505, 1.27, 0.22)
-mesh = SubResource("Mesh_42")
+mesh = SubResource("Mesh_43")
 
 [node name="SwitchToggle" type="MeshInstance3D" parent="Architecture/ChainedDoor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.495, 1.27, 0.22)
-mesh = SubResource("Mesh_43")
+mesh = SubResource("Mesh_44")
 
 [node name="Kitchen" type="Node3D" parent="."]
 
@@ -1471,743 +1483,743 @@ mesh = SubResource("Mesh_43")
 
 [node name="Countertop" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.922, -3.05)
-mesh = SubResource("Mesh_44")
+mesh = SubResource("Mesh_45")
 
 [node name="Backsplash" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.21, -3.365)
-mesh = SubResource("Mesh_45")
+mesh = SubResource("Mesh_46")
 
 [node name="BaseCabinet" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52, 0.47, -3.07)
-mesh = SubResource("Mesh_46")
+mesh = SubResource("Mesh_47")
 
 [node name="ToeKick" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52, 0.045, -3.1)
-mesh = SubResource("Mesh_47")
+mesh = SubResource("Mesh_48")
 
 [node name="CabinetDoor" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0.5, -2.745)
-mesh = SubResource("Mesh_48")
+mesh = SubResource("Mesh_49")
 
 [node name="CabinetDoorPanel" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.76, 0.5, -2.737)
-mesh = SubResource("Mesh_49")
+mesh = SubResource("Mesh_50")
 
 [node name="DoorHandle" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.57, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.5, -2.745)
-mesh = SubResource("Mesh_48")
+mesh = SubResource("Mesh_49")
 
 [node name="CabinetDoorPanel2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.5, -2.737)
-mesh = SubResource("Mesh_49")
+mesh = SubResource("Mesh_50")
 
 [node name="DoorHandle2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="BaseCabinet2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.505, 0.47, -3.07)
-mesh = SubResource("Mesh_51")
+mesh = SubResource("Mesh_52")
 
 [node name="ToeKick2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.505, 0.045, -3.1)
-mesh = SubResource("Mesh_52")
+mesh = SubResource("Mesh_53")
 
 [node name="SinkFront" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.505, 0.62, -2.745)
-mesh = SubResource("Mesh_53")
+mesh = SubResource("Mesh_54")
 
 [node name="CabinetDoor3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2525, 0.24, -2.745)
-mesh = SubResource("Mesh_54")
+mesh = SubResource("Mesh_55")
 
 [node name="CabinetDoorPanel3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2525, 0.24, -2.737)
-mesh = SubResource("Mesh_55")
+mesh = SubResource("Mesh_56")
 
 [node name="DoorHandle3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.455, 0.25, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7575, 0.24, -2.745)
-mesh = SubResource("Mesh_54")
+mesh = SubResource("Mesh_55")
 
 [node name="CabinetDoorPanel4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7575, 0.24, -2.737)
-mesh = SubResource("Mesh_55")
+mesh = SubResource("Mesh_56")
 
 [node name="DoorHandle4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96, 0.25, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="BaseCabinet3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.305, 0.47, -3.07)
-mesh = SubResource("Mesh_56")
+mesh = SubResource("Mesh_57")
 
 [node name="ToeKick3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.305, 0.045, -3.1)
-mesh = SubResource("Mesh_57")
+mesh = SubResource("Mesh_58")
 
 [node name="CabinetDoor5" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1775, 0.5, -2.745)
-mesh = SubResource("Mesh_58")
+mesh = SubResource("Mesh_59")
 
 [node name="CabinetDoorPanel5" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1775, 0.5, -2.737)
-mesh = SubResource("Mesh_59")
+mesh = SubResource("Mesh_60")
 
 [node name="DoorHandle5" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.255, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor6" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4325, 0.5, -2.745)
-mesh = SubResource("Mesh_58")
+mesh = SubResource("Mesh_59")
 
 [node name="CabinetDoorPanel6" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4325, 0.5, -2.737)
-mesh = SubResource("Mesh_59")
+mesh = SubResource("Mesh_60")
 
 [node name="DoorHandle6" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.51, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="BaseCabinet4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.855, 0.47, -3.07)
-mesh = SubResource("Mesh_60")
+mesh = SubResource("Mesh_61")
 
 [node name="ToeKick4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.855, 0.045, -3.1)
-mesh = SubResource("Mesh_61")
+mesh = SubResource("Mesh_62")
 
 [node name="DrawerFront" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.855, 0.72, -2.745)
-mesh = SubResource("Mesh_62")
+mesh = SubResource("Mesh_63")
 
 [node name="DrawerPull" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 1.855, 0.75, -2.715)
-mesh = SubResource("Mesh_63")
+mesh = SubResource("Mesh_64")
 
 [node name="DrawerFront2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.855, 0.47, -2.745)
-mesh = SubResource("Mesh_62")
+mesh = SubResource("Mesh_63")
 
 [node name="DrawerPull2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 1.855, 0.5, -2.715)
-mesh = SubResource("Mesh_63")
+mesh = SubResource("Mesh_64")
 
 [node name="DrawerFront3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.855, 0.22, -2.745)
-mesh = SubResource("Mesh_62")
+mesh = SubResource("Mesh_63")
 
 [node name="DrawerPull3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 1.855, 0.25, -2.715)
-mesh = SubResource("Mesh_63")
+mesh = SubResource("Mesh_64")
 
 [node name="BaseCabinet5" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 0.47, -3.07)
-mesh = SubResource("Mesh_64")
+mesh = SubResource("Mesh_65")
 
 [node name="ToeKick5" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 0.045, -3.1)
-mesh = SubResource("Mesh_65")
+mesh = SubResource("Mesh_66")
 
 [node name="CabinetDoor7" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 0.5, -2.745)
-mesh = SubResource("Mesh_66")
+mesh = SubResource("Mesh_67")
 
 [node name="CabinetDoorPanel7" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 0.5, -2.737)
-mesh = SubResource("Mesh_67")
+mesh = SubResource("Mesh_68")
 
 [node name="DoorHandle7" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor8" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 0.5, -2.745)
-mesh = SubResource("Mesh_66")
+mesh = SubResource("Mesh_67")
 
 [node name="CabinetDoorPanel8" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 0.5, -2.737)
-mesh = SubResource("Mesh_67")
+mesh = SubResource("Mesh_68")
 
 [node name="DoorHandle8" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 0.73, -2.715)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="SinkBasin" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.885, -3.05)
-mesh = SubResource("Mesh_68")
+mesh = SubResource("Mesh_69")
 
 [node name="SinkRim" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.952, -3.05)
-mesh = SubResource("Mesh_69")
+mesh = SubResource("Mesh_70")
 
 [node name="FaucetBase" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.975, -3.27)
-mesh = SubResource("Mesh_70")
+mesh = SubResource("Mesh_71")
 
 [node name="FaucetPost" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.1, -3.27)
-mesh = SubResource("Mesh_71")
+mesh = SubResource("Mesh_72")
 
 [node name="FaucetNeck" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.5, 1.21, -3.19)
-mesh = SubResource("Mesh_72")
+mesh = SubResource("Mesh_73")
 
 [node name="FaucetTip" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.16, -3.11)
-mesh = SubResource("Mesh_73")
+mesh = SubResource("Mesh_74")
 
 [node name="FaucetLever" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.56, 1.02, -3.27)
-mesh = SubResource("Mesh_74")
+mesh = SubResource("Mesh_75")
 
 [node name="WallCabinet" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.51, 2.05, -3.19)
-mesh = SubResource("Mesh_75")
+mesh = SubResource("Mesh_76")
 
 [node name="CabinetDoor9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 2.05, -2.995)
-mesh = SubResource("Mesh_76")
+mesh = SubResource("Mesh_77")
 
 [node name="CabinetDoorPanel9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.755, 2.05, -2.987)
-mesh = SubResource("Mesh_77")
+mesh = SubResource("Mesh_78")
 
 [node name="DoorHandle9" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 2.05, -2.995)
-mesh = SubResource("Mesh_76")
+mesh = SubResource("Mesh_77")
 
 [node name="CabinetDoorPanel10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.265, 2.05, -2.987)
-mesh = SubResource("Mesh_77")
+mesh = SubResource("Mesh_78")
 
 [node name="DoorHandle10" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="WallCabinet2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.515, 2.05, -3.19)
-mesh = SubResource("Mesh_78")
+mesh = SubResource("Mesh_79")
 
 [node name="CabinetDoor11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 2.05, -2.995)
-mesh = SubResource("Mesh_79")
+mesh = SubResource("Mesh_80")
 
 [node name="CabinetDoorPanel11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2675, 2.05, -2.987)
-mesh = SubResource("Mesh_80")
+mesh = SubResource("Mesh_81")
 
 [node name="DoorHandle11" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.465, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 2.05, -2.995)
-mesh = SubResource("Mesh_79")
+mesh = SubResource("Mesh_80")
 
 [node name="CabinetDoorPanel12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7625, 2.05, -2.987)
-mesh = SubResource("Mesh_80")
+mesh = SubResource("Mesh_81")
 
 [node name="DoorHandle12" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="WallCabinet3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.58, 2.05, -3.19)
-mesh = SubResource("Mesh_81")
+mesh = SubResource("Mesh_82")
 
 [node name="CabinetDoor13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 2.05, -2.995)
-mesh = SubResource("Mesh_82")
+mesh = SubResource("Mesh_83")
 
 [node name="CabinetDoorPanel13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.315, 2.05, -2.987)
-mesh = SubResource("Mesh_83")
+mesh = SubResource("Mesh_84")
 
 [node name="DoorHandle13" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.53, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 2.05, -2.995)
-mesh = SubResource("Mesh_82")
+mesh = SubResource("Mesh_83")
 
 [node name="CabinetDoorPanel14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.845, 2.05, -2.987)
-mesh = SubResource("Mesh_83")
+mesh = SubResource("Mesh_84")
 
 [node name="DoorHandle14" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.06, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="WallCabinet4" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15, 2.05, -3.19)
-mesh = SubResource("Mesh_84")
+mesh = SubResource("Mesh_85")
 
 [node name="CabinetDoor15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 2.05, -2.995)
-mesh = SubResource("Mesh_85")
+mesh = SubResource("Mesh_86")
 
 [node name="CabinetDoorPanel15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.025, 2.05, -2.987)
-mesh = SubResource("Mesh_86")
+mesh = SubResource("Mesh_87")
 
 [node name="DoorHandle15" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 2.05, -2.995)
-mesh = SubResource("Mesh_85")
+mesh = SubResource("Mesh_86")
 
 [node name="CabinetDoorPanel16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.275, 2.05, -2.987)
-mesh = SubResource("Mesh_86")
+mesh = SubResource("Mesh_87")
 
 [node name="DoorHandle16" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 2.34, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="WallCabinetStove" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 2.15, -3.19)
-mesh = SubResource("Mesh_87")
+mesh = SubResource("Mesh_88")
 
 [node name="CabinetDoor17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.15, -2.995)
-mesh = SubResource("Mesh_88")
+mesh = SubResource("Mesh_89")
 
 [node name="CabinetDoorPanel17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 2.15, -2.987)
-mesh = SubResource("Mesh_89")
+mesh = SubResource("Mesh_90")
 
 [node name="DoorHandle17" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.44, 2.31, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="CabinetDoor18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.15, -2.995)
-mesh = SubResource("Mesh_88")
+mesh = SubResource("Mesh_89")
 
 [node name="CabinetDoorPanel18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 2.15, -2.987)
-mesh = SubResource("Mesh_89")
+mesh = SubResource("Mesh_90")
 
 [node name="DoorHandle18" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81, 2.31, -2.965)
-mesh = SubResource("Mesh_50")
+mesh = SubResource("Mesh_51")
 
 [node name="SinkLightStrip" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.575, -3.1)
-mesh = SubResource("Mesh_90")
+mesh = SubResource("Mesh_91")
 
 [node name="HookRail" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 2.45, 1.53, -3.28)
-mesh = SubResource("Mesh_91")
+mesh = SubResource("Mesh_92")
 
 [node name="Hook" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1.485, -3.28)
-mesh = SubResource("Mesh_92")
+mesh = SubResource("Mesh_93")
 
 [node name="Hook2" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.485, -3.28)
-mesh = SubResource("Mesh_92")
+mesh = SubResource("Mesh_93")
 
 [node name="Hook3" type="MeshInstance3D" parent="Kitchen/CounterRun"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.485, -3.28)
-mesh = SubResource("Mesh_92")
+mesh = SubResource("Mesh_93")
 
 [node name="Refrigerator" type="Node3D" parent="Kitchen"]
 
 [node name="FridgeBody" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.58, 0.97, -3.01)
-mesh = SubResource("Mesh_93")
+mesh = SubResource("Mesh_94")
 
 [node name="FridgeFront" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.58, 0.97, -2.615)
-mesh = SubResource("Mesh_94")
+mesh = SubResource("Mesh_95")
 
 [node name="FridgeSplit" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.58, 1.4, -2.6)
-mesh = SubResource("Mesh_95")
+mesh = SubResource("Mesh_96")
 
 [node name="FridgeHandleTop" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.16, 1.62, -2.585)
-mesh = SubResource("Mesh_96")
+mesh = SubResource("Mesh_97")
 
 [node name="FridgeHandleBottom" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.16, 0.95, -2.585)
-mesh = SubResource("Mesh_97")
+mesh = SubResource("Mesh_98")
 
 [node name="FridgePhoto" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(0.9982, -0.05996, 0, 0.05996, 0.9982, 0, 0, 0, 1, -1.8, 1.66, -2.598)
-mesh = SubResource("Mesh_98")
+mesh = SubResource("Mesh_99")
 
 [node name="FridgeNoteA" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(0.99875, 0.04998, 0, -0.04998, 0.99875, 0, 0, 0, 1, -1.7, 1.47, -2.598)
-mesh = SubResource("Mesh_99")
+mesh = SubResource("Mesh_100")
 
 [node name="FridgeNoteB" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(0.9992, -0.03999, 0, 0.03999, 0.9992, 0, 0, 0, 1, -1.76, 1.35, -2.598)
-mesh = SubResource("Mesh_100")
+mesh = SubResource("Mesh_101")
 
 [node name="FridgeMagnet" type="MeshInstance3D" parent="Kitchen/Refrigerator"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.86, 1.8, -2.6)
-mesh = SubResource("Mesh_101")
+mesh = SubResource("Mesh_102")
 
 [node name="CounterBoxDark" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 1.03, -3.18)
-mesh = SubResource("Mesh_102")
+mesh = SubResource("Mesh_103")
 
 [node name="CounterBoxLid" type="MeshInstance3D" parent="Kitchen"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 1.125, -3.18)
-mesh = SubResource("Mesh_103")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 1.118, -3.18)
+mesh = SubResource("Mesh_104")
 
 [node name="Stove" type="Node3D" parent="Kitchen"]
 
 [node name="StoveBody" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 0.45, -3.05)
-mesh = SubResource("Mesh_104")
+mesh = SubResource("Mesh_105")
 
 [node name="StoveTop" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 0.885, -3.05)
-mesh = SubResource("Mesh_105")
+mesh = SubResource("Mesh_106")
 
 [node name="StovePanel" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 0.79, -2.715)
-mesh = SubResource("Mesh_106")
+mesh = SubResource("Mesh_107")
 
 [node name="StoveKnob" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.28, 0.79, -2.695)
-mesh = SubResource("Mesh_107")
+mesh = SubResource("Mesh_108")
 
 [node name="StoveKnob2" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.42, 0.79, -2.695)
-mesh = SubResource("Mesh_107")
+mesh = SubResource("Mesh_108")
 
 [node name="StoveKnob3" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.56, 0.79, -2.695)
-mesh = SubResource("Mesh_107")
+mesh = SubResource("Mesh_108")
 
 [node name="StoveKnob4" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.7, 0.79, -2.695)
-mesh = SubResource("Mesh_107")
+mesh = SubResource("Mesh_108")
 
 [node name="StoveIndicator" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.79, -2.7)
-mesh = SubResource("Mesh_108")
+mesh = SubResource("Mesh_109")
 
 [node name="OvenDoor" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 0.4, -2.715)
-mesh = SubResource("Mesh_109")
+mesh = SubResource("Mesh_110")
 
 [node name="OvenWindow" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.505, 0.44, -2.7)
-mesh = SubResource("Mesh_110")
+mesh = SubResource("Mesh_111")
 
 [node name="OvenHandle" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 2.505, 0.735, -2.68)
-mesh = SubResource("Mesh_111")
+mesh = SubResource("Mesh_112")
 
 [node name="Burner" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 0.905, -3.2)
-mesh = SubResource("Mesh_112")
+mesh = SubResource("Mesh_113")
 
 [node name="Burner2" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 0.905, -3.2)
-mesh = SubResource("Mesh_113")
+mesh = SubResource("Mesh_114")
 
 [node name="Burner3" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 0.905, -2.92)
-mesh = SubResource("Mesh_113")
+mesh = SubResource("Mesh_114")
 
 [node name="Burner4" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 0.905, -2.92)
-mesh = SubResource("Mesh_114")
+mesh = SubResource("Mesh_115")
 
 [node name="BurnerHot" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.32, 0.912, -2.92)
-mesh = SubResource("Mesh_115")
-
-[node name="KettleBody" type="MeshInstance3D" parent="Kitchen/Stove"]
-transform = Transform3D(1, 0, 0, 0, 0.78, 0, 0, 0, 1, 2.69, 0.975, -3.2)
 mesh = SubResource("Mesh_116")
 
-[node name="KettleLid" type="MeshInstance3D" parent="Kitchen/Stove"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 1.045, -3.2)
+[node name="KettleBody" type="MeshInstance3D" parent="Kitchen/Stove"]
+transform = Transform3D(1, 0, 0, 0, 0.78, 0, 0, 0, 1, 2.69, 0.985, -3.2)
 mesh = SubResource("Mesh_117")
+
+[node name="KettleLid" type="MeshInstance3D" parent="Kitchen/Stove"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 1.062, -3.2)
+mesh = SubResource("Mesh_118")
 
 [node name="KettleSpout" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(0.69671, 0.71736, 0, -0.71736, 0.69671, 0, 0, 0, 1, 2.775, 0.99, -3.2)
-mesh = SubResource("Mesh_118")
+mesh = SubResource("Mesh_119")
 
 [node name="KettleHandle" type="MeshInstance3D" parent="Kitchen/Stove"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69, 1.03, -3.2)
-mesh = SubResource("Mesh_119")
+mesh = SubResource("Mesh_120")
 
 [node name="Microwave" type="Node3D" parent="Kitchen"]
 
 [node name="MicrowaveBody" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.125, -3.12)
-mesh = SubResource("Mesh_120")
+mesh = SubResource("Mesh_121")
 
 [node name="MicrowaveDoor" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.175, 1.125, -2.915)
-mesh = SubResource("Mesh_121")
+mesh = SubResource("Mesh_122")
 
 [node name="MicrowavePanel" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.475, 1.125, -2.915)
-mesh = SubResource("Mesh_122")
+mesh = SubResource("Mesh_123")
 
 [node name="MicrowaveButton" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.475, 1.19, -2.905)
-mesh = SubResource("Mesh_123")
+mesh = SubResource("Mesh_124")
 
 [node name="MicrowaveButton2" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.475, 1.14, -2.905)
-mesh = SubResource("Mesh_123")
+mesh = SubResource("Mesh_124")
 
 [node name="MicrowaveButton3" type="MeshInstance3D" parent="Kitchen/Microwave"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.475, 1.09, -2.905)
-mesh = SubResource("Mesh_123")
+mesh = SubResource("Mesh_124")
 
 [node name="Toaster" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.03, -3.16)
-mesh = SubResource("Mesh_124")
+mesh = SubResource("Mesh_125")
 
 [node name="ToasterSlot" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.12, -3.16)
-mesh = SubResource("Mesh_125")
+mesh = SubResource("Mesh_126")
 
 [node name="ToasterOven" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.13, 1.06, -3.14)
-mesh = SubResource("Mesh_126")
+mesh = SubResource("Mesh_127")
 
 [node name="ToasterOvenDoor" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.13, 1.05, -2.965)
-mesh = SubResource("Mesh_127")
+mesh = SubResource("Mesh_128")
 
 [node name="ToasterOvenGlow" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.13, 0.99, -2.955)
-mesh = SubResource("Mesh_128")
+mesh = SubResource("Mesh_129")
 
 [node name="CanisterA" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.06, -3.26)
-mesh = SubResource("Mesh_129")
+mesh = SubResource("Mesh_130")
 
 [node name="CanisterB" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.17, 1.03, -3.3)
-mesh = SubResource("Mesh_130")
+mesh = SubResource("Mesh_131")
 
 [node name="Plate" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.955, -3.08)
-mesh = SubResource("Mesh_131")
+mesh = SubResource("Mesh_132")
 
 [node name="Plate2" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.975, -3.08)
-mesh = SubResource("Mesh_131")
+mesh = SubResource("Mesh_132")
 
 [node name="Plate3" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.995, -3.08)
-mesh = SubResource("Mesh_131")
+mesh = SubResource("Mesh_132")
 
 [node name="CuttingBoard" type="MeshInstance3D" parent="Kitchen"]
-transform = Transform3D(1, 0, 0, 0, 0.9759, 0.21823, 0, -0.21823, 0.9759, 0.16, 1.1, -3.26)
-mesh = SubResource("Mesh_132")
+transform = Transform3D(1, 0, 0, 0, 0.9759, 0.21823, 0, -0.21823, 0.9759, 0.06, 1.09, -3.27)
+mesh = SubResource("Mesh_133")
 
 [node name="TowelBase" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.952, -3.12)
-mesh = SubResource("Mesh_133")
+mesh = SubResource("Mesh_134")
 
 [node name="TowelRoll" type="MeshInstance3D" parent="Kitchen"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 1.1, -3.12)
-mesh = SubResource("Mesh_134")
+mesh = SubResource("Mesh_135")
 
 [node name="Island" type="Node3D" parent="."]
 
 [node name="IslandPlinth" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.045, 1.05)
-mesh = SubResource("Mesh_135")
+mesh = SubResource("Mesh_136")
 
 [node name="IslandBody" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.5, 1.05)
-mesh = SubResource("Mesh_136")
+mesh = SubResource("Mesh_137")
 
 [node name="IslandDoor" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.52, 1.545)
-mesh = SubResource("Mesh_137")
+mesh = SubResource("Mesh_138")
 
 [node name="IslandHandle" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.78, 0.74, 1.565)
-mesh = SubResource("Mesh_138")
+mesh = SubResource("Mesh_139")
 
 [node name="IslandDoor2" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.52, 1.545)
-mesh = SubResource("Mesh_137")
+mesh = SubResource("Mesh_138")
 
 [node name="IslandHandle2" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.58, 0.74, 1.565)
-mesh = SubResource("Mesh_138")
+mesh = SubResource("Mesh_139")
 
 [node name="IslandDoor3" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.52, 1.545)
-mesh = SubResource("Mesh_137")
+mesh = SubResource("Mesh_138")
 
 [node name="IslandHandle3" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.38, 0.74, 1.565)
-mesh = SubResource("Mesh_138")
+mesh = SubResource("Mesh_139")
 
 [node name="IslandTop" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.937, 1.05)
-mesh = SubResource("Mesh_139")
+mesh = SubResource("Mesh_140")
 
 [node name="FallenCup" type="Node3D" parent="Island"]
 
 [node name="Cup" type="MeshInstance3D" parent="Island/FallenCup"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.55, 0.997, 0.82)
-mesh = SubResource("Mesh_140")
+mesh = SubResource("Mesh_141")
 
 [node name="CupBottom" type="MeshInstance3D" parent="Island/FallenCup"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.505, 0.997, 0.82)
-mesh = SubResource("Mesh_141")
+mesh = SubResource("Mesh_142")
 
 [node name="CupHandle" type="MeshInstance3D" parent="Island/FallenCup"]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.575, 1, 0.865)
-mesh = SubResource("Mesh_142")
+mesh = SubResource("Mesh_143")
 
 [node name="CoffeeSpill" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66, 0.967, 0.86)
-mesh = SubResource("Mesh_143")
+mesh = SubResource("Mesh_144")
 
 [node name="PaperSheet" type="MeshInstance3D" parent="Island"]
 transform = Transform3D(0.91309, 0, 0.40776, 0, 1, 0, -0.40776, 0, 0.91309, 2.02, 0.968, 1.22)
-mesh = SubResource("Mesh_144")
+mesh = SubResource("Mesh_145")
 
 [node name="ArmOnFloor" type="Node3D" parent="."]
 
 [node name="Forearm" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.32044, -0.74397, 0.58637, 0.94539, 0.2122, -0.2474, 0.05963, 0.63363, 0.77134, 0.28, 0.045, 1.98)
-mesh = SubResource("Mesh_145")
+mesh = SubResource("Mesh_146")
 
 [node name="ArmCut" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.32044, -0.74397, 0.58637, 0.94539, 0.2122, -0.2474, 0.05963, 0.63363, 0.77134, 0.135, 0.05, 2.1)
-mesh = SubResource("Mesh_146")
+mesh = SubResource("Mesh_147")
 
 [node name="HandPalm" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.79608, 0, 0.60519, 0, 1, 0, -0.60519, 0, 0.79608, 0.47, 0.028, 1.8)
-mesh = SubResource("Mesh_147")
+mesh = SubResource("Mesh_148")
 
 [node name="Finger" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.75647, 0.62557, 0.19083, -0.0208, 0.31464, -0.94898, -0.65369, 0.71391, 0.25102, 0.437, 0.026, 1.685)
-mesh = SubResource("Mesh_148")
+mesh = SubResource("Mesh_149")
 
 [node name="Finger2" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.78326, 0.59169, 0.19083, -0.00694, 0.31525, -0.94898, -0.62166, 0.74198, 0.25102, 0.459, 0.026, 1.685)
-mesh = SubResource("Mesh_149")
+mesh = SubResource("Mesh_150")
 
 [node name="Finger3" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.80853, 0.55666, 0.19083, 0.00694, 0.31525, -0.94898, -0.58842, 0.7686, 0.25102, 0.481, 0.026, 1.685)
-mesh = SubResource("Mesh_150")
+mesh = SubResource("Mesh_151")
 
 [node name="Finger4" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.83223, 0.52056, 0.19083, 0.0208, 0.31464, -0.94898, -0.55404, 0.79374, 0.25102, 0.503, 0.026, 1.685)
-mesh = SubResource("Mesh_151")
+mesh = SubResource("Mesh_152")
 
 [node name="Thumb" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(0.89471, -0.2408, 0.37619, 0.44592, 0.43308, -0.78333, 0.0257, 0.8686, 0.49485, 0.415, 0.026, 1.76)
-mesh = SubResource("Mesh_152")
+mesh = SubResource("Mesh_153")
 
 [node name="BloodStain" type="MeshInstance3D" parent="ArmOnFloor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.008, 1.95)
-mesh = SubResource("Mesh_153")
+mesh = SubResource("Mesh_154")
 
 [node name="Flies" type="Node3D" parent="."]
 
 [node name="Fly" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.79314, 1.97222, -0.86631)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly2" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.89854, 1.94656, -0.85745)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly3" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.90666, 2.46032, -0.27574)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly4" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.81149, 2.27568, -1.05731)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly5" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.87554, 1.97433, -1.15696)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly6" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.89428, 2.48024, -0.20936)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly7" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.05942, 2.0354, -1.00424)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly8" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.28493, 2.41233, -0.13256)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly9" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95593, 1.9607, -0.53064)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly10" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.54189, 2.35298, -1.18665)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly11" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2051, 2.14467, -0.27849)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly12" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.87132, 2.37382, -1.03971)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly13" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.94508, 2.38618, -0.34122)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly14" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.84167, 2.35419, -0.90326)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly15" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.41815, 2.31552, -1.20642)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Fly16" type="MeshInstance3D" parent="Flies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91869, 2.5063, -1.34811)
-mesh = SubResource("Mesh_154")
+mesh = SubResource("Mesh_155")
 
 [node name="Lighting" type="Node3D" parent="."]
 
 [node name="WarmFixtureBase" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.45, 2.735, -0.75)
-mesh = SubResource("Mesh_155")
+mesh = SubResource("Mesh_156")
 
 [node name="WarmDome" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0.55, 0, 0, 0, 1, -2.45, 2.715, -0.75)
-mesh = SubResource("Mesh_156")
+mesh = SubResource("Mesh_157")
 
 [node name="WarmCeilingLight" type="OmniLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.45, 2.38, -0.75)
@@ -2219,16 +2231,16 @@ shadow_enabled = false
 
 [node name="FluoroHousing" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 2.725, -0.85)
-mesh = SubResource("Mesh_157")
+mesh = SubResource("Mesh_158")
 
 [node name="FluoroPanel" type="MeshInstance3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 2.69, -0.85)
-mesh = SubResource("Mesh_158")
+mesh = SubResource("Mesh_159")
 
 [node name="FluoroLight" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.25, 2.58, -0.85)
 light_color = Color(0.82, 0.9, 1, 1)
-light_energy = 3.4
+light_energy = 3
 spot_range = 8.5
 spot_angle = 76
 spot_attenuation = 0.9
@@ -2245,7 +2257,7 @@ shadow_enabled = false
 [node name="SinkLight" type="SpotLight3D" parent="Lighting"]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.5, 1.55, -2.92)
 light_color = Color(0.92, 1, 0.84, 1)
-light_energy = 0.9
+light_energy = 0.75
 spot_range = 2.8
 spot_angle = 58
 spot_attenuation = 1
@@ -2257,47 +2269,47 @@ shadow_enabled = false
 
 [node name="Floor" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11, -0.2)
-shape = SubResource("Shape_159")
+shape = SubResource("Shape_160")
 
 [node name="Ceiling" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, -0.2)
-shape = SubResource("Shape_160")
+shape = SubResource("Shape_161")
 
 [node name="WallWest" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.72, 1.4, -0.2)
-shape = SubResource("Shape_161")
+shape = SubResource("Shape_162")
 
 [node name="WallNorth" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -3.52)
-shape = SubResource("Shape_162")
+shape = SubResource("Shape_163")
 
 [node name="WallSouth" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 3.12)
-shape = SubResource("Shape_162")
+shape = SubResource("Shape_163")
 
 [node name="WallEastA" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.72, 1.4, -1.05)
-shape = SubResource("Shape_163")
+shape = SubResource("Shape_164")
 
 [node name="WallEastB" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.72, 1.4, 2.65)
-shape = SubResource("Shape_164")
+shape = SubResource("Shape_165")
 
 [node name="Column" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52, 1.4, -3.06)
-shape = SubResource("Shape_165")
+shape = SubResource("Shape_166")
 
 [node name="Fridge" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.58, 0.97, -3.01)
-shape = SubResource("Shape_166")
+shape = SubResource("Shape_167")
 
 [node name="CounterRun" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.47, -3.06)
-shape = SubResource("Shape_167")
+shape = SubResource("Shape_168")
 
 [node name="Island" type="CollisionShape3D" parent="Collision/StaticBodies"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.48, 1.05)
-shape = SubResource("Shape_168")
+shape = SubResource("Shape_169")
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(0.718, 0, 0.696, 0, 1, 0, -0.696, 0, 0.718, 2.95, 0.05, 2.70)

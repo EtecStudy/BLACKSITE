@@ -93,14 +93,14 @@ func _run() -> void:
 	_check(spots.size() >= 2, "pelo menos 2 SpotLight3D (real: %d)" % spots.size())
 
 	var camera_positions: Array[Vector3] = [
-		Vector3(3.02, 1.66, 2.82),
+		Vector3(3.02, 1.63, 2.82),
 		Vector3(-1.55, 1.50, 0.75),
 		Vector3(0.35, 1.55, 0.55),
 		Vector3(2.85, 1.45, 2.55),
 		Vector3(-2.55, 1.62, -1.55),
 	]
 	var camera_targets: Array[Vector3] = [
-		Vector3(-1.75, 0.92, -2.05),
+		Vector3(-1.75, 0.88, -2.05),
 		Vector3(-3.55, 1.12, -0.80),
 		Vector3(0.60, 0.95, -3.20),
 		Vector3(0.30, 0.50, 1.15),
