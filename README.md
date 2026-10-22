@@ -46,13 +46,6 @@ commit `3c62ec7`), **continua publicada**, junto de `v0.11.1-etapa11-correcao`,
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
-4. Clique em **PRIMEIRO ANDAR** para entrar no laboratório (recepção,
-   segurança, posto de controle, corredor principal, cruzamento central,
-   pesquisa, análises, observação, armazenamento, escritórios, arquivo,
-   funcionários, logística, elétrica, manutenção e as duas escadas).
-5. Clique em **DEMONSTRAR MÓDULOS** para percorrer a demonstração modular
-   (corredor de 40 m, duas salas de pesquisa, ramal, sala técnica com pórtico,
-   mezanino e escada). ESC abre/fecha a pausa.
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 
@@ -133,9 +126,12 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   movimentação e colisão, sem arte final.
 - **Acabamentos sem z-fighting** (Etapa 11, correção 0.11.2): rodapé, batente
   e plinto têm perfil de profundidade próprio — nenhuma face divide plano com
-  a parede. Verificado pelo teste [4b] do `modular_test` e por closes
-  renderizados no build.
-- **Primeiro andar do laboratório** (Etapa 12A): `maps/scenes/laboratory_first_floor.tscn`,
+  a parede. Verificado na época pelo teste [4b] do sistema modular e por closes
+  renderizados no build (a suíte da demonstração saiu na limpeza 0.13.2;
+  a biblioteca modular permanece).
+- **Primeiro andar do laboratório** (Etapa 12A; **cena removida na limpeza
+  0.13.2** — registro em `docs/LIMPEZA_SALAS.md`, recuperação pela tag
+  `v0.13.1-pre-limpeza-salas`): `maps/scenes/laboratory_first_floor.tscn`,
   23 ambientes em 7.248 m², corredor principal de 5,6 m livres, cruzamento
   central de 21,6 × 21,6 m com teto de 12 m, dois corredores de serviço de
   4 m, 40 vãos (portas de 2,4 × 3,0 m, aberturas de 3,6 × 4,2 m e bocas de
@@ -149,8 +145,8 @@ uso de item ou ataque. (A tecla `R` não é listada: é provisória de teste.)
   pilar I, viga de 6 m, coluna de apoio, guarda-corpo, escada de 16 degraus
   (3,2 m em 5,6 m, 29,7°) e corredores principal (6 m), secundário (4 m),
   canto em L, T, X e terminação com comporta. Salas prontas de 10 × 10,
-  12 × 16, 14 × 20 e 8 × 8 m. A cena **DEMONSTRAR MÓDULOS** usa o jogador e a
-  HUD existentes e não substitui a cena de teste de movimentação. Convenções,
+  12 × 16, 14 × 20 e 8 × 8 m. A cena de demonstração que a exercitava foi removida
+  na limpeza 0.13.2; a biblioteca permanece preservada para uso futuro. Convenções,
   medidas e instruções de encaixe em [`docs/ETAPA-11.md`](docs/ETAPA-11.md).
 
 Ainda **não** existe: subsolo construído, iluminação final, móveis,

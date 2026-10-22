@@ -110,42 +110,6 @@ jobs:
             exit 1
           fi
 
-      - name: TESTE 1e — sistema modular de salas (headless)
-        timeout-minutes: 8
-        run: |
-          set -o pipefail
-          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
-            --audio-driver Dummy res://tools/ci/modular_test.tscn 2>&1 | tee ci-logs/modular.log
-          grep -F "MODULAR TEST OK" ci-logs/modular.log
-          if grep -F "✗" ci-logs/modular.log; then
-            echo "::error::Falhas no sistema modular de salas"
-            exit 1
-          fi
-
-      - name: TESTE 1f — primeiro andar do laboratório (headless)
-        timeout-minutes: 12
-        run: |
-          set -o pipefail
-          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
-            --audio-driver Dummy res://tools/ci/first_floor_test.tscn 2>&1 | tee ci-logs/first-floor.log
-          grep -F "PRIMEIRO ANDAR OK" ci-logs/first-floor.log
-          if grep -F "✗" ci-logs/first-floor.log; then
-            echo "::error::Falhas na planta do primeiro andar"
-            exit 1
-          fi
-
-      - name: TESTE 1g — sala-piloto refinada (headless)
-        timeout-minutes: 8
-        run: |
-          set -o pipefail
-          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
-            --audio-driver Dummy res://tools/ci/pilot_room_test.tscn 2>&1 | tee ci-logs/pilot-room.log
-          grep -F "TESTE DA SALA-PILOTO PASSOU" ci-logs/pilot-room.log
-          if grep -F "[PILOT FALHA]" ci-logs/pilot-room.log; then
-            echo "::error::Falhas na sala-piloto refinada"
-            exit 1
-          fi
-
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
@@ -236,56 +200,6 @@ jobs:
           test -s ci-logs/drop_hud.png
           echo "frame do drop capturado: $latest"
 
-      - name: TESTE 3f — renderizar a demonstração modular (Xvfb + OpenGL, captura)
-        run: |
-          mkdir -p ci-logs/modular_frames
-          set -o pipefail
-          xvfb-run -a --server-args="-screen 0 1280x800x24" \
-            "$GODOT_DIR/godot" --path . res://match/scenes/modular_demo.tscn \
-            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
-            --write-movie ci-logs/modular_frames/frame.png --quit-after 60 \
-            2>&1 | tee ci-logs/render_modular.log
-          grep -F "Cena modular carregada" ci-logs/render_modular.log
-          latest=$(ls ci-logs/modular_frames/*.png | tail -1)
-          cp "$latest" ci-logs/modular_demo.png
-          rm -rf ci-logs/modular_frames
-          test -s ci-logs/modular_demo.png
-          echo "frame da demonstração modular capturado: $latest"
-
-      - name: TESTE 3g — renderizar o primeiro andar (Xvfb + OpenGL, captura)
-        run: |
-          mkdir -p ci-logs/first_floor_frames
-          set -o pipefail
-          xvfb-run -a --server-args="-screen 0 1280x800x24" \
-            "$GODOT_DIR/godot" --path . res://match/scenes/laboratory.tscn \
-            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
-            --write-movie ci-logs/first_floor_frames/frame.png --quit-after 60 \
-            2>&1 | tee ci-logs/render_first_floor.log
-          grep -F "Primeiro andar carregado" ci-logs/render_first_floor.log
-          latest=$(ls ci-logs/first_floor_frames/*.png | tail -1)
-          cp "$latest" ci-logs/first_floor.png
-          rm -rf ci-logs/first_floor_frames
-          test -s ci-logs/first_floor.png
-          echo "frame do primeiro andar capturado: $latest"
-
-      - name: TESTE 3h — capturas da sala-piloto (Xvfb + OpenGL)
-        run: |
-          mkdir -p ci-logs/visual-pilot
-          set -o pipefail
-          xvfb-run -a --server-args="-screen 0 1280x800x24" \
-            "$GODOT_DIR/godot" --path . \
-            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
-            res://tools/ci/pilot_room_visual_check.tscn 2>&1 | tee ci-logs/render_pilot_room.log
-          grep -F "CAPTURAS DA SALA-PILOTO PASSARAM" ci-logs/render_pilot_room.log
-          count=$(find ci-logs/visual-pilot -maxdepth 1 -name '*.png' | wc -l)
-          echo "capturas da sala-piloto: $count"
-          test "$count" -ge 9
-          cp ci-logs/visual-pilot/01_sala_inteira.png ci-logs/pilot_room_overview.png
-          cp ci-logs/visual-pilot/02_primeira_pessoa_spawn.png ci-logs/pilot_room_first_person.png
-
-      # ------------------------------------------------------------------
-      # 2. Exportações
-      # ------------------------------------------------------------------
       - name: TESTE 4 — exportar executável Windows (release)
         run: |
           mkdir -p build/windows
@@ -364,7 +278,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Sala-Piloto Refinada (Windows x86_64 · Refinamento visual)
+          BLACK SIGHT — Limpeza das salas (Windows x86_64 · v0.13.2)
           ============================================
 
           COMO JOGAR
@@ -391,27 +305,6 @@ jobs:
           - CONFIGURAÇÕES . abre as configurações durante a pausa
           - VOLTAR AO MENU  volta à tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
-
-          SALA-PILOTO VISUAL
-          - Clique em SALA-PILOTO VISUAL na tela inicial.
-          - A cena é uma única sala independente de pesquisa/análise,
-            com bancadas, capela, cabine de segurança, janela de observação,
-            porta principal, teto técnico e sinalização discreta.
-          - Use W A S D, SHIFT, CTRL e o mouse como nas outras cenas.
-          - ESC abre a mesma pausa; CONFIGURAÇÕES e VOLTAR AO MENU funcionam.
-          - Esta sala serve apenas para avaliar a nova direção visual.
-            A planta da Etapa 12A continua disponível em PRIMEIRO ANDAR.
-
-          DEMONSTRAÇÃO MODULAR (ETAPA 11)
-          - Clique em DEMONSTRAR MÓDULOS na tela inicial.
-          - A cena mostra um corredor reto, um canto, uma sala quadrada
-            (10 x 10 m), uma sala retangular (10 x 14 m), pilares, guarda-corpos
-            e uma escada que liga o piso ao mezanino (4 m de altura).
-          - W A S D sobe e desce a escada normalmente; não é preciso pular.
-          - Os guarda-corpos impedem a queda nas bordas do mezanino.
-          - ESC volta ao menu inicial; F11 alterna a tela cheia.
-          - Esta cena é só uma amostra das peças: não substitui a cena
-            TESTAR MOVIMENTAÇÃO nem o mapa definitivo.
 
           INVENTÁRIO
           - Três slots fixos, no canto inferior direito da tela.
@@ -488,69 +381,49 @@ jobs:
           com 1/2/3, remoção provisória com R e aviso de inventário cheio.
           Etapa 9: soltar itens no ambiente 3D com G (posição segura, física
           simples e recolhimento com E); R continua como remoção de teste.
-          Etapa 11 (revisão): biblioteca modular industrial em maps/modular/
-          (grade de 2 m; paredes de 0,40 x 6 m, portas de 4 m, aberturas de
-          4 m, cantos, pilastras, pisos e tetos de 2 x 2 m, corredores
-          principal/secundário com cantos, T, X e terminação, pilar, viga,
-          guarda-corpo, salas de pesquisa e técnica e escada) e a cena
-          DEMONSTRAR MÓDULOS reconstruída. Nenhum sistema anterior foi
-          alterado; ESC e SHIFT foram corrigidos.
-          Correção 11.2: o rodapé/plinto deixou de dividir plano com a parede
-          (z-fighting, que fazia o acabamento escuro atravessar a parede
-          clara) em parede reta, canto, porta, abertura, junção em T e
-          módulos rotacionados.
-          Etapa 12A: PRIMEIRO ANDAR — planta completa do laboratório sobre os
-          módulos da Etapa 11: vestíbulo, recepção de pé-direito duplo,
-          segurança, posto de controle, corredor principal de 5,6 m livres,
-          grande cruzamento central (21,6 x 21,6 m, teto de 12 m), pesquisa,
-          análises, observação, armazenamento, escritórios, arquivo, área de
-          funcionários, apoio logístico, elétrica, acesso à manutenção e duas
-          escadas para o subsolo (norte e sul). Sem móveis, equipamentos,
-          objetivos, criaturas ou multiplayer.
-          Stamina e controles anteriores seguem iguais.
+          Limpeza 0.13.2: as salas de demonstração (SALA-PILOTO VISUAL,
+          PRIMEIRO ANDAR e DEMONSTRAR MÓDULOS) foram removidas do jogo.
+          Permanece apenas TESTAR MOVIMENTAÇÃO. A biblioteca modular em
+          maps/modular/ continua no projeto para uso futuro.
           Ainda não há pulo, uso/arremesso/transferência de item, portas
           funcionais, geração procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versão 0.13.1 — Sala-Piloto Refinada (refinamento visual)
+          Versão 0.13.2 — Limpeza das salas (salas de demonstração removidas; permanece a sala de movimentação)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip
-          sha256sum BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Windows-x86_64.zip
+          sha256sum BlackSight-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-sala-piloto-refinada-windows
+          name: black-sight-windows
           path: |
-            BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip
+            BlackSight-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
             ci-logs/inventory_hud.png
             ci-logs/drop_hud.png
-            ci-logs/modular_demo.png
-            ci-logs/first_floor.png
-            ci-logs/pilot_room_overview.png
-            ci-logs/pilot_room_first_person.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-sala-piloto-refinada-logs
+          name: black-sight-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -576,7 +449,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Sala-Piloto Refinada"
+            echo "## Black Sight · Limpeza das salas (0.13.2)"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -594,12 +467,6 @@ jobs:
             echo "### Controlador FPS"
             echo '```'
             grep -E "MOVEMENT|✓|✗" ci-logs/movement.log 2>/dev/null | tail -40 || true
-            echo '```'
-            echo ""
-            echo "### Sistema modular de salas"
-            echo '```'
-            grep -E "MODULAR TEST|✗" ci-logs/modular.log 2>/dev/null | tail -20 || true
-            grep -F "Cena modular carregada" ci-logs/render_modular.log 2>/dev/null || true
             echo '```'
             echo ""
             echo "### Cena inicial e configurações"
@@ -700,23 +567,11 @@ jobs:
             "match/scripts/movement_test.gd",
             "tools/ci/ui_flow_test.tscn",
             "tools/ci/movement_test.tscn",
-            "tools/ci/modular_test.tscn",
-            "tools/ci/modular_visual_check.tscn",
-            "tools/ci/first_floor_test.tscn",
-            "tools/ci/first_floor_visual_check.tscn",
-            "tools/ci/pilot_room_test.tscn",
-            "tools/ci/pilot_room_visual_check.tscn",
-            "maps/pilot/pilot_research_room.tscn",
-            "match/scenes/pilot_room.tscn",
-            "maps/scenes/laboratory_first_floor.tscn",
-            "match/scenes/laboratory.tscn",
             "maps/modular/rooms/room_lab_10x10.tscn",
             "maps/modular/rooms/room_tech_14x20.tscn",
             "maps/modular/corridors/corridor_tee_6.tscn",
             "maps/modular/stairs/stairs_straight.tscn",
-            "maps/modular/walls/wall_door_4m.tscn",
-            "maps/scenes/modular_demo_room.tscn",
-            "match/scenes/modular_demo.tscn"
+            "maps/modular/walls/wall_door_4m.tscn"
           )) {
             if (-not (Test-Path $required)) { throw "Arquivo esperado ausente: $required" }
           }
@@ -774,48 +629,6 @@ jobs:
           Write-Host "exit code do teste de drop: $code"
           if (-not (Select-String -Path $log -SimpleMatch "DROP OBSTACLE TEST OK")) {
             throw "Teste de drop junto a obstáculos não passou (exit $code) — ver 05d-drop-obstacle.log"
-          }
-
-      - name: TESTE W2e — sistema modular de salas no Windows (headless)
-        timeout-minutes: 8
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          $log = "ci-logs/05e-modular.log"
-          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/modular_test.tscn *>&1 | Tee-Object -FilePath $log
-          $code = $LASTEXITCODE
-          Write-Host "exit code do teste modular: $code"
-          if (-not (Select-String -Path $log -SimpleMatch "MODULAR TEST OK")) {
-            throw "Teste do sistema modular não passou (exit $code) — ver 05e-modular.log"
-          }
-
-      - name: TESTE W2f — primeiro andar do laboratório no Windows (headless)
-        timeout-minutes: 14
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          $log = "ci-logs/05f-first-floor.log"
-          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/first_floor_test.tscn *>&1 | Tee-Object -FilePath $log
-          $code = $LASTEXITCODE
-          Write-Host "exit code do teste do primeiro andar: $code"
-          if (-not (Select-String -Path $log -SimpleMatch "PRIMEIRO ANDAR OK")) {
-            throw "Teste do primeiro andar não passou (exit $code) — ver 05f-first-floor.log"
-          }
-
-      - name: TESTE W2g — sala-piloto refinada no Windows (headless)
-        timeout-minutes: 8
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          $log = "ci-logs/05g-pilot-room.log"
-          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/pilot_room_test.tscn *>&1 | Tee-Object -FilePath $log
-          $code = $LASTEXITCODE
-          Write-Host "exit code do teste da sala-piloto: $code"
-          if (-not (Select-String -Path $log -SimpleMatch "TESTE DA SALA-PILOTO PASSOU")) {
-            throw "Teste da sala-piloto não passou (exit $code) — ver 05g-pilot-room.log"
           }
 
       - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
@@ -899,51 +712,6 @@ jobs:
           if ($alive) { Stop-Process -Id $proc.Id -Force }
           if (-not $alive) { throw "O .exe encerrou sozinho ao abrir com janela" }
 
-      - name: TESTE W6b — closes dos encaixes (renderização real)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          New-Item -ItemType Directory -Force -Path ci-logs/visual | Out-Null
-          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/modular_visual_check.tscn *>&1 |
-            Tee-Object -FilePath ci-logs/13-visual.log
-          $code = $LASTEXITCODE
-          Write-Host "exit code das capturas de encaixe: $code"
-          $pngs = @(Get-ChildItem ci-logs/visual -Filter *.png -ErrorAction SilentlyContinue)
-          Write-Host "capturas geradas: $($pngs.Count)"
-          if ($code -ne 0) { throw "Capturas de encaixe falharam (exit $code) — ver 13-visual.log" }
-          if ($pngs.Count -lt 10) { throw "Capturas insuficientes ($($pngs.Count) de 10)" }
-
-      - name: TESTE W6c — capturas do primeiro andar (renderização real)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          New-Item -ItemType Directory -Force -Path ci-logs/visual-12a | Out-Null
-          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/first_floor_visual_check.tscn *>&1 |
-            Tee-Object -FilePath ci-logs/14-visual-12a.log
-          $code = $LASTEXITCODE
-          Write-Host "exit code das capturas do primeiro andar: $code"
-          $pngs = @(Get-ChildItem ci-logs/visual-12a -Filter *.png -ErrorAction SilentlyContinue)
-          Write-Host "capturas geradas: $($pngs.Count)"
-          if ($code -ne 0) { throw "Capturas do primeiro andar falharam (exit $code) — ver 14-visual-12a.log" }
-          if ($pngs.Count -lt 14) { throw "Capturas insuficientes ($($pngs.Count) de 14)" }
-
-      - name: TESTE W6d — capturas da sala-piloto (renderização real)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Continue"
-          $PSNativeCommandUseErrorActionPreference = $false
-          New-Item -ItemType Directory -Force -Path ci-logs/visual-pilot | Out-Null
-          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/pilot_room_visual_check.tscn *>&1 |
-            Tee-Object -FilePath ci-logs/15-visual-pilot.log
-          $code = $LASTEXITCODE
-          Write-Host "exit code das capturas da sala-piloto: $code"
-          $pngs = @(Get-ChildItem ci-logs/visual-pilot -Filter *.png -ErrorAction SilentlyContinue)
-          Write-Host "capturas geradas: $($pngs.Count)"
-          if ($code -ne 0) { throw "Capturas da sala-piloto falharam (exit $code) — ver 15-visual-pilot.log" }
-          if ($pngs.Count -lt 9) { throw "Capturas insuficientes ($($pngs.Count) de 9)" }
-
       - name: TESTE W7 — inspecionar o pacote .pck e os metadados do .exe
         shell: pwsh
         run: |
@@ -959,14 +727,14 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
-          if ($info.FileVersion -notlike "0.13.1*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+          if ($info.FileVersion -notlike "0.13.2*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Sala-Piloto Refinada (Windows x86_64 - Refinamento visual)
+          BLACK SIGHT - Limpeza das salas (Windows x86_64 - v0.13.2)
           ============================================
 
           COMO JOGAR
@@ -998,25 +766,6 @@ jobs:
           - CONFIGURACOES . abre as configuracoes durante a pausa
           - VOLTAR AO MENU  volta a tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
-
-          SALA-PILOTO VISUAL
-          - Clique em SALA-PILOTO VISUAL na tela inicial.
-          - Uma sala independente de pesquisa/analise para avaliar a nova
-            direcao visual: arquitetura completa, bancadas, capela, cabine
-            de seguranca, janela de observacao, porta principal, teto
-            tecnico, iluminacao e sinalizacao discreta.
-          - A planta da Etapa 12A continua disponivel em PRIMEIRO ANDAR.
-
-          DEMONSTRACAO MODULAR (ETAPA 11)
-          - Clique em DEMONSTRAR MODULOS na tela inicial.
-          - A cena mostra corredor reto, canto, sala quadrada (10 x 10 m),
-            sala retangular (10 x 14 m), pilares, guarda-corpos e uma escada
-            que liga o piso ao mezanino (4 m de altura).
-          - W A S D sobe e desce a escada normalmente; nao e preciso pular.
-          - Os guarda-corpos impedem a queda nas bordas do mezanino.
-          - ESC volta ao menu inicial; F11 alterna a tela cheia.
-          - A cena e uma amostra das pecas: nao substitui TESTAR MOVIMENTACAO
-            nem o mapa definitivo.
 
           INVENTARIO
           - Tres slots fixos, no canto inferior direito da tela.
@@ -1092,29 +841,16 @@ jobs:
           com 1/2/3, remocao provisoria com R e aviso de inventario cheio.
           Etapa 9: soltar itens no ambiente 3D com G (posicao segura, fisica
           simples e recolhimento com E); R continua como remocao de teste.
-          Etapa 11 (revisao): biblioteca modular industrial (grade de 2 m;
-          paredes de 0,40 x 6 m, portas e aberturas de 4 m, cantos, pisos e
-          tetos, corredores com cantos/T/X/terminacao, pilar, viga,
-          guarda-corpo, salas e escada) e a cena DEMONSTRAR MODULOS
-          reconstruida. ESC e SHIFT corrigidos. Nenhum
-          sistema anterior foi alterado.
-          Correcao 11.2: rodape e plinto deixaram de dividir plano com a
-          parede (z-fighting) em parede reta, canto, porta, abertura, juncao
-          em T e modulos rotacionados.
-          Etapa 12A: PRIMEIRO ANDAR - planta completa do laboratorio sobre os
-          modulos da Etapa 11: vestibulo, recepcao de pe-direito duplo,
-          seguranca, posto de controle, corredor principal de 5,6 m livres,
-          grande cruzamento central (21,6 x 21,6 m, teto de 12 m), pesquisa,
-          analises, observacao, armazenamento, escritorios, arquivo, area de
-          funcionarios, apoio logistico, eletrica, acesso a manutencao e duas
-          escadas para o subsolo (norte e sul). Sem moveis, equipamentos,
-          objetivos, criaturas ou multiplayer.
+          Limpeza 0.13.2: as salas de demonstracao (SALA-PILOTO VISUAL,
+          PRIMEIRO ANDAR e DEMONSTRAR MODULOS) foram removidas do jogo.
+          Permanece apenas TESTAR MOVIMENTACAO. A biblioteca modular
+          continua no projeto para uso futuro.
           Stamina e controles anteriores seguem iguais.
           Ainda nao ha pulo, uso/arremesso/transferencia de item, portas
           funcionais, geracao procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versao 0.13.1 - Sala-Piloto Refinada (refinamento visual)
+          Versao 0.13.2 - Limpeza das salas (salas de demonstracao removidas; permanece a sala de movimentacao)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -1125,7 +861,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -1142,66 +878,11 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-sala-piloto-refinada-windows-real
+          name: black-sight-windows-real
           path: |
-            BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip
+            BlackSight-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
-
-      - name: Resumo dos testes e do pacote (Windows)
-        if: success()
-        shell: pwsh
-        run: |
-          # As notas da release carregam as contagens reais do Windows e o
-          # tamanho/SHA-256 do ZIP que está sendo publicado: os números do
-          # arquivo de notas vêm de um build anterior e não podem ser copiados.
-          $bt = [char]96
-          $rows = @(
-            @{ Nome = "Fumaça (smoke_test.gd)"; Log = "ci-logs/05-smoke.log" },
-            @{ Nome = "Fluxo de interface (ui_flow_test.gd)"; Log = "ci-logs/05b-ui-flow.log" },
-            @{ Nome = "Controlador FPS + inventário + drop (movement_test.gd)"; Log = "ci-logs/05c-movement.log" },
-            @{ Nome = "Sistema modular de salas (modular_test.gd)"; Log = "ci-logs/05e-modular.log" },
-            @{ Nome = "Primeiro andar do laboratório (first_floor_test.gd)"; Log = "ci-logs/05f-first-floor.log" },
-            @{ Nome = "Sala-piloto refinada (pilot_room_test.gd)"; Log = "ci-logs/05g-pilot-room.log" }
-          )
-          $linhas = @("", "## Testes automatizados (Windows)", "", "| Suíte | Resultado |", "| --- | --- |")
-          foreach ($r in $rows) {
-            $texto = Get-Content $r.Log -Encoding utf8 -Raw
-            $m = [regex]::Match($texto, "(\d+) verifica..es aprovadas")
-            if ($m.Success) {
-              $linhas += "| $($r.Nome) | $($m.Groups[1].Value) verificações aprovadas |"
-            } else {
-              $linhas += "| $($r.Nome) | sem linha de resumo no log |"
-              Write-Host "::warning::sem linha de resumo em $($r.Log)"
-            }
-          }
-          $zip = "BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip"
-          $info = Get-Item $zip
-          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          $linhas += @("", "## Pacote verificado neste build", "", "| Item | Valor |", "| --- | --- |")
-          $linhas += "| Arquivo | $bt$zip$bt |"
-          $linhas += "| Tamanho | $($info.Length) bytes |"
-          $linhas += "| SHA-256 | $bt$hash$bt |"
-          $linhas += ""
-          $linhas | Out-File -FilePath ci-logs/release-summary.md -Encoding utf8
-          Get-Content ci-logs/release-summary.md
-
-      - name: Criar release no GitHub
-        if: success()
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $tag = "v0.13.1-sala-piloto-refinamento"
-          # Reexecução do mesmo commit: remove a release anterior da etapa
-          # para publicar exatamente o pacote deste build.
-          gh release delete $tag --yes --cleanup-tag 2>$null
-          $notas = (Get-Content docs/RELEASE_NOTES_SALA_PILOTO.md -Encoding utf8 -Raw).TrimEnd()
-          $extra = Get-Content ci-logs/release-summary.md -Encoding utf8 -Raw
-          New-Item -ItemType Directory -Force -Path build | Out-Null
-          ($notas + "`n" + $extra) | Out-File -FilePath build/release-notes.md -Encoding utf8
-          gh release create $tag "BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Sala-Piloto Refinada - Refinamento visual - Windows x86_64" --notes-file build/release-notes.md
-          if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
         if: always()
@@ -1225,7 +906,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Sala-Piloto Refinada (Windows real - Refinamento visual)", "")
+          $summary = @("## Black Sight - Limpeza das salas (Windows real - v0.13.2)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

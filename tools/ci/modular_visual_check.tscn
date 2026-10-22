@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://tools/ci/modular_visual_check.gd" id="1_visual"]
-
-[node name="ModularVisualCheck" type="Node3D"]
-script = ExtResource("1_visual")
