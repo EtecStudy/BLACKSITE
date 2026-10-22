@@ -189,9 +189,93 @@ Baseline medida antes da alteração:
 
 ## 8. Resultados
 
-_A preencher após a implementação e o CI._
+Implementação em três commits sobre o checkpoint `v0.13.0-pre-refinamento`:
+
+- `dd8cdcd` — refinamento principal (arquitetura em camadas, PBR procedural,
+  forro técnico a 3,20 m, porta/janela detalhadas, iluminação por
+  luminárias);
+- `8fdf838` — passada corretiva após inspeção das capturas do CI (a primeira
+  versão refinada estava escura demais);
+- `b4b73ff` — correção da placa da janela e métricas na vista geral.
+
+Cena final (`maps/pilot/pilot_research_room.tscn`, gerada por
+`tools/arch/build_pilot_room.py`):
+
+| Item | v0.13.0 | v0.13.1 |
+| --- | ---: | ---: |
+| Nós | 702 | 929 |
+| `MeshInstance3D` | 631 | 855 |
+| `CollisionShape3D` | 23 | 23 |
+| Luzes | 9 | 12 (8 spots + 4 omnis; 2 spots com sombra) |
+| `Label3D` | 8 | 8 |
+| Materiais `.tres` | 34 | 43 |
+| Texturas PNG | 20 | 28 (2.687.815 bytes) |
+| Malhas reutilizáveis | 288 | 446 |
+| Formas de colisão reutilizáveis | — | 14 |
+| Duplicados entre irmãos | 0 | 0 |
+
+Validação (run `39704865799`, commit
+`b4b73ff04ab82530c3b55fb551784de719e6ad40`, verde no Linux e no Windows):
+
+- sala-piloto: **62/62 verificações** no Linux e **62/62** no Windows;
+- Windows: fumaça **405**, fluxo de interface **95**, controlador **598**,
+  modular **364**, primeiro andar **347** — todas aprovadas;
+- métricas do renderizador (Linux, Xvfb/llvmpipe, 1600 × 900,
+  `gl_compatibility`, vista geral `01_sala_inteira`): **822 draw calls**,
+  **31.544 primitivas**, **70.181.795 bytes** de texturas e **77.248.215
+  bytes** de memória de vídeo. A v0.13.0 media 437 draw calls e 19.240
+  primitivas em enquadramento amplo comparável: a densidade de detalhes
+  quase dobrou as draw calls, que hoje são o custo dominante (as primitivas
+  continuam baixas). É aceitável para uma sala isolada em GPU intermediária,
+  mas **não deve ser replicado para o prédio inteiro sem instanciamento,
+  mesclagem de geometria estática ou LOD**;
+- capturas: **15 imagens** (12 obrigatórias + 3 closes de sinalização) em
+  `docs/screenshots/sala-piloto/`.
+
+Defeitos encontrados na inspeção das capturas e corrigidos antes da entrega:
+
+- iluminação geral escura demais (ambiente 0,34→0,55; spots principais
+  2,35→3,6 com ângulo 72° e atenuação 0,85; difusores 1,55→2,3; sombras de
+  spots reduzidas de 4 para 2; luz vermelha de emergência 0,35→0,16);
+- guarda-corpo da parede sul atravessando a folha da porta — segmentado fora
+  do vão (−2,95…−1,45);
+- juntas do piso pretas e largas — 12 mm em cinza médio;
+- vigas do forro pretas e pesadas — perfil de 0,14 m em `ceiling_panel`;
+  soffits em `painted_metal_gray`;
+- fitas luminosas sob prateleiras largas demais — 0,28/0,24 m → 0,12 m;
+- rótulo "OBSERVAÇÃO" cortado ao meio: a causa raiz **não era orientação**
+  (o teste de base — determinante +1 e eixo Y para cima — sempre esteve
+  verde, e os rótulos de EPI e da porta sempre renderizaram corretos). A
+  placa (topo em 3,00 m) ficava com a metade superior dentro do soffit do
+  forro (2,88–3,08 m), que a cortava exatamente na linha do texto. Placa e
+  rótulo desceram para 2,76 m (placa de 0,18 m, entre a verga da janela,
+  topo 2,67 m, e o soffit). Verificação visual nos closes
+  `13_sinalizacao_janela.png`, `14_sinalizacao_epi.png` e
+  `15_sinalizacao_porta.png`.
+
+Entrega:
+
+- tag/release: `v0.13.1-sala-piloto-refinamento` (alvo `b4b73ff`);
+- ZIP: `BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip`,
+  **42.567.970 bytes**;
+- SHA-256: `38514d90280357b3af2c5db37f6db1ee1e47f83c07f20cb90db0db8922c9e3cb`
+  (calculado pelo job do Windows durante o empacotamento; o ZIP também
+  contém `SHA256SUMS.txt`);
+- avaliação manual do usuário: **pendente** — esta etapa para aqui.
 
 ## 9. Avaliação honesta
 
-_A preencher após inspeção das capturas finais. Nenhuma nota deve ser
-declarada antes da comparação com as capturas da v0.13.0._
+Notas internas 0–10 após inspeção das 15 capturas finais comparadas com a
+v0.13.0. São uma leitura técnica da equipe, **não aprovação do usuário** —
+a direção visual definitiva depende da avaliação manual.
+
+| Categoria | Nota | Justificativa curta |
+| --- | ---: | --- |
+| Arquitetura e legibilidade construtiva | 7 | Paredes em camadas, soffits, forro técnico e rodapé cove leem como laboratório; encontros ainda são caixas primitivas. |
+| Materiais e PBR | 6 | PBR procedural completo (albedo/roughness/metallic/normal/AO local) e coerente; sem texturas fotográficas, o microdetalhe em close extremo é limitado. |
+| Iluminação | 6 | Hierarquia nasce das luminárias, com contraste e sombras seletivas; sem GI/bake, alguns cantos (sala de observação) seguem escuros e o llvmpipe do CI achata o resultado. |
+| Mobiliário e equipamentos | 6 | Silhuetas, frentes, trilhos e controles plausíveis; interiores de capela/cabine e instrumentos seguem simplificados. |
+| Detalhes funcionais e sinalização | 7 | Sinalização em pt-BR consistente e legível nos closes; detalhes têm função (tomadas, sensores, grelhas, extintor, inspeções) sem clutter aleatório. |
+| Escala e primeira pessoa | 7 | Teto 3,20 m, bancadas e porta em escala; circulação e aproximações validadas por colisões e raios no teste do piloto. |
+| Performance | 5 | 822 draw calls numa única sala é alto; exige estratégia de instanciamento/mesclagem antes de virar padrão do prédio. Texturas e primitivas estão sob controle. |
+| **Conjunto como referência visual** | **6,5** | Um laboratório mantido, técnico e crível em primeira pessoa — claramente acima da v0.13.0 —, ainda longe de asset de produção AAA. Bom o bastante para avaliar direção; não é a direção definitiva declarada. |

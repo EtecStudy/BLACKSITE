@@ -314,7 +314,44 @@ primeira leva de capturas também mostrou rótulos laterais espelhados, piso
 em blocos, capela vazia e lava-olhos desconectado; esses defeitos foram
 corrigidos antes da entrega.
 
-## 9. Limites honestos
+## 9. Atualização — Refinamento 13B (v0.13.1)
+
+A sala acima (v0.13.0) foi refinada na Etapa 13B, preservando planta,
+sistemas e a própria cena como checkpoint (`v0.13.0-pre-refinamento`).
+Resumo do que mudou e dos resultados; o detalhamento completo (pesquisa,
+classificação A/B/C/D, defeitos corrigidos e avaliação por categoria) está
+em [`REFINAMENTO_VISUAL_SALA_PILOTO.md`](REFINAMENTO_VISUAL_SALA_PILOTO.md).
+
+- Arquitetura em camadas (painéis, faixa de serviços, rodapé cove, soffits),
+  forro técnico modular a 3,20 m, piso contínuo com juntas finas, porta e
+  janela de observação com profundidade real.
+- PBR procedural ampliado (43 materiais, 28 texturas), mobiliário e
+  equipamentos com frentes/controles, detalhes funcionais e sinalização
+  em pt-BR verificada em closes.
+- Iluminação redesenhada a partir das luminárias (6 spots principais, 2 com
+  sombra; tarefas e apoios locais; emergência discreta) — incluindo uma
+  passada corretiva após a inspeção das capturas mostrar a primeira versão
+  refinada escura demais, e a correção da placa "OBSERVAÇÃO", que estava
+  parcialmente dentro do soffit do forro.
+- Cena final: 929 nós, 855 `MeshInstance3D`, 23 `CollisionShape3D`,
+  12 luzes, 446 malhas reutilizáveis, zero duplicados entre irmãos.
+- CI verde (run `39704865799`, commit `b4b73ff`): sala-piloto **62/62** no
+  Linux e no Windows; demais suítes aprovadas (Windows: fumaça 405,
+  interface 95, controlador 598, modular 364, primeiro andar 347).
+- Métricas (Linux/llvmpipe, vista geral): 822 draw calls, 31.544
+  primitivas, 70.181.795 bytes de texturas, 77.248.215 bytes de vídeo.
+- Release `v0.13.1-sala-piloto-refinamento`:
+  `BlackSight-Sala-Piloto-Refinada-Windows-x86_64.zip`, 42.567.970 bytes,
+  SHA-256 `38514d90280357b3af2c5db37f6db1ee1e47f83c07f20cb90db0db8922c9e3cb`.
+- Capturas atualizadas nesta pasta (15): as 12 vistas obrigatórias e os
+  closes `13_sinalizacao_janela.png`, `14_sinalizacao_epi.png` e
+  `15_sinalizacao_porta.png`. As capturas da v0.13.0 permanecem na release
+  `v0.13.0-sala-piloto-visual` e no histórico Git.
+- Avaliação manual do usuário: **pendente**. A etapa para aqui; nenhuma
+  direção visual foi declarada definitiva e nada foi aplicado aos módulos
+  ou às demais salas.
+
+## 10. Limites honestos
 
 - A geometria é construída com primitivas do Godot e texturas procedurais;
   isso testa direção, escala, materiais e densidade, mas não é um modelo
