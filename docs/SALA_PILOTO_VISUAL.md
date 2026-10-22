@@ -239,20 +239,23 @@ Medidas internas:
 - circulação livre ao redor da ilha e entre bancadas;
 - spawn em `(-2,60; 0,05; 4,35)`, olhando para o interior na sessão jogável.
 
-Contagem estática gerada:
+Contagem medida pelo Godot no teste técnico:
 
-- 689 nós declarados, incluindo a raiz;
-- 619 `MeshInstance3D`;
+- 702 nós na árvore da sala, incluindo a raiz;
+- 631 `MeshInstance3D`;
 - 23 `CollisionShape3D` em dois corpos estáticos;
-- 8 luzes (6 omni + 2 spots);
+- 9 luzes (7 omni + 2 spots);
 - 8 `Label3D`;
-- 34 materiais;
-- 275 malhas reutilizáveis e 14 formas de colisão reutilizáveis, segundo o
+- 34 materiais distintos carregados;
+- 288 malhas reutilizáveis e 14 formas de colisão reutilizáveis, segundo o
   gerador;
-- texturas PNG somam 2.301.285 bytes antes da importação/compressão do Godot.
+- texturas PNG somam 2.318.610 bytes antes da importação/compressão do Godot.
 
-O custo real de draw calls, primitivas e memória de texturas deve ser lido do
-log da captura no CI, não estimado a partir da contagem de nós.
+No quadro final da captura Linux, o `RenderingServer` registrou **437 draw
+calls**, **19.240 primitivas**, **61.793.195 bytes de memória de texturas** e
+**68.652.915 bytes de memória de vídeo**. Esses números são do quadro de
+captura em 1600 × 900 no Xvfb/llvmpipe; servem como ordem de grandeza da sala
+isolada, não como promessa de desempenho em qualquer GPU.
 
 ## 7. Como testar manualmente
 
@@ -273,14 +276,43 @@ log da captura no CI, não estimado a partir da contagem de nós.
 
 ## 8. Validação automática e capturas
 
-Seção a ser preenchida com os resultados reais do CI desta etapa:
+Validação executada no run **39699270251**, commit
+`b6b49b06885954739c6b72a8d119715bc732eae6`:
 
-- run Linux/Windows: **pendente**;
-- verificações da sala-piloto: **pendente**;
-- capturas geradas: **pendente**;
-- draw calls/primitivas/memória de texturas: **pendente**;
-- build Windows e SHA-256: **pendente**;
-- percurso manual do usuário: **pendente**.
+- Linux: importar, fumaça, fluxo de interface, controlador, modular, primeiro
+  andar, sala-piloto, renderizações, exportações e pacote — **aprovado**;
+- Windows real: mesmas suítes, `.exe` exportado, janela, capturas e pacote —
+  **aprovado**;
+- sala-piloto: **58/58 verificações** no Linux e **58/58** no Windows;
+- fumaça: **405** verificações; fluxo de interface: **95**; controlador:
+  **598**; modular: **364**; primeiro andar: **347** (contagens do Windows);
+- capturas: **9 imagens** em 1600 × 900 no Linux e no Windows;
+- draw calls/primitivas/memória: ver a seção anterior;
+- release: `v0.13.0-sala-piloto-visual`;
+- ZIP: `BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip`, **42.326.220
+  bytes**;
+- SHA-256: `f398eac0d9c249d2cc3cfc6b02bbc587cebc76324b01af9e047be9b69366f3a4`;
+- percurso manual do usuário: **pendente** — é a avaliação que encerra a
+  etapa.
+
+As capturas do CI foram copiadas para `docs/screenshots/sala-piloto/`:
+
+- [sala inteira](screenshots/sala-piloto/01_sala_inteira.png)
+- [primeira pessoa no spawn](screenshots/sala-piloto/02_primeira_pessoa_spawn.png)
+- [parede e teto](screenshots/sala-piloto/03_parede_e_teto.png)
+- [piso e móveis](screenshots/sala-piloto/04_piso_e_moveis.png)
+- [porta principal](screenshots/sala-piloto/05_porta_principal.png)
+- [janela de observação](screenshots/sala-piloto/06_janela_observacao.png)
+- [capela e bancada norte](screenshots/sala-piloto/07_capela_e_bancada_norte.png)
+- [teto técnico](screenshots/sala-piloto/08_teto_tecnico.png)
+- [bancada central](screenshots/sala-piloto/09_bancada_central.png)
+
+A primeira execução (`39697023937`) falhou em um único ponto de circulação
+escolhido colado ao colisor de uma banqueta; o ponto foi movido para o
+corredor sul real da ilha, sem remover nem enfraquecer a verificação. A
+primeira leva de capturas também mostrou rótulos laterais espelhados, piso
+em blocos, capela vazia e lava-olhos desconectado; esses defeitos foram
+corrigidos antes da entrega.
 
 ## 9. Limites honestos
 
