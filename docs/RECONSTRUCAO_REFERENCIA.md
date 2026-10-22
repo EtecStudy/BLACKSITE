@@ -71,6 +71,24 @@ comparação visual.
 
 ## Ciclo de comparação
 
-Rodada 1 — aguardando capturas do CI para o lado a lado com a referência
-(porta/correntes, cozinha, ilha/braço, câmera principal). Ajustes de
-geometria, luz e enquadramento serão registrados aqui a cada rodada.
+- **Rodada 1** (CI `39861675002`, verde): composição confirmada — porta
+  acorrentada, cozinha corrida, ilha e braço nos lugares certos. Diferenças:
+  cena clara demais, tampo da ilha espelhado, armários aéreos baixos,
+  vão leste selado por painel, manchas duras demais.
+- **Rodada 2** (CI `39862585051`, verde): ambiente e albedos escurecidos,
+  tampo fosco, armários aéreos elevados até perto da sanca, elos de
+  corrente maiores, pele/sangue ajustados. Resultado próximo do clima
+  da foto.
+- **Rodada 3** (CI `39863626683`, verde): vão leste aberto com moldura em
+  tiras (escuridão real), cromo menos preto, tábua/caixa/chaleira
+  corrigidas, luzes sem estouro, câmera da foto ajustada (1,63 m).
+  Conferência nos dois sistemas: SMOKE 357, UI FLOW 53, MOVEMENT 598,
+  DROP 156, KITCHEN 13/13.
+
+**Diferenças restantes (honestas):** a referência tem grão de filme,
+profundidade de campo e penumbras mais profundas no canto direito —
+efeitos de pós-processo além do escopo do renderizador Compatibility
+usado no projeto; o mofo procedural é mais regular que o da foto; objetos
+muito pequenos (ganchos, ímãs, fiação) são simplificados. A geometria, as
+proporções, a posição da câmera e as duas luzes principais reproduzem a
+referência, e a cena é navegável de qualquer ângulo.
