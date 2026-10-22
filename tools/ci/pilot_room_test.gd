@@ -134,6 +134,15 @@ func _check_dimensions(room: Node3D) -> void:
 	var safety_sign := room.get_node_or_null("TechnicalDetails/SafetySign") as Label3D
 	_check(safety_sign != null and safety_sign.global_transform.basis.z.dot(Vector3.RIGHT) > 0.99,
 		"Rótulo de EPI da parede oeste está voltado para o interior da sala")
+	# Nenhum rótulo pode estar espelhado ou de cabeça para baixo: a base precisa
+	# ser rotação própria (determinante +1) com o eixo Y apontando para cima.
+	var bad_labels: Array[String] = []
+	for label_node in room.find_children("", "Label3D", true, false):
+		var basis := (label_node as Node3D).global_transform.basis
+		if basis.determinant() < 0.99 or basis.y.dot(Vector3.UP) < 0.99:
+			bad_labels.append(label_node.name)
+	_check(bad_labels.is_empty(),
+		"Todos os rótulos estão direitos e sem espelhamento (problemas: %s)" % ", ".join(bad_labels))
 	var main_light := room.get_node_or_null("Lighting/MainLight0") as SpotLight3D
 	_check(main_light != null and main_light.position.y > 2.9,
 		"Luz principal nasce nas luminárias do forro técnico")

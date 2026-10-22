@@ -79,6 +79,13 @@ func _run() -> void:
 	await _save_shot(camera, "11_equipamento_detalhe.png")
 	_look(camera, Vector3(4.30, 1.52, 4.65), Vector3(-1.2, 2.85, -3.2))
 	await _save_shot(camera, "12_iluminacao_e_forro.png")
+	# Close-ups de sinalização: legibilidade, orientação e alinhamento às placas.
+	_look(camera, Vector3(3.55, 2.45, -1.0), Vector3(4.95, 2.85, -1.0))
+	await _save_shot(camera, "13_sinalizacao_janela.png")
+	_look(camera, Vector3(-3.55, 1.95, 1.55), Vector3(-4.95, 2.05, 1.55))
+	await _save_shot(camera, "14_sinalizacao_epi.png")
+	_look(camera, Vector3(-0.72, 1.70, 4.35), Vector3(-0.72, 1.70, 5.95))
+	await _save_shot(camera, "15_sinalizacao_porta.png")
 
 	for i in range(10):
 		await get_tree().process_frame

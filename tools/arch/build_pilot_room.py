@@ -334,7 +334,7 @@ MATERIALS: dict[str, dict[str, object]] = {
     "perforated_metal": {"texture": "perforated_metal", "color": (0.46, 0.49, 0.50, 1), "metallic": 0.52, "normal_scale": 0.45},
     "cove_floor": {"texture": "floor_epoxy", "color": (0.78, 0.81, 0.80, 1), "metallic": 0.02, "normal_scale": 0.35},
     "contact_shadow": {"color": (0.008, 0.010, 0.010, 0.34), "roughness": 1.0, "transparency": 1},
-    "diffuser": {"color": (0.88, 0.90, 0.88, 1), "emission": (0.82, 0.86, 0.82, 1), "emission_energy": 1.55, "roughness": 0.55},
+    "diffuser": {"color": (0.88, 0.90, 0.88, 1), "emission": (0.82, 0.86, 0.82, 1), "emission_energy": 2.3, "roughness": 0.55},
     "dark_metal": {"color": (0.10, 0.11, 0.12, 1), "metallic": 0.55, "roughness": 0.50},
     "frame_metal": {"color": (0.23, 0.26, 0.27, 1), "metallic": 0.65, "roughness": 0.42},
     "stainless": {"color": (0.58, 0.62, 0.63, 1), "metallic": 0.86, "roughness": 0.30},
@@ -348,7 +348,7 @@ MATERIALS: dict[str, dict[str, object]] = {
     "screen": {"color": (0.015, 0.035, 0.045, 1), "emission": (0.05, 0.22, 0.27, 1), "emission_energy": 0.75, "roughness": 0.35},
     "screen_dim": {"color": (0.02, 0.03, 0.035, 1), "emission": (0.03, 0.10, 0.12, 1), "emission_energy": 0.45, "roughness": 0.4},
     "light_panel": {"color": (0.92, 0.94, 0.92, 1), "emission": (0.95, 0.97, 0.94, 1), "emission_energy": 2.4, "roughness": 0.4},
-    "task_light": {"color": (0.85, 0.88, 0.84, 1), "emission": (0.72, 0.78, 0.72, 1), "emission_energy": 1.2, "roughness": 0.5},
+    "task_light": {"color": (0.85, 0.88, 0.84, 1), "emission": (0.72, 0.78, 0.72, 1), "emission_energy": 1.35, "roughness": 0.5},
     "indicator_green": {"color": (0.02, 0.12, 0.05, 1), "emission": (0.05, 0.65, 0.22, 1), "emission_energy": 1.5},
     "indicator_red": {"color": (0.16, 0.015, 0.012, 1), "emission": (0.65, 0.035, 0.025, 1), "emission_energy": 1.3},
     "indicator_amber": {"color": (0.16, 0.08, 0.01, 1), "emission": (0.70, 0.34, 0.04, 1), "emission_energy": 1.1},
@@ -571,13 +571,13 @@ class Builder:
         self.node(name, "OmniLight3D", parent, pos, (0, 0, 0), extra)
 
     def spot(self, name: str, parent: str, pos: tuple[float, float, float], color: tuple[float, float, float],
-             energy: float, range_: float, angle: float, shadow: bool = False) -> None:
+             energy: float, range_: float, angle: float, shadow: bool = False, attenuation: float = 1.1) -> None:
         extra = [
             f"light_color = {color_text((*color, 1.0))}",
             f"light_energy = {fmt(energy)}",
             f"spot_range = {fmt(range_)}",
             f"spot_angle = {fmt(angle)}",
-            "spot_attenuation = 1.1",
+            f"spot_attenuation = {fmt(attenuation)}",
             f"shadow_enabled = {'true' if shadow else 'false'}",
         ]
         self.node(name, "SpotLight3D", parent, pos, (-math.pi / 2, 0, 0), extra)
@@ -726,7 +726,7 @@ def wall_panels() -> None:
         # Proteção contra carrinhos a 0,95 m, segmentada onde há circulação.
         guard_segments = {
             "north": [(-3.6, 2.6), (0.0, 2.6), (3.6, 2.6)],
-            "south": [(-3.65, 2.6), (1.4, 7.0)],
+            "south": [(-4.0, 1.9), (1.72, 6.25)],
             "west": [(-4.0, 2.4), (0.0, 2.4), (4.0, 2.4)],
             "east": [(-4.4, 3.0), (3.6, 4.6)],
         }[side]
@@ -754,9 +754,9 @@ def floor_and_ceiling() -> None:
     for x, z, sx, sz in [(-2.2, 3.4, 3.6, 4.8), (0.0, -0.4, 5.8, 3.4), (3.1, -3.0, 3.2, 4.2)]:
         B.box("FloorWear", floor, (x, 0.026, z), (sx, 0.004, sz), "floor_alt")
     for x in (-3.0, -1.5, 0.0, 1.5, 3.0):
-        B.box("FloorSeamX", floor, (x, 0.027, 0), (0.018, 0.005, 12.0), "rubber")
+        B.box("FloorSeamX", floor, (x, 0.027, 0), (0.012, 0.005, 12.0), "container_gray")
     for z in (-4.0, -2.0, 0.0, 2.0, 4.0):
-        B.box("FloorSeamZ", floor, (0, 0.027, z), (10.0, 0.005, 0.018), "rubber")
+        B.box("FloorSeamZ", floor, (0, 0.027, z), (10.0, 0.005, 0.012), "container_gray")
     B.box("DoorThreshold", floor, (-2.2, 0.026, 5.82), (1.65, 0.018, 0.28), "brushed_metal")
     B.cyl("FloorDrain", floor, (-4.15, 0.027, 0.72), 0.09, 0.008, "dark_metal", segments=28)
     for dz in (-0.045, 0.0, 0.045):
@@ -776,9 +776,9 @@ def floor_and_ceiling() -> None:
     for z in (-3.6, -1.2, 1.2, 3.6):
         B.box("CeilingGridZ", ceiling, (0, 3.165, z), (10.0, 0.035, 0.045), "frame_metal")
     for x in (-4.72, 4.72):
-        B.box("CeilingSoffit", ceiling, (x, 2.98, 0), (0.55, 0.20, 12.0), "service_metal")
+        B.box("CeilingSoffit", ceiling, (x, 2.98, 0), (0.55, 0.20, 12.0), "painted_metal_gray")
     for z in (-5.72, 5.72):
-        B.box("CeilingSoffit", ceiling, (0, 2.98, z), (10.0, 0.20, 0.55), "service_metal")
+        B.box("CeilingSoffit", ceiling, (0, 2.98, z), (10.0, 0.20, 0.55), "painted_metal_gray")
     B.box("MainDuct", ceiling, (0, 2.94, 0), (0.82, 0.26, 10.9), "ceiling_panel")
     for z in (-4.0, 0.0, 4.0):
         B.box("DuctFlange", ceiling, (0, 2.94, z), (0.90, 0.30, 0.08), "service_metal")
@@ -787,7 +787,7 @@ def floor_and_ceiling() -> None:
     B.cyl("PipeWater", ceiling, (-0.78, 2.90, 0), 0.055, 10.9, "stainless", (math.pi / 2, 0, 0), 18)
     B.cyl("PipeAir", ceiling, (-0.92, 2.84, 0), 0.038, 10.9, "frame_metal", (math.pi / 2, 0, 0), 16)
     for z in (-3.6, 0.0, 3.6):
-        B.box("CeilingBeam", ceiling, (0, 3.03, z), (10.0, 0.24, 0.24), "service_metal")
+        B.box("CeilingBeam", ceiling, (0, 3.10, z), (10.0, 0.14, 0.20), "ceiling_panel")
     # Luminárias embutidas 1200 x 300 mm equivalentes: fonte das luzes principais.
     for x in (-2.3, 2.3):
         for z in (-4.0, 0.0, 4.0):
@@ -865,7 +865,7 @@ def door_and_window() -> None:
     for i in range(5):
         B.box("WindowBlindSlat", window, (4.995, 2.34 - i * 0.09, -1.0), (0.012, 0.018, 3.55), "frame_metal", (0, 0, 0.35))
     B.box("WindowSignPlate", window, (4.90, 2.88, -1.0), (0.025, 0.24, 0.78), "plastic_white")
-    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
+    B.label("WindowSign", window, (4.862, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
     # Painéis de fechamento acima dos vãos, no mesmo plano dos painéis principais.
     B.box("DoorTransomPanel", door, (-2.2, 2.94, 5.965), (1.58, 0.50, 0.07), "wall_panel")
     B.box("WindowTransomPanel", window, (4.965, 2.92, -1.0), (0.07, 0.52, 3.82), "wall_panel")
@@ -939,7 +939,7 @@ def furniture() -> None:
         B.box("BenchOutletSlot", west, (-4.765, 1.18, z), (0.008, 0.045, 0.10), "plastic_black")
     for y in (1.72, 2.18):
         B.box("WestShelf", west, (-4.78, y, -1.6), (0.38, 0.045, 5.6), "brushed_metal")
-    B.box("WestShelfLight", west, (-4.72, 1.665, -1.6), (0.28, 0.018, 5.35), "task_light")
+    B.box("WestShelfLight", west, (-4.72, 1.665, -1.6), (0.12, 0.018, 5.35), "task_light")
     for z in (-4.35, -1.6, 1.15):
         B.box("WestShelfUpright", west, (-4.78, 1.95, z), (0.34, 0.52, 0.045), "frame_metal")
         B.box("WestShelfBracket", west, (-4.78, 1.58, z), (0.30, 0.035, 0.035), "frame_metal", (0, 0, 0.55))
@@ -961,7 +961,7 @@ def furniture() -> None:
             B.cyl("IslandHandle", island, (x, 0.70, front_z + (0.025 if side > 0 else -0.025)), 0.010, 0.30, "stainless", (0, 0, math.pi / 2), 10)
     B.box("IslandServiceSpine", island, (0, 1.10, -0.55), (4.35, 0.18, 0.22), "service_metal")
     B.box("IslandShelf", island, (0, 1.48, -0.55), (4.15, 0.045, 0.34), "brushed_metal")
-    B.box("IslandShelfLight", island, (0, 1.445, -0.55), (4.05, 0.016, 0.24), "task_light")
+    B.box("IslandShelfLight", island, (0, 1.445, -0.55), (4.05, 0.016, 0.12), "task_light")
     for x in (-1.85, -0.65, 0.65, 1.85):
         B.cyl("IslandFoot", island, (x, 0.045, -0.55), 0.040, 0.07, "dark_metal", segments=12)
     for x in (-2.0, 0.0, 2.0):
@@ -1225,7 +1225,7 @@ def props_and_details() -> None:
     B.box("FirstAidCrossV", details, (-4.868, 1.62, 4.38), (0.012, 0.20, 0.055), "safety_red")
     B.box("FirstAidCrossH", details, (-4.868, 1.62, 4.38), (0.012, 0.055, 0.20), "safety_red")
     B.box("SafetySignPlate", details, (-4.91, 2.05, 1.55), (0.025, 0.34, 0.58), "safety_yellow")
-    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", -math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
+    B.label("SafetySign", details, (-4.895, 2.05, 1.55), "EPI OBRIGATÓRIO", -math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
     B.cyl("EyewashPipe", details, (-4.82, 2.15, 2.45), 0.022, 1.05, "stainless", segments=12)
     B.cyl("EyewashArm", details, (-4.62, 2.64, 2.45), 0.018, 0.42, "stainless", (0, 0, math.pi / 2), 12)
     B.cyl("EyewashDrop", details, (-4.48, 2.52, 2.45), 0.016, 0.24, "stainless", segments=10)
@@ -1251,14 +1251,14 @@ def lights_and_collisions() -> None:
     light_index = 0
     for x in (-2.3, 2.3):
         for z in (-4.0, 0.0, 4.0):
-            B.spot(f"MainLight{light_index}", lights, (x, 3.04, z), (0.93, 0.96, 1.0), 2.35, 8.5, 64, z != 0.0)
+            B.spot(f"MainLight{light_index}", lights, (x, 3.04, z), (0.93, 0.96, 1.0), 3.6, 9.5, 72, light_index in (1, 4), 0.85)
             light_index += 1
-    B.spot("IslandTaskLight", lights, (0, 1.43, -0.55), (0.96, 0.98, 0.94), 0.85, 3.2, 55, False)
-    B.spot("WestTaskLight", lights, (-4.68, 1.64, -1.6), (0.96, 0.98, 0.94), 0.80, 3.4, 52, False)
-    B.omni("ObservationLight", lights, (6.45, 2.65, -1.0), (0.55, 0.68, 0.78), 0.95, 5.0, 1.2, False)
-    B.omni("HoodWorkLight", lights, (-2.3, 2.35, -4.95), (0.94, 0.97, 0.94), 0.55, 2.6, 1.25, False)
-    B.omni("BscWorkLight", lights, (3.75, 1.95, -5.12), (0.94, 0.97, 0.94), 0.35, 1.8, 1.25, False)
-    B.omni("DoorEmergencyLight", lights, (-2.2, 3.15, 5.55), (1.0, 0.18, 0.10), 0.35, 3.2, 1.3, False)
+    B.spot("IslandTaskLight", lights, (0, 1.43, -0.55), (0.96, 0.98, 0.94), 1.15, 3.2, 55, False)
+    B.spot("WestTaskLight", lights, (-4.68, 1.64, -1.6), (0.96, 0.98, 0.94), 1.10, 3.4, 52, False)
+    B.omni("ObservationLight", lights, (6.45, 2.65, -1.0), (0.55, 0.68, 0.78), 1.25, 5.0, 1.2, False)
+    B.omni("HoodWorkLight", lights, (-2.3, 2.35, -4.95), (0.94, 0.97, 0.94), 0.75, 2.6, 1.25, False)
+    B.omni("BscWorkLight", lights, (3.75, 1.95, -5.12), (0.94, 0.97, 0.94), 0.50, 1.8, 1.25, False)
+    B.omni("DoorEmergencyLight", lights, (-2.2, 3.15, 5.55), (1.0, 0.18, 0.10), 0.16, 2.6, 1.3, False)
     B.box("EmergencyFixture", lights, (-2.2, 3.18, 5.88), (0.34, 0.09, 0.06), "indicator_red")
 
     collision = B.group("Collision")
@@ -1311,8 +1311,8 @@ def build_scene() -> None:
 background_mode = 1
 background_color = Color(0.008, 0.010, 0.014, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.38, 0.43, 0.50, 1)
-ambient_light_energy = 0.34
+ambient_light_color = Color(0.42, 0.47, 0.54, 1)
+ambient_light_energy = 0.55
 tonemap_mode = 2"""
     world = "[node name=\"WorldEnvironment\" type=\"WorldEnvironment\" parent=\".\"]\nenvironment = SubResource(\"Env_pilot\")"
     load_steps = len(MATERIALS) + len(B.subresources) + 2
