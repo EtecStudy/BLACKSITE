@@ -270,7 +270,7 @@ MATERIALS: dict[str, dict[str, object]] = {
     "wall_lower": {"texture": "wall_panel", "color": (0.60, 0.64, 0.64, 1), "metallic": 0.10, "normal_scale": 0.5},
     "service_metal": {"texture": "brushed_metal", "color": (0.56, 0.60, 0.61, 1), "metallic": 0.38, "normal_scale": 0.35},
     "floor_epoxy": {"texture": "floor_epoxy", "metallic": 0.02, "normal_scale": 0.45},
-    "floor_alt": {"texture": "floor_epoxy", "color": (0.88, 0.92, 0.94, 1), "metallic": 0.02, "normal_scale": 0.45},
+    "floor_alt": {"texture": "floor_epoxy", "color": (0.96, 0.98, 1.0, 1), "metallic": 0.02, "normal_scale": 0.45},
     "ceiling_panel": {"texture": "ceiling_panel", "metallic": 0.12, "normal_scale": 0.55},
     "brushed_metal": {"texture": "brushed_metal", "metallic": 0.72, "normal_scale": 0.3},
     "bench_top": {"texture": "bench_top", "metallic": 0.05, "normal_scale": 0.35},
@@ -648,7 +648,7 @@ def floor_and_ceiling() -> None:
         B.box("CeilingSoffit", ceiling, (x, 4.98, 0), (0.55, 0.20, 12.0), "service_metal")
     for z in (-5.72, 5.72):
         B.box("CeilingSoffit", ceiling, (0, 4.98, z), (10.0, 0.20, 0.55), "service_metal")
-    B.box("MainDuct", ceiling, (0, 4.94, 0), (0.82, 0.26, 10.9), "service_metal")
+    B.box("MainDuct", ceiling, (0, 4.94, 0), (0.82, 0.26, 10.9), "ceiling_panel")
     B.box("CableTray", ceiling, (0.72, 4.86, 0), (0.30, 0.08, 10.9), "frame_metal")
     B.cyl("PipeWater", ceiling, (-0.78, 4.90, 0), 0.055, 10.9, "stainless", (math.pi / 2, 0, 0), 18)
     B.cyl("PipeAir", ceiling, (-0.92, 4.84, 0), 0.038, 10.9, "frame_metal", (math.pi / 2, 0, 0), 16)

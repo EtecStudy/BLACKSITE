@@ -91,7 +91,7 @@ material = ExtResource("mat_service_metal")
 size = Vector3(10, 0.2, 0.55)
 
 [sub_resource type="BoxMesh" id="Mesh_012"]
-material = ExtResource("mat_service_metal")
+material = ExtResource("mat_ceiling_panel")
 size = Vector3(0.82, 0.26, 10.9)
 
 [sub_resource type="BoxMesh" id="Mesh_013"]
