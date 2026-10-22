@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Limpeza 0.13.2: salas de demonstração removidas; permanece apenas a sala de movimentação como ambiente de teste dos sistemas."
-config/version="0.13.2"
+config/description="Black Sight — jogo de terror em primeira pessoa. Reconstrução 3D 0.14.0: cozinha da imagem de referência reconstruída como cena navegável em primeira pessoa; a sala de movimentação permanece como ambiente de teste dos sistemas."
+config/version="0.14.0"
 run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://shared/textures/branding/icon_1024.png"

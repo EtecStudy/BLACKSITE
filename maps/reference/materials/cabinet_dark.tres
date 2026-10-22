@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://maps/reference/textures/cabinet_albedo.png" id="tex_albedo"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/cabinet_normal.png" id="tex_normal"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/cabinet_roughness.png" id="tex_roughness"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/cabinet_ao.png" id="tex_ao"]
+
+[resource]
+albedo_texture = ExtResource("tex_albedo")
+albedo_color = Color(0.3, 0.33, 0.31, 1)
+roughness_texture = ExtResource("tex_roughness")
+roughness = 0.62
+normal_enabled = true
+normal_texture = ExtResource("tex_normal")
+normal_scale = 0.6
+ao_enabled = true
+ao_texture = ExtResource("tex_ao")
+ao_light_affect = 0.35
+metallic = 0

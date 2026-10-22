@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://maps/reference/textures/counter_albedo.png" id="tex_albedo"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/counter_normal.png" id="tex_normal"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/counter_roughness.png" id="tex_roughness"]
+[ext_resource type="Texture2D" path="res://maps/reference/textures/counter_ao.png" id="tex_ao"]
+
+[resource]
+albedo_texture = ExtResource("tex_albedo")
+roughness_texture = ExtResource("tex_roughness")
+roughness = 0.38
+normal_enabled = true
+normal_texture = ExtResource("tex_normal")
+normal_scale = 0.5
+ao_enabled = true
+ao_texture = ExtResource("tex_ao")
+ao_light_affect = 0.35
+metallic = 0.05

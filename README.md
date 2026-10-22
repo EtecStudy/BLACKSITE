@@ -46,6 +46,9 @@ commit `3c62ec7`), **continua publicada**, junto de `v0.11.1-etapa11-correcao`,
 3. Clique em **TESTAR MOVIMENTAÇÃO** para entrar na sala 3D. Olhe para os itens
    **ITEM A**, **B**, **C** e **D**, pressione **E** para pegar, **1/2/3** para
    escolher o slot e **G** para soltar o item no chão (recolha de novo com **E**).
+4. Ou clique em **RECONSTRUÇÃO 3D** para explorar a cozinha da imagem de
+   referência reconstruída em 3D (porta acorrentada, armários, geladeira,
+   fogão e ilha), navegável em primeira pessoa com os mesmos controles.
 
 Requisitos: Windows 10/11 64 bits e GPU com OpenGL 3.3+ (renderizador *GL Compatibility*).
 

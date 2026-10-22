@@ -15,6 +15,8 @@ extends Control
 const SETTINGS_SCENE: String = "res://ui/scenes/settings_screen.tscn"
 ## Navegação por caminho: a UI não importa classes de gameplay, apenas troca de cena.
 const MOVEMENT_TEST_SCENE: String = "res://match/scenes/movement_test.tscn"
+## Reconstrução 3D da imagem de referência (cozinha navegável em 1ª pessoa).
+const KITCHEN_REFERENCE_SCENE: String = "res://match/scenes/kitchen_reference.tscn"
 
 const FADE_IN_DURATION: float = 1.3
 const FADE_OUT_DURATION: float = 0.55
@@ -26,6 +28,7 @@ const EMBLEM_BREATH_DURATION: float = 3.2
 @onready var _build_label: Label = %BuildLabel
 @onready var _start_button: Button = %StartButton
 @onready var _test_button: Button = %TestMovementButton
+@onready var _kitchen_button: Button = %KitchenReferenceButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
 
@@ -43,6 +46,7 @@ func _ready() -> void:
 	]
 	_start_button.disabled = true
 	_test_button.pressed.connect(_on_test_movement_pressed)
+	_kitchen_button.pressed.connect(_on_kitchen_reference_pressed)
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	print("[Black Sight] Tela inicial carregada — %s · %s" % [
@@ -75,6 +79,11 @@ func _play_intro() -> void:
 func _on_test_movement_pressed() -> void:
 	_play_click()
 	get_tree().change_scene_to_file(MOVEMENT_TEST_SCENE)
+
+
+func _on_kitchen_reference_pressed() -> void:
+	_play_click()
+	get_tree().change_scene_to_file(KITCHEN_REFERENCE_SCENE)
 
 
 func _on_settings_pressed() -> void:

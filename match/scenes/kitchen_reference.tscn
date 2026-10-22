@@ -1,0 +1,135 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://match/scripts/kitchen_reference_session.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://maps/reference/kitchen_reference.tscn" id="2_room"]
+[ext_resource type="PackedScene" path="res://players/scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://ui/scenes/hud/player_hud.tscn" id="4_hud"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="5_title_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause"]
+bg_color = Color(0.031, 0.031, 0.035, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.62, 0.58, 0.51, 0.22)
+
+[sub_resource type="FontVariation" id="FontVariation_pause_title"]
+base_font = ExtResource("5_title_font")
+spacing_glyph = 8
+
+[node name="KitchenReferenceSession" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="KitchenRoom" parent="." instance=ExtResource("2_room")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(0.718, 0, 0.696, 0, 1, 0, -0.696, 0, 0.718, 2.95, 0.05, 2.70)
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="HintLabel" type="Label" parent="Interface"]
+unique_name_in_owner = true
+offset_left = 42.0
+offset_top = 28.0
+offset_right = 1200.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 0.9)
+theme_override_font_sizes/font_size = 15
+text = "WASD MOVER · SHIFT CORRER · CTRL AGACHAR · ESC PAUSA — COZINHA DA IMAGEM DE REFERÊNCIA"
+
+[node name="PlayerHud" parent="Interface" instance=ExtResource("4_hud")]
+unique_name_in_owner = true
+
+[node name="PauseRoot" type="Control" parent="Interface"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Interface/PauseRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="Center" type="CenterContainer" parent="Interface/PauseRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Interface/PauseRoot/Center"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pause")
+
+[node name="Margin" type="MarginContainer" parent="Interface/PauseRoot/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 30
+
+[node name="Content" type="VBoxContainer" parent="Interface/PauseRoot/Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PauseTitle" type="Label" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.87, 0.8, 1)
+theme_override_fonts/font = SubResource("FontVariation_pause_title")
+theme_override_font_sizes/font_size = 38
+text = "PAUSA"
+horizontal_alignment = 1
+
+[node name="PauseHint" type="Label" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 1)
+theme_override_font_sizes/font_size = 15
+text = "O mouse foi liberado. O jogador está parado e o ambiente continua carregado."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="PauseDivider" type="ColorRect" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.62, 0.58, 0.51, 0.18)
+
+[node name="PauseControls" type="Label" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 0.9)
+theme_override_font_sizes/font_size = 14
+text = "WASD mover · SHIFT correr · CTRL agachar · E pegar · 1 2 3 slots · G soltar · R remover · ESC capturar novamente"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "CONTINUAR"
+
+[node name="SettingsButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "CONFIGURAÇÕES"
+
+[node name="MenuButton" type="Button" parent="Interface/PauseRoot/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "VOLTAR AO MENU"
+
+[node name="SettingsLayer" type="CanvasLayer" parent="."]
+layer = 5

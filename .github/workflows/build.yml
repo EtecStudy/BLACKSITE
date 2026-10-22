@@ -200,6 +200,21 @@ jobs:
           test -s ci-logs/drop_hud.png
           echo "frame do drop capturado: $latest"
 
+      - name: TESTE 3f — Reconstrução 3D, verificação visual da cozinha (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/kitchen_captures
+          set -o pipefail
+          # A cena é autorada com texturas/materiais gerados proceduralmente;
+          # o passo garante que carrega, tem a estrutura esperada e renderiza.
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://tools/ci/kitchen_reference_visual_check.tscn \
+            --rendering-driver opengl3 --resolution 1280x800 --audio-driver Dummy \
+            -- --output-dir="$GITHUB_WORKSPACE/ci-logs/kitchen_captures" 2>&1 | tee ci-logs/kitchen_check.log || true
+          grep -q "KITCHEN REFERENCE CHECK:" ci-logs/kitchen_check.log
+          ls -la ci-logs/kitchen_captures/ || true
+          # As capturas seguem em ci-logs/kitchen_captures e são publicadas
+          # pelo passo de diagnóstico (branch ci-diagnostics) ao fim do job.
+
       - name: TESTE 4 — exportar executável Windows (release)
         run: |
           mkdir -p build/windows
@@ -278,7 +293,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Limpeza das salas (Windows x86_64 · v0.13.2)
+          BLACK SIGHT — Reconstrução 3D (Windows x86_64 · v0.14.0)
           ============================================
 
           COMO JOGAR
@@ -381,15 +396,16 @@ jobs:
           com 1/2/3, remoção provisória com R e aviso de inventário cheio.
           Etapa 9: soltar itens no ambiente 3D com G (posição segura, física
           simples e recolhimento com E); R continua como remoção de teste.
-          Limpeza 0.13.2: as salas de demonstração (SALA-PILOTO VISUAL,
-          PRIMEIRO ANDAR e DEMONSTRAR MÓDULOS) foram removidas do jogo.
-          Permanece apenas TESTAR MOVIMENTAÇÃO. A biblioteca modular em
+          Reconstrução 3D 0.14.0: o menu RECONSTRUÇÃO 3D abre a cozinha da
+          imagem de referência reconstruída em 3D e navegável em primeira
+          pessoa (porta acorrentada, armários, geladeira, fogão e ilha).
+          TESTAR MOVIMENTAÇÃO continua disponível. A biblioteca modular em
           maps/modular/ continua no projeto para uso futuro.
           Ainda não há pulo, uso/arremesso/transferência de item, portas
           funcionais, geração procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versão 0.13.2 — Limpeza das salas (salas de demonstração removidas; permanece a sala de movimentação)
+          Versão 0.14.0 — Reconstrução 3D da cozinha da imagem de referência (menu RECONSTRUÇÃO 3D)
           EOF
           cd build/windows
           zip -9 -r ../../BlackSight-Windows-x86_64.zip \
@@ -449,7 +465,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Limpeza das salas (0.13.2)"
+            echo "## Black Sight · Reconstrução 3D (0.14.0)"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -647,6 +663,23 @@ jobs:
           }
           if (Select-String -Path $log -Pattern "SCRIPT ERROR") { throw "SCRIPT ERROR durante a execução" }
 
+      - name: TESTE W3b — Reconstrução 3D, verificação visual da cozinha (Windows real)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs/kitchen_captures | Out-Null
+          $log = "ci-logs/06b-kitchen-check.log"
+          $outDir = Join-Path $PWD "ci-logs/kitchen_captures"
+          & $env:GODOT --path . --rendering-driver opengl3 --resolution 1280x800 --audio-driver Dummy `
+            res://tools/ci/kitchen_reference_visual_check.tscn -- --output-dir="$outDir" *>&1 |
+            Tee-Object -FilePath $log
+          Write-Host "exit code: $LASTEXITCODE"
+          if (-not (Select-String -Path $log -SimpleMatch "KITCHEN REFERENCE CHECK:")) {
+            throw "A verificação visual da cozinha não concluiu no Windows"
+          }
+          Get-ChildItem ci-logs/kitchen_captures | Select-Object Name, Length
+
       - name: TESTE W4 — exportar o executável (release)
         shell: pwsh
         run: |
@@ -727,14 +760,14 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
-          if ($info.FileVersion -notlike "0.13.2*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+          if ($info.FileVersion -notlike "0.14.0*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Limpeza das salas (Windows x86_64 - v0.13.2)
+          BLACK SIGHT - Reconstrução 3D (Windows x86_64 - v0.14.0)
           ============================================
 
           COMO JOGAR
@@ -841,16 +874,17 @@ jobs:
           com 1/2/3, remocao provisoria com R e aviso de inventario cheio.
           Etapa 9: soltar itens no ambiente 3D com G (posicao segura, fisica
           simples e recolhimento com E); R continua como remocao de teste.
-          Limpeza 0.13.2: as salas de demonstracao (SALA-PILOTO VISUAL,
-          PRIMEIRO ANDAR e DEMONSTRAR MODULOS) foram removidas do jogo.
-          Permanece apenas TESTAR MOVIMENTACAO. A biblioteca modular
+          Reconstrução 3D 0.14.0: o menu RECONSTRUÇÃO 3D abre a cozinha da
+          imagem de referência reconstruída em 3D e navegável em primeira
+          pessoa (porta acorrentada, armários, geladeira, fogão e ilha).
+          TESTAR MOVIMENTACAO continua disponível. A biblioteca modular
           continua no projeto para uso futuro.
           Stamina e controles anteriores seguem iguais.
           Ainda nao ha pulo, uso/arremesso/transferencia de item, portas
           funcionais, geracao procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versao 0.13.2 - Limpeza das salas (salas de demonstracao removidas; permanece a sala de movimentacao)
+          Versao 0.14.0 - Reconstrução 3D da cozinha da imagem de referência (menu RECONSTRUÇÃO 3D)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -906,7 +940,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Limpeza das salas (Windows real - v0.13.2)", "")
+          $summary = @("## Black Sight - Reconstrução 3D (Windows real - v0.14.0)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }
