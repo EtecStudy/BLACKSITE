@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://maps/pilot/textures/painted_metal_albedo.png" id="tex_albedo"]
+[ext_resource type="Texture2D" path="res://maps/pilot/textures/painted_metal_normal.png" id="tex_normal"]
+[ext_resource type="Texture2D" path="res://maps/pilot/textures/painted_metal_roughness.png" id="tex_roughness"]
+[ext_resource type="Texture2D" path="res://maps/pilot/textures/painted_metal_ao.png" id="tex_ao"]
+
+[resource]
+albedo_texture = ExtResource("tex_albedo")
+albedo_color = Color(0.56, 0.6, 0.61, 1)
+roughness_texture = ExtResource("tex_roughness")
+normal_enabled = true
+normal_texture = ExtResource("tex_normal")
+normal_scale = 0.4
+ao_enabled = true
+ao_texture = ExtResource("tex_ao")
+ao_light_affect = 0.35
+metallic = 0.22

@@ -125,9 +125,18 @@ func _check_dimensions(room: Node3D) -> void:
 	var floor_hit := _ray(room, Vector3(3.3, 2, 3.4), Vector3(3.3, -0.5, 3.4))
 	_check(not floor_hit.is_empty() and absf((floor_hit["position"] as Vector3).y) < 0.06,
 		"Piso físico está próximo de y=0")
-	var ceiling_hit := _ray(room, Vector3(0, 3, 0), Vector3(0, 6, 0))
-	_check(not ceiling_hit.is_empty() and (ceiling_hit["position"] as Vector3).y > 5.0,
-		"Teto técnico físico está acima de y=5")
+	var ceiling_hit := _ray(room, Vector3(0, 2, 0), Vector3(0, 4, 0))
+	_check(not ceiling_hit.is_empty() and (ceiling_hit["position"] as Vector3).y > 3.0,
+		"Teto técnico físico está próximo de y=3,2")
+	var window_sign := room.get_node_or_null("Architecture/ObservationWindow/WindowSign") as Label3D
+	_check(window_sign != null and absf(window_sign.rotation.y + PI / 2.0) < 0.01,
+		"Rótulo da janela está voltado para o interior da sala")
+	var safety_sign := room.get_node_or_null("TechnicalDetails/SafetySign") as Label3D
+	_check(safety_sign != null and absf(safety_sign.rotation.y - PI / 2.0) < 0.01,
+		"Rótulo de EPI da parede oeste está voltado para o interior da sala")
+	var main_light := room.get_node_or_null("Lighting/MainLight0") as SpotLight3D
+	_check(main_light != null and main_light.position.y > 2.9,
+		"Luz principal nasce nas luminárias do forro técnico")
 	for spec in [
 		[Vector3(0, 1.4, -6.4), Vector3(0, 1.4, 6.4), "norte/sul"],
 		[Vector3(-5.4, 1.4, 0), Vector3(5.4, 1.4, 0), "leste/oeste"],

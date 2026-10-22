@@ -1,38 +1,22 @@
-# Black Sight — Sala-Piloto Visual (Windows x86_64)
+# Black Sight — Sala-Piloto Refinada (Windows x86_64)
+
+Versão 0.13.1 — Etapa 13B: refinamento de realismo da Sala-Piloto.
 
 ## O que testar
 
-Clique em **SALA-PILOTO VISUAL** na tela inicial. A build abre uma única sala
-independente de pesquisa/análise, criada para avaliar a nova direção visual:
+- Entrar em **SALA-PILOTO VISUAL** no menu principal.
+- Caminhar pela sala, correr, agachar e observar em primeira pessoa:
+  arquitetura em camadas, forro técnico a cerca de 3,20 m, porta, janela de
+  observação, bancadas, capela, cabine de segurança e equipamentos.
+- Aproximar-se de paredes, quinas, tampos e equipamentos para avaliar escala,
+  contato, sombras e materiais.
+- Pressionar ESC, abrir configurações, retornar ao menu e reabrir a sala.
 
-- arquitetura completa: paredes em painéis, piso técnico, teto modular,
-  porta principal e janela de observação;
-- bancada perimetral, ilha central, bancada de análise e mesa de trabalho;
-- capela de exaustão, cabine de segurança, refrigerador e incubadora;
-- armários, carrinho, monitores, instrumentos e objetos de bancada;
-- iluminação principal, luz de tarefa, observação e emergência;
-- sinalização discreta, tomadas, gases, ventilação e detalhes técnicos.
+## Escopo
 
-Use os mesmos controles das outras cenas: **W A S D**, mouse, **SHIFT** para
-correr, **CTRL** para agachar e **ESC** para pausar. Em **CONFIGURAÇÕES** e
-**VOLTAR AO MENU**, use os mesmos menus já existentes.
+Refinamento exclusivamente visual da sala-piloto existente. Não há criatura,
+IA, objetivos, portas funcionais, multiplayer, voz, combate, eventos de
+terror, morte, resgate, subfloor, mapa completo ou outras salas novas.
 
-## O que observar
-
-1. Pare a poucos centímetros de uma parede e observe juntas, textura, faixa
-   de serviços e rodapé sanitário.
-2. Olhe para o teto e depois para o piso junto das bancadas.
-3. Contorne a ilha e aproxime-se da capela, da cabine e dos equipamentos.
-4. Observe a porta, o visor, o leitor de acesso e a janela de observação.
-5. Procure objetos flutuando, colisões invisíveis, repetições evidentes,
-   z-fighting ou excesso de neon.
-
-A planta da Etapa 12A continua preservada e acessível em **PRIMEIRO ANDAR**.
-Nenhum ambiente foi reconstruído nesta etapa.
-
-## Validação
-
-Os resultados automatizados reais (Linux e Windows) e o SHA-256 deste pacote
-são acrescentados automaticamente ao final destas notas pelo workflow. A
-avaliação manual da sala continua pendente e é a decisão que encerra esta
-etapa.
+Os números reais de testes, tamanho e SHA-256 deste pacote são anexados
+automaticamente ao final destas notas pelo build do Windows.

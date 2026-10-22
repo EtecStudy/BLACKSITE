@@ -198,7 +198,8 @@ def generate_textures() -> None:
             elif speck > 0.975:
                 r0, g0, b0 = 126, 132, 130
             arow.extend((clamp_byte(r0 * tone), clamp_byte(g0 * tone), clamp_byte(b0 * tone)))
-            rv = clamp_byte((0.42 + (n - 0.5) * 0.23) * 255)
+            wear = max(0.0, n - 0.60) * 0.55
+            rv = clamp_byte((0.46 + (n - 0.5) * 0.20 - wear) * 255)
             rrow.extend((rv, rv, rv))
             hrow.append(h)
         height.append(hrow)
@@ -260,6 +261,57 @@ def generate_textures() -> None:
             rough.append(rrow)
         save_maps(name, albedo, height, rough, 1.2)
 
+    # Metal pintado de armários/equipamentos: película satinada, riscos finos
+    # e desgaste leve apenas nos bordos inferiores, sem ferrugem aleatória.
+    size = 512
+    noise = combined_noise(size, 606)
+    height = []
+    albedo = []
+    rough = []
+    for y in range(size):
+        hrow = []
+        arow = bytearray()
+        rrow = bytearray()
+        for x in range(size):
+            n = noise[y][x]
+            streak = hash2(x // 3, 0, 619)
+            speck = hash2(x, y, 631)
+            scratch = 0.16 if speck > 0.9982 and y > 24 else 0.0
+            edge_wear = 0.07 if y > size * 0.965 and speck > 0.62 else 0.0
+            h = 0.52 + (n - 0.5) * 0.055 + (streak - 0.5) * 0.018
+            tone = 0.91 + (n - 0.5) * 0.075 + (streak - 0.5) * 0.035 + scratch + edge_wear
+            arow.extend((clamp_byte(188 * tone), clamp_byte(194 * tone), clamp_byte(193 * tone)))
+            rv = clamp_byte((0.42 + (n - 0.5) * 0.15 - scratch * 0.35) * 255)
+            rrow.extend((rv, rv, rv))
+            hrow.append(h)
+        height.append(hrow)
+        albedo.append(arow)
+        rough.append(rrow)
+    save_maps("painted_metal", albedo, height, rough, 1.1)
+
+    # Chapa perfurada para difusores, retornos e faces de FFU.
+    noise = combined_noise(size, 707)
+    height = []
+    albedo = []
+    rough = []
+    for y in range(size):
+        hrow = []
+        arow = bytearray()
+        rrow = bytearray()
+        for x in range(size):
+            n = noise[y][x]
+            hole = 0.30 if ((x % 16) - 8) ** 2 + ((y % 16) - 8) ** 2 < 7 else 0.0
+            h = 0.55 + (n - 0.5) * 0.045 - hole
+            tone = 0.88 + (n - 0.5) * 0.07 - hole * 0.55
+            arow.extend((clamp_byte(164 * tone), clamp_byte(170 * tone), clamp_byte(169 * tone)))
+            rv = clamp_byte((0.46 + (n - 0.5) * 0.10 + hole * 0.22) * 255)
+            rrow.extend((rv, rv, rv))
+            hrow.append(h)
+        height.append(hrow)
+        albedo.append(arow)
+        rough.append(rrow)
+    save_maps("perforated_metal", albedo, height, rough, 1.5)
+
 
 # ---------------------------------------------------------------------------
 # Materiais Godot
@@ -274,6 +326,15 @@ MATERIALS: dict[str, dict[str, object]] = {
     "ceiling_panel": {"texture": "ceiling_panel", "metallic": 0.12, "normal_scale": 0.55},
     "brushed_metal": {"texture": "brushed_metal", "metallic": 0.72, "normal_scale": 0.3},
     "bench_top": {"texture": "bench_top", "metallic": 0.05, "normal_scale": 0.35},
+    "wall_panel_cool": {"texture": "wall_panel", "color": (0.82, 0.87, 0.89, 1), "metallic": 0.06, "normal_scale": 0.55},
+    "wall_panel_warm": {"texture": "wall_panel", "color": (0.97, 0.93, 0.85, 1), "metallic": 0.05, "normal_scale": 0.55},
+    "painted_metal": {"texture": "painted_metal", "metallic": 0.16, "normal_scale": 0.4},
+    "painted_metal_gray": {"texture": "painted_metal", "color": (0.56, 0.60, 0.61, 1), "metallic": 0.22, "normal_scale": 0.4},
+    "equipment_white": {"texture": "painted_metal", "color": (0.94, 0.95, 0.94, 1), "metallic": 0.08, "normal_scale": 0.35},
+    "perforated_metal": {"texture": "perforated_metal", "color": (0.46, 0.49, 0.50, 1), "metallic": 0.52, "normal_scale": 0.45},
+    "cove_floor": {"texture": "floor_epoxy", "color": (0.78, 0.81, 0.80, 1), "metallic": 0.02, "normal_scale": 0.35},
+    "contact_shadow": {"color": (0.008, 0.010, 0.010, 0.34), "roughness": 1.0, "transparency": 1},
+    "diffuser": {"color": (0.88, 0.90, 0.88, 1), "emission": (0.82, 0.86, 0.82, 1), "emission_energy": 1.55, "roughness": 0.55},
     "dark_metal": {"color": (0.10, 0.11, 0.12, 1), "metallic": 0.55, "roughness": 0.50},
     "frame_metal": {"color": (0.23, 0.26, 0.27, 1), "metallic": 0.65, "roughness": 0.42},
     "stainless": {"color": (0.58, 0.62, 0.63, 1), "metallic": 0.86, "roughness": 0.30},
@@ -282,8 +343,8 @@ MATERIALS: dict[str, dict[str, object]] = {
     "cabinet_teal": {"color": (0.21, 0.41, 0.43, 1), "metallic": 0.16, "roughness": 0.60},
     "plastic_black": {"color": (0.045, 0.048, 0.052, 1), "metallic": 0.05, "roughness": 0.72},
     "plastic_white": {"color": (0.78, 0.80, 0.78, 1), "metallic": 0.02, "roughness": 0.64},
-    "glass": {"color": (0.36, 0.55, 0.60, 0.30), "metallic": 0.05, "roughness": 0.08, "transparency": 1},
-    "glass_dark": {"color": (0.08, 0.13, 0.15, 0.52), "metallic": 0.05, "roughness": 0.12, "transparency": 1},
+    "glass": {"color": (0.36, 0.55, 0.60, 0.30), "metallic": 0.0, "roughness": 0.07, "transparency": 1, "clearcoat": 0.65},
+    "glass_dark": {"color": (0.08, 0.13, 0.15, 0.52), "metallic": 0.0, "roughness": 0.11, "transparency": 1, "clearcoat": 0.5},
     "screen": {"color": (0.015, 0.035, 0.045, 1), "emission": (0.05, 0.22, 0.27, 1), "emission_energy": 0.75, "roughness": 0.35},
     "screen_dim": {"color": (0.02, 0.03, 0.035, 1), "emission": (0.03, 0.10, 0.12, 1), "emission_energy": 0.45, "roughness": 0.4},
     "light_panel": {"color": (0.92, 0.94, 0.92, 1), "emission": (0.95, 0.97, 0.94, 1), "emission_energy": 2.4, "roughness": 0.4},
@@ -337,6 +398,8 @@ def write_materials() -> None:
             if "color" in spec:
                 lines.append(f"albedo_color = {color_text(spec['color'])}")  # type: ignore[arg-type]
             lines.append("roughness_texture = ExtResource(\"tex_roughness\")")
+            if "roughness" in spec:
+                lines.append(f"roughness = {fmt(float(spec['roughness']))}")  # type: ignore[arg-type]
             lines.append("normal_enabled = true")
             lines.append("normal_texture = ExtResource(\"tex_normal\")")
             lines.append(f"normal_scale = {fmt(float(spec.get('normal_scale', 0.5)))}")
@@ -347,6 +410,10 @@ def write_materials() -> None:
             lines.append(f"albedo_color = {color_text(spec.get('color', (1, 1, 1, 1)))}")  # type: ignore[arg-type]
             lines.append(f"roughness = {fmt(float(spec.get('roughness', 0.7)))}")
         lines.append(f"metallic = {fmt(float(spec.get('metallic', 0.0)))}")
+        if "clearcoat" in spec:
+            lines.append("clearcoat_enabled = true")
+            lines.append(f"clearcoat = {fmt(float(spec['clearcoat']))}")  # type: ignore[arg-type]
+            lines.append("clearcoat_roughness = 0.18")
         if "transparency" in spec:
             lines.append(f"transparency = {int(spec['transparency'])}")  # type: ignore[arg-type]
         if "emission" in spec:
@@ -551,26 +618,26 @@ def wall_panels() -> None:
         for a, b in intervals_without(start, end, openings[side]):
             center = (a + b) / 2
             length = b - a
-            pos = (center, 2.6, fixed) if horizontal else (fixed, 2.6, center)
-            size = (length, 5.2, 0.30) if horizontal else (0.30, 5.2, length)
+            pos = (center, 1.6, fixed) if horizontal else (fixed, 1.6, center)
+            size = (length, 3.2, 0.30) if horizontal else (0.30, 3.2, length)
             B.box(f"Structure_{side}", walls, pos, size, "outside_dark")
         if side in openings and openings[side]:
             for a, b in openings[side]:
                 center = (a + b) / 2
                 length = b - a
                 if side == "south":
-                    B.box("Structure_south_lintel", walls, (center, (2.68 + 5.2) / 2, fixed), (length, 5.2 - 2.68, 0.30), "outside_dark")
+                    B.box("Structure_south_lintel", walls, (center, (2.68 + 3.2) / 2, fixed), (length, 3.2 - 2.68, 0.30), "outside_dark")
                 else:
                     low_h = heights["east"][0]  # type: ignore[index]
                     high_y = heights["east"][1]  # type: ignore[index]
                     B.box("Structure_east_low", walls, (fixed, low_h / 2, center), (0.30, low_h, length), "outside_dark")
-                    B.box("Structure_east_high", walls, (fixed, (high_y + 5.2) / 2, center), (0.30, 5.2 - high_y, length), "outside_dark")
+                    B.box("Structure_east_high", walls, (fixed, (high_y + 3.2) / 2, center), (0.30, 3.2 - high_y, length), "outside_dark")
 
     bands = [
         ("Lower", 0.16, 1.02, "wall_lower"),
-        ("Main", 1.09, 3.30, "wall_panel"),
-        ("Service", 3.38, 4.02, "service_metal"),
-        ("Upper", 4.10, 5.16, "wall_panel"),
+        ("Main", 1.09, 2.48, "wall_panel"),
+        ("Service", 2.56, 2.84, "service_metal"),
+        ("Upper", 2.92, 3.16, "wall_panel_cool"),
     ]
     for side in ["north", "south", "west", "east"]:
         horizontal = side in ("north", "south")
@@ -584,91 +651,167 @@ def wall_panels() -> None:
                 blocks = openings["east"]
             if side == "east" and band == "Lower":
                 blocks = []
+            panel_index = 0
             for a, b in intervals_without(start, end, blocks):
                 for pa, pb in split_interval(a, b, 1.48):
                     center = (pa + pb) / 2
                     length = max(0.05, pb - pa - 0.025)
-                    pos = (center, (y0 + y1) / 2, fixed) if horizontal else (fixed, (y0 + y1) / 2, center)
-                    size = (length, y1 - y0 - 0.018, 0.07) if horizontal else (0.07, y1 - y0 - 0.018, length)
-                    B.box(f"Panel_{side}_{band}", walls, pos, size, material)
+                    inward = 1.0 if side in ("north", "west") else -1.0
+                    protrusion = (0.0, 0.014, 0.028)[(panel_index + len(band)) % 3]
+                    thickness = 0.07 + protrusion
+                    axis_pos = fixed + inward * (protrusion / 2)
+                    panel_material = material
+                    if band == "Main" and panel_index % 5 == 2:
+                        panel_material = "wall_panel_cool"
+                    elif band == "Main" and panel_index % 7 == 3:
+                        panel_material = "wall_panel_warm"
+                    elif band == "Service" and panel_index % 3 == 1:
+                        panel_material = "perforated_metal"
+                    pos = (center, (y0 + y1) / 2, axis_pos) if horizontal else (axis_pos, (y0 + y1) / 2, center)
+                    size = (length, y1 - y0 - 0.018, thickness) if horizontal else (thickness, y1 - y0 - 0.018, length)
+                    B.box(f"Panel_{side}_{band}", walls, pos, size, panel_material)
+                    panel_index += 1
+        # Juntas em sombra entre bandas: leitura de montagem, não só empilhamento.
+        inward = 1.0 if side in ("north", "west") else -1.0
+        for reveal_y in (1.055, 2.52, 2.88):
+            reveal_blocks: list[tuple[float, float]] = []
+            if side == "south" and reveal_y < 2.68:
+                reveal_blocks = openings["south"]
+            if side == "east" and 1.02 < reveal_y < 2.58:
+                reveal_blocks = openings["east"]
+            for a, b in intervals_without(start, end, reveal_blocks):
+                center = (a + b) / 2
+                length = b - a
+                axis_pos = fixed + inward * 0.030
+                pos = (center, reveal_y, axis_pos) if horizontal else (axis_pos, reveal_y, center)
+                size = (length, 0.022, 0.018) if horizontal else (0.018, 0.022, length)
+                B.box(f"Reveal_{side}", walls, pos, size, "dark_metal")
+        # Colunas técnicas/pilastras rasas quebram os panos longos e abrigam serviços.
+        pilaster_coords = {
+            "north": [-4.0, -2.0, 0.0, 2.0, 4.0],
+            "south": [-4.0, 0.0, 2.0, 4.0],
+            "west": [-5.0, -3.0, -1.0, 1.0, 3.0, 5.0],
+            "east": [-4.2, -3.4, 1.6, 3.2, 4.8],
+        }[side]
+        for coord in pilaster_coords:
+            axis_pos = fixed + inward * 0.020
+            pos = (coord, 1.66, axis_pos) if horizontal else (axis_pos, 1.66, coord)
+            size = (0.15, 2.98, 0.105) if horizontal else (0.105, 2.98, 0.15)
+            B.box(f"Pilaster_{side}", walls, pos, size, "painted_metal_gray")
+        if side == "north":
+            B.box("InspectionPanelFrame", walls, (3.85, 1.92, -5.905), (0.70, 0.92, 0.035), "frame_metal")
+            B.box("InspectionPanel", walls, (3.85, 1.92, -5.882), (0.60, 0.82, 0.022), "painted_metal_gray")
+            for dx in (-0.24, 0.24):
+                for dy in (-0.34, 0.34):
+                    B.cyl("InspectionScrew", walls, (3.85 + dx, 1.92 + dy, -5.866), 0.009, 0.012, "stainless", (math.pi / 2, 0, 0), 8)
+        if side == "east":
+            B.box("InspectionPanelFrame", walls, (4.905, 1.92, 3.35), (0.035, 0.92, 0.70), "frame_metal")
+            B.box("InspectionPanel", walls, (4.882, 1.92, 3.35), (0.022, 0.82, 0.60), "painted_metal_gray")
         # Rodapé sanitário: faixa vertical + plano inclinado, sem dividir o plano da parede.
         for a, b in intervals_without(start, end, openings[side] if side == "south" else []):
             center = (a + b) / 2
             length = b - a
             if horizontal:
                 z = -5.94 if side == "north" else 5.94
-                B.box(f"Cove_{side}", walls, (center, 0.075, z), (length, 0.15, 0.10), "cabinet_dark")
+                B.box(f"Cove_{side}", walls, (center, 0.075, z), (length, 0.15, 0.10), "cove_floor")
                 pitch = math.radians(38 if side == "north" else -38)
-                B.box(f"CoveSlope_{side}", walls, (center, 0.055, (-5.955 if side == "north" else 5.955)), (length, 0.025, 0.19), "floor_alt", (pitch, 0, 0))
+                B.box(f"CoveSlope_{side}", walls, (center, 0.055, (-5.955 if side == "north" else 5.955)), (length, 0.025, 0.19), "cove_floor", (pitch, 0, 0))
+                B.box(f"CoveTrim_{side}", walls, (center, 0.168, (-5.905 if side == "north" else 5.905)), (length, 0.018, 0.025), "stainless")
             else:
                 x = -4.94 if side == "west" else 4.94
-                B.box(f"Cove_{side}", walls, (x, 0.075, center), (0.10, 0.15, length), "cabinet_dark")
+                B.box(f"Cove_{side}", walls, (x, 0.075, center), (0.10, 0.15, length), "cove_floor")
                 roll = math.radians(-38 if side == "west" else 38)
-                B.box(f"CoveSlope_{side}", walls, ((-4.955 if side == "west" else 4.955), 0.055, center), (0.19, 0.025, length), "floor_alt", (0, 0, roll))
-        # Proteção contra carrinhos a 0,95 m.
-        pos = (0, 0.98, -5.91) if side == "north" else (0, 0.98, 5.91) if side == "south" else (-4.91, 0.98, 0) if side == "west" else (4.91, 0.98, 0)
-        if side == "east":
-            pos = (4.91, 0.98, -4.4)
-            B.box("WallGuard_east_a", walls, pos, (0.07, 0.13, 3.0), "frame_metal")
-            B.box("WallGuard_east_b", walls, (4.91, 0.98, 3.6), (0.07, 0.13, 4.6), "frame_metal")
-        else:
-            size = (10.0, 0.13, 0.07) if horizontal else (0.07, 0.13, 12.0)
-            if side == "south":
-                B.box("WallGuard_south_a", walls, (-3.65, 0.98, 5.91), (2.6, 0.13, 0.07), "frame_metal")
-                B.box("WallGuard_south_b", walls, (1.4, 0.98, 5.91), (7.0, 0.13, 0.07), "frame_metal")
+                B.box(f"CoveSlope_{side}", walls, ((-4.955 if side == "west" else 4.955), 0.055, center), (0.19, 0.025, length), "cove_floor", (0, 0, roll))
+                B.box(f"CoveTrim_{side}", walls, ((-4.905 if side == "west" else 4.905), 0.168, center), (0.025, 0.018, length), "stainless")
+        # Proteção contra carrinhos a 0,95 m, segmentada onde há circulação.
+        guard_segments = {
+            "north": [(-3.6, 2.6), (0.0, 2.6), (3.6, 2.6)],
+            "south": [(-3.65, 2.6), (1.4, 7.0)],
+            "west": [(-4.0, 2.4), (0.0, 2.4), (4.0, 2.4)],
+            "east": [(-4.4, 3.0), (3.6, 4.6)],
+        }[side]
+        for coord, seg_len in guard_segments:
+            if horizontal:
+                B.box(f"WallGuard_{side}", walls, (coord, 0.98, -5.91 if side == "north" else 5.91), (seg_len, 0.13, 0.07), "frame_metal")
+                for bracket_offset in (-seg_len / 2 + 0.18, seg_len / 2 - 0.18):
+                    B.box(f"WallGuardBracket_{side}", walls, (coord + bracket_offset, 0.98, -5.945 if side == "north" else 5.945), (0.05, 0.18, 0.035), "dark_metal")
             else:
-                B.box(f"WallGuard_{side}", walls, pos, size, "frame_metal")
+                B.box(f"WallGuard_{side}", walls, (-4.91 if side == "west" else 4.91, 0.98, coord), (0.07, 0.13, seg_len), "frame_metal")
+                for bracket_offset in (-seg_len / 2 + 0.18, seg_len / 2 - 0.18):
+                    B.box(f"WallGuardBracket_{side}", walls, (-4.945 if side == "west" else 4.945, 0.98, coord + bracket_offset), (0.035, 0.18, 0.05), "dark_metal")
     for x in (-4.93, 4.93):
         for z in (-5.93, 5.93):
-            B.box("CornerTrim", walls, (x, 2.6, z), (0.13, 5.2, 0.13), "frame_metal")
+            B.box("CornerTrim", walls, (x, 1.6, z), (0.13, 3.2, 0.13), "frame_metal")
+            B.box("CornerGuard", walls, (x, 0.68, z), (0.155, 1.36, 0.155), "stainless")
 
 
 def floor_and_ceiling() -> None:
     floor = B.group("Floor", "Architecture")
     B.box("FloorSlab", floor, (0, -0.12, 0), (10.7, 0.22, 12.7), "outside_dark")
-    rnd = random.Random(42)
-    for ix in range(5):
-        for iz in range(6):
-            x = -4 + ix * 2.0
-            z = -5 + iz * 2.0
-            mat = "floor_alt" if rnd.random() < 0.22 else "floor_epoxy"
-            B.box("FloorPanel", floor, (x, 0.012, z), (2.0, 0.024, 2.0), mat)
+    # Folha contínua de vinil/epóxi: uma superfície, juntas finas soldadas e
+    # variação de brilho apenas nas rotas de circulação e junto à porta.
+    B.box("FloorPanel", floor, (0, 0.012, 0), (10.0, 0.024, 12.0), "floor_epoxy")
+    for x, z, sx, sz in [(-2.2, 3.4, 3.6, 4.8), (0.0, -0.4, 5.8, 3.4), (3.1, -3.0, 3.2, 4.2)]:
+        B.box("FloorWear", floor, (x, 0.026, z), (sx, 0.004, sz), "floor_alt")
+    for x in (-3.0, -1.5, 0.0, 1.5, 3.0):
+        B.box("FloorSeamX", floor, (x, 0.027, 0), (0.018, 0.005, 12.0), "rubber")
+    for z in (-4.0, -2.0, 0.0, 2.0, 4.0):
+        B.box("FloorSeamZ", floor, (0, 0.027, z), (10.0, 0.005, 0.018), "rubber")
     B.box("DoorThreshold", floor, (-2.2, 0.026, 5.82), (1.65, 0.018, 0.28), "brushed_metal")
     B.cyl("FloorDrain", floor, (-4.15, 0.027, 0.72), 0.09, 0.008, "dark_metal", segments=28)
-    # Linhas discretas de circulação/segurança, gastas e sem neon.
-    B.box("FloorLineDoor", floor, (-2.2, 0.027, 4.72), (1.7, 0.006, 0.07), "safety_yellow")
-    B.box("FloorLineHood", floor, (-2.3, 0.027, -4.25), (2.6, 0.006, 0.07), "container_gray")
+    for dz in (-0.045, 0.0, 0.045):
+        B.box("FloorDrainSlat", floor, (-4.15, 0.032, 0.72 + dz), (0.14, 0.004, 0.018), "stainless")
+    # Linhas discretas de circulação/segurança, segmentadas pelo uso.
+    for dx in (-0.58, 0.0, 0.58):
+        B.box("FloorLineDoor", floor, (-2.2 + dx, 0.030, 4.72), (0.48, 0.006, 0.07), "safety_yellow")
+    B.box("FloorLineHood", floor, (-2.3, 0.030, -4.25), (2.6, 0.006, 0.07), "container_gray")
 
     ceiling = B.group("Ceiling", "Architecture")
-    B.box("CeilingSlab", ceiling, (0, 5.34, 0), (10.7, 0.24, 12.7), "outside_dark")
+    B.box("CeilingSlab", ceiling, (0, 3.34, 0), (10.7, 0.24, 12.7), "outside_dark")
     for ix in range(4):
         for iz in range(5):
-            B.box("CeilingPanel", ceiling, (-3.75 + ix * 2.5, 5.19, -4.8 + iz * 2.4), (2.38, 0.05, 2.28), "ceiling_panel")
+            B.box("CeilingPanel", ceiling, (-3.75 + ix * 2.5, 3.19, -4.8 + iz * 2.4), (2.38, 0.05, 2.28), "ceiling_panel")
+    for x in (-2.5, 0.0, 2.5):
+        B.box("CeilingGridX", ceiling, (x, 3.165, 0), (0.045, 0.035, 12.0), "frame_metal")
+    for z in (-3.6, -1.2, 1.2, 3.6):
+        B.box("CeilingGridZ", ceiling, (0, 3.165, z), (10.0, 0.035, 0.045), "frame_metal")
     for x in (-4.72, 4.72):
-        B.box("CeilingSoffit", ceiling, (x, 4.98, 0), (0.55, 0.20, 12.0), "service_metal")
+        B.box("CeilingSoffit", ceiling, (x, 2.98, 0), (0.55, 0.20, 12.0), "service_metal")
     for z in (-5.72, 5.72):
-        B.box("CeilingSoffit", ceiling, (0, 4.98, z), (10.0, 0.20, 0.55), "service_metal")
-    B.box("MainDuct", ceiling, (0, 4.94, 0), (0.82, 0.26, 10.9), "ceiling_panel")
-    B.box("CableTray", ceiling, (0.72, 4.86, 0), (0.30, 0.08, 10.9), "frame_metal")
-    B.cyl("PipeWater", ceiling, (-0.78, 4.90, 0), 0.055, 10.9, "stainless", (math.pi / 2, 0, 0), 18)
-    B.cyl("PipeAir", ceiling, (-0.92, 4.84, 0), 0.038, 10.9, "frame_metal", (math.pi / 2, 0, 0), 16)
+        B.box("CeilingSoffit", ceiling, (0, 2.98, z), (10.0, 0.20, 0.55), "service_metal")
+    B.box("MainDuct", ceiling, (0, 2.94, 0), (0.82, 0.26, 10.9), "ceiling_panel")
+    for z in (-4.0, 0.0, 4.0):
+        B.box("DuctFlange", ceiling, (0, 2.94, z), (0.90, 0.30, 0.08), "service_metal")
+    B.box("HoodBranchDuct", ceiling, (-1.15, 2.94, -5.50), (2.30, 0.24, 0.62), "service_metal")
+    B.box("CableTray", ceiling, (0.72, 2.86, 0), (0.30, 0.08, 10.9), "frame_metal")
+    B.cyl("PipeWater", ceiling, (-0.78, 2.90, 0), 0.055, 10.9, "stainless", (math.pi / 2, 0, 0), 18)
+    B.cyl("PipeAir", ceiling, (-0.92, 2.84, 0), 0.038, 10.9, "frame_metal", (math.pi / 2, 0, 0), 16)
     for z in (-3.6, 0.0, 3.6):
-        B.box("CeilingBeam", ceiling, (0, 5.03, z), (10.0, 0.24, 0.24), "service_metal")
+        B.box("CeilingBeam", ceiling, (0, 3.03, z), (10.0, 0.24, 0.24), "service_metal")
+    # Luminárias embutidas 1200 x 300 mm equivalentes: fonte das luzes principais.
     for x in (-2.3, 2.3):
-        for z in (-4.5, -1.5, 1.5, 4.5):
-            B.box("LightHousing", ceiling, (x, 5.13, z), (1.78, 0.09, 0.36), "frame_metal")
-            B.box("LightPanel", ceiling, (x, 5.075, z), (1.62, 0.025, 0.25), "light_panel")
+        for z in (-4.0, 0.0, 4.0):
+            B.box("LightHousing", ceiling, (x, 3.13, z), (1.24, 0.09, 0.34), "frame_metal")
+            B.box("LightPanel", ceiling, (x, 3.075, z), (1.16, 0.025, 0.26), "diffuser")
+    # FFUs e retornos nas zonas técnicas laterais, sem espalhar peças ao acaso.
     for x in (-3.8, 3.8):
         for z in (-3.0, 3.0):
-            B.box("Diffuser", ceiling, (x, 5.12, z), (0.78, 0.05, 0.28), "dark_metal")
-            for i in range(4):
-                B.box("DiffuserSlat", ceiling, (x - 0.27 + i * 0.18, 5.085, z), (0.07, 0.018, 0.24), "stainless")
-    B.cyl("SprinklerPipe", ceiling, (0, 5.02, -5.45), 0.026, 9.4, "frame_metal", (0, 0, math.pi / 2), 14)
+            B.box("FfuFrame", ceiling, (x, 3.12, z), (0.68, 0.07, 0.68), "frame_metal")
+            B.box("FfuFace", ceiling, (x, 3.08, z), (0.60, 0.020, 0.60), "perforated_metal")
+            B.cyl("FfuHub", ceiling, (x, 3.065, z), 0.15, 0.018, "dark_metal", segments=24)
+        B.box("Diffuser", ceiling, (x, 3.12, 0), (0.78, 0.05, 0.28), "dark_metal")
+        for i in range(4):
+            B.box("DiffuserSlat", ceiling, (x - 0.27 + i * 0.18, 3.085, 0), (0.07, 0.018, 0.24), "stainless")
+    B.box("CeilingAccessFrame", ceiling, (-3.8, 3.12, 5.15), (0.82, 0.045, 0.58), "frame_metal")
+    B.box("CeilingAccessPanel", ceiling, (-3.8, 3.09, 5.15), (0.74, 0.020, 0.50), "painted_metal_gray")
+    B.cyl("SprinklerPipe", ceiling, (0, 3.02, -5.45), 0.026, 9.4, "frame_metal", (0, 0, math.pi / 2), 14)
     for x in (-4.0, -2.0, 0.0, 2.0, 4.0):
-        B.cyl("SprinklerHead", ceiling, (x, 4.94, -5.45), 0.018, 0.11, "brushed_metal", segments=10)
+        B.cyl("SprinklerHead", ceiling, (x, 2.94, -5.45), 0.018, 0.11, "brushed_metal", segments=10)
     for x, z in [(-4.2, -5.2), (4.2, 5.2)]:
-        B.cyl("SmokeDetector", ceiling, (x, 5.10, z), 0.075, 0.045, "plastic_white", segments=20)
-    B.sphere("CeilingCamera", ceiling, (4.55, 5.02, -5.45), 0.085, "glass_dark")
+        B.cyl("SmokeDetectorBase", ceiling, (x, 3.13, z), 0.085, 0.025, "frame_metal", segments=20)
+        B.cyl("SmokeDetector", ceiling, (x, 3.10, z), 0.075, 0.045, "plastic_white", segments=20)
+    B.box("CeilingCameraMount", ceiling, (4.55, 3.10, -5.45), (0.10, 0.10, 0.10), "dark_metal")
+    B.sphere("CeilingCamera", ceiling, (4.55, 3.02, -5.45), 0.085, "glass_dark")
 
 
 def door_and_window() -> None:
@@ -678,14 +821,24 @@ def door_and_window() -> None:
     B.box("DoorFrameLeft", door, (-3.02, 1.31, 6.02), (0.14, 2.68, 0.28), "frame_metal")
     B.box("DoorFrameRight", door, (-1.38, 1.31, 6.02), (0.14, 2.68, 0.28), "frame_metal")
     B.box("DoorLeaf", door, (-2.2, 1.30, 6.03), (1.46, 2.56, 0.075), "cabinet_teal")
+    B.box("DoorLeafInset", door, (-2.2, 1.42, 5.982), (1.22, 2.02, 0.018), "painted_metal_gray")
+    B.box("DoorGasketTop", door, (-2.2, 2.545, 5.978), (1.38, 0.035, 0.012), "rubber")
+    B.box("DoorGasketBottom", door, (-2.2, 0.075, 5.978), (1.38, 0.035, 0.012), "rubber")
+    B.box("DoorGasketLeft", door, (-2.905, 1.31, 5.978), (0.035, 2.46, 0.012), "rubber")
+    B.box("DoorGasketRight", door, (-1.495, 1.31, 5.978), (0.035, 2.46, 0.012), "rubber")
     B.box("DoorKickPlate", door, (-2.2, 0.28, 5.975), (1.30, 0.34, 0.018), "brushed_metal")
+    for dx in (-0.58, 0.58):
+        for dy in (0.16, 0.40):
+            B.cyl("KickPlateScrew", door, (-2.2 + dx, dy, 5.962), 0.008, 0.010, "dark_metal", (math.pi / 2, 0, 0), 8)
     B.box("DoorVisionFrame", door, (-2.52, 1.72, 5.982), (0.34, 0.98, 0.025), "frame_metal")
     B.box("DoorVisionGlass", door, (-2.52, 1.72, 5.978), (0.25, 0.88, 0.012), "glass")
     B.box("DoorHandlePlate", door, (-1.62, 1.05, 5.972), (0.09, 0.28, 0.018), "stainless")
     B.cyl("DoorHandle", door, (-1.70, 1.08, 5.94), 0.018, 0.34, "stainless", (0, 0, math.pi / 2), 12)
     B.box("DoorCloser", door, (-1.72, 2.36, 5.96), (0.34, 0.09, 0.07), "dark_metal")
+    B.box("DoorCloserArm", door, (-1.94, 2.43, 5.94), (0.42, 0.035, 0.035), "stainless", (0, 0, -0.22))
     for y in (0.45, 1.30, 2.15):
         B.box("DoorHinge", door, (-2.90, y, 5.965), (0.055, 0.14, 0.025), "stainless")
+        B.cyl("DoorHingeBarrel", door, (-2.955, y, 5.99), 0.018, 0.17, "dark_metal", segments=10)
     B.box("CardReader", door, (-1.18, 1.28, 5.90), (0.11, 0.19, 0.045), "plastic_black")
     B.box("CardReaderLight", door, (-1.18, 1.34, 5.872), (0.035, 0.018, 0.008), "indicator_green")
     B.box("ExitSignPlate", door, (-2.2, 2.92, 5.90), (0.62, 0.20, 0.035), "safety_green")
@@ -703,11 +856,19 @@ def door_and_window() -> None:
     B.box("WindowMullion", window, (4.94, 1.80, -1.0), (0.13, 1.58, 0.09), "frame_metal")
     B.box("WindowGlassA", window, (4.955, 1.80, -1.97), (0.025, 1.48, 1.78), "glass")
     B.box("WindowGlassB", window, (4.955, 1.80, -0.03), (0.025, 1.48, 1.78), "glass")
+    B.box("WindowGlassOuterA", window, (5.035, 1.80, -1.97), (0.018, 1.48, 1.78), "glass")
+    B.box("WindowGlassOuterB", window, (5.035, 1.80, -0.03), (0.018, 1.48, 1.78), "glass")
+    B.box("WindowGasketTop", window, (4.925, 2.565, -1.0), (0.018, 0.035, 3.72), "rubber")
+    B.box("WindowGasketBottom", window, (4.925, 1.035, -1.0), (0.018, 0.035, 3.72), "rubber")
+    B.box("WindowGasketA", window, (4.925, 1.80, -2.885), (0.018, 1.55, 0.035), "rubber")
+    B.box("WindowGasketB", window, (4.925, 1.80, 0.885), (0.018, 1.55, 0.035), "rubber")
+    for i in range(5):
+        B.box("WindowBlindSlat", window, (4.995, 2.34 - i * 0.09, -1.0), (0.012, 0.018, 3.55), "frame_metal", (0, 0, 0.35))
     B.box("WindowSignPlate", window, (4.90, 2.88, -1.0), (0.025, 0.24, 0.78), "plastic_white")
-    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
+    B.label("WindowSign", window, (4.875, 2.88, -1.0), "OBSERVAÇÃO", -math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
     # Painéis de fechamento acima dos vãos, no mesmo plano dos painéis principais.
-    B.box("DoorTransomPanel", door, (-2.2, 3.02, 5.965), (1.58, 0.58, 0.07), "wall_panel")
-    B.box("WindowTransomPanel", window, (4.965, 3.00, -1.0), (0.07, 0.62, 3.82), "wall_panel")
+    B.box("DoorTransomPanel", door, (-2.2, 2.94, 5.965), (1.58, 0.50, 0.07), "wall_panel")
+    B.box("WindowTransomPanel", window, (4.965, 2.92, -1.0), (0.07, 0.52, 3.82), "wall_panel")
 
     outside = B.group("ExteriorObservation", "Architecture")
     B.box("ObsFloor", outside, (6.45, -0.06, -1.0), (2.9, 0.10, 5.6), "outside_dark")
@@ -741,21 +902,35 @@ def bench_cabinet_run(parent: str, axis: str, fixed: float, start: float, length
     for i in range(count):
         c = start + step * (i + 0.5)
         if axis == "z":
-            B.box(f"{name}Cabinet", parent, (fixed, 0.47, c), (0.68, 0.76, step - 0.07), "cabinet")
-            B.box(f"{name}Front", parent, (fixed + front_sign * 0.355, 0.52, c), (0.025, 0.58, step - 0.16), "cabinet_dark" if i % 3 == 1 else "cabinet")
-            B.box(f"{name}DrawerLine", parent, (fixed + front_sign * 0.372, 0.72, c), (0.012, 0.018, step - 0.22), "frame_metal")
-            B.cyl(f"{name}Handle", parent, (fixed + front_sign * 0.39, 0.64, c), 0.011, 0.34, "stainless", (math.pi / 2, 0, 0), 10)
+            B.box(f"{name}Cabinet", parent, (fixed, 0.47, c), (0.68, 0.76, step - 0.07), "painted_metal_gray")
+            B.box(f"{name}Front", parent, (fixed + front_sign * 0.355, 0.52, c), (0.025, 0.58, step - 0.16), "cabinet_dark" if i % 3 == 1 else "painted_metal")
+            B.box(f"{name}DrawerFront", parent, (fixed + front_sign * 0.370, 0.755, c), (0.018, 0.17, step - 0.20), "painted_metal_gray" if i % 2 else "painted_metal")
+            B.box(f"{name}DrawerLine", parent, (fixed + front_sign * 0.382, 0.72, c), (0.012, 0.018, step - 0.22), "frame_metal")
+            B.cyl(f"{name}Handle", parent, (fixed + front_sign * 0.40, 0.64, c), 0.011, 0.34, "stainless", (math.pi / 2, 0, 0), 10)
+            B.cyl(f"{name}DoorHandle", parent, (fixed + front_sign * 0.40, 0.43, c + (step / 2 - 0.16)), 0.010, 0.20, "stainless", segments=10)
         else:
-            B.box(f"{name}Cabinet", parent, (c, 0.47, fixed), (step - 0.07, 0.76, 0.68), "cabinet")
-            B.box(f"{name}Front", parent, (c, 0.52, fixed - 0.355), (step - 0.16, 0.58, 0.025), "cabinet_dark" if i % 3 == 1 else "cabinet")
+            B.box(f"{name}Cabinet", parent, (c, 0.47, fixed), (step - 0.07, 0.76, 0.68), "painted_metal_gray")
+            B.box(f"{name}Front", parent, (c, 0.52, fixed - 0.355), (step - 0.16, 0.58, 0.025), "cabinet_dark" if i % 3 == 1 else "painted_metal")
+            B.box(f"{name}DrawerFront", parent, (c, 0.755, fixed - 0.370), (step - 0.20, 0.17, 0.018), "painted_metal_gray" if i % 2 else "painted_metal")
             B.box(f"{name}DrawerLine", parent, (c, 0.72, fixed - 0.372), (step - 0.22, 0.018, 0.012), "frame_metal")
-            B.cyl(f"{name}Handle", parent, (c, 0.64, fixed - 0.39), 0.011, 0.34, "stainless", (0, 0, math.pi / 2), 10)
+            B.cyl(f"{name}Handle", parent, (c, 0.64, fixed - 0.40), 0.011, 0.34, "stainless", (0, 0, math.pi / 2), 10)
+            B.cyl(f"{name}DoorHandle", parent, (c + (step / 2 - 0.16), 0.43, fixed - 0.40), 0.010, 0.20, "stainless", (0, 0, math.pi / 2), 10)
 
 
 def furniture() -> None:
     furniture = B.group("Furniture")
+    # Sombras de contato geométricas: aterram móveis sem depender de GI.
+    for pos, size in [
+        ((-4.56, 0.034, -1.4), (0.98, 0.006, 6.75)),
+        ((0.0, 0.034, -0.55), (5.15, 0.006, 1.32)),
+        ((4.55, 0.034, 2.15), (0.98, 0.006, 3.85)),
+        ((2.85, 0.034, 5.48), (2.48, 0.006, 0.88)),
+        ((-3.75, 0.034, 4.65), (1.04, 0.006, 0.72)),
+    ]:
+        B.box("ContactShadow", furniture, pos, size, "contact_shadow")
     west = B.group("WestBench", furniture)
     B.box("WestBenchTop", west, (-4.56, 0.92, -1.4), (0.82, 0.07, 6.6), "bench_top")
+    B.box("WestBenchEdge", west, (-4.135, 0.92, -1.4), (0.025, 0.075, 6.6), "stainless")
     B.box("WestToeKick", west, (-4.66, 0.10, -1.4), (0.58, 0.16, 6.5), "dark_metal")
     bench_cabinet_run(west, "z", -4.60, -4.55, 6.3, "West")
     B.box("WestServiceTrunk", west, (-4.88, 1.18, -1.4), (0.16, 0.20, 6.3), "service_metal")
@@ -764,14 +939,18 @@ def furniture() -> None:
         B.box("BenchOutletSlot", west, (-4.765, 1.18, z), (0.008, 0.045, 0.10), "plastic_black")
     for y in (1.72, 2.18):
         B.box("WestShelf", west, (-4.78, y, -1.6), (0.38, 0.045, 5.6), "brushed_metal")
+    B.box("WestShelfLight", west, (-4.72, 1.665, -1.6), (0.28, 0.018, 5.35), "task_light")
     for z in (-4.35, -1.6, 1.15):
         B.box("WestShelfUpright", west, (-4.78, 1.95, z), (0.34, 0.52, 0.045), "frame_metal")
+        B.box("WestShelfBracket", west, (-4.78, 1.58, z), (0.30, 0.035, 0.035), "frame_metal", (0, 0, 0.55))
     B.box("SinkBasin", west, (-4.56, 0.965, 0.72), (0.58, 0.035, 0.82), "dark_metal")
     B.cyl("FaucetPost", west, (-4.82, 1.10, 0.72), 0.022, 0.32, "stainless", segments=12)
     B.cyl("FaucetArm", west, (-4.70, 1.25, 0.72), 0.018, 0.34, "stainless", (0, 0, math.pi / 2), 12)
 
     island = B.group("IslandBench", furniture)
     B.box("IslandTop", island, (0, 0.93, -0.55), (5.0, 0.08, 1.18), "bench_top")
+    B.box("IslandEdgeFront", island, (0, 0.93, 0.045), (5.0, 0.075, 0.025), "stainless")
+    B.box("IslandEdgeBack", island, (0, 0.93, -1.145), (5.0, 0.075, 0.025), "stainless")
     B.box("IslandToeA", island, (-1.2, 0.10, -0.55), (2.2, 0.16, 0.86), "dark_metal")
     B.box("IslandToeB", island, (1.2, 0.10, -0.55), (2.2, 0.16, 0.86), "dark_metal")
     for side in (-0.31, 0.31):
@@ -782,6 +961,9 @@ def furniture() -> None:
             B.cyl("IslandHandle", island, (x, 0.70, front_z + (0.025 if side > 0 else -0.025)), 0.010, 0.30, "stainless", (0, 0, math.pi / 2), 10)
     B.box("IslandServiceSpine", island, (0, 1.10, -0.55), (4.35, 0.18, 0.22), "service_metal")
     B.box("IslandShelf", island, (0, 1.48, -0.55), (4.15, 0.045, 0.34), "brushed_metal")
+    B.box("IslandShelfLight", island, (0, 1.445, -0.55), (4.05, 0.016, 0.24), "task_light")
+    for x in (-1.85, -0.65, 0.65, 1.85):
+        B.cyl("IslandFoot", island, (x, 0.045, -0.55), 0.040, 0.07, "dark_metal", segments=12)
     for x in (-2.0, 0.0, 2.0):
         B.box("IslandShelfPost", island, (x, 1.28, -0.55), (0.045, 0.42, 0.045), "frame_metal")
     for x in (-1.8, -0.6, 0.6, 1.8):
@@ -790,6 +972,7 @@ def furniture() -> None:
 
     east = B.group("EastAnalysisBench", furniture)
     B.box("EastBenchTop", east, (4.55, 0.91, 2.15), (0.78, 0.07, 3.7), "bench_top")
+    B.box("EastBenchEdge", east, (4.145, 0.91, 2.15), (0.025, 0.075, 3.7), "stainless")
     bench_cabinet_run(east, "z", 4.60, 0.55, 3.3, "East", front_sign=-1.0)
 
     desk = B.group("WorkstationDesk", furniture)
@@ -799,15 +982,22 @@ def furniture() -> None:
     for i in range(3):
         B.box("DeskDrawer", desk, (1.88, 0.28 + i * 0.22, 5.15), (0.44, 0.15, 0.018), "cabinet")
     B.box("DeskModesty", desk, (2.85, 0.52, 5.76), (2.2, 0.42, 0.035), "cabinet_dark")
+    B.box("DeskCableTray", desk, (2.85, 0.66, 5.70), (2.05, 0.08, 0.18), "dark_metal")
+    B.cyl("DeskGrommet", desk, (3.55, 0.815, 5.48), 0.035, 0.012, "dark_metal", segments=16)
 
     storage = B.group("Storage", furniture)
+    B.box("TallCabinetPelmet", storage, (1.55, 2.70, -5.52), (2.72, 0.08, 0.66), "painted_metal_gray")
     for i, x in enumerate((0.65, 1.55, 2.45)):
-        B.box("TallCabinet", storage, (x, 1.35, -5.52), (0.82, 2.62, 0.62), "cabinet")
-        B.box("TallCabinetDoor", storage, (x, 1.42, -5.20), (0.68, 2.28, 0.025), "cabinet_dark" if i == 1 else "cabinet")
+        B.box("TallCabinet", storage, (x, 1.35, -5.52), (0.82, 2.62, 0.62), "painted_metal_gray")
+        B.box("TallCabinetDoor", storage, (x, 1.42, -5.20), (0.68, 2.28, 0.025), "cabinet_dark" if i == 1 else "painted_metal")
+        B.box("TallCabinetDoorSeam", storage, (x, 1.42, -5.178), (0.018, 2.18, 0.010), "frame_metal")
         B.cyl("TallCabinetHandle", storage, (x + 0.25, 1.35, -5.17), 0.011, 0.42, "stainless", segments=10)
         B.box("TallCabinetVent", storage, (x, 2.48, -5.185), (0.48, 0.10, 0.012), "dark_metal")
+        for vent_y in (2.435, 2.48, 2.525):
+            B.box("TallCabinetVentSlat", storage, (x, vent_y, -5.168), (0.42, 0.016, 0.008), "stainless")
     B.box("MobileCartTop", storage, (-3.75, 0.82, 4.65), (0.92, 0.05, 0.58), "stainless")
     B.box("MobileCartShelf", storage, (-3.75, 0.38, 4.65), (0.86, 0.04, 0.52), "frame_metal")
+    B.cyl("MobileCartHandle", storage, (-3.24, 0.88, 4.65), 0.016, 0.52, "stainless", (math.pi / 2, 0, 0), 12)
     for dx in (-0.40, 0.40):
         for dz in (-0.23, 0.23):
             B.cyl("CartPost", storage, (-3.75 + dx, 0.58, 4.65 + dz), 0.016, 0.62, "stainless", segments=10)
@@ -816,18 +1006,28 @@ def furniture() -> None:
     for i, (x, z) in enumerate([(-1.55, 0.48), (0.35, 0.48), (1.65, -1.62), (-0.85, -1.62)]):
         B.cyl(f"StoolSeat{i}", furniture, (x, 0.64, z), 0.19, 0.055, "plastic_black", segments=24)
         B.cyl(f"StoolPost{i}", furniture, (x, 0.34, z), 0.028, 0.56, "stainless", segments=12)
-        B.cyl(f"StoolRing{i}", furniture, (x, 0.24, z), 0.16, 0.018, "frame_metal", segments=24)
+        B.torus(f"StoolRing{i}", furniture, (x, 0.24, z), 0.125, 0.165, "frame_metal", (math.pi / 2, 0, 0))
         B.cyl(f"StoolBase{i}", furniture, (x, 0.035, z), 0.24, 0.035, "dark_metal", segments=24)
     chair = B.group("OfficeChair", furniture)
     B.box("ChairSeat", chair, (2.85, 0.52, 4.72), (0.52, 0.07, 0.50), "plastic_black")
     B.box("ChairBack", chair, (2.85, 0.92, 4.99), (0.50, 0.62, 0.07), "plastic_black", (-0.10, 0, 0))
     B.cyl("ChairPost", chair, (2.85, 0.27, 4.78), 0.028, 0.46, "stainless", segments=12)
+    for side in (-0.29, 0.29):
+        B.box("ChairArmPost", chair, (2.85 + side, 0.68, 4.80), (0.035, 0.30, 0.035), "dark_metal")
+        B.box("ChairArmPad", chair, (2.85 + side, 0.85, 4.80), (0.045, 0.035, 0.42), "plastic_black")
     for yaw in (0.0, 2.1, 4.2):
         B.box("ChairLeg", chair, (2.85, 0.055, 4.78), (0.62, 0.035, 0.07), "dark_metal", (0, yaw, 0))
 
 
 def equipment() -> None:
     equip = B.group("Equipment")
+    for pos, size in [
+        ((-2.3, 0.034, -5.48), (2.62, 0.006, 1.00)),
+        ((3.75, 0.034, -5.48), (1.68, 0.006, 0.96)),
+        ((4.48, 0.034, -4.15), (0.98, 0.006, 0.92)),
+        ((4.50, 0.034, -2.55), (0.98, 0.006, 0.90)),
+    ]:
+        B.box("EquipmentContactShadow", equip, pos, size, "contact_shadow")
     hood = B.group("FumeHood", equip)
     B.box("HoodBase", hood, (-2.3, 0.46, -5.48), (2.45, 0.84, 0.82), "cabinet_dark")
     B.box("HoodWorktop", hood, (-2.3, 0.94, -5.48), (2.55, 0.07, 0.92), "bench_top")
@@ -842,9 +1042,20 @@ def equipment() -> None:
     B.box("HoodSampleTray", hood, (-1.75, 1.005, -5.45), (0.52, 0.035, 0.34), "stainless")
     B.box("HoodSashGlass", hood, (-2.3, 2.12, -5.08), (2.18, 0.72, 0.025), "glass")
     B.box("HoodSashBar", hood, (-2.3, 1.72, -5.065), (2.22, 0.07, 0.035), "frame_metal")
-    B.cyl("HoodDuct", hood, (-2.3, 3.65, -5.55), 0.19, 1.55, "brushed_metal", segments=24)
+    B.cyl("HoodDuct", hood, (-2.3, 3.06, -5.55), 0.19, 0.48, "brushed_metal", segments=24)
+    B.cyl("HoodDuctFlange", hood, (-2.3, 2.94, -5.55), 0.235, 0.055, "frame_metal", segments=24)
     B.box("HoodMonitor", hood, (-1.02, 1.56, -5.20), (0.16, 0.11, 0.025), "screen")
     B.box("HoodLight", hood, (-2.3, 2.56, -5.45), (1.65, 0.025, 0.18), "task_light")
+    B.box("HoodWorktopLip", hood, (-2.3, 0.99, -5.005), (2.55, 0.065, 0.035), "stainless")
+    B.box("HoodSashTrackLeft", hood, (-3.38, 1.82, -5.055), (0.045, 1.52, 0.035), "dark_metal")
+    B.box("HoodSashTrackRight", hood, (-1.22, 1.82, -5.055), (0.045, 1.52, 0.035), "dark_metal")
+    B.box("HoodSideGlassLeft", hood, (-3.405, 1.82, -5.48), (0.018, 1.10, 0.62), "glass")
+    B.box("HoodSideGlassRight", hood, (-1.195, 1.82, -5.48), (0.018, 1.10, 0.62), "glass")
+    for baffle_y in (1.34, 1.64, 1.94):
+        B.box("HoodBaffleSlat", hood, (-2.3, baffle_y, -5.865), (2.02, 0.025, 0.015), "dark_metal")
+    B.box("HoodControlPanel", hood, (-1.02, 1.84, -5.16), (0.18, 0.34, 0.025), "painted_metal_gray")
+    for button_y, button_mat in [(1.76, "indicator_green"), (1.84, "indicator_amber"), (1.92, "indicator_red")]:
+        B.cyl("HoodControlButton", hood, (-1.02, button_y, -5.14), 0.012, 0.014, button_mat, (math.pi / 2, 0, 0), 10)
 
     bsc = B.group("BiosafetyCabinet", equip)
     B.box("BscBody", bsc, (3.75, 1.55, -5.48), (1.55, 2.05, 0.82), "stainless")
@@ -856,6 +1067,11 @@ def equipment() -> None:
     B.box("BscContainer", bsc, (3.98, 1.06, -5.52), (0.20, 0.14, 0.18), "container_blue")
     B.box("BscGrille", bsc, (3.75, 1.02, -5.13), (1.28, 0.13, 0.018), "dark_metal")
     B.box("BscDisplay", bsc, (4.38, 2.22, -5.08), (0.22, 0.12, 0.02), "screen")
+    B.box("BscFilterBox", bsc, (3.75, 2.68, -5.48), (1.45, 0.18, 0.72), "painted_metal_gray")
+    B.box("BscFilterGrille", bsc, (3.75, 2.68, -5.10), (1.28, 0.10, 0.018), "perforated_metal")
+    B.box("BscControlPanel", bsc, (3.75, 2.30, -5.12), (1.30, 0.16, 0.040), "painted_metal_gray", (-0.22, 0, 0))
+    B.box("BscUvStrip", bsc, (3.75, 2.02, -5.35), (1.10, 0.018, 0.08), "task_light")
+    B.box("BscSashRail", bsc, (3.75, 1.34, -5.055), (1.34, 0.05, 0.035), "frame_metal")
 
     fridge = B.group("LaboratoryRefrigerator", equip)
     B.box("FridgeBody", fridge, (4.48, 1.08, -4.15), (0.88, 2.16, 0.82), "plastic_white")
@@ -863,11 +1079,18 @@ def equipment() -> None:
     B.cyl("FridgeHandle", fridge, (3.99, 1.22, -3.86), 0.014, 0.48, "stainless", segments=10)
     B.box("FridgeDisplay", fridge, (4.015, 1.78, -4.15), (0.018, 0.13, 0.22), "screen")
     B.box("FridgeVent", fridge, (4.48, 0.16, -3.76), (0.70, 0.18, 0.018), "dark_metal")
+    B.box("FridgeGasket", fridge, (4.025, 1.12, -4.15), (0.012, 1.94, 0.70), "rubber")
+    for hinge_y in (0.48, 1.76):
+        B.cyl("FridgeHinge", fridge, (4.03, hinge_y, -3.80), 0.016, 0.14, "dark_metal", segments=10)
+    for vent_y in (0.115, 0.16, 0.205):
+        B.box("FridgeVentSlat", fridge, (4.035, vent_y, -4.15), (0.010, 0.016, 0.62), "stainless")
 
     incubator = B.group("Incubator", equip)
     B.box("IncubatorBody", incubator, (4.50, 0.92, -2.55), (0.86, 1.78, 0.78), "cabinet")
     B.box("IncubatorGlass", incubator, (4.05, 1.05, -2.55), (0.022, 1.25, 0.58), "glass_dark")
     B.box("IncubatorDisplay", incubator, (4.045, 1.78, -2.55), (0.018, 0.14, 0.24), "screen")
+    B.box("IncubatorGasket", incubator, (4.055, 1.05, -2.55), (0.012, 1.30, 0.62), "rubber")
+    B.cyl("IncubatorHandle", incubator, (4.03, 1.05, -2.22), 0.013, 0.42, "stainless", segments=10)
     for y in (0.68, 1.02, 1.36):
         B.box("IncubatorShelf", incubator, (4.18, y, -2.55), (0.42, 0.018, 0.58), "stainless")
 
@@ -879,15 +1102,24 @@ def equipment() -> None:
     B.box("MicroscopeArm", island, (-1.42, 1.23, -0.55), (0.07, 0.30, 0.09), "plastic_black", (0, 0, -0.25))
     B.cyl("MicroscopeTube", island, (-1.58, 1.34, -0.55), 0.032, 0.30, "plastic_black", (0, 0, 0.55), 14)
     B.cyl("MicroscopeObjective", island, (-1.62, 1.17, -0.55), 0.020, 0.10, "stainless", segments=12)
+    for dz in (-0.045, 0.045):
+        B.cyl("MicroscopeEyepiece", island, (-1.50, 1.47, -0.55 + dz), 0.014, 0.075, "dark_metal", (0, 0, 0.55), 10)
+    for dx in (-0.16, 0.16):
+        B.cyl("MicroscopeFocusKnob", island, (-1.48, 1.16, -0.55 + dx), 0.020, 0.025, "dark_metal", (math.pi / 2, 0, 0), 12)
     # Centrífuga.
     B.box("CentrifugeBody", island, (0.35, 1.13, -0.58), (0.52, 0.34, 0.46), "plastic_white")
     B.cyl("CentrifugeLid", island, (0.35, 1.325, -0.58), 0.20, 0.045, "cabinet_dark", segments=28)
     B.box("CentrifugeDisplay", island, (0.35, 1.16, -0.345), (0.22, 0.10, 0.018), "screen")
+    for dx in (-0.075, 0.0, 0.075):
+        B.cyl("CentrifugeButton", island, (0.35 + dx, 1.055, -0.342), 0.011, 0.012, "dark_metal", (math.pi / 2, 0, 0), 10)
     # Analisador com tampa e leitor.
     B.box("AnalyzerBody", island, (1.65, 1.16, -0.58), (0.62, 0.40, 0.48), "cabinet")
     B.box("AnalyzerLid", island, (1.65, 1.39, -0.60), (0.56, 0.055, 0.42), "cabinet_dark")
     B.box("AnalyzerScreen", island, (1.47, 1.20, -0.335), (0.24, 0.15, 0.018), "screen", (-0.08, 0, 0))
     B.cyl("AnalyzerPort", island, (1.88, 1.12, -0.34), 0.045, 0.025, "dark_metal", (math.pi / 2, 0, 0), 16)
+    B.box("AnalyzerRack", island, (1.92, 1.415, -0.60), (0.28, 0.025, 0.18), "dark_metal")
+    for dx in (-0.09, -0.03, 0.03, 0.09):
+        B.cyl("AnalyzerTube", island, (1.92 + dx, 1.465, -0.60), 0.011, 0.075, "glass", segments=10)
     # Espectrofotômetro na bancada leste.
     B.box("SpectroBody", equip, (4.52, 1.08, 1.35), (0.58, 0.28, 0.72), "plastic_white")
     B.box("SpectroLid", equip, (4.52, 1.24, 1.35), (0.52, 0.035, 0.62), "cabinet_dark")
@@ -902,6 +1134,7 @@ def equipment() -> None:
         B.box("MonitorFrame", equip, (x, 1.23, 5.62), (0.58, 0.36, 0.035), "plastic_black", (-0.06, 0, 0))
         B.box("MonitorScreen", equip, (x, 1.23, 5.598), (0.52, 0.30, 0.012), "screen", (-0.06, 0, 0))
         B.box("MonitorStand", equip, (x, 0.98, 5.66), (0.07, 0.34, 0.07), "dark_metal")
+        B.box("MonitorArm", equip, (x, 1.12, 5.64), (0.045, 0.045, 0.20), "dark_metal")
         B.box("MonitorFoot", equip, (x, 0.825, 5.62), (0.28, 0.025, 0.20), "dark_metal")
     B.box("Keyboard", equip, (2.85, 0.825, 5.28), (0.46, 0.025, 0.17), "plastic_black", (0, 0.04, 0))
     B.box("Mouse", equip, (3.38, 0.83, 5.30), (0.07, 0.03, 0.11), "plastic_black")
@@ -922,6 +1155,11 @@ def props_and_details() -> None:
         B.cyl(f"Bottle{i}", props, (x, y + 0.07, z), 0.045, 0.14, mat, segments=16)
         B.cyl(f"BottleNeck{i}", props, (x, y + 0.155, z), 0.018, 0.045, mat, segments=12)
         B.cyl(f"BottleCap{i}", props, (x, y + 0.185, z), 0.021, 0.025, "plastic_black", segments=12)
+        if i < 4:
+            B.box(f"BottleLabel{i}", props, (x + 0.047, y + 0.07, z), (0.012, 0.070, 0.055), "paper")
+    B.box("TestTubeRack", props, (-0.25, 1.525, -0.55), (0.34, 0.035, 0.16), "container_gray")
+    for dx in (-0.12, -0.06, 0.0, 0.06, 0.12):
+        B.cyl("TestTube", props, (-0.25 + dx, 1.575, -0.55), 0.011, 0.085, "glass", segments=10)
     for i, (x, y, z, sx, sz, mat) in enumerate([
         (-4.72, 1.76, -0.95, 0.26, 0.34, "cardboard"), (-4.70, 2.26, -3.85, 0.30, 0.38, "container_gray"),
         (1.25, 1.53, -0.55, 0.32, 0.24, "cardboard"), (2.05, 1.02, -0.48, 0.36, 0.28, "container_gray"),
@@ -948,6 +1186,18 @@ def props_and_details() -> None:
         B.box(f"ElectricalPanelSeam{i}", details, (x, 1.72, -5.858), (0.44, 0.82, 0.008), "frame_metal")
         B.box(f"ElectricalLight{i}", details, (x - 0.14, 1.98, -5.85), (0.035, 0.035, 0.012), "indicator_green")
         B.box(f"ElectricalLightB{i}", details, (x + 0.02, 1.98, -5.85), (0.035, 0.035, 0.012), "indicator_amber")
+        B.cyl(f"ElectricalConduit{i}", details, (x, 2.62, -5.93), 0.018, 0.88, "frame_metal", segments=10)
+    B.box("WallCableDrop", details, (-3.85, 2.92, -5.92), (0.20, 0.46, 0.05), "frame_metal")
+    B.cyl("WallClockFrame", details, (0.85, 2.18, -5.915), 0.165, 0.028, "frame_metal", (math.pi / 2, 0, 0), 28)
+    B.cyl("WallClockFace", details, (0.85, 2.18, -5.898), 0.148, 0.030, "plastic_white", (math.pi / 2, 0, 0), 28)
+    B.box("GloveDispenser", details, (-4.91, 1.55, -0.20), (0.07, 0.28, 0.42), "container_blue")
+    B.box("GloveDispenserSlot", details, (-4.868, 1.50, -0.20), (0.012, 0.055, 0.28), "plastic_black")
+    B.box("PaperDispenser", details, (-4.91, 1.48, 1.28), (0.07, 0.34, 0.30), "plastic_white")
+    B.box("PaperDispenserSlot", details, (-4.868, 1.38, 1.28), (0.012, 0.035, 0.20), "dark_metal")
+    B.box("DataOutlet", details, (-0.95, 0.45, 5.915), (0.22, 0.13, 0.025), "plastic_white")
+    B.box("DataOutletPortA", details, (-0.99, 0.45, 5.898), (0.045, 0.045, 0.010), "plastic_black")
+    B.box("DataOutletPortB", details, (-0.91, 0.45, 5.898), (0.045, 0.045, 0.010), "plastic_black")
+    B.cyl("EmergencyStop", details, (2.05, 1.10, -0.425), 0.026, 0.022, "safety_red", (math.pi / 2, 0, 0), 16)
     # Grelhas no band técnico.
     for side, positions in {
         "north": [(-3.6, -5.90, 0), (3.6, -5.90, 0)],
@@ -955,14 +1205,14 @@ def props_and_details() -> None:
         "south": [(3.9, 5.90, math.pi)],
     }.items():
         for x, z, yaw in positions:
-            pos = (x, 3.70, z)
+            pos = (x, 2.70, z)
             size = (0.92, 0.42, 0.035) if side != "west" else (0.035, 0.42, 0.92)
             B.box(f"VentGrille_{side}", details, pos, size, "dark_metal")
             for j in range(4):
                 if side == "west":
-                    B.box(f"VentSlat_{side}", details, (x - 0.022, 3.57 + j * 0.09, z), (0.012, 0.025, 0.80), "stainless")
+                    B.box(f"VentSlat_{side}", details, (x - 0.022, 2.57 + j * 0.09, z), (0.012, 0.025, 0.80), "stainless")
                 else:
-                    B.box(f"VentSlat_{side}", details, (x, 3.57 + j * 0.09, z - (0.022 if side == "north" else -0.022)), (0.80, 0.025, 0.012), "stainless")
+                    B.box(f"VentSlat_{side}", details, (x, 2.57 + j * 0.09, z - (0.022 if side == "north" else -0.022)), (0.80, 0.025, 0.012), "stainless")
     # Pontos de gases e tomadas na espinha da ilha.
     for x, mat in [(-1.45, "container_blue"), (-1.28, "safety_green"), (-1.11, "safety_yellow"), (1.28, "container_blue"), (1.45, "safety_green")]:
         B.cyl("GasPoint", details, (x, 1.13, -0.40), 0.020, 0.055, mat, (math.pi / 2, 0, 0), 12)
@@ -970,20 +1220,21 @@ def props_and_details() -> None:
     B.cyl("FireExtinguisher", details, (-4.72, 0.78, 3.72), 0.085, 0.48, "safety_red", segments=20)
     B.cyl("ExtinguisherNozzle", details, (-4.66, 1.08, 3.72), 0.016, 0.22, "plastic_black", (0, 0, 0.7), 10)
     B.box("ExtinguisherSign", details, (-4.91, 1.48, 3.72), (0.025, 0.30, 0.24), "safety_red")
-    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", -math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
+    B.label("ExtinguisherLabel", details, (-4.895, 1.48, 3.72), "EXTINTOR", math.pi / 2, 26, (0.96, 0.96, 0.94, 1), 0.0014)
     B.box("FirstAidBox", details, (-4.91, 1.62, 4.38), (0.07, 0.32, 0.42), "plastic_white")
     B.box("FirstAidCrossV", details, (-4.868, 1.62, 4.38), (0.012, 0.20, 0.055), "safety_red")
     B.box("FirstAidCrossH", details, (-4.868, 1.62, 4.38), (0.012, 0.055, 0.20), "safety_red")
     B.box("SafetySignPlate", details, (-4.91, 2.05, 1.55), (0.025, 0.34, 0.58), "safety_yellow")
-    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", -math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
+    B.label("SafetySign", details, (-4.895, 2.08, 1.55), "EPI OBRIGATÓRIO", math.pi / 2, 28, (0.05, 0.05, 0.04, 1), 0.0015)
     B.cyl("EyewashPipe", details, (-4.82, 2.15, 2.45), 0.022, 1.05, "stainless", segments=12)
     B.cyl("EyewashArm", details, (-4.62, 2.64, 2.45), 0.018, 0.42, "stainless", (0, 0, math.pi / 2), 12)
     B.cyl("EyewashDrop", details, (-4.48, 2.52, 2.45), 0.016, 0.24, "stainless", segments=10)
     B.cyl("EyewashBowl", details, (-4.48, 2.38, 2.45), 0.16, 0.07, "safety_green", segments=24)
     B.box("EyewashDrain", details, (-4.48, 2.30, 2.45), (0.20, 0.035, 0.20), "frame_metal")
     # Câmera, sensor e interruptor junto à porta.
-    B.sphere("DoorCamera", details, (-4.45, 4.78, 5.55), 0.075, "glass_dark")
-    B.cyl("PirSensor", details, (4.55, 4.72, 5.55), 0.055, 0.035, "plastic_white", segments=16)
+    B.box("DoorCameraMount", details, (-4.45, 3.02, 5.62), (0.09, 0.12, 0.09), "dark_metal")
+    B.sphere("DoorCamera", details, (-4.45, 2.94, 5.55), 0.075, "glass_dark")
+    B.cyl("PirSensor", details, (4.55, 2.94, 5.55), 0.055, 0.035, "plastic_white", segments=16)
     B.box("LightSwitch", details, (-1.05, 1.28, 5.91), (0.11, 0.17, 0.025), "plastic_white")
     B.box("LightSwitchToggle", details, (-1.05, 1.28, 5.895), (0.025, 0.055, 0.010), "plastic_black")
     # Cabos curtos e organizados dos instrumentos até a espinha.
@@ -999,13 +1250,14 @@ def lights_and_collisions() -> None:
     lights = B.group("Lighting")
     light_index = 0
     for x in (-2.3, 2.3):
-        for z in (-3.0, 3.0):
-            B.omni(f"MainLight{light_index}", lights, (x, 4.62, z), (0.92, 0.96, 1.0), 1.55, 9.5, 1.2, False)
+        for z in (-4.0, 0.0, 4.0):
+            B.spot(f"MainLight{light_index}", lights, (x, 3.04, z), (0.93, 0.96, 1.0), 2.35, 8.5, 64, z != 0.0)
             light_index += 1
-    B.spot("IslandTaskLight", lights, (0, 4.95, -0.55), (0.96, 0.98, 0.94), 1.7, 7.0, 52, True)
-    B.spot("WestTaskLight", lights, (-4.35, 4.95, -1.4), (0.96, 0.98, 0.94), 1.25, 6.5, 48, False)
+    B.spot("IslandTaskLight", lights, (0, 1.43, -0.55), (0.96, 0.98, 0.94), 0.85, 3.2, 55, False)
+    B.spot("WestTaskLight", lights, (-4.68, 1.64, -1.6), (0.96, 0.98, 0.94), 0.80, 3.4, 52, False)
     B.omni("ObservationLight", lights, (6.45, 2.65, -1.0), (0.55, 0.68, 0.78), 0.95, 5.0, 1.2, False)
     B.omni("HoodWorkLight", lights, (-2.3, 2.35, -4.95), (0.94, 0.97, 0.94), 0.55, 2.6, 1.25, False)
+    B.omni("BscWorkLight", lights, (3.75, 1.95, -5.12), (0.94, 0.97, 0.94), 0.35, 1.8, 1.25, False)
     B.omni("DoorEmergencyLight", lights, (-2.2, 3.15, 5.55), (1.0, 0.18, 0.10), 0.35, 3.2, 1.3, False)
     B.box("EmergencyFixture", lights, (-2.2, 3.18, 5.88), (0.34, 0.09, 0.06), "indicator_red")
 
@@ -1014,11 +1266,11 @@ def lights_and_collisions() -> None:
     B.node_count += 1
     body = "Collision/ArchitectureBodies"
     B.collider("Floor", body, (0, -0.11, 0), (10.7, 0.22, 12.7))
-    B.collider("Ceiling", body, (0, 5.32, 0), (10.7, 0.22, 12.7))
-    B.collider("WallNorth", body, (0, 2.6, -6.16), (10.7, 5.2, 0.32))
-    B.collider("WallSouth", body, (0, 2.6, 6.16), (10.7, 5.2, 0.32))
-    B.collider("WallWest", body, (-5.16, 2.6, 0), (0.32, 5.2, 12.7))
-    B.collider("WallEast", body, (5.16, 2.6, 0), (0.32, 5.2, 12.7))
+    B.collider("Ceiling", body, (0, 3.32, 0), (10.7, 0.22, 12.7))
+    B.collider("WallNorth", body, (0, 1.6, -6.16), (10.7, 3.2, 0.32))
+    B.collider("WallSouth", body, (0, 1.6, 6.16), (10.7, 3.2, 0.32))
+    B.collider("WallWest", body, (-5.16, 1.6, 0), (0.32, 3.2, 12.7))
+    B.collider("WallEast", body, (5.16, 1.6, 0), (0.32, 3.2, 12.7))
     B.nodes.append("[node name=\"FurnitureBodies\" type=\"StaticBody3D\" parent=\"Collision\"]")
     B.node_count += 1
     fbody = "Collision/FurnitureBodies"
@@ -1060,7 +1312,7 @@ background_mode = 1
 background_color = Color(0.008, 0.010, 0.014, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.38, 0.43, 0.50, 1)
-ambient_light_energy = 0.48
+ambient_light_energy = 0.34
 tonemap_mode = 2"""
     world = "[node name=\"WorldEnvironment\" type=\"WorldEnvironment\" parent=\".\"]\nenvironment = SubResource(\"Env_pilot\")"
     load_steps = len(MATERIALS) + len(B.subresources) + 2

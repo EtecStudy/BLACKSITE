@@ -69,10 +69,16 @@ func _run() -> void:
 	await _save_shot(camera, "06_janela_observacao.png")
 	_look(camera, Vector3(-0.55, 1.52, -2.65), Vector3(-2.3, 1.65, -5.45))
 	await _save_shot(camera, "07_capela_e_bancada_norte.png")
-	_look(camera, Vector3(0.0, 1.15, 3.65), Vector3(0.2, 5.25, -2.2))
+	_look(camera, Vector3(0.0, 1.15, 3.65), Vector3(0.2, 3.25, -2.2))
 	await _save_shot(camera, "08_teto_tecnico.png")
 	_look(camera, Vector3(-3.85, 1.55, -4.15), Vector3(0.5, 1.0, 0.8))
 	await _save_shot(camera, "09_bancada_central.png")
+	_look(camera, Vector3(-3.35, 1.52, 3.35), Vector3(-5.0, 1.05, 5.95))
+	await _save_shot(camera, "10_quina_e_parede.png")
+	_look(camera, Vector3(3.05, 1.45, -1.15), Vector3(4.52, 1.05, -2.55))
+	await _save_shot(camera, "11_equipamento_detalhe.png")
+	_look(camera, Vector3(4.30, 1.52, 4.65), Vector3(-1.2, 2.85, -3.2))
+	await _save_shot(camera, "12_iluminacao_e_forro.png")
 
 	for i in range(10):
 		await get_tree().process_frame
