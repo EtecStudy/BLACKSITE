@@ -27,7 +27,6 @@ const EXPECTED_NODES := [
 	"Content/TitleLabel",
 	"Content/Buttons/StartButton",
 	"Content/Buttons/TestMovementButton",
-	"Content/Buttons/KitchenReferenceButton",
 	"Content/Buttons/SettingsButton",
 	"Content/Buttons/QuitButton",
 	"Content/BuildLabel",
@@ -969,13 +968,13 @@ func _check_stage8() -> void:
 	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
 	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.14.0",
-		"versão do projeto é 0.14.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.14.1",
+		"versão do projeto é 0.14.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Reconstrução"),
+			str(app_info.stage_label()).contains("Sala de movimentação"),
 			"AppInfo anuncia a etapa atual (%s)" % str(app_info.stage_label())
 		)
 
@@ -1136,13 +1135,13 @@ func _check_stage9() -> void:
 
 	# --- Versão -------------------------------------------------------------
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.14.0",
-		"versão do projeto é 0.14.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.14.1",
+		"versão do projeto é 0.14.1"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Reconstrução"),
+			str(app_info.stage_label()).contains("Sala de movimentação"),
 			"AppInfo anuncia a Etapa 11 (%s)" % str(app_info.stage_label())
 		)
 

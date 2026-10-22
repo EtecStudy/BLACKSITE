@@ -1,9 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[ext_resource type="Texture2D" path="res://maps/reference/textures/stain_alpha.png" id="tex_albedo"]
-
-[resource]
-transparency = 1
-albedo_texture = ExtResource("tex_albedo")
-roughness = 0.35
-metallic = 0

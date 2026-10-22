@@ -137,12 +137,6 @@ custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 text = "TESTAR MOVIMENTAÇÃO"
 
-[node name="KitchenReferenceButton" type="Button" parent="Content/Buttons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(330, 0)
-layout_mode = 2
-text = "RECONSTRUÇÃO 3D"
-
 [node name="SettingsButton" type="Button" parent="Content/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 0)
@@ -164,7 +158,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "TESTAR MOVIMENTAÇÃO abre a sala de teste do controlador. RECONSTRUÇÃO 3D abre a cozinha da imagem de referência, navegável em primeira pessoa."
+text = "TESTAR MOVIMENTAÇÃO abre a sala de teste do controlador: andar, correr, agachar, stamina, inventário e interação."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]
