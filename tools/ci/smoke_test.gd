@@ -28,6 +28,7 @@ const EXPECTED_NODES := [
 	"Content/Buttons/StartButton",
 	"Content/Buttons/TestMovementButton",
 	"Content/Buttons/LaboratoryButton",
+	"Content/Buttons/PilotRoomButton",
 	"Content/Buttons/ModularDemoButton",
 	"Content/Buttons/SettingsButton",
 	"Content/Buttons/QuitButton",
@@ -102,6 +103,7 @@ func _ready() -> void:
 	_check_stage8()
 	_check_stage9()
 	_check_stage12a()
+	_check_pilot_room()
 
 	if settings != null:
 		settings.config_path = _original_config_path
@@ -990,13 +992,13 @@ func _check_stage8() -> void:
 	# (0.9.0 na Etapa 9). O que este grupo garante é que o inventário da Etapa 8
 	# continua presente nessa versão — verificado logo abaixo.
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.12.0",
-		"versão do projeto é 0.12.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.0",
+		"versão do projeto é 0.13.0"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Etapa 12"),
+			str(app_info.stage_label()).contains("Sala-Piloto"),
 			"AppInfo anuncia a etapa atual (%s)" % str(app_info.stage_label())
 		)
 
@@ -1157,13 +1159,13 @@ func _check_stage9() -> void:
 
 	# --- Versão -------------------------------------------------------------
 	_expect(
-		str(ProjectSettings.get_setting("application/config/version", "")) == "0.12.0",
-		"versão do projeto é 0.12.0"
+		str(ProjectSettings.get_setting("application/config/version", "")) == "0.13.0",
+		"versão do projeto é 0.13.0"
 	)
 	var app_info = get_node_or_null("/root/AppInfo")
 	if app_info != null:
 		_expect(
-			str(app_info.stage_label()).contains("Etapa 12"),
+			str(app_info.stage_label()).contains("Sala-Piloto"),
 			"AppInfo anuncia a Etapa 11 (%s)" % str(app_info.stage_label())
 		)
 
@@ -1348,4 +1350,51 @@ func _check_stage12a() -> void:
 		_expect(button != null, "botão PRIMEIRO ANDAR na tela inicial")
 		if button != null:
 			_expect(button.text == "PRIMEIRO ANDAR", "botão PRIMEIRO ANDAR rotulado")
+		screen.free()
+
+
+## Sala-Piloto Visual: a sala independente, a sessão e o botão existem sem
+## substituir a planta da Etapa 12A. A geometria/física detalhada fica em
+## `tools/ci/pilot_room_test.tscn`.
+func _check_pilot_room() -> void:
+	print("[27] Sala-Piloto Visual")
+	for path: String in [
+		"res://maps/pilot/pilot_research_room.tscn",
+		"res://maps/pilot/materials/wall_panel.tres",
+		"res://maps/pilot/materials/floor_epoxy.tres",
+		"res://maps/pilot/materials/ceiling_panel.tres",
+		"res://maps/pilot/textures/wall_panel_albedo.png",
+		"res://maps/pilot/textures/floor_epoxy_albedo.png",
+		"res://match/scenes/pilot_room.tscn",
+		"res://match/scripts/pilot_room_session.gd",
+		"res://tools/ci/pilot_room_test.tscn",
+		"res://tools/ci/pilot_room_visual_check.tscn",
+		"res://tools/arch/build_pilot_room.py",
+		"res://docs/SALA_PILOTO_VISUAL.md",
+	]:
+		_expect(FileAccess.file_exists(path), "arquivo da sala-piloto existe: %s" % path.get_file())
+	var room_packed: PackedScene = load("res://maps/pilot/pilot_research_room.tscn") as PackedScene
+	_expect(room_packed != null, "sala-piloto carrega")
+	if room_packed != null:
+		var room: Node = room_packed.instantiate()
+		_expect(room.get_node_or_null("Architecture/Floor") != null, "sala-piloto tem piso arquitetônico")
+		_expect(room.get_node_or_null("Architecture/Ceiling") != null, "sala-piloto tem teto técnico")
+		_expect(room.get_node_or_null("Equipment/FumeHood") != null, "sala-piloto tem capela")
+		_expect(room.get_node_or_null("Equipment/BiosafetyCabinet") != null, "sala-piloto tem cabine de segurança")
+		_expect(room.get_node_or_null("Spawn") is Marker3D, "sala-piloto tem ponto de entrada")
+		room.free()
+	var session_packed: PackedScene = load("res://match/scenes/pilot_room.tscn") as PackedScene
+	_expect(session_packed != null, "sessão da sala-piloto carrega")
+	if session_packed != null:
+		var session: Node = session_packed.instantiate()
+		_expect(session.get_node_or_null("PilotRoom") != null, "sessão carrega a sala-piloto")
+		_expect(session.get_node_or_null("Player") != null, "sessão da sala-piloto usa o jogador existente")
+		session.free()
+	var title: PackedScene = load("res://ui/scenes/title_screen.tscn") as PackedScene
+	if title != null:
+		var screen: Node = title.instantiate()
+		var button: Button = screen.get_node_or_null("Content/Buttons/PilotRoomButton") as Button
+		_expect(button != null, "botão SALA-PILOTO VISUAL na tela inicial")
+		if button != null:
+			_expect(button.text == "SALA-PILOTO VISUAL", "botão da sala-piloto rotulado")
 		screen.free()

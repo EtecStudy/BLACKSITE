@@ -143,6 +143,12 @@ custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 text = "PRIMEIRO ANDAR"
 
+[node name="PilotRoomButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "SALA-PILOTO VISUAL"
+
 [node name="ModularDemoButton" type="Button" parent="Content/Buttons"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 0)
@@ -170,7 +176,7 @@ mouse_filter = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
 theme_override_font_sizes/font_size = 15
-text = "PRIMEIRO ANDAR abre o laboratório completo da Etapa 12A (recepção, segurança, controle, cruzamento central, pesquisa, análises, observação, armazenamento, escritórios, logística, setor técnico e duas escadas). DEMONSTRAR MÓDULOS mostra as peças isoladas. TESTAR MOVIMENTAÇÃO abre a sala de teste."
+text = "SALA-PILOTO VISUAL abre a sala independente de pesquisa/análise criada para avaliar a nova direção visual. PRIMEIRO ANDAR mantém a planta da Etapa 12A preservada. DEMONSTRAR MÓDULOS mostra as peças isoladas e TESTAR MOVIMENTAÇÃO abre a sala de teste."
 horizontal_alignment = 1
 
 [node name="FooterSpacer" type="Control" parent="Content"]

@@ -134,6 +134,18 @@ jobs:
             exit 1
           fi
 
+      - name: TESTE 1g — sala-piloto visual (headless)
+        timeout-minutes: 8
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/pilot_room_test.tscn 2>&1 | tee ci-logs/pilot-room.log
+          grep -F "TESTE DA SALA-PILOTO PASSOU" ci-logs/pilot-room.log
+          if grep -F "[PILOT FALHA]" ci-logs/pilot-room.log; then
+            echo "::error::Falhas na sala-piloto visual"
+            exit 1
+          fi
+
       - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
         run: |
           set -o pipefail
@@ -256,6 +268,21 @@ jobs:
           test -s ci-logs/first_floor.png
           echo "frame do primeiro andar capturado: $latest"
 
+      - name: TESTE 3h — capturas da sala-piloto (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/visual-pilot
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            res://tools/ci/pilot_room_visual_check.tscn 2>&1 | tee ci-logs/render_pilot_room.log
+          grep -F "CAPTURAS DA SALA-PILOTO PASSARAM" ci-logs/render_pilot_room.log
+          count=$(find ci-logs/visual-pilot -maxdepth 1 -name '*.png' | wc -l)
+          echo "capturas da sala-piloto: $count"
+          test "$count" -ge 9
+          cp ci-logs/visual-pilot/01_sala_inteira.png ci-logs/pilot_room_overview.png
+          cp ci-logs/visual-pilot/02_primeira_pessoa_spawn.png ci-logs/pilot_room_first_person.png
+
       # ------------------------------------------------------------------
       # 2. Exportações
       # ------------------------------------------------------------------
@@ -337,7 +364,7 @@ jobs:
       - name: Empacotar para distribuição
         run: |
           cat > build/windows/LEIA-ME.txt <<'EOF'
-          BLACK SIGHT — Etapa 12A (Windows x86_64 · Primeiro andar do laboratorio)
+          BLACK SIGHT — Sala-Piloto Visual (Windows x86_64 · Pesquisa e análise)
           ============================================
 
           COMO JOGAR
@@ -364,6 +391,16 @@ jobs:
           - CONFIGURAÇÕES . abre as configurações durante a pausa
           - VOLTAR AO MENU  volta à tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
+
+          SALA-PILOTO VISUAL
+          - Clique em SALA-PILOTO VISUAL na tela inicial.
+          - A cena é uma única sala independente de pesquisa/análise,
+            com bancadas, capela, cabine de segurança, janela de observação,
+            porta principal, teto técnico e sinalização discreta.
+          - Use W A S D, SHIFT, CTRL e o mouse como nas outras cenas.
+          - ESC abre a mesma pausa; CONFIGURAÇÕES e VOLTAR AO MENU funcionam.
+          - Esta sala serve apenas para avaliar a nova direção visual.
+            A planta da Etapa 12A continua disponível em PRIMEIRO ANDAR.
 
           DEMONSTRAÇÃO MODULAR (ETAPA 11)
           - Clique em DEMONSTRAR MÓDULOS na tela inicial.
@@ -475,29 +512,29 @@ jobs:
           funcionais, geração procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versão 0.12.0 — Etapa 12A (primeiro andar do laboratório)
+          Versão 0.13.0 — Sala-Piloto Visual (pesquisa e análise)
           EOF
           cd build/windows
-          zip -9 -r ../../BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip \
+          zip -9 -r ../../BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip \
             BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
           cd ../..
-          ls -la BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
-          sha256sum BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+          ls -la BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip
+          sha256sum BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
 
       - name: TESTE 8 — listar o conteúdo do ZIP
         run: |
-          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
-          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "BlackSight.exe"
-          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "BlackSight.pck"
-          unzip -l BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
-          unzip -t BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip | tail -2
+          unzip -l BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip | tail -2
 
       - name: Publicar artefatos do workflow
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa12a-primeiro-andar-windows
+          name: black-sight-sala-piloto-visual-windows
           path: |
-            BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
+            BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip
             ci-logs/render_frame.png
             ci-logs/settings_screen.png
             ci-logs/movement_test.png
@@ -505,13 +542,15 @@ jobs:
             ci-logs/drop_hud.png
             ci-logs/modular_demo.png
             ci-logs/first_floor.png
+            ci-logs/pilot_room_overview.png
+            ci-logs/pilot_room_first_person.png
           if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa12a-primeiro-andar-logs
+          name: black-sight-sala-piloto-visual-logs
           path: ci-logs/
           if-no-files-found: warn
 
@@ -537,7 +576,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## Black Sight · Etapa 12A"
+            echo "## Black Sight · Sala-Piloto Visual"
             echo ""
             echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
             echo "- Commit: $GITHUB_SHA"
@@ -665,6 +704,10 @@ jobs:
             "tools/ci/modular_visual_check.tscn",
             "tools/ci/first_floor_test.tscn",
             "tools/ci/first_floor_visual_check.tscn",
+            "tools/ci/pilot_room_test.tscn",
+            "tools/ci/pilot_room_visual_check.tscn",
+            "maps/pilot/pilot_research_room.tscn",
+            "match/scenes/pilot_room.tscn",
             "maps/scenes/laboratory_first_floor.tscn",
             "match/scenes/laboratory.tscn",
             "maps/modular/rooms/room_lab_10x10.tscn",
@@ -759,6 +802,20 @@ jobs:
           Write-Host "exit code do teste do primeiro andar: $code"
           if (-not (Select-String -Path $log -SimpleMatch "PRIMEIRO ANDAR OK")) {
             throw "Teste do primeiro andar não passou (exit $code) — ver 05f-first-floor.log"
+          }
+
+      - name: TESTE W2g — sala-piloto visual no Windows (headless)
+        timeout-minutes: 8
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05g-pilot-room.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/pilot_room_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste da sala-piloto: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "TESTE DA SALA-PILOTO PASSOU")) {
+            throw "Teste da sala-piloto não passou (exit $code) — ver 05g-pilot-room.log"
           }
 
       - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
@@ -872,6 +929,21 @@ jobs:
           if ($code -ne 0) { throw "Capturas do primeiro andar falharam (exit $code) — ver 14-visual-12a.log" }
           if ($pngs.Count -lt 14) { throw "Capturas insuficientes ($($pngs.Count) de 14)" }
 
+      - name: TESTE W6d — capturas da sala-piloto (renderização real)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs/visual-pilot | Out-Null
+          & $env:GODOT --path . --fixed-fps 60 res://tools/ci/pilot_room_visual_check.tscn *>&1 |
+            Tee-Object -FilePath ci-logs/15-visual-pilot.log
+          $code = $LASTEXITCODE
+          Write-Host "exit code das capturas da sala-piloto: $code"
+          $pngs = @(Get-ChildItem ci-logs/visual-pilot -Filter *.png -ErrorAction SilentlyContinue)
+          Write-Host "capturas geradas: $($pngs.Count)"
+          if ($code -ne 0) { throw "Capturas da sala-piloto falharam (exit $code) — ver 15-visual-pilot.log" }
+          if ($pngs.Count -lt 9) { throw "Capturas insuficientes ($($pngs.Count) de 9)" }
+
       - name: TESTE W7 — inspecionar o pacote .pck e os metadados do .exe
         shell: pwsh
         run: |
@@ -887,14 +959,14 @@ jobs:
             "CompanyName=$($info.CompanyName)"
           ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
           if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
-          if ($info.FileVersion -notlike "0.12.0*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+          if ($info.FileVersion -notlike "0.13.0*") { throw "FileVersion inesperada: $($info.FileVersion)" }
 
       - name: Empacotar para distribuição
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
           $readme = @"
-          BLACK SIGHT - Etapa 12A (Windows x86_64 - Primeiro andar do laboratorio)
+          BLACK SIGHT - Sala-Piloto Visual (Windows x86_64 - Pesquisa e analise)
           ============================================
 
           COMO JOGAR
@@ -926,6 +998,14 @@ jobs:
           - CONFIGURACOES . abre as configuracoes durante a pausa
           - VOLTAR AO MENU  volta a tela inicial
           - O jogador colide com piso, paredes, pilares e caixas.
+
+          SALA-PILOTO VISUAL
+          - Clique em SALA-PILOTO VISUAL na tela inicial.
+          - Uma sala independente de pesquisa/analise para avaliar a nova
+            direcao visual: arquitetura completa, bancadas, capela, cabine
+            de seguranca, janela de observacao, porta principal, teto
+            tecnico, iluminacao e sinalizacao discreta.
+          - A planta da Etapa 12A continua disponivel em PRIMEIRO ANDAR.
 
           DEMONSTRACAO MODULAR (ETAPA 11)
           - Clique em DEMONSTRAR MODULOS na tela inicial.
@@ -1034,7 +1114,7 @@ jobs:
           funcionais, geracao procedural, criaturas, multiplayer nem mapa
           definitivo.
 
-          Versao 0.12.0 - Etapa 12A (primeiro andar do laboratorio)
+          Versao 0.13.0 - Sala-Piloto Visual (pesquisa e analise)
           "@
           $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
           $lines = @()
@@ -1045,7 +1125,7 @@ jobs:
           $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
           Get-Content build/windows/SHA256SUMS.txt
           Get-ChildItem build/windows | Select-Object Name, Length
-          $zip = Join-Path $PWD "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip"
+          $zip = Join-Path $PWD "BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
           Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
           Get-Item $zip | Select-Object Name, Length
@@ -1062,9 +1142,9 @@ jobs:
       - name: Publicar artefatos (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: black-sight-etapa12a-primeiro-andar-windows-real
+          name: black-sight-sala-piloto-visual-windows-real
           path: |
-            BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip
+            BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip
             ci-logs/
           if-no-files-found: warn
 
@@ -1081,7 +1161,8 @@ jobs:
             @{ Nome = "Fluxo de interface (ui_flow_test.gd)"; Log = "ci-logs/05b-ui-flow.log" },
             @{ Nome = "Controlador FPS + inventário + drop (movement_test.gd)"; Log = "ci-logs/05c-movement.log" },
             @{ Nome = "Sistema modular de salas (modular_test.gd)"; Log = "ci-logs/05e-modular.log" },
-            @{ Nome = "Primeiro andar do laboratório (first_floor_test.gd)"; Log = "ci-logs/05f-first-floor.log" }
+            @{ Nome = "Primeiro andar do laboratório (first_floor_test.gd)"; Log = "ci-logs/05f-first-floor.log" },
+            @{ Nome = "Sala-piloto visual (pilot_room_test.gd)"; Log = "ci-logs/05g-pilot-room.log" }
           )
           $linhas = @("", "## Testes automatizados (Windows)", "", "| Suíte | Resultado |", "| --- | --- |")
           foreach ($r in $rows) {
@@ -1094,7 +1175,7 @@ jobs:
               Write-Host "::warning::sem linha de resumo em $($r.Log)"
             }
           }
-          $zip = "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip"
+          $zip = "BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip"
           $info = Get-Item $zip
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           $linhas += @("", "## Pacote verificado neste build", "", "| Item | Valor |", "| --- | --- |")
@@ -1111,15 +1192,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "v0.12.0-etapa12a-primeiro-andar"
+          $tag = "v0.13.0-sala-piloto-visual"
           # Reexecução do mesmo commit: remove a release anterior da etapa
           # para publicar exatamente o pacote deste build.
           gh release delete $tag --yes --cleanup-tag 2>$null
-          $notas = (Get-Content docs/RELEASE_NOTES_ETAPA12A.md -Encoding utf8 -Raw).TrimEnd()
+          $notas = (Get-Content docs/RELEASE_NOTES_SALA_PILOTO.md -Encoding utf8 -Raw).TrimEnd()
           $extra = Get-Content ci-logs/release-summary.md -Encoding utf8 -Raw
           New-Item -ItemType Directory -Force -Path build | Out-Null
           ($notas + "`n" + $extra) | Out-File -FilePath build/release-notes.md -Encoding utf8
-          gh release create $tag "BlackSight-Etapa12A-Primeiro-Andar-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Etapa 12A - Primeiro andar do laboratorio - Windows x86_64" --notes-file build/release-notes.md
+          gh release create $tag "BlackSight-Sala-Piloto-Visual-Windows-x86_64.zip" --target $env:GITHUB_SHA --title "Black Sight - Sala-Piloto Visual - Pesquisa e analise - Windows x86_64" --notes-file build/release-notes.md
           if ($LASTEXITCODE -ne 0) { throw "Falha ao criar a release" }
 
       - name: Publicar diagnóstico Windows (branch ci-windows)
@@ -1144,7 +1225,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $summary = @("## Black Sight - Etapa 12A (Windows real - Primeiro andar do laboratorio)", "")
+          $summary = @("## Black Sight - Sala-Piloto Visual (Windows real - Pesquisa e analise)", "")
           foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
             $summary += "- $($f.Name)"
           }

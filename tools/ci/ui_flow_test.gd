@@ -15,6 +15,7 @@ extends Node
 
 const TITLE_SCENE := "res://ui/scenes/title_screen.tscn"
 const SETTINGS_SCENE := "res://ui/scenes/settings_screen.tscn"
+const PILOT_ROOM_PATH := "res://match/scenes/pilot_room.tscn"
 const FLOW_CONFIG := "user://test_ui_flow_settings.cfg"
 
 const SIDEBAR := "Margin/Layout/Body/Sidebar"
@@ -330,6 +331,47 @@ class FlowDriver:
 						lab_menu.pressed.emit()
 						title_again = await _wait_for_scene("TitleScreen", 2400)
 						_expect(title_again != null, "primeiro andar volta à tela inicial")
+
+		# 10c. Sala-piloto: o botão abre a sessão independente, o jogador nasce
+		#      dentro dela, ESC pausa/retoma e VOLTAR AO MENU fecha o ciclo.
+		if title_again != null:
+			var pilot_button: Button = title_again.get_node_or_null(
+				"Content/Buttons/PilotRoomButton"
+			) as Button
+			_expect(pilot_button != null, "botão SALA-PILOTO VISUAL presente")
+			if pilot_button != null:
+				pilot_button.pressed.emit()
+				var pilot: Node = await _wait_for_scene("PilotRoomSession", 2400)
+				_expect(pilot != null, "SALA-PILOTO VISUAL abre a sala independente")
+				if pilot != null:
+					_expect(pilot.scene_file_path == PILOT_ROOM_PATH,
+						"sessão aberta é a sala-piloto (%s)" % pilot.scene_file_path)
+					var pilot_player: Node = pilot.get_node_or_null("Player")
+					var pilot_room: Node = pilot.get_node_or_null("PilotRoom")
+					_expect(pilot_player != null and pilot_room != null,
+						"sala-piloto tem jogador e cenário")
+					_expect(pilot.get_node_or_null("Interface/PauseRoot") != null,
+						"sala-piloto usa o mesmo menu de pausa")
+					if pilot_player != null:
+						var pilot_position := (pilot_player as Node3D).global_position
+						_expect(absf(pilot_position.x) < 5.0 and absf(pilot_position.z) < 6.0,
+							"jogador nasce dentro da sala-piloto")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					_expect(pilot.is_paused(), "ESC pausa a sala-piloto")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					_expect(not pilot.is_paused(), "ESC retoma a sala-piloto")
+					_push_key(KEY_ESCAPE)
+					await _frames(4)
+					var pilot_menu: Button = pilot.get_node_or_null(
+						"Interface/PauseRoot/Center/Panel/Margin/Content/MenuButton"
+					) as Button
+					_expect(pilot_menu != null, "pausa da sala-piloto tem VOLTAR AO MENU")
+					if pilot_menu != null:
+						pilot_menu.pressed.emit()
+						title_again = await _wait_for_scene("TitleScreen", 2400)
+						_expect(title_again != null, "sala-piloto volta à tela inicial")
 
 		# 11. Demonstração modular: ESC abre a pausa, retoma e volta ao menu
 		#     (revisão da Etapa 11 — o ESC travava o jogo).
