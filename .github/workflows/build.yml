@@ -433,6 +433,7 @@ jobs:
             ci-logs/movement_test.png
             ci-logs/inventory_hud.png
             ci-logs/drop_hud.png
+          if-no-files-found: warn
 
       - name: Publicar release no GitHub (dispatch manual ou [release TAG] no commit)
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_release) || contains(github.event.head_commit.message, '[release ') }}
@@ -457,7 +458,6 @@ jobs:
               BlackSight-Windows-x86_64.zip
           fi
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url,name -q '.url + " · " + .name'
-          if-no-files-found: warn
 
       - name: Publicar logs
         if: always()
