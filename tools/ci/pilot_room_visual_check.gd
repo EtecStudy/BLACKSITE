@@ -37,6 +37,18 @@ func _look(camera: Camera3D, from: Vector3, target: Vector3) -> void:
 	camera.look_at(target, Vector3.UP)
 
 
+func _report_metrics(context: String) -> void:
+	# Contadores por quadro do renderizador (llvmpipe no CI): servem para
+	# comparar revisões da mesma cena, não como promessa de desempenho.
+	print("[PILOT VISUAL] métricas (%s): draw calls no quadro=%d primitivas=%d memória de texturas=%d bytes memória de vídeo=%d bytes" % [
+		context,
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TEXTURE_MEM_USED),
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_VIDEO_MEM_USED),
+	])
+
+
 func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
 	var scene: PackedScene = load(ROOM_SCENE) as PackedScene
@@ -57,6 +69,7 @@ func _run() -> void:
 
 	_look(camera, Vector3(-4.25, 2.35, 5.20), Vector3(1.8, 0.65, -2.4))
 	await _save_shot(camera, "01_sala_inteira.png")
+	_report_metrics("vista geral")
 	_look(camera, Vector3(-2.60, 1.62, 4.35), Vector3(-0.4, 1.05, -1.2))
 	await _save_shot(camera, "02_primeira_pessoa_spawn.png")
 	_look(camera, Vector3(-4.34, 1.35, -0.20), Vector3(-5.0, 2.6, -1.8))
@@ -80,21 +93,14 @@ func _run() -> void:
 	_look(camera, Vector3(4.30, 1.52, 4.65), Vector3(-1.2, 2.85, -3.2))
 	await _save_shot(camera, "12_iluminacao_e_forro.png")
 	# Close-ups de sinalização: legibilidade, orientação e alinhamento às placas.
-	_look(camera, Vector3(3.55, 2.45, -1.0), Vector3(4.95, 2.85, -1.0))
+	_look(camera, Vector3(3.55, 2.30, -1.0), Vector3(4.95, 2.72, -1.0))
 	await _save_shot(camera, "13_sinalizacao_janela.png")
 	_look(camera, Vector3(-3.55, 1.95, 1.55), Vector3(-4.95, 2.05, 1.55))
 	await _save_shot(camera, "14_sinalizacao_epi.png")
 	_look(camera, Vector3(-0.72, 1.70, 4.35), Vector3(-0.72, 1.70, 5.95))
 	await _save_shot(camera, "15_sinalizacao_porta.png")
 
-	for i in range(10):
-		await get_tree().process_frame
-	print("[PILOT VISUAL] draw calls no quadro=%d primitivas=%d memória de texturas=%d bytes memória de vídeo=%d bytes" % [
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TEXTURE_MEM_USED),
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_VIDEO_MEM_USED),
-	])
+	_report_metrics("close final")
 	if _failures == 0:
 		print("[PILOT VISUAL] CAPTURAS DA SALA-PILOTO PASSARAM")
 		get_tree().quit(0)

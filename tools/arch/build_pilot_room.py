@@ -864,8 +864,9 @@ def door_and_window() -> None:
     B.box("WindowGasketB", window, (4.925, 1.80, 0.885), (0.018, 1.55, 0.035), "rubber")
     for i in range(5):
         B.box("WindowBlindSlat", window, (4.995, 2.34 - i * 0.09, -1.0), (0.012, 0.018, 3.55), "frame_metal", (0, 0, 0.35))
-    B.box("WindowSignPlate", window, (4.90, 2.88, -1.0), (0.025, 0.24, 0.78), "plastic_white")
-    B.label("WindowSign", window, (4.862, 2.88, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
+    # Placa entre a verga da janela (topo 2,67) e o soffit do forro (base 2,88).
+    B.box("WindowSignPlate", window, (4.90, 2.76, -1.0), (0.025, 0.18, 0.78), "plastic_white")
+    B.label("WindowSign", window, (4.862, 2.76, -1.0), "OBSERVAÇÃO", math.pi / 2, 30, (0.08, 0.10, 0.11, 1), 0.0016)
     # Painéis de fechamento acima dos vãos, no mesmo plano dos painéis principais.
     B.box("DoorTransomPanel", door, (-2.2, 2.94, 5.965), (1.58, 0.50, 0.07), "wall_panel")
     B.box("WindowTransomPanel", window, (4.965, 2.92, -1.0), (0.07, 0.52, 3.82), "wall_panel")
