@@ -1,0 +1,66 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/wall_material.tres" id="m_wall"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/accent_material.tres" id="m_accent"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/panel_material.tres" id="m_panel"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_wall")
+size = Vector3(0.4, 6, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(0.4, 6, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_trim")
+size = Vector3(0.57, 0.34, 0.57)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_4"]
+material = ExtResource("m_trim")
+size = Vector3(0.5, 0.24, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_accent")
+size = Vector3(0.44, 0.12, 0.44)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_6"]
+material = ExtResource("m_panel")
+size = Vector3(0.03, 5.4, 0.03)
+
+[node name="WallCornerInner" type="StaticBody3D"]
+[node name="Column" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="ColumnCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="CollarBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="CollarTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.84, 0)
+mesh = SubResource("BoxMesh_box_4")
+
+[node name="Band" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="Edge_1_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 3, 0.2)
+mesh = SubResource("BoxMesh_box_6")
+
+[node name="Edge_1_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 3, -0.2)
+mesh = SubResource("BoxMesh_box_6")
+
+[node name="Edge_-1_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 3, 0.2)
+mesh = SubResource("BoxMesh_box_6")
+
+[node name="Edge_-1_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 3, -0.2)
+mesh = SubResource("BoxMesh_box_6")

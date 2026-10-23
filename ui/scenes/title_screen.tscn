@@ -1,0 +1,192 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://ui/scripts/title_screen.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/background.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://shared/textures/ui/vignette.png" id="3_vignette"]
+[ext_resource type="Texture2D" path="res://shared/textures/branding/emblem.png" id="4_emblem"]
+[ext_resource type="Texture2D" path="res://shared/textures/fx/dust.png" id="5_dust"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-SemiBold.ttf" id="6_title_font"]
+[ext_resource type="FontFile" path="res://shared/fonts/cinzel/Cinzel-Regular.ttf" id="7_subtitle_font"]
+
+[sub_resource type="FontVariation" id="FontVariation_title"]
+base_font = ExtResource("6_title_font")
+spacing_glyph = 14
+
+[sub_resource type="FontVariation" id="FontVariation_subtitle"]
+base_font = ExtResource("7_subtitle_font")
+spacing_glyph = 5
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Dust" type="CPUParticles2D" parent="."]
+position = Vector2(960, 560)
+amount = 80
+lifetime = 16.0
+preprocess = 16.0
+emission_shape = 3
+emission_rect_extents = Vector2(980, 620)
+direction = Vector2(0.15, -1)
+spread = 22.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 13.0
+scale_amount_min = 0.035
+scale_amount_max = 0.11
+color = Color(0.82, 0.79, 0.71, 0.35)
+texture = ExtResource("5_dust")
+
+[node name="Vignette" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_vignette")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Content" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 120.0
+offset_top = 60.0
+offset_right = -120.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="Emblem" type="TextureRect" parent="Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 230)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("4_emblem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleSpacer" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.87, 0.8, 1)
+theme_override_fonts/font = SubResource("FontVariation_title")
+theme_override_font_sizes/font_size = 86
+text = "BLACK SIGHT"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.55, 0.49, 1)
+theme_override_fonts/font = SubResource("FontVariation_subtitle")
+theme_override_font_sizes/font_size = 17
+text = "UM JOGO DE TERROR EM PRIMEIRA PESSOA"
+horizontal_alignment = 1
+
+[node name="ButtonsSpacer" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 18
+
+[node name="StartButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+focus_mode = 0
+disabled = true
+tooltip_text = "Disponível em uma etapa futura"
+text = "JOGAR"
+
+[node name="TestMovementButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "TESTAR MOVIMENTAÇÃO"
+
+[node name="ExhibitionRoomButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "SALA DE EXIBIÇÃO"
+
+[node name="SettingsButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "CONFIGURAÇÕES"
+
+[node name="QuitButton" type="Button" parent="Content/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+text = "SAIR DO JOGO"
+
+[node name="HintSpacer" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StageHint" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.44, 0.42, 0.38, 1)
+theme_override_font_sizes/font_size = 15
+text = "TESTAR MOVIMENTAÇÃO abre a sala de teste do controlador. SALA DE EXIBIÇÃO abre o showroom do kit visual (piso, parede e teto de teste)."
+horizontal_alignment = 1
+
+[node name="FooterSpacer" type="Control" parent="Content"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BuildLabel" type="Label" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47, 0.44, 0.39, 1)
+theme_override_font_sizes/font_size = 15
+text = "Black Sight · Etapa 9"
+horizontal_alignment = 1
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

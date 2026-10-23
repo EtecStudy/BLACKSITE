@@ -1,0 +1,104 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/wall_material.tres" id="m_wall"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/floor_material.tres" id="m_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/accent_material.tres" id="m_accent"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/panel_material.tres" id="m_panel"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_wall")
+size = Vector3(4, 1.8, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(4, 1.8, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_wall")
+size = Vector3(0.2, 4.2, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_4"]
+size = Vector3(0.2, 4.2, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_floor")
+size = Vector3(3.6, 0.3, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_6"]
+size = Vector3(3.6, 0.3, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_7"]
+material = ExtResource("m_accent")
+size = Vector3(0.15, 4.185, 0.07)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_8"]
+material = ExtResource("m_accent")
+size = Vector3(3.88, 0.14, 0.07)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_9"]
+material = ExtResource("m_panel")
+size = Vector3(4, 0.12, 0.08)
+
+[node name="WallOpening4m" type="StaticBody3D"]
+[node name="Header" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.1, 0)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="HeaderCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.1, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="PierWest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 2.1, 0)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="PierWestCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 2.1, 0)
+shape = SubResource("BoxShape3D_box_4")
+
+[node name="PierEast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 2.1, 0)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="PierEastCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 2.1, 0)
+shape = SubResource("BoxShape3D_box_4")
+
+[node name="Sill" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="SillCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+shape = SubResource("BoxShape3D_box_6")
+
+[node name="CasingLA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.735, 2.0925, -0.225)
+mesh = SubResource("BoxMesh_box_7")
+
+[node name="CasingRA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.735, 2.0925, -0.225)
+mesh = SubResource("BoxMesh_box_7")
+
+[node name="CasingTopA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.255, -0.225)
+mesh = SubResource("BoxMesh_box_8")
+
+[node name="HeaderRibA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -0.23)
+mesh = SubResource("BoxMesh_box_9")
+
+[node name="CasingLB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.735, 2.0925, 0.225)
+mesh = SubResource("BoxMesh_box_7")
+
+[node name="CasingRB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.735, 2.0925, 0.225)
+mesh = SubResource("BoxMesh_box_7")
+
+[node name="CasingTopB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.255, 0.225)
+mesh = SubResource("BoxMesh_box_8")
+
+[node name="HeaderRibB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, 0.23)
+mesh = SubResource("BoxMesh_box_9")

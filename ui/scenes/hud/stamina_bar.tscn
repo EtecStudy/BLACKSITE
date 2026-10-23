@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/scripts/hud/stamina_bar.gd" id="1_bar"]
+[ext_resource type="Script" path="res://ui/scripts/hud/stamina_fill.gd" id="2_fill"]
+
+[node name="StaminaBar" type="VBoxContainer"]
+theme_override_constants/separation = 6
+mouse_filter = 2
+script = ExtResource("1_bar")
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+text = "STAMINA"
+theme_override_colors/font_color = Color(0.56, 0.53, 0.47, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="Value" type="Label" parent="Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "100%"
+theme_override_colors/font_color = Color(0.92, 0.89, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 2
+
+[node name="Track" type="Control" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 8)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_fill")

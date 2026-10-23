@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/panel_material.tres" id="m_panel"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_panel")
+size = Vector3(1.9, 0.86, 0.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(1.9, 0.86, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_trim")
+size = Vector3(2, 0.1, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_4"]
+material = ExtResource("m_trim")
+size = Vector3(2, 0.06, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_trim")
+size = Vector3(0.1, 1.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_6"]
+size = Vector3(0.1, 1.1, 0.1)
+
+[node name="Railing2m" type="StaticBody3D"]
+[node name="Panel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="PanelCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="RailTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="RailMid" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+mesh = SubResource("BoxMesh_box_4")
+
+[node name="Post_-1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.55, 0)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="Post_-1Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.55, 0)
+shape = SubResource("BoxShape3D_box_6")
+
+[node name="Post_1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.55, 0)
+mesh = SubResource("BoxMesh_box_5")
+
+[node name="Post_1Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.55, 0)
+shape = SubResource("BoxShape3D_box_6")

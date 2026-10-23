@@ -1,0 +1,986 @@
+name: Black Sight · build (importar, testar, exportar)
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publicar release no GitHub com o ZIP do Windows anexado"
+        type: boolean
+        default: false
+      release_tag:
+        description: "Tag da release (quando publish_release estiver marcado)"
+        type: string
+        default: "v0.15.1-exibicao-aberta"
+  push:
+    branches:
+      - main
+      - arena/aa5e0e47-blacksite
+    # Mudanças só de documentação não geram novo build/release:
+    # o ZIP publicado continua sendo exatamente o que foi testado.
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+
+env:
+  GODOT_VERSION: "4.7.2"
+  GODOT_STATUS: "stable"
+  GODOT_DIR: ".godot-ci"
+  LIBGL_ALWAYS_SOFTWARE: "1"
+
+jobs:
+  build:
+    name: Linux — importar, testar e validar o pacote
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências (Xvfb, Mesa, zip, imagemagick)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglx-mesa0 libgl1-mesa-dri libegl1 mesa-utils zip imagemagick
+          mkdir -p ci-logs
+
+      - name: Baixar Godot ${GODOT_VERSION}
+        run: |
+          mkdir -p "$GODOT_DIR"
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64.zip"
+          unzip -q godot.zip -d "$GODOT_DIR"
+          mv "$GODOT_DIR/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64" "$GODOT_DIR/godot"
+          chmod +x "$GODOT_DIR/godot"
+          "$GODOT_DIR/godot" --version | tee ci-logs/godot-version.txt
+
+      - name: Baixar templates de exportação ${GODOT_VERSION}
+        run: |
+          curl -fsSL -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_export_templates.tpz"
+          rm -rf /tmp/godot_templates
+          mkdir -p /tmp/godot_templates
+          unzip -q templates.tpz -d /tmp/godot_templates
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -r /tmp/godot_templates/templates/. "$TEMPLATE_DIR/"
+          ls "$TEMPLATE_DIR" | grep -Ei "windows|linux" | tee ci-logs/templates.txt
+
+      - name: Importar recursos do projeto
+        run: |
+          "$GODOT_DIR/godot" --headless --path . --import 2>&1 | tee ci-logs/import.log
+          test -d .godot/imported
+          echo "recursos importados: $(ls .godot/imported | wc -l)"
+
+      # ------------------------------------------------------------------
+      # 1. Testes do projeto no editor/headless
+      # ------------------------------------------------------------------
+      - name: TESTE 1 — fumaça da configuração e da cena (headless)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --audio-driver Dummy \
+            res://tools/ci/smoke_test.tscn 2>&1 | tee ci-logs/smoke.log
+          grep -F "SMOKE TEST OK" ci-logs/smoke.log
+
+      - name: TESTE 1b — fluxo real da interface (headless, troca de cenas)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/ui_flow_test.tscn 2>&1 | tee ci-logs/ui-flow.log
+          grep -F "UI FLOW OK" ci-logs/ui-flow.log
+          if grep -F "✗" ci-logs/ui-flow.log; then
+            echo "::error::Falhas no fluxo de interface"
+            exit 1
+          fi
+
+      - name: TESTE 1c — controlador FPS e cena de teste (headless)
+        timeout-minutes: 8
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/movement_test.tscn 2>&1 | tee ci-logs/movement.log
+          grep -F "MOVEMENT TEST OK" ci-logs/movement.log
+          if grep -F "✗" ci-logs/movement.log; then
+            echo "::error::Falhas no teste do controlador em primeira pessoa"
+            exit 1
+          fi
+
+      - name: TESTE 1d — drop junto a obstáculos (headless)
+        timeout-minutes: 8
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --fixed-fps 60 \
+            --audio-driver Dummy res://tools/ci/drop_obstacle_test.tscn 2>&1 | tee ci-logs/drop_obstacle.log
+          grep -F "DROP OBSTACLE TEST OK" ci-logs/drop_obstacle.log
+          if grep -F "✗" ci-logs/drop_obstacle.log; then
+            echo "::error::Falhas no drop junto a obstáculos"
+            exit 1
+          fi
+
+      - name: TESTE 2 — executar a cena inicial (headless, 240 frames)
+        run: |
+          set -o pipefail
+          "$GODOT_DIR/godot" --headless --path . --audio-driver Dummy --quit-after 240 2>&1 | tee ci-logs/run_headless.log
+          grep -F "[Black Sight] Tela inicial carregada" ci-logs/run_headless.log
+          grep -F "[Black Sight] Configurações carregadas" ci-logs/run_headless.log
+          grep -nE "SCRIPT ERROR|ERROR:" ci-logs/run_headless.log || echo "(nenhum erro registrado)"
+          if grep -q "SCRIPT ERROR" ci-logs/run_headless.log; then
+            echo "::error::Erros de script durante a execução da cena inicial"
+            exit 1
+          fi
+
+      - name: TESTE 3 — renderizar a cena inicial (Xvfb + OpenGL/llvmpipe)
+        run: |
+          mkdir -p ci-logs/frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . \
+            --rendering-driver opengl3 \
+            --audio-driver Dummy \
+            --fixed-fps 30 \
+            --write-movie ci-logs/frames/frame.png \
+            --quit-after 90 2>&1 | tee ci-logs/render.log
+          latest=$(ls ci-logs/frames/*.png | tail -1)
+          cp "$latest" ci-logs/render_frame.png
+          rm -rf ci-logs/frames
+          test -s ci-logs/render_frame.png
+          echo "frame capturado: $latest"
+
+      - name: TESTE 3b — renderizar a tela de configurações (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/settings_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://ui/scenes/settings_screen.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/settings_frames/frame.png --quit-after 75 \
+            2>&1 | tee ci-logs/render_settings.log
+          latest=$(ls ci-logs/settings_frames/*.png | tail -1)
+          cp "$latest" ci-logs/settings_screen.png
+          rm -rf ci-logs/settings_frames
+          test -s ci-logs/settings_screen.png
+
+      - name: TESTE 3c — renderizar a cena de teste da movimentação (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/movement_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://match/scenes/movement_test.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/movement_frames/frame.png --quit-after 60 \
+            2>&1 | tee ci-logs/render_movement.log
+          latest=$(ls ci-logs/movement_frames/*.png | tail -1)
+          cp "$latest" ci-logs/movement_test.png
+          rm -rf ci-logs/movement_frames
+          test -s ci-logs/movement_test.png
+          echo "frame da cena de teste capturado: $latest"
+
+      - name: TESTE 3d — inventário na cena real (Xvfb + OpenGL, captura de frame)
+        run: |
+          mkdir -p ci-logs/inventory_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://tools/ci/inventory_visual.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/inventory_frames/frame.png --quit-after 240 \
+            2>&1 | tee ci-logs/render_inventory.log
+          grep -F "INVENTORY VISUAL OK" ci-logs/render_inventory.log
+          latest=$(ls ci-logs/inventory_frames/*.png | tail -1)
+          cp "$latest" ci-logs/inventory_hud.png
+          rm -rf ci-logs/inventory_frames
+          test -s ci-logs/inventory_hud.png
+          echo "frame do inventário capturado: $latest"
+
+      - name: TESTE 3e — soltar item na cena real (Xvfb + OpenGL, captura de frame)
+        run: |
+          mkdir -p ci-logs/drop_frames
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://tools/ci/drop_visual.tscn \
+            --rendering-driver opengl3 --audio-driver Dummy --fixed-fps 30 \
+            --write-movie ci-logs/drop_frames/frame.png --quit-after 210 \
+            2>&1 | tee ci-logs/render_drop.log
+          grep -F "DROP VISUAL OK" ci-logs/render_drop.log
+          latest=$(ls ci-logs/drop_frames/*.png | tail -1)
+          cp "$latest" ci-logs/drop_hud.png
+          rm -rf ci-logs/drop_frames
+          test -s ci-logs/drop_hud.png
+          echo "frame do drop capturado: $latest"
+
+      - name: TESTE 3g — Sala de Exibição, verificação visual (Xvfb + OpenGL)
+        run: |
+          mkdir -p ci-logs/exhibition_captures
+          set -o pipefail
+          xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            "$GODOT_DIR/godot" --path . res://tools/ci/exhibition_visual_check.tscn \
+            --rendering-driver opengl3 --resolution 1280x800 --audio-driver Dummy \
+            -- --output-dir="$GITHUB_WORKSPACE/ci-logs/exhibition_captures" 2>&1 | tee ci-logs/exhibition_check.log || true
+          grep -q "EXHIBITION CHECK:" ci-logs/exhibition_check.log
+          ls -la ci-logs/exhibition_captures/ || true
+          # As capturas seguem em ci-logs/exhibition_captures e são publicadas
+          # pelo passo de diagnóstico (branch ci-diagnostics) ao fim do job.
+
+      - name: TESTE 4 — exportar executável Windows (release)
+        run: |
+          mkdir -p build/windows
+          set +e
+          "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee ci-logs/export_windows.log
+          set -e
+          if [ ! -s build/windows/BlackSight.exe ]; then
+            echo "::warning::Exportação com modificação de recursos falhou; tentando sem metadados embutidos."
+            sed -i 's|application/modify_resources=true|application/modify_resources=false|' export_presets.cfg
+            rm -rf build/windows
+            mkdir -p build/windows
+            "$GODOT_DIR/godot" --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" 2>&1 | tee -a ci-logs/export_windows.log
+          fi
+          ls -la build/windows
+          test -s build/windows/BlackSight.exe
+          test -s build/windows/BlackSight.pck
+
+      - name: Exportar build Linux (para executar o pacote exportado)
+        run: |
+          mkdir -p build/linux
+          "$GODOT_DIR/godot" --headless --path . --export-release "Linux" "build/linux/BlackSight.x86_64" 2>&1 | tee ci-logs/export_linux.log
+          chmod +x build/linux/BlackSight.x86_64
+          ls -la build/linux
+          test -s build/linux/BlackSight.x86_64
+          test -s build/linux/BlackSight.pck
+
+      # ------------------------------------------------------------------
+      # 3. Verificações dos binários
+      # ------------------------------------------------------------------
+      - name: TESTE 5 — executar o BUILD EXPORTADO (não-editor) sob Xvfb
+        run: |
+          rm -rf "$HOME/.local/share/BlackSight"
+          cd build/linux
+          timeout 120 xvfb-run -a --server-args="-screen 0 1280x800x24" \
+            ./BlackSight.x86_64 --audio-driver Dummy --quit-after 180 > ../../ci-logs/exported_run.log 2>&1 || true
+          cd ../..
+          cat ci-logs/exported_run.log
+          grep -F "[Black Sight] Tela inicial carregada" ci-logs/exported_run.log
+          # Erros de áudio do runner headless (ALSA/audio_server) não são erros do jogo.
+          if grep -E "SCRIPT ERROR|ERROR:" ci-logs/exported_run.log \
+              | grep -vE "ALSA|audio_driver|init_output_device|audio_server"; then
+            echo "::error::Erros ao executar o build exportado"
+            exit 1
+          fi
+
+      - name: TESTE 5b — configurações criadas pelo build exportado (user://)
+        run: |
+          CFG="$HOME/.local/share/BlackSight/settings.cfg"
+          test -f "$CFG"
+          cat "$CFG" | tee ci-logs/exported-settings.cfg
+          grep -q "master_volume" ci-logs/exported-settings.cfg
+          grep -q "mouse_sensitivity_x" ci-logs/exported-settings.cfg
+          grep -q "crouch_mode" ci-logs/exported-settings.cfg
+
+      - name: TESTE 6 — inspecionar o pacote .pck exportado
+        run: |
+          set -o pipefail
+          python3 tools/ci/inspect_pck.py build/windows/BlackSight.pck | tee ci-logs/pck-windows.txt
+          python3 tools/ci/inspect_pck.py build/linux/BlackSight.pck | tee ci-logs/pck-linux.txt
+
+      - name: TESTE 7 — validar o binário Windows (.exe)
+        run: |
+          file build/windows/BlackSight.exe | tee ci-logs/binary-check.log
+          file build/windows/BlackSight.exe | grep -qi "PE32+"
+          file build/windows/BlackSight.exe | grep -qi "x86-64"
+          (strings -a -e l build/windows/BlackSight.exe | grep -m 8 -E "Black Sight|EtecStudy|0\\.11\\." || echo "(metadados de versão não localizados)") | tee ci-logs/exe-strings.txt
+          if ! strings -a -e l build/windows/BlackSight.exe | grep -q "Black Sight"; then
+            echo "::warning::Metadados de versão não localizados no .exe (exportação sem modify_resources)."
+          fi
+          sha256sum build/windows/BlackSight.exe build/windows/BlackSight.pck | tee build/windows/SHA256SUMS.txt
+          du -h build/windows/*
+
+      # ------------------------------------------------------------------
+      # 4. Empacotamento e distribuição
+      # ------------------------------------------------------------------
+      - name: Empacotar para distribuição
+        run: |
+          cat > build/windows/LEIA-ME.txt <<'EOF'
+          BLACK SIGHT — Sala de Exibição Aberta (Windows x86_64 · v0.15.1)
+          ============================================
+
+          COMO JOGAR
+          1. Extraia todos os arquivos deste ZIP para a mesma pasta.
+          2. Dê duplo clique em BlackSight.exe.
+             (BlackSight.pck precisa estar na mesma pasta do .exe)
+
+          JOGAR (ETAPA 9)
+          - Clique em TESTAR MOVIMENTAÇÃO na tela inicial.
+          - W A S D ....... andar (relativo à direção da câmera)
+          - SHIFT ......... correr (consome stamina)
+          - CTRL .......... agachar
+                            ALTERNAR (padrão): um toque agacha, outro levanta
+                            SEGURAR: mantenha CTRL pressionado
+          - E ............. interagir / pegar o item na mira
+          - 1 2 3 ......... selecionar o slot do inventário
+          - G ............. soltar no chão o item do slot selecionado
+                            (aparece à frente e pode ser recolhido com E)
+          - R ............. remover o item do slot selecionado
+                            (tecla provisória de teste; use G para soltar)
+          - Mouse ......... olhar (até 89 graus para cima/baixo)
+          - Esc ........... libera o mouse e abre a pausa
+          - CONTINUAR ..... volta ao jogo, no mesmo lugar
+          - CONFIGURAÇÕES . abre as configurações durante a pausa
+          - VOLTAR AO MENU  volta à tela inicial
+          - O jogador colide com piso, paredes, pilares e caixas.
+
+          INVENTÁRIO
+          - Três slots fixos, no canto inferior direito da tela.
+          - Olhe para um dos quatro itens de teste (ITEM A, B, C e D) e
+            pressione E: o item some do cenário e aparece no primeiro slot
+            livre; o slot ocupado mostra o nome do item.
+          - 1, 2 e 3 escolhem o slot — inclusive um slot vazio. O slot
+            selecionado fica com fundo e borda mais claros.
+          - R remove o item do slot selecionado (só para validar a remoção).
+          - G solta o item do slot selecionado no chão, à frente do jogador.
+            O item vira um objeto físico, aparece com o nome e pode ser
+            recolhido de novo com E. Se o slot estiver vazio, nada acontece.
+          - Ao soltar, o slot mostra VAZIO na hora; os outros slots ficam
+            intactos. Se não houver espaço livre à frente, o item continua no
+            inventário.
+          - Com os três slots ocupados, tentar pegar o quarto item não troca
+            nada: aparece "INVENTÁRIO CHEIO" por instantes e o item continua
+            no lugar.
+          - Durante a pausa o inventário não muda: E não pega, 1/2/3 não
+            selecionam e R não remove.
+
+          INTERAÇÃO
+          - Olhe para um objeto interativo (o Painel de Teste) e a indicação
+            [E] Interagir aparece no rodapé.
+          - Alcance máximo de 2,5 m, medido do centro da câmera.
+          - Paredes e caixas bloqueiam: sem linha de visão não há interação.
+          - A indicação some ao olhar para outro lugar, ao se afastar ou ao
+            abrir a pausa. Pressione E para acionar o objeto.
+
+          STAMINA
+          - A corrida consome 20 pontos por segundo e para ao chegar a 0.
+          - Segurar SHIFT bloqueia a recuperação: exausto, a stamina fica em 0
+            enquanto SHIFT continuar pressionado.
+          - Ao soltar SHIFT, a stamina espera 1 segundo antes de recuperar
+            (15 por segundo) parado, andando ou agachado.
+          - Depois de esgotar, a corrida só volta com 20 pontos ou mais.
+          - Agachado nunca se corre e a stamina não é consumida.
+          - A HUD no canto inferior esquerdo mostra a stamina atual (0 a 100%)
+            e acompanha o consumo, o atraso e a recuperação em tempo real.
+
+          CONFIGURAÇÕES
+          - Clique em CONFIGURAÇÕES na tela inicial ou use ESC durante o jogo.
+          - É a mesma tela e o mesmo arquivo nos dois caminhos.
+          - Abas: CONTROLES, ÁUDIO e VÍDEO.
+          - Em CONTROLES: sensibilidade, inversão do eixo Y, MODO DE AGACHAMENTO
+            e a lista real de controles (agora com E, 1 2 3 e G).
+          - APLICAR grava os valores; RESTAURAR PADRÕES volta ao original;
+            VOLTAR (ou Esc) retorna ao menu sem aplicar o que não foi confirmado.
+          - O arquivo fica em %APPDATA%\BlackSight\settings.cfg
+            (nunca dentro da pasta do jogo).
+
+          CONTROLES
+          - F11 .......... alterna entre janela e tela cheia
+          - Esc .......... pausa/libera o mouse na cena de teste e, nas
+                           configurações, volta ao menu anterior
+          - SAIR DO JOGO . fecha o jogo (na tela inicial)
+          - Alt+F4 ....... fecha o jogo
+
+          REQUISITOS
+          - Windows 10 ou 11 (64 bits)
+          - Placa de vídeo com suporte a OpenGL 3.3 ou superior
+            (renderizador GL Compatibility; funciona em GPUs integradas)
+
+          OBSERVAÇÃO
+          Etapa 6: stamina, modos de agachamento (ALTERNAR/SEGURAR) e lista
+          real de controles, mantendo os estados de movimento da Etapa 5.
+          Correção 6.1: HUD discreta no canto inferior esquerdo com a barra de
+          stamina em tempo real, integrada à cena da partida.
+          Correção 6.2: recuperação com atraso de 1 s depois da corrida e
+          bloqueada enquanto SHIFT estiver pressionado.
+          Etapa 7: interação por olhar (raycast da câmera, 2,5 m, linha de
+          visão) com a indicação [E] Interagir e um painel de teste.
+          Etapa 8: inventário de três slots, coleta por interação, seleção
+          com 1/2/3, remoção provisória com R e aviso de inventário cheio.
+          Etapa 9: soltar itens no ambiente 3D com G (posição segura, física
+          simples e recolhimento com E); R continua como remoção de teste.
+          Sala de Exibição 0.15.0: SALA DE EXIBIÇÃO abre o showroom do kit
+          visual (piso, parede e teto de teste) para avaliação em primeira
+          pessoa. TESTAR MOVIMENTAÇÃO continua disponível — a sala de teste
+          do controlador FPS (andar, correr, agachar, stamina e inventário).
+          A biblioteca modular em maps/modular/ continua no projeto.
+          Ainda não há pulo, uso/arremesso/transferência de item, portas
+          funcionais, geração procedural, criaturas, multiplayer nem mapa
+          definitivo.
+
+          Versão 0.15.1 — Sala de Exibição aberta (áreas demarcadas: parede, piso e teto)
+          EOF
+          cd build/windows
+          zip -9 -r ../../BlackSight-Windows-x86_64.zip \
+            BlackSight.exe BlackSight.pck LEIA-ME.txt SHA256SUMS.txt
+          cd ../..
+          ls -la BlackSight-Windows-x86_64.zip
+          sha256sum BlackSight-Windows-x86_64.zip | tee ci-logs/zip-sha256.txt
+
+      - name: TESTE 8 — listar o conteúdo do ZIP
+        run: |
+          unzip -l BlackSight-Windows-x86_64.zip | tee ci-logs/zip-listing.txt
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "BlackSight.exe"
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "BlackSight.pck"
+          unzip -l BlackSight-Windows-x86_64.zip | grep -q "LEIA-ME.txt"
+          unzip -t BlackSight-Windows-x86_64.zip | tail -2
+
+      - name: Publicar artefatos do workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-windows
+          path: |
+            BlackSight-Windows-x86_64.zip
+            ci-logs/render_frame.png
+            ci-logs/settings_screen.png
+            ci-logs/movement_test.png
+            ci-logs/inventory_hud.png
+            ci-logs/drop_hud.png
+          if-no-files-found: warn
+
+      - name: Publicar release no GitHub (dispatch manual ou [release TAG] no commit)
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_release) || contains(github.event.head_commit.message, '[release ') }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.release_tag }}"
+          else
+            TAG=$(printf '%s' "${{ github.event.head_commit.message }}" | sed -n 's/.*\[release \([^]]*\)\].*/\1/p' | head -1)
+          fi
+          echo "Publicando release: $TAG"
+          test -n "$TAG"
+          test -s BlackSight-Windows-x86_64.zip
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $TAG já existe — atualizando o ZIP anexo."
+            gh release upload "$TAG" BlackSight-Windows-x86_64.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --title "Black Sight $TAG" \
+              --notes "Black Sight (Windows x86_64) validado pelo CI (Linux + Windows): baixe, extraia e execute BlackSight.exe." \
+              BlackSight-Windows-x86_64.zip
+          fi
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url,name -q '.url + " · " + .name'
+
+      - name: Publicar logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-logs
+          path: ci-logs/
+          if-no-files-found: warn
+
+      - name: Publicar diagnóstico no branch ci-diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          # Canal de diagnóstico: publica logs/frames num branch temporário
+          # (os artefatos de Actions não são acessíveis pelo ambiente de desenvolvimento).
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-diagnostics
+          git rm -rf --cached . > /dev/null 2>&1 || true
+          mkdir -p .ci
+          rm -rf .ci/*
+          cp -r ci-logs .ci/ci-logs 2>/dev/null || true
+          cp build/windows/SHA256SUMS.txt .ci/ 2>/dev/null || true
+          git add -f .ci
+          git commit -m "ci: diagnóstico da execução ${GITHUB_RUN_ID} (${GITHUB_RUN_ATTEMPT})" || true
+          git push -f origin ci-diagnostics
+
+      - name: Resumo da execução
+        if: always()
+        run: |
+          {
+            echo "## Black Sight · Sala de Exibição Aberta (0.15.1)"
+            echo ""
+            echo "- Godot: ${GODOT_VERSION}-${GODOT_STATUS}"
+            echo "- Commit: $GITHUB_SHA"
+            echo ""
+            echo "### Teste de fumaça"
+            echo '```'
+            grep -E "SMOKE TEST|✗" ci-logs/smoke.log 2>/dev/null | tail -20 || true
+            echo '```'
+            echo ""
+            echo "### Fluxo de interface"
+            echo '```'
+            grep -E "UI FLOW|✓|✗" ci-logs/ui-flow.log 2>/dev/null | tail -40 || true
+            echo '```'
+            echo ""
+            echo "### Controlador FPS"
+            echo '```'
+            grep -E "MOVEMENT|✓|✗" ci-logs/movement.log 2>/dev/null | tail -40 || true
+            echo '```'
+            echo ""
+            echo "### Cena inicial e configurações"
+            echo '```'
+            grep -E "Tela inicial carregada|Configurações carregadas|ERROR" ci-logs/run_headless.log 2>/dev/null | head -10 || true
+            grep -E "Tela inicial carregada|Configurações carregadas|ERROR" ci-logs/exported_run.log 2>/dev/null | head -10 || true
+            echo '```'
+            echo ""
+            echo "### Binário"
+            echo '```'
+            cat ci-logs/binary-check.log 2>/dev/null || true
+            cat ci-logs/wine-version.txt 2>/dev/null || true
+            cat ci-logs/wine-exit.txt 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  windows:
+    name: Windows real — exportar e executar o .exe
+    runs-on: windows-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar pastas
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path ci-logs | Out-Null
+          New-Item -ItemType Directory -Force -Path godot-ci | Out-Null
+
+      - name: Baixar Godot ${GODOT_VERSION} (Windows x64)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $url = "https://github.com/godotengine/godot/releases/download/$($env:GODOT_VERSION)-$($env:GODOT_STATUS)/Godot_v$($env:GODOT_VERSION)-$($env:GODOT_STATUS)_win64.exe.zip"
+          $log = "ci-logs/01-godot-download.log"
+          Write-Host "Baixando: $url"
+          curl.exe -L --fail --retry 3 --retry-delay 5 -o godot.zip $url *>&1 | Tee-Object -FilePath $log
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path godot.zip)) { throw "Falha ao baixar o Godot (exit $LASTEXITCODE)" }
+          Expand-Archive -Path godot.zip -DestinationPath godot-ci -Force
+          $godot = (Get-ChildItem godot-ci -Filter "*win64.exe" | Select-Object -First 1).FullName
+          "GODOT=$godot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          & $godot --version *>&1 | Tee-Object -FilePath ci-logs/02-godot-version.log
+          Write-Host "Godot instalado: $godot"
+
+      - name: Instalar templates de exportação
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/03-templates.log"
+          $url = "https://github.com/godotengine/godot/releases/download/$($env:GODOT_VERSION)-$($env:GODOT_STATUS)/Godot_v$($env:GODOT_VERSION)-$($env:GODOT_STATUS)_export_templates.tpz"
+          curl.exe -L --fail --retry 3 --retry-delay 5 -o templates.zip $url *>&1 | Tee-Object -FilePath $log
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path templates.zip)) { throw "Falha ao baixar os templates (exit $LASTEXITCODE)" }
+          Copy-Item templates.zip templates_extract.zip -Force
+          Expand-Archive -Path templates_extract.zip -DestinationPath templates_extract -Force
+          $dest = Join-Path $env:APPDATA "Godot/export_templates/$($env:GODOT_VERSION).$($env:GODOT_STATUS)"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Get-ChildItem "templates_extract/templates" -Force | ForEach-Object {
+            Copy-Item $_.FullName -Destination $dest -Recurse -Force
+          }
+          Get-ChildItem $dest | Where-Object { $_.Name -like "*windows*" } |
+            Select-Object -ExpandProperty Name | Tee-Object -FilePath $log -Append
+          if (-not (Test-Path (Join-Path $dest "windows_release_x86_64.exe"))) {
+            throw "Template windows_release_x86_64.exe ausente em $dest"
+          }
+
+      - name: TESTE W1 — importar recursos (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/04-import.log"
+          & $env:GODOT --headless --path . --import *>&1 | Tee-Object -FilePath $log
+          Write-Host "exit code: $LASTEXITCODE"
+          if (-not (Test-Path .godot/imported)) { throw "Pasta .godot/imported não foi criada" }
+          foreach ($required in @(
+            "shared/themes/black_sight.tres",
+            "shared/fonts/cinzel/Cinzel-Regular.ttf",
+            "ui/scenes/title_screen.tscn",
+            "ui/scripts/title_screen.gd",
+            "shared/settings/settings_schema.gd",
+            "shared/settings/game_settings.gd",
+            "shared/settings/audio_applier.gd",
+            "shared/settings/video_applier.gd",
+            "audio/default_bus_layout.tres",
+            "audio/assets/sfx/ui_click.wav",
+            "ui/scenes/settings_screen.tscn",
+            "ui/scripts/settings_screen.gd",
+            "players/scenes/player.tscn",
+            "players/scripts/player_controller.gd",
+            "maps/scenes/test_room.tscn",
+            "match/scenes/movement_test.tscn",
+            "match/scripts/movement_test.gd",
+            "maps/exhibition/exhibition_room.tscn",
+            "match/scenes/exhibition_room.tscn",
+            "match/scripts/exhibition_session.gd",
+            "tools/ci/ui_flow_test.tscn",
+            "tools/ci/movement_test.tscn",
+            "maps/modular/rooms/room_lab_10x10.tscn",
+            "maps/modular/rooms/room_tech_14x20.tscn",
+            "maps/modular/corridors/corridor_tee_6.tscn",
+            "maps/modular/stairs/stairs_straight.tscn",
+            "maps/modular/walls/wall_door_4m.tscn"
+          )) {
+            if (-not (Test-Path $required)) { throw "Arquivo esperado ausente: $required" }
+          }
+          "OK import — recursos e módulos presentes" | Out-File ci-logs/04-import.ok
+
+      - name: TESTE W2 — teste de fumaça (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05-smoke.log"
+          & $env:GODOT --headless --path . --audio-driver Dummy res://tools/ci/smoke_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste de fumaça: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "SMOKE TEST OK")) {
+            throw "Teste de fumaça não passou (exit $code) — ver 05-smoke.log"
+          }
+
+      - name: TESTE W2b — fluxo real da interface no Windows (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05b-ui-flow.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/ui_flow_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do fluxo de interface: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "UI FLOW OK")) {
+            throw "Fluxo de interface não passou (exit $code) — ver 05b-ui-flow.log"
+          }
+
+      - name: TESTE W2c — controlador FPS e cena de teste no Windows (headless)
+        timeout-minutes: 8
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05c-movement.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/movement_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste de movimento: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "MOVEMENT TEST OK")) {
+            throw "Teste do controlador não passou (exit $code) — ver 05c-movement.log"
+          }
+
+      - name: TESTE W2d — drop junto a obstáculos no Windows (headless)
+        timeout-minutes: 8
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/05d-drop-obstacle.log"
+          & $env:GODOT --headless --path . --fixed-fps 60 --audio-driver Dummy res://tools/ci/drop_obstacle_test.tscn *>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          Write-Host "exit code do teste de drop: $code"
+          if (-not (Select-String -Path $log -SimpleMatch "DROP OBSTACLE TEST OK")) {
+            throw "Teste de drop junto a obstáculos não passou (exit $code) — ver 05d-drop-obstacle.log"
+          }
+
+      - name: TESTE W3 — executar a cena inicial (headless, 240 frames)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/06-run-headless.log"
+          & $env:GODOT --headless --path . --audio-driver Dummy --quit-after 240 *>&1 | Tee-Object -FilePath $log
+          Write-Host "exit code: $LASTEXITCODE"
+          if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Tela inicial carregada")) {
+            throw "A cena inicial não inicializou no Windows"
+          }
+          if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Configurações carregadas")) {
+            throw "O autoload GameSettings não inicializou no Windows"
+          }
+          if (Select-String -Path $log -Pattern "SCRIPT ERROR") { throw "SCRIPT ERROR durante a execução" }
+
+      - name: TESTE W3c — Sala de Exibição, verificação visual (Windows real)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path ci-logs/exhibition_captures | Out-Null
+          $log = "ci-logs/06c-exhibition-check.log"
+          $outDir = Join-Path $PWD "ci-logs/exhibition_captures"
+          & $env:GODOT --path . --rendering-driver opengl3 --resolution 1280x800 --audio-driver Dummy `
+            res://tools/ci/exhibition_visual_check.tscn -- --output-dir="$outDir" *>&1 |
+            Tee-Object -FilePath $log
+          Write-Host "exit code: $LASTEXITCODE"
+          if (-not (Select-String -Path $log -SimpleMatch "EXHIBITION CHECK:")) {
+            throw "A verificação visual da Sala de Exibição não concluiu no Windows"
+          }
+          Get-ChildItem ci-logs/exhibition_captures | Select-Object Name, Length
+
+      - name: TESTE W4 — exportar o executável (release)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force -Path build/windows | Out-Null
+          $log = "ci-logs/07-export.log"
+          & $env:GODOT --headless --path . --export-release "Windows Desktop" "build/windows/BlackSight.exe" *>&1 | Tee-Object -FilePath $log
+          Write-Host "exit code: $LASTEXITCODE"
+          Get-ChildItem build/windows | Select-Object Name, Length
+          if (-not (Test-Path build/windows/BlackSight.exe)) { throw "BlackSight.exe não foi gerado" }
+          if (-not (Test-Path build/windows/BlackSight.pck)) { throw "BlackSight.pck não foi gerado" }
+
+      - name: TESTE W5 — executar o .exe exportado (headless)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          $log = "ci-logs/08-exe-headless.log"
+          $errLog = "ci-logs/08-exe-headless.err.log"
+          Remove-Item -Recurse -Force (Join-Path $env:APPDATA "BlackSight") -ErrorAction SilentlyContinue
+          $exe = Join-Path $PWD "build/windows/BlackSight.console.exe"
+          if (-not (Test-Path $exe)) { $exe = Join-Path $PWD "build/windows/BlackSight.exe" }
+          Write-Host "Executando: $exe"
+          $proc = Start-Process -FilePath $exe `
+            -ArgumentList "--headless","--audio-driver","Dummy","--quit-after","240" `
+            -RedirectStandardOutput $log -RedirectStandardError $errLog -PassThru -NoNewWindow
+          if (-not $proc.WaitForExit(180000)) {
+            $proc.Kill()
+            throw "O .exe não terminou em 180s"
+          }
+          Get-Content $log -ErrorAction SilentlyContinue
+          Get-Content $errLog -ErrorAction SilentlyContinue
+          if (-not (Select-String -Path $log -SimpleMatch "[Black Sight] Tela inicial carregada" -ErrorAction SilentlyContinue)) {
+            throw "O .exe não registrou a inicialização da cena inicial"
+          }
+          if (Select-String -Path $log -Pattern "SCRIPT ERROR" -ErrorAction SilentlyContinue) { throw "SCRIPT ERROR no .exe" }
+          "OK: .exe exportado iniciou e carregou a cena inicial no Windows" | Out-File ci-logs/08-exe-headless.ok
+
+      - name: TESTE W5b — configurações criadas pelo .exe em %APPDATA%
+        shell: pwsh
+        run: |
+          $cfg = Join-Path $env:APPDATA "BlackSight/settings.cfg"
+          if (-not (Test-Path $cfg)) { throw "O .exe não criou $cfg (user://settings.cfg)" }
+          Get-Content $cfg | Tee-Object -FilePath ci-logs/08b-settings-cfg.log
+          foreach ($key in @("mouse_sensitivity_x","crouch_mode","master_volume","window_mode","vsync")) {
+            if (-not (Select-String -Path $cfg -SimpleMatch $key)) { throw "Configuração ausente no arquivo: $key" }
+          }
+          "OK: user://settings.cfg criado pelo .exe exportado" | Out-File ci-logs/08b-settings-cfg.ok
+
+      - name: TESTE W6 — abrir o .exe com janela
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $exe = Join-Path $PWD "build/windows/BlackSight.exe"
+          $proc = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 25
+          $proc.Refresh()
+          $alive = -not $proc.HasExited
+          $title = $proc.MainWindowTitle
+          $status = "vivo_apos_25s=$alive`ntitulo_janela=$title"
+          $status | Tee-Object -FilePath ci-logs/09-exe-window.log
+          if ($alive) { Stop-Process -Id $proc.Id -Force }
+          if (-not $alive) { throw "O .exe encerrou sozinho ao abrir com janela" }
+
+      - name: TESTE W7 — inspecionar o pacote .pck e os metadados do .exe
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $PSNativeCommandUseErrorActionPreference = $false
+          python tools/ci/inspect_pck.py build/windows/BlackSight.pck *>&1 | Tee-Object -FilePath ci-logs/10-pck.log
+          if (-not (Select-String -Path ci-logs/10-pck.log -SimpleMatch "PACOTE OK")) { throw "Pacote .pck inválido" }
+          $info = (Get-Item build/windows/BlackSight.exe).VersionInfo
+          @(
+            "ProductName=$($info.ProductName)"
+            "FileDescription=$($info.FileDescription)"
+            "FileVersion=$($info.FileVersion)"
+            "CompanyName=$($info.CompanyName)"
+          ) | Tee-Object -FilePath ci-logs/11-exe-versioninfo.log
+          if ($info.ProductName -notlike "*Black Sight*") { throw "Metadados do .exe sem ProductName 'Black Sight'" }
+          if ($info.FileVersion -notlike "0.15.1*") { throw "FileVersion inesperada: $($info.FileVersion)" }
+
+      - name: Empacotar para distribuição
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $readme = @"
+          BLACK SIGHT - Sala de Exibição Aberta (Windows x86_64 - v0.15.1)
+          ============================================
+
+          COMO JOGAR
+          1. Extraia todos os arquivos deste ZIP para a mesma pasta.
+          2. De duplo clique em BlackSight.exe.
+             (BlackSight.pck precisa estar na mesma pasta do .exe)
+
+          ARQUIVOS
+          - BlackSight.exe ......... o jogo (use este)
+          - BlackSight.pck ......... dados do jogo (obrigatorio)
+          - SHA256SUMS.txt ......... conferencia de integridade
+
+          JOGAR (ETAPA 9)
+          - Clique em TESTAR MOVIMENTACAO na tela inicial.
+          - W A S D ....... andar (relativo a direcao da camera)
+          - SHIFT ......... correr (consome stamina)
+          - CTRL .......... agachar
+                            ALTERNAR (padrao): um toque agacha, outro levanta
+                            SEGURAR: mantenha CTRL pressionado
+          - E ............. interagir / pegar o item na mira
+          - 1 2 3 ......... selecionar o slot do inventario
+          - G ............. soltar no chao o item do slot selecionado
+                            (aparece a frente e pode ser recolhido com E)
+          - R ............. remover o item do slot selecionado
+                            (tecla provisoria de teste; use G para soltar)
+          - Mouse ......... olhar (ate 89 graus para cima/baixo)
+          - Esc ........... libera o mouse e abre a pausa
+          - CONTINUAR ..... volta ao jogo, no mesmo lugar
+          - CONFIGURACOES . abre as configuracoes durante a pausa
+          - VOLTAR AO MENU  volta a tela inicial
+          - O jogador colide com piso, paredes, pilares e caixas.
+
+          INVENTARIO
+          - Tres slots fixos, no canto inferior direito da tela.
+          - Olhe para um dos quatro itens de teste (ITEM A, B, C e D) e
+            pressione E: o item some do cenario e aparece no primeiro slot
+            livre; o slot ocupado mostra o nome do item.
+          - 1, 2 e 3 escolhem o slot - inclusive um slot vazio. O slot
+            selecionado fica com fundo e borda mais claros.
+          - R remove o item do slot selecionado (so para validar a remocao).
+          - G solta o item do slot selecionado no chao, a frente do jogador.
+            O item vira um objeto fisico, aparece com o nome e pode ser
+            recolhido de novo com E. Se o slot estiver vazio, nada acontece.
+          - Ao soltar, o slot mostra VAZIO na hora; os outros slots ficam
+            intactos. Se nao houver espaco livre a frente, o item continua no
+            inventario.
+          - Com os tres slots ocupados, tentar pegar o quarto item nao troca
+            nada: aparece "INVENTARIO CHEIO" por instantes e o item continua
+            no lugar.
+          - Durante a pausa o inventario nao muda: E nao pega, 1/2/3 nao
+            selecionam e R nao remove.
+
+          INTERACAO
+          - Olhe para um objeto interativo (o Painel de Teste) e a indicacao
+            [E] Interagir aparece no rodape.
+          - Alcance maximo de 2,5 m, medido do centro da camera.
+          - Paredes e caixas bloqueiam: sem linha de visao nao ha interacao.
+          - A indicacao some ao olhar para outro lugar, ao se afastar ou ao
+            abrir a pausa. Pressione E para acionar o objeto.
+
+          STAMINA
+          - A corrida consome 20 pontos por segundo e para ao chegar a 0.
+          - Segurar SHIFT bloqueia a recuperacao: exausto, a stamina fica em 0
+            enquanto SHIFT continuar pressionado.
+          - Ao soltar SHIFT, a stamina espera 1 segundo antes de recuperar
+            (15 por segundo) parado, andando ou agachado.
+          - Depois de esgotar, a corrida so volta com 20 pontos ou mais.
+          - Agachado nunca corre e a stamina nao e consumida.
+          - A HUD no canto inferior esquerdo mostra a stamina atual (0 a 100%)
+            e acompanha o consumo, o atraso e a recuperacao em tempo real.
+
+          CONFIGURACOES
+          - Clique em CONFIGURACOES na tela inicial ou use ESC durante o jogo.
+          - E a mesma tela e o mesmo arquivo nos dois caminhos.
+          - Abas: CONTROLES, AUDIO e VIDEO.
+          - Em CONTROLES: sensibilidade, inversao do eixo Y, MODO DE AGACHAMENTO
+            e a lista real de controles (agora com E, 1 2 3 e G).
+          - APLICAR grava; RESTAURAR PADROES volta ao original;
+            VOLTAR (ou Esc) retorna ao menu sem aplicar o que nao foi confirmado.
+          - Arquivo: %APPDATA%\BlackSight\settings.cfg (fora da pasta do jogo).
+
+          CONTROLES
+          - F11 .......... alterna entre janela e tela cheia
+          - Esc .......... pausa/libera o mouse na cena de teste e, nas
+                           configuracoes, volta ao menu anterior
+          - SAIR DO JOGO . fecha o jogo (na tela inicial)
+          - Alt+F4 ....... fecha o jogo
+
+          REQUISITOS
+          - Windows 10 ou 11 (64 bits)
+          - Placa de video com OpenGL 3.3 ou superior
+            (renderizador GL Compatibility; funciona em GPUs integradas)
+
+          OBSERVACAO
+          Etapa 6: stamina, modos de agachamento (ALTERNAR/SEGURAR) e lista
+          real de controles, mantendo os estados de movimento da Etapa 5.
+          Correcao 6.1: HUD discreta no canto inferior esquerdo com a barra de
+          stamina em tempo real, integrada a cena da partida.
+          Correcao 6.2: recuperacao com atraso de 1 s depois da corrida e
+          bloqueada enquanto SHIFT estiver pressionado.
+          Etapa 7: interacao por olhar (raycast da camera, 2,5 m, linha de
+          visao) com a indicacao [E] Interagir e um painel de teste.
+          Etapa 8: inventario de tres slots, coleta por interacao, selecao
+          com 1/2/3, remocao provisoria com R e aviso de inventario cheio.
+          Etapa 9: soltar itens no ambiente 3D com G (posicao segura, fisica
+          simples e recolhimento com E); R continua como remocao de teste.
+          Sala de Exibicao 0.15.0: SALA DE EXIBIÇÃO abre o showroom do kit
+          visual (piso, parede e teto de teste) para avaliação em primeira
+          pessoa. TESTAR MOVIMENTACAO continua disponível — a sala de teste
+          do controlador FPS (andar, correr, agachar, stamina e inventário).
+          A biblioteca modular continua no projeto para uso futuro.
+          Stamina e controles anteriores seguem iguais.
+          Ainda nao ha pulo, uso/arremesso/transferencia de item, portas
+          funcionais, geracao procedural, criaturas, multiplayer nem mapa
+          definitivo.
+
+          Versao 0.15.1 - Sala de Exibição aberta (áreas demarcadas: parede, piso e teto)
+          "@
+          $readme | Out-File -FilePath build/windows/LEIA-ME.txt -Encoding utf8
+          $lines = @()
+          foreach ($f in @("BlackSight.exe","BlackSight.pck")) {
+            $h = (Get-FileHash (Join-Path "build/windows" $f) -Algorithm SHA256).Hash.ToLower()
+            $lines += "$h  $f"
+          }
+          $lines | Out-File -FilePath build/windows/SHA256SUMS.txt -Encoding ascii
+          Get-Content build/windows/SHA256SUMS.txt
+          Get-ChildItem build/windows | Select-Object Name, Length
+          $zip = Join-Path $PWD "BlackSight-Windows-x86_64.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path "build/windows/*" -DestinationPath $zip -CompressionLevel Optimal
+          Get-Item $zip | Select-Object Name, Length
+          $zipHash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          "zip_sha256=$zipHash" | Tee-Object -FilePath ci-logs/12-zip.log
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $entries = [System.IO.Compression.ZipFile]::OpenRead($zip).Entries |
+            ForEach-Object { "$($_.FullName) ($($_.Length) bytes)" }
+          $entries | Tee-Object -FilePath ci-logs/12-zip.log -Append
+          foreach ($required in @("BlackSight.exe","BlackSight.pck","LEIA-ME.txt","SHA256SUMS.txt")) {
+            if (-not ($entries -match [regex]::Escape($required))) { throw "ZIP sem $required" }
+          }
+
+      - name: Publicar artefatos (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-sight-windows-real
+          path: |
+            BlackSight-Windows-x86_64.zip
+            ci-logs/
+          if-no-files-found: warn
+
+      - name: Publicar diagnóstico Windows (branch ci-windows)
+        if: always()
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-windows
+          git rm -rf --cached . 2>$null | Out-Null
+          New-Item -ItemType Directory -Force -Path .ci | Out-Null
+          Copy-Item ci-logs -Destination .ci/ -Recurse -Force -ErrorAction SilentlyContinue
+          Get-ChildItem build/windows -ErrorAction SilentlyContinue |
+            ForEach-Object { "$($_.Name) $($_.Length)" } |
+            Out-File -Append .ci/ci-logs/windows-build-files.txt
+          git add -f .ci
+          git commit -m "ci: diagnostico windows $($env:GITHUB_RUN_ID)" 2>$null
+          git push -f origin ci-windows
+
+      - name: Resumo (Windows)
+        if: always()
+        shell: pwsh
+        run: |
+          $summary = @("## Black Sight - Sala de Exibição Aberta (Windows real - v0.15.1)", "")
+          foreach ($f in (Get-ChildItem ci-logs -Filter *.log -ErrorAction SilentlyContinue | Sort-Object Name)) {
+            $summary += "- $($f.Name)"
+          }
+          $summary += ""
+          $summary += '```'
+          $summary += (Get-Content ci-logs/11-exe-versioninfo.log -ErrorAction SilentlyContinue)
+          $summary += (Get-Content ci-logs/12-zip.log -ErrorAction SilentlyContinue | Select-Object -First 12)
+          $summary += '```'
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

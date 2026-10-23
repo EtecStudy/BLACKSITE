@@ -1,0 +1,45 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/panel_material.tres" id="m_panel"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/trim_material.tres" id="m_trim"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/accent_material.tres" id="m_accent"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_panel")
+size = Vector3(0.7, 6, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(0.7, 6, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_trim")
+size = Vector3(0.76, 0.35, 0.13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_4"]
+material = ExtResource("m_trim")
+size = Vector3(0.76, 0.16, 0.13)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_5"]
+material = ExtResource("m_accent")
+size = Vector3(0.1, 0.1, 0.04)
+
+[node name="WallJunction" type="StaticBody3D"]
+[node name="Strip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.24)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="StripCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0.24)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0.255)
+mesh = SubResource("BoxMesh_box_3")
+
+[node name="Top" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.92, 0.255)
+mesh = SubResource("BoxMesh_box_4")
+
+[node name="Bolt" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3, 0.305)
+mesh = SubResource("BoxMesh_box_5")

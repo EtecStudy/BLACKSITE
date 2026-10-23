@@ -1,0 +1,23 @@
+# Godot 4
+.godot/
+*.translation
+export.cfg
+export_credentials.cfg
+
+# Builds / artefatos locais
+build/
+dist/
+*.exe
+*.pck
+*.zip
+
+# Sistema
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+
+# CI
+ci-logs/
+s1_render_frame.png
+.godot-ci/

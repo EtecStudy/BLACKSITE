@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/floor_material.tres" id="m_floor"]
+[ext_resource type="StandardMaterial3D" path="res://maps/modular/materials/accent_material.tres" id="m_accent"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_1"]
+material = ExtResource("m_floor")
+size = Vector3(2, 0.3, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box_2"]
+size = Vector3(2, 0.3, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_box_3"]
+material = ExtResource("m_accent")
+size = Vector3(2, 0.012, 0.08)
+
+[node name="Threshold2m" type="StaticBody3D"]
+[node name="Plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+mesh = SubResource("BoxMesh_box_1")
+
+[node name="PlateCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+shape = SubResource("BoxShape3D_box_2")
+
+[node name="Strip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.004, 0)
+mesh = SubResource("BoxMesh_box_3")
