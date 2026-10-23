@@ -1,0 +1,390 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[Black Sight] Arquivo de configurações criado com os valores padrão: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[Black Sight] Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+=== Black Sight · teste de fumaça ===
+Godot: 4.7.2-stable (official)
+[1] Configuração do projeto
+  ✓ nome do projeto é 'Black Sight'
+  ✓ versão do projeto definida ('0.15.1')
+  ✓ renderizador é 'gl_compatibility'
+  ✓ renderizador mobile é 'gl_compatibility'
+  ✓ resolução lógica é (1920, 1080)
+  ✓ stretch mode é 'canvas_items'
+  ✓ stretch aspect é 'keep' (sem deformar a interface)
+  ✓ cena principal é 'res://ui/scenes/title_screen.tscn'
+  ✓ arquivo da cena principal existe
+  ✓ ícone do projeto configurado
+  ✓ imagem de boot splash configurada
+  ✓ layout de buses configurado (res://audio/default_bus_layout.tres)
+[2] Autoloads
+  ✓ autoload GameSettings registrado
+  ✓ autoload UiAudio registrado
+  ✓ AppInfo disponível na árvore
+  ✓ GameSettings disponível na árvore
+  ✓ UiAudio disponível na árvore
+  ✓ AppInfo expõe versão (v0.15.1)
+[3] Tema e fonte
+  ✓ tema customizado configurado
+  ✓ tema pode ser carregado
+  ✓ tema é do tipo Theme
+  ✓ tema define uma fonte padrão
+  ✓ fonte padrão mede texto corretamente
+  ✓ tema define estilo do botão (normal)
+[4] Arquivos de fonte
+  ✓ fonte presente: res://shared/fonts/cinzel/Cinzel-Regular.ttf
+  ✓ fonte carrega: res://shared/fonts/cinzel/Cinzel-Regular.ttf
+  ✓ fonte renderiza texto: res://shared/fonts/cinzel/Cinzel-Regular.ttf
+  ✓ fonte presente: res://shared/fonts/cinzel/Cinzel-SemiBold.ttf
+  ✓ fonte carrega: res://shared/fonts/cinzel/Cinzel-SemiBold.ttf
+  ✓ fonte renderiza texto: res://shared/fonts/cinzel/Cinzel-SemiBold.ttf
+[5] Texturas importadas
+  ✓ recurso importado: res://shared/textures/ui/background.png
+  ✓ textura carrega: res://shared/textures/ui/background.png
+  ✓ recurso importado: res://shared/textures/ui/vignette.png
+  ✓ textura carrega: res://shared/textures/ui/vignette.png
+  ✓ recurso importado: res://shared/textures/branding/emblem.png
+  ✓ textura carrega: res://shared/textures/branding/emblem.png
+  ✓ recurso importado: res://shared/textures/branding/icon_1024.png
+  ✓ textura carrega: res://shared/textures/branding/icon_1024.png
+  ✓ recurso importado: res://shared/textures/branding/boot_splash.png
+  ✓ textura carrega: res://shared/textures/branding/boot_splash.png
+  ✓ recurso importado: res://shared/textures/fx/dust.png
+  ✓ textura carrega: res://shared/textures/fx/dust.png
+  ✓ som de interface presente: res://audio/assets/sfx/ui_click.wav
+  ✓ som de interface importado: res://audio/assets/sfx/ui_click.wav
+  ✓ som de interface presente: res://audio/assets/sfx/ui_confirm.wav
+  ✓ som de interface importado: res://audio/assets/sfx/ui_confirm.wav
+[6] Módulos da arquitetura
+  ✓ módulo existe: players/
+  ✓ módulo documentado: players/README.md
+  ✓ módulo existe: creatures/
+  ✓ módulo documentado: creatures/README.md
+  ✓ módulo existe: maps/
+  ✓ módulo documentado: maps/README.md
+  ✓ módulo existe: items/
+  ✓ módulo documentado: items/README.md
+  ✓ módulo existe: objectives/
+  ✓ módulo documentado: objectives/README.md
+  ✓ módulo existe: ui/
+  ✓ módulo documentado: ui/README.md
+  ✓ módulo existe: audio/
+  ✓ módulo documentado: audio/README.md
+  ✓ módulo existe: match/
+  ✓ módulo documentado: match/README.md
+  ✓ módulo existe: shared/
+  ✓ módulo documentado: shared/README.md
+  ✓ documento de arquitetura presente (docs/ARQUITETURA.md)
+  ✓ documentação das configurações presente (docs/CONFIGURACOES.md)
+  ✓ caminho antigo removido: res://scenes/boot/title_screen.tscn
+  ✓ caminho antigo removido: res://scripts/ui/title_screen.gd
+  ✓ caminho antigo removido: res://scripts/autoload/app_info.gd
+  ✓ caminho antigo removido: res://assets/themes/black_sight.tres
+  ✓ caminho antigo removido: res://assets/fonts/cinzel/Cinzel-Regular.ttf
+  ✓ tela inicial está no módulo ui/
+  ✓ gerenciador de configurações está em shared/settings/
+  ✓ layout de áudio está no módulo audio/
+  ✓ módulo creatures ainda não tem scripts (estrutura preparatória)
+  ✓ módulo objectives ainda não tem scripts (estrutura preparatória)
+  ✓ items/ tem apenas o item de teste e o item solto (["res://items/scripts/inventory_test_item.gd", "res://items/scripts/world_item.gd"])
+[7] Cena inicial
+  ✓ cena inicial é um PackedScene
+  ✓ cena inicial pode ser instanciada
+  ✓ raiz da cena é 'TitleScreen'
+  ✓ nó presente na cena: Background
+  ✓ nó presente na cena: Dust
+  ✓ nó presente na cena: Vignette
+  ✓ nó presente na cena: Content
+  ✓ nó presente na cena: Content/Emblem
+  ✓ nó presente na cena: Content/TitleLabel
+  ✓ nó presente na cena: Content/Buttons/StartButton
+  ✓ nó presente na cena: Content/Buttons/TestMovementButton
+  ✓ nó presente na cena: Content/Buttons/ExhibitionRoomButton
+  ✓ nó presente na cena: Content/Buttons/SettingsButton
+  ✓ nó presente na cena: Content/Buttons/QuitButton
+  ✓ nó presente na cena: Content/BuildLabel
+  ✓ nó presente na cena: Fade
+  ✓ cena raiz tem script anexado
+  ✓ botão JOGAR segue desabilitado
+[8] Preset de exportação
+  ✓ export_presets.cfg existe
+  ✓ preset 'Windows Desktop' presente
+  ✓ plataforma Windows Desktop configurada
+  ✓ ícone do executável configurado no preset
+[9] Configurações — esquema e persistência
+  ✓ esquema tem as três seções (controles, áudio, vídeo)
+  ✓ sensibilidade negativa é limitada ao mínimo
+  ✓ sensibilidade excessiva é limitada ao máximo
+  ✓ volume acima de 100 é limitado a 100
+  ✓ volume negativo é limitado a 0
+  ✓ volume válido é preservado (music=55)
+  ✓ volume inválido cai no padrão
+  ✓ modo de janela inválido cai no padrão
+  ✓ resolução pequena demais é limitada
+  ✓ autoload GameSettings disponível para os testes
+[Black Sight] Configurações aplicadas: master=42 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=false sens_x=1.00 sens_y=1.00 invert_y=true
+  ✓ apply() grava o arquivo de configurações
+  ✓ arquivo de configurações criado em user://
+  ✓ volume gravado é lido de volta (42)
+  ✓ inverter eixo gravado é lido de volta
+  ✓ vsync gravado é lido de volta
+  ✓ configuração sobrevive a um 'reinício' (nova instância lê 42)
+  ✓ arquivo corrompido cai nos valores padrão
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ restaurar padrões grava o arquivo
+  ✓ restaurar padrões devolve o volume padrão
+  ✓ padrões restaurados ficam persistidos no disco
+[10] Áudio — buses e aplicação de volume
+  ✓ bus de áudio existe: Master
+  ✓ bus de áudio existe: Music
+  ✓ bus de áudio existe: SFX
+  ✓ bus de áudio existe: Ambience
+  ✓ bus de áudio existe: Voice
+  ✓ volume de SFX aplicado ao bus (25%) — obtido 25%
+  ✓ volume geral aplicado ao bus Master
+  ✓ volume 0%% silencia o bus de música
+  ✓ voltar ao padrão reativa o bus de música
+[11] Vídeo — limites de segurança
+  ✓ resolução absurda é limitada ao tamanho da tela
+  ✓ resolução minúscula sobe para o tamanho mínimo legível
+  ✓ há ao menos uma resolução disponível (6)
+  ✓ resoluções oferecidas são válidas
+  ✓ modos de janela têm rótulos em português
+[12] Tela de configurações — interface
+  ✓ cena de configurações é um PackedScene
+  ✓ cena de configurações instancia
+  ✓ área de seções existe
+  ✓ aba CONTROLES existe
+  ✓ aba ÁUDIO existe
+  ✓ aba VÍDEO existe
+  ✓ botão APLICAR existe
+  ✓ botão RESTAURAR PADRÕES existe
+  ✓ botão VOLTAR existe
+  ✓ botão VOLTAR está conectado
+  ✓ três seções montadas (controles, áudio, vídeo)
+  ✓ apenas uma seção visível por vez
+  ✓ aba ÁUDIO mostra a seção de áudio
+  ✓ quatro sliders de volume na seção de áudio
+[Black Sight] Configurações aplicadas: master=33 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ APLICAR grava o valor do slider (volume geral = 33)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ RESTAURAR PADRÕES devolve o volume padrão após aplicar
+  ✓ aba VÍDEO mostra a seção de vídeo
+  ✓ seção de vídeo tem resolução e modo de janela
+  ✓ lista de resoluções preenchida
+  ✓ três modos de janela
+[Black Sight] Tela inicial carregada — v0.15.1 · Godot 4.7.2-stable (official) · gl_compatibility
+  ✓ botão CONFIGURAÇÕES presente na tela inicial
+  ✓ botão CONFIGURAÇÕES está conectado à navegação
+  ✓ botão SAIR DO JOGO continua presente
+  ✓ botão SAIR DO JOGO continua conectado
+  ✓ botão TESTAR MOVIMENTAÇÃO presente na tela inicial
+  ✓ botão TESTAR MOVIMENTAÇÃO está conectado
+[13] Controlador FPS e cena de teste
+  ✓ cena do jogador carrega
+  ✓ jogador é um CharacterBody3D
+  ✓ jogador tem forma de colisão
+  ✓ jogador tem nó Head
+  ✓ câmera na altura dos olhos (1.62 m)
+  ✓ câmera 3D presente
+  ✓ detector de interação na câmera do jogador
+  ✓ alcance de interação = 2,5 m
+  ✓ sala de teste carrega (maps/scenes/test_room.tscn)
+  ✓ painel de teste de interação carrega
+  ✓ indicação de interação carrega
+  ✓ contrato Interactable carrega (shared/interaction)
+  ✓ cena de teste carrega (match/scenes/movement_test.tscn)
+  ✓ cena de teste contém o jogador
+  ✓ cena de teste tem ponto de nascimento
+  ✓ cena de teste tem camada de pausa
+  ✓ cena de teste tem o painel de interação
+  ✓ ação de entrada 'move_forward' configurada
+  ✓ ação de entrada 'move_back' configurada
+  ✓ ação de entrada 'move_left' configurada
+  ✓ ação de entrada 'move_right' configurada
+  ✓ ação de entrada 'move_sprint' configurada
+  ✓ ação de entrada 'move_crouch' configurada
+  ✓ ação de entrada 'release_mouse' configurada
+  ✓ ação de entrada 'interact' configurada
+  ✓ interact usa E como tecla padrão
+  ✓ documentação da Etapa 4 presente (docs/ETAPA-4.md)
+[14] Estados de movimento (Etapa 5)
+  ✓ script do controlador carrega
+  ✓ enum MovementState declarado
+  ✓ estado 'IDLE' definido
+  ✓ estado 'WALKING' definido
+  ✓ estado 'RUNNING' definido
+  ✓ estado 'CROUCHING' definido
+  ✓ não existe estado de pulo
+  ✓ nomes dos estados disponíveis
+  ✓ corrida (5.60 m/s) mais rápida que caminhada (3.20 m/s)
+  ✓ agachado (1.60 m/s) mais lento que caminhada (3.20 m/s)
+  ✓ controlador expõe get_state()
+  ✓ controlador expõe is_crouched()
+  ✓ ponto de extensão para a stamina (set_sprint_allowed) presente
+  ✓ menu de pausa tem CONFIGURAÇÕES
+  ✓ botão rotulado CONFIGURAÇÕES
+  ✓ camada para abrir as configurações durante a partida
+  ✓ tela de configurações aceita modo embutido
+  ✓ documentação da Etapa 5 presente (docs/ETAPA-5.md)
+[15] Stamina, agachamento e controles reais (Etapas 6.2–7)
+  ✓ modo de agachamento padrão é ALTERNAR
+  ✓ modo inválido cai no padrão ALTERNAR
+  ✓ normalização do modo aceita maiúsculas
+  ✓ rótulo do modo SEGURAR
+  ✓ rótulo do modo ALTERNAR
+  ✓ stamina máxima = 100
+  ✓ consumo de stamina = 20/s
+  ✓ recuperação de stamina = 15/s
+  ✓ atraso de recuperação = 1,0 s (Etapa 6.2)
+  ✓ limiar de retorno entre 0 e o máximo (20)
+  ✓ controlador expõe get_stamina()
+  ✓ controlador expõe get_max_stamina()
+  ✓ controlador expõe get_stamina_ratio()
+  ✓ controlador expõe set_stamina()
+  ✓ controlador expõe get_crouch_mode()
+  ✓ controlador expõe is_sprint_allowed()
+  ✓ controlador expõe set_sprint_allowed()
+  ✓ controlador expõe get_recovery_delay_left()
+  ✓ controlador expõe is_sprint_held()
+  ✓ sinal stamina_changed preparado para a HUD
+  ✓ HUD da Etapa 6.1 continua presente e carrega
+  ✓ controlador não tem código de pulo
+  ✓ não há impulso vertical positivo
+  ✓ não existe ação de pulo
+  ✓ não existe ação move_jump
+  ✓ nenhuma ação de pulo no Input Map
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ modo SEGURAR aplicado em memória
+  ✓ modo gravado em settings.cfg
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ RESTAURAR PADRÕES volta ao modo ALTERNAR
+  ✓ lista tem exatamente nove controles (9)
+  ✓ teclas reais na ordem esperada: ["W A S D", "Shift", "Ctrl", "E", "1 2 3", "G", "Mouse", "Esc", "F11"]
+  ✓ WASD descreve mover
+  ✓ SHIFT descreve correr
+  ✓ mouse descreve olhar
+  ✓ Esc descreve pausar
+  ✓ F11 descreve tela cheia
+  ✓ E descreve interagir (Etapa 7)
+  ✓ 1 2 3 descreve selecionar slot (Etapa 8)
+  ✓ G descreve soltar item (Etapa 9)
+  ✓ R (remoção provisória) continua fora da lista
+  ✓ não lista F/Lanterna
+  ✓ não lista pulo
+  ✓ não lista uso nem equipamento de item
+  ✓ não lista descarte de item
+  ✓ não lista ataque
+  ✓ lista E (implementada) e não F
+  ✓ não lista a barra de espaço
+  ✓ Ctrl em SEGURAR: 'Segurar para agachar'
+  ✓ Ctrl em ALTERNAR: 'Alternar agachamento'
+  ✓ read_values() inclui crouch_mode
+  ✓ documentação da Etapa 6 presente (docs/ETAPA-6.md)
+  ✓ documentação da Etapa 7 presente (docs/ETAPA-7.md)
+[16] Inventário de três slots (Etapa 8)
+  ✓ versão do projeto é 0.15.1
+  ✓ AppInfo anuncia a etapa atual (Sala de exibição do kit visual)
+  ✓ ação 'inventory_slot_1' configurada
+  ✓ ação 'inventory_slot_1' usa 1
+  ✓ ação 'inventory_slot_2' configurada
+  ✓ ação 'inventory_slot_2' usa 2
+  ✓ ação 'inventory_slot_3' configurada
+  ✓ ação 'inventory_slot_3' usa 3
+  ✓ ação 'inventory_remove' configurada
+  ✓ ação 'inventory_remove' usa R
+  ✓ ações de inventário são exatamente as previstas: ["inventory_drop", "inventory_remove", "inventory_slot_1", "inventory_slot_2", "inventory_slot_3"]
+  ✓ arquivo da Etapa 8 presente (res://shared/items/item_definition.gd)
+  ✓ arquivo da Etapa 8 presente (res://players/scripts/inventory/inventory.gd)
+  ✓ arquivo da Etapa 8 presente (res://players/scripts/inventory/inventory_slot.gd)
+  ✓ arquivo da Etapa 8 presente (res://players/scripts/inventory/inventory_input.gd)
+  ✓ arquivo da Etapa 8 presente (res://items/scripts/inventory_test_item.gd)
+  ✓ arquivo da Etapa 8 presente (res://items/scenes/inventory_test_item.tscn)
+  ✓ arquivo da Etapa 8 presente (res://ui/scripts/hud/inventory_bar.gd)
+  ✓ arquivo da Etapa 8 presente (res://ui/scenes/hud/inventory_bar.tscn)
+  ✓ arquivo da Etapa 8 presente (res://docs/ETAPA-8.md)
+  ✓ cena do item de teste carrega
+  ✓ cena da barra de slots carrega
+  ✓ Inventory.SLOT_COUNT = 3
+  ✓ inventário começa com três slots
+  ✓ inventário começa vazio
+  ✓ slot 1 selecionado por padrão
+  ✓ adiciona item no inventário
+  ✓ adiciona até encher
+  ✓ inventário cheio após três itens
+  ✓ inventário cheio recusa o quarto item
+  ✓ item recusado não substitui o primeiro
+  ✓ seleciona o slot 3
+  ✓ item selecionado é o do slot 3
+  ✓ remove o item do slot 2
+  ✓ slot fica vazio depois da remoção
+  ✓ substitui o item do slot 1
+  ✓ slot 1 recebe o substituto
+  ✓ slot livre volta a aceitar item
+  ✓ cena do jogador tem o nó Inventory
+  ✓ cena do jogador tem a entrada do inventário
+  ✓ controlador expõe get_inventory()
+  ✓ controlador expõe get_inventory_input()
+  ✓ HUD carrega com a barra de slots
+  ✓ HUD expõe a barra de slots
+  ✓ HUD desenha 3 slots
+  ✓ slot começa VAZIO
+  ✓ HUD tem o aviso de inventário cheio
+  ✓ HUD mostra o item do slot 1 (ITEM HUD)
+  ✓ HUD acompanha a seleção
+  ✓ HUD avisa quando o inventário enche
+  ✓ TestItemA na cena de teste
+  ✓ TestItemB na cena de teste
+  ✓ TestItemC na cena de teste
+  ✓ TestItemD na cena de teste
+  ✓ inventário não lê teclas diretamente
+[17] Soltar itens no ambiente (Etapa 9)
+  ✓ versão do projeto é 0.15.1
+  ✓ AppInfo anuncia a Etapa 11 (Sala de exibição do kit visual)
+  ✓ ação 'inventory_drop' configurada
+  ✓ ação 'inventory_drop' usa G
+  ✓ remoção de teste continua existindo
+  ✓ não existe ação de arremesso
+  ✓ arquivo da Etapa 9 presente (res://items/scripts/world_item.gd)
+  ✓ arquivo da Etapa 9 presente (res://items/scenes/world_item.tscn)
+  ✓ arquivo da Etapa 9 presente (res://players/scripts/inventory/item_dropper.gd)
+  ✓ arquivo da Etapa 9 presente (res://shared/mapping/space_probe.gd)
+  ✓ arquivo da Etapa 9 presente (res://docs/ETAPA-9.md)
+  ✓ cena do item solto carrega
+  ✓ cena do item solto tem o script WorldItem
+  ✓ item solto usa o contrato Interactable
+  ✓ item solto tem corpo físico (RigidBody3D)
+  ✓ item solto tem colisão
+  ✓ item solto tem etiqueta 3D
+  ✓ item solto sem ator não é interativo
+  ✓ item inválido é recusado
+  ✓ item válido é aceito
+  ✓ item solto entra no grupo de mundo
+  ✓ etiqueta mostra o nome do item
+  ✓ item solto guarda a definição
+  ✓ nome para exibição
+  ✓ jogador tem ItemDropper na câmera
+  ✓ controlador expõe get_item_dropper()
+  ✓ drop aponta para a cena do item
+  ✓ drop não processa por frame
+  ✓ contador de drops começa em zero
+  ✓ componente do drop não lê teclas diretamente
+  ✓ HUD aceita a ligação com o drop
+  ✓ HUD reutiliza o painel de aviso
+  ✓ HUD ligada ao componente de drop
+  ✓ aviso do drop usa o mesmo painel da HUD (SLOT VAZIO)
+  ✓ barra de inventário continua única, com 3 slots
+  ✓ cena de teste ensina G SOLTAR (WASD MOVER · SHIFT CORRER · CTRL AGACHAR · E INTERAGIR · 1 2 3 SLOTS · G SOLTAR · R REMOVER TESTE · ESC PAUSA)
+  ✓ cena de teste marca R como teste
+  ✓ pausa lista G soltar
+  ✓ arquivo da correção presente (res://docs/ETAPA-9-CORRECAO.md)
+  ✓ arquivo da correção presente (res://tools/ci/drop_obstacle_test.gd)
+  ✓ arquivo da correção presente (res://tools/ci/drop_obstacle_test.tscn)
+  ✓ SpaceProbe confere o apoio da pegada
+  ✓ SpaceProbe confirma a posição real do item
+  ✓ SpaceProbe usa a grade de apoio e a superfície encontrada
+  ✓ drop confirma a posição depois de instanciar o item
+  ✓ item solto não tomba ao assentar (rotação travada)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+
+SMOKE TEST OK — 357 verificações aprovadas

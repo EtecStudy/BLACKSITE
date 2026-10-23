@@ -1,0 +1,174 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[Black Sight] Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+=== Black Sight · teste do drop junto a obstáculos ===
+  ✓ cena de teste carrega
+[Black Sight] Cena de teste carregada — controlador FPS ativo
+  ✓ jogador instanciado
+  ✓ jogador tem inventário
+  ✓ jogador tem o componente de drop
+[1] Chão aberto
+  ✓ chão aberto: slot 1 ficou vazio
+  ✓ chão aberto: corpo assenta no piso (y=-0.007)
+  ✓ chão aberto: pegada inteiramente apoiada (100%)
+  ✓ chão aberto: não nasce dentro de nada (0 colisões)
+  ✓ chão aberto: não afunda (base -0.007, piso 0.000)
+  ✓ chão aberto: objeto continua no mundo
+  ✓ chão aberto: fica onde foi solto (0.000 m)
+  ✓ chão aberto: não afunda ao assentar
+  ✓ chão aberto: continua fora de tudo ao assentar
+  ✓ chão aberto: item é detectado pelo olhar
+  ✓ chão aberto: recolhido com E
+  ✓ chão aberto: um item a menos no mundo
+  ✓ chão aberto: item voltou ao inventário
+[2] Sobre a caixa
+  ✓ sobre a caixa: slot 1 ficou vazio
+  ✓ sobre a caixa: item fica no topo (y=0.993)
+  ✓ sobre a caixa: centralizado em X (3.000)
+  ✓ sobre a caixa: pegada inteiramente apoiada (100%)
+  ✓ sobre a caixa: não nasce dentro de nada (0 colisões)
+  ✓ sobre a caixa: não afunda (base 0.993, piso 1.000)
+  ✓ sobre a caixa: objeto continua no mundo
+  ✓ sobre a caixa: fica onde foi solto (0.000 m)
+  ✓ sobre a caixa: não afunda ao assentar
+  ✓ sobre a caixa: continua fora de tudo ao assentar
+  ✓ sobre a caixa: item é detectado pelo olhar
+  ✓ sobre a caixa: recolhido com E
+  ✓ sobre a caixa: um item a menos no mundo
+  ✓ sobre a caixa: item voltou ao inventário
+[3] Ao lado da caixa
+  ✓ ao lado da caixa: slot 1 ficou vazio
+  ✓ ao lado da caixa: fica no piso (y=-0.007)
+  ✓ ao lado da caixa: fora da caixa (z=1.143)
+  ✓ ao lado da caixa: pegada inteiramente apoiada (100%)
+  ✓ ao lado da caixa: não nasce dentro de nada (0 colisões)
+  ✓ ao lado da caixa: não afunda (base -0.007, piso 0.000)
+  ✓ ao lado da caixa: objeto continua no mundo
+  ✓ ao lado da caixa: fica onde foi solto (0.000 m)
+  ✓ ao lado da caixa: não afunda ao assentar
+  ✓ ao lado da caixa: continua fora de tudo ao assentar
+  ✓ ao lado da caixa: item é detectado pelo olhar
+  ✓ ao lado da caixa: recolhido com E
+  ✓ ao lado da caixa: um item a menos no mundo
+  ✓ ao lado da caixa: item voltou ao inventário
+[4] Ao lado do pilar
+  ✓ ao lado do pilar: slot 1 ficou vazio
+  ✓ ao lado do pilar: fica no piso (y=-0.007)
+  ✓ ao lado do pilar: fora do pilar (z=-5.336)
+  ✓ ao lado do pilar: pegada inteiramente apoiada (100%)
+  ✓ ao lado do pilar: não nasce dentro de nada (0 colisões)
+  ✓ ao lado do pilar: não afunda (base -0.007, piso 0.000)
+  ✓ ao lado do pilar: objeto continua no mundo
+  ✓ ao lado do pilar: fica onde foi solto (0.000 m)
+  ✓ ao lado do pilar: não afunda ao assentar
+  ✓ ao lado do pilar: continua fora de tudo ao assentar
+  ✓ ao lado do pilar: item é detectado pelo olhar
+  ✓ ao lado do pilar: recolhido com E
+  ✓ ao lado do pilar: um item a menos no mundo
+  ✓ ao lado do pilar: item voltou ao inventário
+[5] Ao lado da parede
+  ✓ ao lado da parede: slot 1 ficou vazio
+  ✓ ao lado da parede: fica no piso (y=-0.007)
+  ✓ ao lado da parede: fora da parede (x=-11.336)
+  ✓ ao lado da parede: pegada inteiramente apoiada (100%)
+  ✓ ao lado da parede: não nasce dentro de nada (0 colisões)
+  ✓ ao lado da parede: não afunda (base -0.007, piso 0.000)
+  ✓ ao lado da parede: objeto continua no mundo
+  ✓ ao lado da parede: fica onde foi solto (0.000 m)
+  ✓ ao lado da parede: não afunda ao assentar
+  ✓ ao lado da parede: continua fora de tudo ao assentar
+  ✓ ao lado da parede: item é detectado pelo olhar
+  ✓ ao lado da parede: recolhido com E
+  ✓ ao lado da parede: um item a menos no mundo
+  ✓ ao lado da parede: item voltou ao inventário
+[6] Espaço insuficiente (encostado na parede)
+[Black Sight] Drop cancelado: sem posição segura (espaço ocupado)
+  ✓ espaço insuficiente: nenhum objeto criado
+  ✓ espaço insuficiente: item continua no inventário
+  ✓ espaço insuficiente: nada novo no mundo
+  ✓ espaço insuficiente: aviso 'SEM ESPAÇO PARA SOLTAR' (recebido 'SEM ESPAÇO PARA SOLTAR')
+[7] Drops repetidos perto dos obstáculos
+  ✓ repetido 1: slot 1 ficou vazio
+  ✓ repetido 1: pegada inteiramente apoiada (100%)
+  ✓ repetido 1: não nasce dentro de nada (0 colisões)
+  ✓ repetido 1: não afunda (base 0.993, piso 1.000)
+  ✓ repetido 2: slot 1 ficou vazio
+  ✓ repetido 2: pegada inteiramente apoiada (100%)
+  ✓ repetido 2: não nasce dentro de nada (0 colisões)
+  ✓ repetido 2: não afunda (base -0.007, piso 0.000)
+  ✓ repetido 3: slot 1 ficou vazio
+  ✓ repetido 3: pegada inteiramente apoiada (100%)
+  ✓ repetido 3: não nasce dentro de nada (0 colisões)
+  ✓ repetido 3: não afunda (base -0.007, piso 0.000)
+  ✓ drops repetidos: nenhum item desapareceu (3 de 3)
+  ✓ drops repetidos: todos os drops aconteceram (3 de 3)
+  ✓ repetido: item é detectado pelo olhar
+  ✓ repetido: recolhido com E
+  ✓ repetido: um item a menos no mundo
+  ✓ repetido: item voltou ao inventário
+  ✓ repetido: item é detectado pelo olhar
+  ✓ repetido: recolhido com E
+  ✓ repetido: um item a menos no mundo
+  ✓ repetido: item voltou ao inventário
+  ✓ repetido: item é detectado pelo olhar
+  ✓ repetido: recolhido com E
+  ✓ repetido: um item a menos no mundo
+  ✓ repetido: item voltou ao inventário
+  ✓ drops repetidos: todos recolhidos
+[8] Quatro itens soltos ao mesmo tempo
+  ✓ item ITEM A: slot 1 ficou vazio
+  ✓ item ITEM A: pegada inteiramente apoiada (100%)
+  ✓ item ITEM A: não nasce dentro de nada (0 colisões)
+  ✓ item ITEM A: não afunda (base 0.993, piso 1.000)
+  ✓ item ITEM B: slot 1 ficou vazio
+  ✓ item ITEM B: pegada inteiramente apoiada (100%)
+  ✓ item ITEM B: não nasce dentro de nada (0 colisões)
+  ✓ item ITEM B: não afunda (base -0.007, piso 0.000)
+  ✓ item ITEM C: slot 1 ficou vazio
+  ✓ item ITEM C: pegada inteiramente apoiada (100%)
+  ✓ item ITEM C: não nasce dentro de nada (0 colisões)
+  ✓ item ITEM C: não afunda (base -0.007, piso 0.000)
+  ✓ item ITEM D: slot 1 ficou vazio
+  ✓ item ITEM D: pegada inteiramente apoiada (100%)
+  ✓ item ITEM D: não nasce dentro de nada (0 colisões)
+  ✓ item ITEM D: não afunda (base -0.007, piso 0.000)
+  ✓ quatro itens no mundo (4)
+  ✓ item multi_a continua no mundo
+  ✓ item multi_b continua no mundo
+  ✓ item multi_c continua no mundo
+  ✓ item multi_d continua no mundo
+  ✓ inventário cheio: item continua no chão
+  ✓ inventário cheio: nada foi removido do mundo
+  ✓ item multi_a: item é detectado pelo olhar
+  ✓ item multi_a: recolhido com E
+  ✓ item multi_a: um item a menos no mundo
+  ✓ item multi_a: item voltou ao inventário
+  ✓ item multi_b: item é detectado pelo olhar
+  ✓ item multi_b: recolhido com E
+  ✓ item multi_b: um item a menos no mundo
+  ✓ item multi_b: item voltou ao inventário
+  ✓ item multi_c: item é detectado pelo olhar
+  ✓ item multi_c: recolhido com E
+  ✓ item multi_c: um item a menos no mundo
+  ✓ item multi_c: item voltou ao inventário
+  ✓ item multi_d: item é detectado pelo olhar
+  ✓ item multi_d: recolhido com E
+  ✓ item multi_d: um item a menos no mundo
+  ✓ item multi_d: item voltou ao inventário
+  ✓ todos os itens recolhidos ao final
+[9] Pausa com item solto perto da caixa
+  ✓ pausa: item solto: slot 1 ficou vazio
+  ✓ pausa: pegada inteiramente apoiada (100%)
+  ✓ pausa: não nasce dentro de nada (0 colisões)
+  ✓ pausa: não afunda (base -0.007, piso 0.000)
+  ✓ pausa: G não solta
+  ✓ pausa: R não remove
+  ✓ pausa: item recolhível depois da pausa: item é detectado pelo olhar
+  ✓ pausa: item recolhível depois da pausa: recolhido com E
+  ✓ pausa: item recolhível depois da pausa: um item a menos no mundo
+  ✓ pausa: item recolhível depois da pausa: item voltou ao inventário
+[10] Estado final
+  ✓ final: nenhum item solto
+  ✓ final: inventário vazio
+
+DROP OBSTACLE TEST OK — 156 verificações aprovadas

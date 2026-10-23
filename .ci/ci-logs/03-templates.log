@@ -1,0 +1,28 @@
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+  0      0   0      0   0      0      0      0                              0
+  0      0   0      0   0      0      0      0                              0
+
+  0      0   0      0   0      0      0      0                              0
+ 19  1.19G  19 240.9M   0      0 201.6M      0   00:06   00:01   00:05 240.6M
+ 40  1.19G  40 489.0M   0      0 222.7M      0   00:05   00:02   00:03 244.3M
+ 58  1.19G  58 720.0M   0      0 224.8M      0   00:05   00:03   00:02 239.2M
+ 77  1.19G  77 950.9M   0      0 225.9M      0   00:05   00:04   00:01 236.8M
+ 98  1.19G  98  1.17G   0      0 229.3M      0   00:05   00:05         238.1M
+100  1.19G 100  1.19G   0      0 230.6M      0   00:05   00:05         238.1M
+100  1.19G 100  1.19G   0      0 230.6M      0   00:05   00:05         238.1M
+100  1.19G 100  1.19G   0      0 230.6M      0   00:05   00:05         238.1M
+windows_debug_arm64_console.exe
+windows_debug_arm64.exe
+windows_debug_x86_32_console.exe
+windows_debug_x86_32.exe
+windows_debug_x86_64_console.exe
+windows_debug_x86_64.exe
+windows_release_arm64_console.exe
+windows_release_arm64.exe
+windows_release_x86_32_console.exe
+windows_release_x86_32.exe
+windows_release_x86_64_console.exe
+windows_release_x86_64.exe

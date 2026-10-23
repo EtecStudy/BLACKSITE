@@ -1,0 +1,25 @@
+[meta]
+
+version=1
+game="Black Sight"
+
+[controls]
+
+mouse_sensitivity_x=1.0
+mouse_sensitivity_y=1.0
+invert_y=false
+crouch_mode="toggle"
+
+[audio]
+
+master_volume=80
+sfx_volume=80
+ambience_volume=70
+music_volume=60
+
+[video]
+
+window_mode=0
+resolution_x=1600
+resolution_y=900
+vsync=true
