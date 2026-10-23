@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Black Sight"
-config/description="Black Sight — jogo de terror em primeira pessoa. Sala de exibição 0.15.0: showroom temporário do kit visual (piso, parede e teto de teste) para avaliação em primeira pessoa; a sala de movimentação permanece como ambiente de teste dos sistemas."
-config/version="0.15.0"
+config/description="Black Sight — jogo de terror em primeira pessoa. Sala de exibição 0.15.1: espaço aberto de exposição do kit visual — plataforma neutra com áreas demarcadas por fita (parede, piso e teto) para avaliação em primeira pessoa; a sala de movimentação permanece como ambiente de teste dos sistemas."
+config/version="0.15.1"
 run/main_scene="res://ui/scenes/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://shared/textures/branding/icon_1024.png"

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Gera a Sala de Exibição do Kit Visual do Black Sight.
+"""Gera a Sala de Exibição do Kit Visual do Black Sight (espaço aberto).
 
-Espaço neutro e espaçoso (showroom técnico de 32 x 14 m) para avaliar
-individualmente os elementos do kit visual do jogo. Nesta etapa:
+Correção da etapa: NADA de sala fechada. Apenas um grande chão/plataforma
+neutro e aberto em todas as direções, com áreas de exposição demarcadas
+por fita no chão e placas de identificação. Cada elemento do kit visual
+será criado depois, dentro da sua área:
 
-- piso de teste (vinílico de laboratório, 6 x 4 m, embutido no piso neutro);
-- parede de teste (painéis compostos de 6 m com junções e rodapé);
-- teto de teste (trecho de 4,8 x 3,6 m com estrutura, perfis e suportes);
-- iluminação neutra inicial apenas para avaliação dos materiais.
+- ÁREA DA PAREDE (fita 7,0 x 3,0 m, vazia) + placa "PAREDE";
+- ÁREA DO PISO   (fita 7,0 x 5,0 m, vazia) + placa "PISO";
+- ÁREA DO TETO   (fita 6,0 x 5,0 m, vazia) + placa "TETO".
 
 Uso:
     python3 tools/arch/build_exhibition_room.py
@@ -192,130 +193,37 @@ def tint_noise(size: int, base: tuple[float, float, float], amp: float, seed: in
 
 
 # ---------------------------------------------------------------------------
-# Texturas
+# Texturas (somente a plataforma neutra)
 # ---------------------------------------------------------------------------
 
 
-def tex_showroom_floor(size: int = 512) -> None:
-    """Piso neutro da galeria: concreto fosco cinza, sem protagonismo."""
+def tex_platform(size: int = 512) -> None:
+    """Chão neutro da exposição: concreto fosco cinza, sem protagonismo."""
     rnd = random.Random(11)
-    rows, height = tint_noise(size, (0.30, 0.305, 0.31), 0.05, 11)
-    speckle(rows, height, rnd, 2600, (0.16, 0.16, 0.17), 0.35, 1.6)
-    speckle(rows, height, rnd, 1200, (0.48, 0.48, 0.49), 0.25, 1.4)
+    rows, height = tint_noise(size, (0.32, 0.325, 0.33), 0.05, 11)
+    speckle(rows, height, rnd, 2600, (0.17, 0.17, 0.18), 0.32, 1.6)
+    speckle(rows, height, rnd, 1200, (0.50, 0.50, 0.51), 0.22, 1.4)
     save_maps("showroom_floor", rows, height, rough_from(height, 0.85, 0.12, 13), 0.8)
 
 
-def tex_showroom_wall(size: int = 512) -> None:
-    """Parede neutra da galeria: pintura lisa cinza-clara."""
-    rnd = random.Random(21)
-    rows, height = tint_noise(size, (0.60, 0.61, 0.62), 0.035, 21)
-    speckle(rows, height, rnd, 900, (0.4, 0.4, 0.41), 0.2, 1.4)
-    save_maps("showroom_wall", rows, height, rough_from(height, 0.9, 0.08, 23), 0.6)
-
-
-def tex_kit_floor(size: int = 1024) -> None:
-    """KIT — piso vinílico de laboratório (protótipo do piso do jogo).
-
-    Textura desenhada para uma placa de 6 m (costuras soldadas a cada 2 m
-    no eixo X): vinil cinza quente com speckle fino de duas tonalidades,
-    marmoramento suave e linhas de solda levemente mais escuras.
-    """
-    rnd = random.Random(31)
-    rows, height = tint_noise(size, (0.515, 0.52, 0.50), 0.045, 31)
-    # Variação de tom por folha (3 folhas de 2 m).
-    for sheet in range(3):
-        delta = rnd.uniform(-0.022, 0.022)
-        x0 = sheet * size // 3
-        x1 = (sheet + 1) * size // 3
-        for y in range(size):
-            for x in range(x0, x1):
-                i = x * 3
-                rows[y][i] = clamp_byte(rows[y][i] + delta * 255)
-                rows[y][i + 1] = clamp_byte(rows[y][i + 1] + delta * 255)
-                rows[y][i + 2] = clamp_byte(rows[y][i + 2] + delta * 235)
-    # Speckle mineral fino, típico de vinil homogêneo.
-    speckle(rows, height, rnd, 21000, (0.40, 0.41, 0.395), 0.4, 1.3)
-    speckle(rows, height, rnd, 15000, (0.64, 0.645, 0.62), 0.35, 1.3)
-    speckle(rows, height, rnd, 2600, (0.30, 0.315, 0.31), 0.3, 1.2)
-    # Costuras soldadas a cada 2 m (X) e uma transversal central.
-    for sx in (size // 3, 2 * size // 3):
-        for y in range(size):
-            for dx in (-1, 0, 1):
-                blend_px(rows, sx + dx, y, (0.335, 0.34, 0.325), 0.8 if dx == 0 else 0.45)
-                height[y][sx + dx] -= 0.16
-    for x in range(size):
-        blend_px(rows, x, size // 2, (0.335, 0.34, 0.325), 0.6)
-        height[size // 2][x] -= 0.13
-    # Desgaste leve no centro (tráfego).
-    for _ in range(7000):
-        x = int(size / 2 + rnd.gauss(0, size * 0.16))
-        y = int(size / 2 + rnd.gauss(0, size * 0.16))
-        blend_px(rows, x, y, (0.44, 0.445, 0.43), 0.10)
-    rough = rough_from(height, 0.34, 0.16, 33)
-    # Solda levemente mais lisa que o campo: linha de brilho nas costuras.
-    for sx in (size // 3, 2 * size // 3):
-        for y in range(size):
-            for dx in (-1, 0, 1):
-                i = (sx + dx) * 3
-                v = clamp_byte(0.22 * 255)
-                rough[y][i:i + 3] = bytes((v, v, v))
-    for x in range(size):
-        i = x * 3
-        v = clamp_byte(0.24 * 255)
-        rough[size // 2][i:i + 3] = bytes((v, v, v))
-    save_maps("kit_floor", rows, height, rough, 1.2)
-
-
-def tex_kit_wall(size: int = 1024) -> None:
-    """KIT — painel composto de parede (protótipo do sistema de paredes).
-
-    Metal pintado cinza-claro, grão fino de pintura eletrostática, leve
-    textura de escovação vertical e sujeira mínima junto à base (a textura
-    cobre um painel inteiro de 1,2 x 2,8 m: a base da textura é o rodapé).
-    """
-    rnd = random.Random(41)
-    rows, height = tint_noise(size, (0.615, 0.625, 0.615), 0.03, 41)
-    # Escovação vertical sutil.
-    grain = noise_grid(size, 96, 43)
-    for y in range(size):
-        for x in range(size):
-            v = (grain[y][x] - 0.5) * 0.028
-            i = x * 3
-            rows[y][i] = clamp_byte(rows[y][i] + v * 255)
-            rows[y][i + 1] = clamp_byte(rows[y][i + 1] + v * 255)
-    speckle(rows, height, rnd, 3000, (0.5, 0.51, 0.5), 0.18, 1.3)
-    # Sombra/sujeira crescente junto ao rodapé (10% inferiores).
-    for y in range(int(size * 0.90), size):
-        f = (y - size * 0.90) / (size * 0.10)
-        for x in range(size):
-            blend_px(rows, x, y, (0.42, 0.42, 0.40), 0.20 * f)
-    save_maps("kit_wall", rows, height, rough_from(height, 0.46, 0.12, 45), 0.7)
-
-
-def tex_kit_ceiling(size: int = 512) -> None:
-    """KIT — placa de teto 600 x 600: lisa, microperfurada nas bordas."""
-    rnd = random.Random(51)
-    rows, height = tint_noise(size, (0.78, 0.785, 0.78), 0.02, 51)
-    step = size // 16
-    for gy in range(16):
-        for gx in range(16):
-            cx, cy = gx * step + step // 2, gy * step + step // 2
-            if 1 <= gx <= 14 and 1 <= gy <= 14:
-                for dy in (-1, 0, 1):
-                    for dx in (-1, 0, 1):
-                        blend_px(rows, cx + dx, cy + dy, (0.55, 0.55, 0.55), 0.5)
-                        height[cy + dy][cx + dx] -= 0.15
-    speckle(rows, height, rnd, 500, (0.6, 0.6, 0.6), 0.15, 1.2)
-    save_maps("kit_ceiling", rows, height, rough_from(height, 0.6, 0.08, 53), 0.9)
+def tex_tape(size: int = 256) -> None:
+    """Fita de demarcação: amarela com desgaste leve de uso."""
+    rnd = random.Random(71)
+    rows, height = tint_noise(size, (0.80, 0.63, 0.10), 0.05, 71)
+    speckle(rows, height, rnd, 1500, (0.55, 0.42, 0.06), 0.35, 1.5)
+    speckle(rows, height, rnd, 500, (0.30, 0.30, 0.30), 0.25, 1.6)
+    save_maps("tape", rows, height, rough_from(height, 0.55, 0.15, 73), 0.8)
 
 
 def generate_textures() -> None:
     TEX_DIR.mkdir(parents=True, exist_ok=True)
-    tex_showroom_floor()
-    tex_showroom_wall()
-    tex_kit_floor()
-    tex_kit_wall()
-    tex_kit_ceiling()
+    # Remove texturas do desenho anterior (sala fechada) que não são mais usadas.
+    keep = {"showroom_floor", "tape"}
+    for png in TEX_DIR.glob("*.png"):
+        if png.name.rsplit("_", 1)[0] not in keep:
+            png.unlink()
+    tex_platform()
+    tex_tape()
     print(f"Texturas: {len(list(TEX_DIR.glob('*.png')))} arquivos")
 
 
@@ -325,20 +233,11 @@ def generate_textures() -> None:
 
 MATERIALS: dict[str, dict[str, object]] = {
     "showroom_floor": {"texture": "showroom_floor", "roughness": 0.85, "normal_scale": 0.4},
-    "showroom_wall": {"texture": "showroom_wall", "roughness": 0.9, "normal_scale": 0.3},
-    "showroom_ceiling": {"color": (0.46, 0.47, 0.48, 1), "roughness": 0.92},
-    "kit_floor": {"texture": "kit_floor", "roughness": 0.36, "normal_scale": 0.55},
-    "kit_wall": {"texture": "kit_wall", "roughness": 0.46, "normal_scale": 0.45},
-    "kit_wall_b": {"texture": "kit_wall", "color": (0.965, 0.97, 0.965, 1), "roughness": 0.46, "normal_scale": 0.45},
-    "kit_wall_c": {"texture": "kit_wall", "color": (0.93, 0.935, 0.93, 1), "roughness": 0.48, "normal_scale": 0.45},
-    "kit_joint": {"color": (0.16, 0.165, 0.16, 1), "roughness": 0.6},
-    "kit_skirt": {"texture": "kit_wall", "color": (0.82, 0.83, 0.82, 1), "roughness": 0.5, "normal_scale": 0.4},
-    "kit_ceiling": {"texture": "kit_ceiling", "roughness": 0.6, "normal_scale": 0.5},
-    "alu_profile": {"color": (0.62, 0.64, 0.66, 1), "metallic": 0.85, "roughness": 0.38},
+    "platform_side": {"color": (0.16, 0.165, 0.17, 1), "roughness": 0.9},
+    "tape": {"texture": "tape", "roughness": 0.55, "normal_scale": 0.5},
+    "sign_panel": {"color": (0.09, 0.095, 0.10, 1), "roughness": 0.55},
+    "sign_frame": {"color": (0.55, 0.57, 0.59, 1), "metallic": 0.85, "roughness": 0.35},
     "steel_dark": {"color": (0.20, 0.21, 0.22, 1), "metallic": 0.8, "roughness": 0.45},
-    "edge_trim": {"color": (0.55, 0.57, 0.59, 1), "metallic": 0.9, "roughness": 0.3},
-    "light_panel": {"color": (0.92, 0.94, 0.96, 1), "emission": (0.92, 0.96, 1.0, 1), "emission_energy": 1.6, "roughness": 0.5},
-    "light_panel_off": {"color": (0.55, 0.57, 0.59, 1), "roughness": 0.5},
 }
 
 
@@ -355,6 +254,9 @@ def color_text(color: tuple[float, ...]) -> str:
 
 def write_materials() -> None:
     MAT_DIR.mkdir(parents=True, exist_ok=True)
+    for stale in MAT_DIR.glob("*.tres"):
+        if stale.stem not in MATERIALS:
+            stale.unlink()
     for name, spec in MATERIALS.items():
         lines = ["[gd_resource type=\"StandardMaterial3D\" format=3]", ""]
         texture = spec.get("texture")
@@ -448,7 +350,7 @@ class Builder:
         return self._mesh_id(key, ["BoxMesh", f"material = ExtResource(\"mat_{material}\")",
                                    f"size = Vector3({fmt(size[0])}, {fmt(size[1])}, {fmt(size[2])})"])
 
-    def cyl_mesh(self, radius: float, height: float, material: str, segments: int = 20) -> str:
+    def cyl_mesh(self, radius: float, height: float, material: str, segments: int = 16) -> str:
         key = ("CylinderMesh", radius, height, material, segments)
         return self._mesh_id(key, ["CylinderMesh", f"material = ExtResource(\"mat_{material}\")",
                                    f"top_radius = {fmt(radius)}", f"bottom_radius = {fmt(radius)}",
@@ -472,25 +374,29 @@ class Builder:
         self.node(name, "MeshInstance3D", parent, pos, euler, [f"mesh = SubResource(\"{mesh}\")"])
 
     def cyl(self, name: str, parent: str, pos: tuple[float, float, float], radius: float, height: float,
-            material: str, euler: tuple[float, float, float] = (0.0, 0.0, 0.0), segments: int = 20) -> None:
+            material: str, euler: tuple[float, float, float] = (0.0, 0.0, 0.0), segments: int = 16) -> None:
         mesh = self.cyl_mesh(radius, height, material, segments)
         self.node(name, "MeshInstance3D", parent, pos, euler, [f"mesh = SubResource(\"{mesh}\")"])
 
+    def label3d(self, name: str, parent: str, pos: tuple[float, float, float], text: str,
+                pixel_size: float, color: tuple[float, float, float] = (0.92, 0.93, 0.94)) -> None:
+        extra = [f"text = \"{text}\"", f"pixel_size = {fmt(pixel_size)}",
+                 f"modulate = {color_text((*color, 1.0))}", "billboard = 0", "no_depth_test = false"]
+        self.node(name, "Label3D", parent, pos, (0, 0, 0), extra)
+
+    def directional(self, name: str, parent: str, euler: tuple[float, float, float],
+                    color: tuple[float, float, float], energy: float, shadow: bool = True) -> None:
+        extra = [f"light_color = {color_text((*color, 1.0))}", f"light_energy = {fmt(energy)}",
+                 f"shadow_enabled = {'true' if shadow else 'false'}",
+                 "directional_shadow_mode = 1", "directional_shadow_max_distance = 60.0"]
+        self.node(name, "DirectionalLight3D", parent, (0, 0, 0), euler, extra)
+
     def omni(self, name: str, parent: str, pos: tuple[float, float, float], color: tuple[float, float, float],
-             energy: float, range_: float, attenuation: float = 1.0, shadow: bool = False) -> None:
+             energy: float, range_: float, attenuation: float = 1.0) -> None:
         extra = [f"light_color = {color_text((*color, 1.0))}", f"light_energy = {fmt(energy)}",
                  f"omni_range = {fmt(range_)}", f"omni_attenuation = {fmt(attenuation)}",
-                 f"shadow_enabled = {'true' if shadow else 'false'}"]
+                 "shadow_enabled = false"]
         self.node(name, "OmniLight3D", parent, pos, (0, 0, 0), extra)
-
-    def spot(self, name: str, parent: str, pos: tuple[float, float, float], color: tuple[float, float, float],
-             energy: float, range_: float, angle: float, shadow: bool = False,
-             attenuation: float = 1.0) -> None:
-        extra = [f"light_color = {color_text((*color, 1.0))}", f"light_energy = {fmt(energy)}",
-                 f"spot_range = {fmt(range_)}", f"spot_angle = {fmt(angle)}",
-                 f"spot_attenuation = {fmt(attenuation)}",
-                 f"shadow_enabled = {'true' if shadow else 'false'}"]
-        self.node(name, "SpotLight3D", parent, pos, (-math.pi / 2, 0, 0), extra)
 
     def collider(self, name: str, parent: str, pos: tuple[float, float, float],
                  size: tuple[float, float, float]) -> None:
@@ -511,139 +417,96 @@ class Builder:
 
 B = Builder()
 
-# Showroom: X [-16, 16], Z [-7, 7], pé-direito 5,0 m. Elementos ao longo de X.
+# Plataforma aberta: X [-20, 20], Z [-9, 9]. Sem paredes, sem teto.
+
+AREAS = [
+    # (grupo, centro_x, largura_x, profundidade_z, texto da placa, nome do grupo)
+    ("AreaParede", -11.5, 7.0, 3.0, "PAREDE"),
+    ("AreaPiso", 0.0, 7.0, 5.0, "PISO"),
+    ("AreaTeto", 11.5, 6.0, 5.0, "TETO"),
+]
+SIGN_COLLIDERS: list[tuple[float, float, float, tuple[float, float, float]]] = []
 
 
-def gallery_shell() -> None:
-    g = B.group("Gallery")
-    B.box("Floor", g, (0, -0.06, 0), (32.3, 0.12, 14.3), "showroom_floor")
-    B.box("Ceiling", g, (0, 5.06, 0), (32.3, 0.12, 14.3), "showroom_ceiling")
-    B.box("WallNorth", g, (0, 2.5, -7.0), (32.3, 5.0, 0.15), "showroom_wall")
-    B.box("WallSouth", g, (0, 2.5, 7.0), (32.3, 5.0, 0.15), "showroom_wall")
-    B.box("WallWest", g, (-16.0, 2.5, 0), (0.15, 5.0, 14.3), "showroom_wall")
-    B.box("WallEast", g, (16.0, 2.5, 0), (0.15, 5.0, 14.3), "showroom_wall")
-    # Rodapé neutro simples da galeria.
-    for name, pos, size in [
-        ("BaseN", (0, 0.05, -6.90), (32.0, 0.10, 0.04)),
-        ("BaseS", (0, 0.05, 6.90), (32.0, 0.10, 0.04)),
-        ("BaseW", (-15.90, 0.05, 0), (0.04, 0.10, 13.8)),
-        ("BaseE", (15.90, 0.05, 0), (0.04, 0.10, 13.8)),
-    ]:
-        B.box(name, g, pos, size, "steel_dark")
+def platform() -> None:
+    g = B.group("Platform")
+    B.box("Deck", g, (0, -0.11, 0), (40.0, 0.22, 18.0), "showroom_floor")
+    # Friso lateral escuro: leitura da borda da plataforma no vazio.
+    B.box("EdgeN", g, (0, -0.03, -9.02), (40.0, 0.06, 0.05), "platform_side")
+    B.box("EdgeS", g, (0, -0.03, 9.02), (40.0, 0.06, 0.05), "platform_side")
+    B.box("EdgeW", g, (-20.02, -0.03, 0), (0.05, 0.06, 18.0), "platform_side")
+    B.box("EdgeE", g, (20.02, -0.03, 0), (0.05, 0.06, 18.0), "platform_side")
 
 
-def kit_floor_section() -> None:
-    """Piso de teste 6 x 4 m embutido (topo 2 mm acima do piso neutro)."""
-    f = B.group("KitFloor")
-    cx, cz = -9.0, 0.0
-    B.box("FloorSlab", f, (cx, -0.018, cz), (6.0, 0.04, 4.0), "kit_floor")
-    # Perfil metálico de borda (acabamento do encontro com o piso neutro).
-    B.box("EdgeN", f, (cx, 0.004, cz - 2.01), (6.06, 0.008, 0.03), "edge_trim")
-    B.box("EdgeS", f, (cx, 0.004, cz + 2.01), (6.06, 0.008, 0.03), "edge_trim")
-    B.box("EdgeW", f, (cx - 3.01, 0.004, cz), (0.03, 0.008, 4.06), "edge_trim")
-    B.box("EdgeE", f, (cx + 3.01, 0.004, cz), (0.03, 0.008, 4.06), "edge_trim")
-    # Soleira de transição (chanfro metálico) no lado de circulação.
-    B.box("RampS", f, (cx, 0.002, cz + 2.09), (6.06, 0.006, 0.14), "alu_profile", (0.10, 0, 0))
+def tape_rectangle(parent: str, cx: float, cz: float, w: float, d: float) -> None:
+    """Contorno de fita (4 tiras de 8 cm) delimitando a área de exposição."""
+    t = 0.08
+    y = 0.004
+    B.box("TapeN", parent, (cx, y, cz - d / 2 + t / 2), (w, 0.006, t), "tape")
+    B.box("TapeS", parent, (cx, y, cz + d / 2 - t / 2), (w, 0.006, t), "tape")
+    B.box("TapeW", parent, (cx - w / 2 + t / 2, y, cz), (t, 0.006, d - 2 * t), "tape")
+    B.box("TapeE", parent, (cx + w / 2 - t / 2, y, cz), (t, 0.006, d - 2 * t), "tape")
+    # Cantoneiras reforçadas (leitura do canto a distância).
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            B.box("TapeCorner", parent, (cx + sx * (w / 2 - 0.14), y + 0.001, cz + sz * (d / 2 - 0.14)),
+                  (0.28, 0.007, 0.28), "tape")
 
 
-def kit_wall_section() -> None:
-    """Parede de teste isolada: 5 painéis de 1,2 m, junções, rodapé, 2 faces."""
-    w = B.group("KitWall")
-    cx, cz = 0.0, -1.2
-    # Núcleo escuro que aparece nas junções (fuga de 6 mm entre painéis).
-    B.box("WallCore", w, (cx, 1.40, cz), (6.02, 2.80, 0.10), "kit_joint")
-    mats = ["kit_wall", "kit_wall_b", "kit_wall", "kit_wall_c", "kit_wall_b"]
-    for i in range(5):
-        px = cx - 2.4 + i * 1.2
-        for side, pz, label in ((1, cz + 0.062, "F"), (-1, cz - 0.062, "B")):
-            B.box(f"Panel{label}", w, (px, 1.46, pz), (1.185, 2.66, 0.024), mats[i])
-        # Tampa superior do painel (topo acabado).
-        B.box("PanelTop", w, (px, 2.815, cz), (1.185, 0.03, 0.148), "alu_profile")
-    # Rodapé do sistema (perfil com topo chanfrado), nas duas faces.
-    for side, pz in ((1, cz + 0.075), (-1, cz - 0.075)):
-        B.box("Skirt", w, (cx, 0.075, pz), (6.0, 0.15, 0.03), "kit_skirt")
-        B.box("SkirtChamfer", w, (cx, 0.158, pz + (0.008 if side > 0 else -0.008)),
-              (6.0, 0.018, 0.036), "kit_skirt", (0.6 * side, 0, 0))
-    # Placa de topo corrida (remate superior da parede de demonstração).
-    B.box("WallCoping", w, (cx, 2.845, cz), (6.10, 0.04, 0.20), "alu_profile")
+def sign(parent: str, cx: float, cz: float, title: str) -> None:
+    """Placa simples de pé: 2 postes, painel e textos 3D (título + aviso)."""
+    B.cyl("SignPost", parent, (cx - 0.34, 0.55, cz), 0.022, 1.1, "sign_frame")
+    B.cyl("SignPost", parent, (cx + 0.34, 0.55, cz), 0.022, 1.1, "sign_frame")
+    B.box("SignFoot", parent, (cx - 0.34, 0.02, cz), (0.16, 0.04, 0.30), "steel_dark")
+    B.box("SignFoot", parent, (cx + 0.34, 0.02, cz), (0.16, 0.04, 0.30), "steel_dark")
+    B.box("SignPanel", parent, (cx, 1.12, cz), (0.95, 0.58, 0.035), "sign_panel")
+    B.box("SignPanelFrame", parent, (cx, 1.12, cz - 0.012), (1.0, 0.63, 0.02), "sign_frame")
+    # Textos voltados para +Z (corredor sul de circulação).
+    B.label3d("SignTitle", parent, (cx, 1.24, cz + 0.022), title, 0.0060)
+    B.label3d("SignSub", parent, (cx, 0.99, cz + 0.022), "ÁREA RESERVADA", 0.0032, (0.65, 0.68, 0.70))
+    SIGN_COLLIDERS.append((cx, cz, 0.0, (1.05, 1.45, 0.30)))
 
 
-def kit_ceiling_section() -> None:
-    """Teto de teste 4,8 x 3,6 m a 3,0 m: estrutura, perfis, placas, suportes.
-
-    Uma célula fica sem placa (aberta) para inspecionar a construção; uma
-    placa é luminária neutra apagada (forma apenas, nesta etapa).
-    """
-    c = B.group("KitCeiling")
-    cx, cz, y = 9.6, 0.0, 3.02
-    sx, sz = 4.8, 3.6
-    # Perfis perimetrais (cantoneira de borda).
-    B.box("FrameN", c, (cx, y, cz - sz / 2), (sx + 0.06, 0.07, 0.05), "alu_profile")
-    B.box("FrameS", c, (cx, y, cz + sz / 2), (sx + 0.06, 0.07, 0.05), "alu_profile")
-    B.box("FrameW", c, (cx - sx / 2, y, cz), (0.05, 0.07, sz + 0.06), "alu_profile")
-    B.box("FrameE", c, (cx + sx / 2, y, cz), (0.05, 0.07, sz + 0.06), "alu_profile")
-    # Perfis T principais e secundários (malha 600 mm).
-    for i in range(1, 8):
-        x = cx - sx / 2 + i * 0.6
-        B.box("MainT", c, (x, y - 0.012, cz), (0.035, 0.045, sz), "alu_profile")
-    for j in range(1, 6):
-        z = cz - sz / 2 + j * 0.6
-        B.box("CrossT", c, (cx, y - 0.012, z), (sx, 0.045, 0.035), "alu_profile")
-    # Placas 600x600 (célula [5,2] aberta; [2,4] é luminária apagada).
-    for i in range(8):
-        for j in range(6):
-            if (i, j) == (5, 2):
-                continue
-            x = cx - sx / 2 + 0.3 + i * 0.6
-            z = cz - sz / 2 + 0.3 + j * 0.6
-            if (i, j) == (2, 4):
-                B.box("CeilingLightTile", c, (x, y + 0.012, z), (0.58, 0.03, 0.58), "light_panel_off")
-                B.box("CeilingLightFrame", c, (x, y - 0.004, z), (0.60, 0.012, 0.60), "steel_dark")
-            else:
-                B.box("CeilingTile", c, (x, y + 0.012, z), (0.58, 0.025, 0.58), "kit_ceiling")
-    # Tirantes de suspensão até o teto da galeria (5,0 m).
-    for hx in (cx - 1.8, cx, cx + 1.8):
-        for hz in (cz - 1.2, cz + 1.2):
-            B.cyl("Hanger", c, (hx, (y + 5.0) / 2 + 0.02, hz), 0.006, 5.0 - y - 0.02, "steel_dark", segments=8)
-            B.box("HangerClip", c, (hx, y + 0.06, hz), (0.05, 0.06, 0.05), "steel_dark")
+def areas() -> None:
+    for name, cx, w, d, title in AREAS:
+        g = B.group(name)
+        tape_rectangle(g, cx, 0.0, w, d)
+        # Placa ao lado sul da área, fora da fita.
+        sign(g, cx, d / 2 + 1.05, title)
 
 
 def lighting_and_collisions() -> None:
     lights = B.group("Lighting")
-    # Trilho neutro de avaliação: 4 conjuntos de painéis emissivos + spots.
-    for i, lx in enumerate((-12.0, -4.0, 4.0, 12.0)):
-        B.box("GalleryLightPanel", lights, (lx, 4.94, 0), (2.6, 0.05, 0.5), "light_panel")
-        B.box("GalleryLightPanel2", lights, (lx, 4.94, 0.55), (2.6, 0.05, 0.5), "light_panel")
-        B.spot(f"GallerySpot{i}", lights, (lx, 4.86, 0), (0.98, 0.99, 1.0),
-               3.1, 13.0, 68, i in (1, 2), 1.0)
-    B.omni("GalleryFillA", lights, (-8.0, 4.4, 0), (0.96, 0.97, 1.0), 0.5, 14.0, 1.0, False)
-    B.omni("GalleryFillB", lights, (8.0, 4.4, 0), (0.96, 0.97, 1.0), 0.5, 14.0, 1.0, False)
+    # Luz neutra simples de espaço aberto: sol de avaliação + preenchimentos.
+    B.directional("KeyLight", lights, (-0.85, -0.55, 0.0), (1.0, 0.99, 0.96), 1.15, True)
+    B.omni("FillA", lights, (-11.5, 7.0, 2.0), (0.95, 0.97, 1.0), 0.55, 22.0, 1.0)
+    B.omni("FillB", lights, (0.0, 7.0, 2.0), (0.95, 0.97, 1.0), 0.55, 22.0, 1.0)
+    B.omni("FillC", lights, (11.5, 7.0, 2.0), (0.95, 0.97, 1.0), 0.55, 22.0, 1.0)
 
     collision = B.group("Collision")
     B.nodes.append("[node name=\"StaticBodies\" type=\"StaticBody3D\" parent=\"Collision\"]")
     B.node_count += 1
     body = "Collision/StaticBodies"
-    B.collider("Floor", body, (0, -0.12, 0), (32.4, 0.24, 14.4))
-    B.collider("Ceiling", body, (0, 5.2, 0), (32.4, 0.3, 14.4))
-    B.collider("WallNorth", body, (0, 2.5, -7.15), (32.4, 5.0, 0.3))
-    B.collider("WallSouth", body, (0, 2.5, 7.15), (32.4, 5.0, 0.3))
-    B.collider("WallWest", body, (-16.15, 2.5, 0), (0.3, 5.0, 14.4))
-    B.collider("WallEast", body, (16.15, 2.5, 0), (0.3, 5.0, 14.4))
-    B.collider("KitWall", body, (0, 1.4, -1.2), (6.15, 2.9, 0.35))
-    B.collider("KitCeiling", body, (9.6, 3.06, 0), (4.95, 0.14, 3.75))
+    B.collider("Deck", body, (0, -0.12, 0), (40.2, 0.24, 18.2))
+    # Barreiras invisíveis nas bordas: o espaço é aberto, mas o jogador
+    # não cai da plataforma durante a avaliação.
+    B.collider("EdgeBarrierN", body, (0, 0.7, -9.15), (40.4, 1.4, 0.3))
+    B.collider("EdgeBarrierS", body, (0, 0.7, 9.15), (40.4, 1.4, 0.3))
+    B.collider("EdgeBarrierW", body, (-20.15, 0.7, 0), (0.3, 1.4, 18.4))
+    B.collider("EdgeBarrierE", body, (20.15, 0.7, 0), (0.3, 1.4, 18.4))
+    for i, (cx, cz, _r, size) in enumerate(SIGN_COLLIDERS):
+        B.collider(f"Sign{i}", body, (cx, size[1] / 2, cz), size)
 
 
 def build_scene() -> None:
     REF.mkdir(parents=True, exist_ok=True)
-    gallery_shell()
-    kit_floor_section()
-    kit_wall_section()
-    kit_ceiling_section()
+    platform()
+    areas()
     lighting_and_collisions()
-    # Spawn na extremidade oeste, olhando ao longo da galeria (+X).
+    # Spawn na extremidade oeste, sobre a plataforma, olhando ao longo dela.
     # Linhas da base: X=(0,0,-1), Y=(0,1,0), Z=(1,0,0) -> yaw -90 graus.
     B.nodes.append("[node name=\"Spawn\" type=\"Marker3D\" parent=\".\"]\n"
-                   "transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.5, 0.05, 0)")
+                   "transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -17.5, 0.05, 3.2)")
     B.node_count += 1
 
     ext_lines = []
@@ -651,10 +514,10 @@ def build_scene() -> None:
         ext_lines.append(f"[ext_resource type=\"StandardMaterial3D\" path=\"res://maps/exhibition/materials/{name}.tres\" id=\"mat_{name}\"]")
     env = """[sub_resource type="Environment" id="Env_gallery"]
 background_mode = 1
-background_color = Color(0.055, 0.058, 0.062, 1)
+background_color = Color(0.016, 0.017, 0.020, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.62, 0.64, 0.67, 1)
-ambient_light_energy = 0.72
+ambient_light_color = Color(0.56, 0.58, 0.61, 1)
+ambient_light_energy = 0.62
 tonemap_mode = 2
 adjustment_enabled = true
 adjustment_brightness = 1.0
