@@ -1,0 +1,9 @@
+Archive:  BlackSight-Windows-x86_64.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+109193728  2026-10-23 00:04   BlackSight.exe
+  1962320  2026-10-23 00:04   BlackSight.pck
+     5505  2026-10-23 00:05   LEIA-ME.txt
+      190  2026-10-23 00:05   SHA256SUMS.txt
+---------                     -------
+111161743                     4 files

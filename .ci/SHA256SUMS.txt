@@ -1,0 +1,2 @@
+876e4ef13a283f9ef264562e35128dae157300502a854202aeb050abfb326946  build/windows/BlackSight.exe
+0aa8a8fce2dd6d6cd1ebb1f7debcda3682d17dee32b67076e2bc00eb5a32a756  build/windows/BlackSight.pck

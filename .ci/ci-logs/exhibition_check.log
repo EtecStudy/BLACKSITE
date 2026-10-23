@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+[Black Sight] Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+EXHIBITION CHECK: início
+EXHIBITION-OK: cena da sala de exibição carrega
+EXHIBITION-OK: grupo Platform existe
+EXHIBITION-OK: grupo AreaParede existe
+EXHIBITION-OK: grupo AreaPiso existe
+EXHIBITION-OK: grupo AreaTeto existe
+EXHIBITION-OK: sem grupo Gallery (sala fechada removida)
+EXHIBITION-OK: sem KitFloor (desenho anterior removido)
+EXHIBITION-OK: sem KitWall (parede ainda não criada)
+EXHIBITION-OK: sem KitCeiling (teto ainda não criado)
+EXHIBITION-OK: Spawn Marker3D existe
+EXHIBITION-OK: pelo menos 12 peças de fita (real: 24)
+EXHIBITION-OK: pelo menos 3 placas de identificação (real: 6)
+EXHIBITION-OK: pelo menos 8 CollisionShape3D (real: 8)
+EXHIBITION-OK: pelo menos 3 OmniLight3D (real: 3)
+EXHIBITION-OK: pelo menos 1 DirectionalLight3D (real: 1)
+EXHIBITION-OK: 4 câmeras pareadas com 4 nomes
+EXHIBITION-OK: capturou as 4 imagens (real: 4)
+EXHIBITION CHECK: 17 ok / 0 falhas
+EXHIBITION CHECK: concluído com código 0

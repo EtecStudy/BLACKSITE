@@ -1,0 +1,1335 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[Black Sight] Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+=== Black Sight · teste do controlador FPS ===
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[1] Input Map
+  ✓ ação 'move_forward' existe
+  ✓ ação 'move_forward' tem pelo menos uma tecla
+  ✓ ação 'move_forward' vinculada a W
+  ✓ ação 'move_back' existe
+  ✓ ação 'move_back' tem pelo menos uma tecla
+  ✓ ação 'move_back' vinculada a S
+  ✓ ação 'move_left' existe
+  ✓ ação 'move_left' tem pelo menos uma tecla
+  ✓ ação 'move_left' vinculada a A
+  ✓ ação 'move_right' existe
+  ✓ ação 'move_right' tem pelo menos uma tecla
+  ✓ ação 'move_right' vinculada a D
+  ✓ ação 'move_sprint' existe
+  ✓ ação 'move_sprint' vinculada a Shift
+  ✓ ação 'move_crouch' existe
+  ✓ ação 'move_crouch' vinculada a Ctrl
+  ✓ ação 'release_mouse' existe (Escape)
+[2] Cena de teste
+  ✓ cena de teste carrega
+[Black Sight] Cena de teste carregada — controlador FPS ativo
+  ✓ jogador instanciado na cena
+  ✓ jogador é um CharacterBody3D
+  ✓ sala de teste instanciada
+  ✓ camada de pausa existe
+  ✓ botão VOLTAR AO MENU existe
+  ✓ botão VOLTAR AO MENU está conectado
+[3] Nascimento e piso
+  ✓ ponto de nascimento existe
+  ✓ jogador começa apoiado no piso
+  ✓ nasce sobre o ponto de nascimento (0.00 m)
+  ✓ cabeça e câmera existem
+  ✓ câmera na altura dos olhos (1.62 m)
+  ✓ câmera em primeira pessoa ativa
+  ✓ sem tremor no piso (variação máx. 0.000 m)
+[4] Direções (WASD)
+  ✓ W anda para frente (-Z): -1.59 m
+  ✓ W não desvia para os lados (x=0.000)
+  ✓ S anda para trás (+Z): 1.59 m
+  ✓ A anda para a esquerda (-X): -1.59 m
+  ✓ D anda para a direita (+X): 1.59 m
+[5] Diagonal
+  ✓ deslocamento reto medido (1.59 m)
+  ✓ diagonal não é mais rápida (1.59 m vs 1.59 m)
+[6] Movimento relativo à visão
+  ✓ com a visão a 90°, W anda para -X: -1.59 m
+  ✓ movimento acompanha a orientação (z=0.000)
+[7] Estabilidade parado
+  ✓ não se desloca sozinho parado (0.0000 m)
+[8] Câmera e configurações
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ mouse à direita gira a visão para a direita
+  ✓ sensibilidade 1.0 aplicada ao eixo horizontal
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=2.00 sens_y=1.00 invert_y=false
+  ✓ sensibilidade 2.0 dobra o giro horizontal
+  ✓ jogador leu a sensibilidade do GameSettings
+  ✓ mouse para baixo olha para baixo
+  ✓ visão vertical limitada ao olhar para baixo (-89.0°)
+  ✓ visão vertical limitada ao olhar para cima (89.0°)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=true
+  ✓ inverter eixo vertical funciona
+  ✓ jogador leu a inversão do GameSettings
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ voltar aos padrões restaura sensibilidade e inversão
+[9] Pausa e liberação do mouse
+  ✓ pause_session marca a sessão como pausada
+  ✓ camada de pausa fica visível
+  ✓ pausa desativa o movimento do jogador
+  ✓ WASD não move durante a pausa (0.000 m)
+  ✓ resume_session retira a pausa
+  ✓ camada de pausa é escondida
+  ✓ continuar reativa o movimento
+[10] Gravidade
+  ✓ jogador começa no ar
+  ✓ gravidade leva o jogador ao chão
+  ✓ pousa no piso (y=0.000)
+[11] Colisões
+  ✓ não atravessa a parede norte (z=-11.39)
+  ✓ chega até a parede (z=-11.39)
+  ✓ não atravessa a caixa (z=2.85)
+  ✓ para na frente da caixa (z=2.85)
+  ✓ não atravessa o canto das paredes (11.40, 11.40)
+  ✓ estável encostado na parede (máx. 0.001 m)
+[12] Estados de movimento
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ sem entrada → PARADO (estado: IDLE)
+  ✓ W → ANDANDO (estado: WALKING)
+  ✓ W + SHIFT → CORRENDO (estado: RUNNING)
+  ✓ CTRL durante corrida → AGACHADO (prioridade) (estado: CROUCHING)
+  ✓ cápsula fica agachada
+  ✓ soltar SHIFT não levanta o agachamento (estado: CROUCHING)
+  ✓ soltar CTRL andando → ANDANDO (estado: WALKING)
+  ✓ cápsula volta à altura normal
+  ✓ soltar W → PARADO (estado: IDLE)
+  ✓ correndo de novo (estado: RUNNING)
+  ✓ parar durante a corrida → PARADO (estado: IDLE)
+  ✓ CTRL parado → AGACHADO (estado: CROUCHING)
+  ✓ soltar CTRL sem direção → PARADO (estado: IDLE)
+[13] Velocidades
+  ✓ corrida claramente maior que caminhada (5.60 m/s vs 3.20 m/s)
+  ✓ agachado claramente menor que caminhada (1.60 m/s vs 3.20 m/s)
+  ✓ parado tem velocidade 0
+  ✓ velocidade de caminhada vem de walk_speed
+  ✓ corrida percorre mais que caminhada (2.78 m vs 1.59 m)
+  ✓ agachado percorre menos que caminhada (0.79 m vs 1.59 m)
+  ✓ diagonal correndo não é mais rápida (2.78 m vs 2.78 m)
+[14] Câmera ao agachar
+  ✓ câmera em pé na altura dos olhos (1.62 m)
+  ✓ câmera desce ao agachar (1.02 m)
+  ✓ câmera chega à altura agachada (1.02 m)
+  ✓ descida suave, sem teletransporte (máx. 0.109 m/frame)
+  ✓ agachar não desloca o jogador (0.000 m)
+  ✓ limite vertical continua valendo agachado
+  ✓ câmera volta à altura normal (1.62 m)
+  ✓ subida suave, sem teletransporte (máx. 0.109 m/frame)
+[15] Agachar sob obstáculo
+  ✓ agacha antes do obstáculo
+  ✓ não levanta com obstáculo acima
+  ✓ estado continua AGACHADO sob o obstáculo (estado: CROUCHING)
+  ✓ levanta quando o espaço fica livre
+  ✓ volta a PARADO depois de levantar (estado: IDLE)
+[16] Pausa com configurações
+  ✓ agachado antes da pausa (estado: CROUCHING)
+  ✓ pausa ativa
+  ✓ menu de pausa tem CONTINUAR
+  ✓ menu de pausa tem CONFIGURAÇÕES
+  ✓ menu de pausa tem VOLTAR AO MENU
+[Black Sight] Configurações abertas durante a pausa
+  ✓ CONFIGURAÇÕES abre por cima da partida
+  ✓ usa a mesma tela de configurações da Etapa 3
+  ✓ tela aberta em modo embutido (sem trocar de cena)
+  ✓ jogador continua parado com as configurações abertas
+  ✓ menu de pausa fica oculto
+  ✓ WASD não move com configurações abertas (0.000 m)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=2.00 sens_y=1.00 invert_y=false
+  ✓ alteração de sensibilidade chega ao controlador
+  ✓ configurações têm VOLTAR
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ VOLTAR fecha as configurações
+  ✓ VOLTAR leva de volta ao menu de pausa
+  ✓ menu de pausa reaparece
+  ✓ posição do jogador preservada
+  ✓ estado do jogador preservado (AGACHADO) (estado: CROUCHING)
+  ✓ CONTINUAR retoma a partida
+  ✓ jogador habilitado de novo
+  ✓ levanta ao continuar com o espaço livre
+  ✓ movimento volta a funcionar depois de CONTINUAR
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[17] Stamina
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ stamina máxima = 100
+  ✓ consumo = 20 por segundo
+  ✓ recuperação = 15 por segundo
+  ✓ limiar de retorno configurado (20)
+  ✓ stamina começa cheia
+  ✓ corrida liberada com stamina cheia
+  ✓ razão de stamina = 1.0 cheia
+  ✓ correndo com stamina (estado: RUNNING)
+  ✓ 1 s correndo consome ~20 (20.0)
+  ✓ corrida curta não esgota a stamina
+  ✓ soltar SHIFT → ANDANDO (estado: WALKING)
+  ✓ voltou a ANDAR (estado: WALKING)
+  ✓ 1 s andando recupera ~15 (15.0)
+  ✓ em pé antes do teste agachado
+  ✓ CTRL andando → AGACHADO (estado: CROUCHING)
+  ✓ agachado recupera stamina (15.0)
+  ✓ recuperação agachado ≈ 15/s (15.0)
+  ✓ 1 s parado recupera ~15 (15.0)
+  ✓ em pé antes do esgotamento ((0.0, 0.000098, 0.0))
+  ✓ stamina chega a 0 sem ficar negativa
+  ✓ esgotar interrompe a corrida (RUNNING → WALKING)
+  ✓ corrida bloqueada com stamina esgotada
+  ✓ SHIFT pressionado não corre com stamina baixa (estado: WALKING)
+  ✓ SHIFT pressionado mantém a stamina parada (0.0)
+  ✓ 5 pontos abaixo do limiar: corrida continua bloqueada
+  ✓ stamina não fica negativa ao recuperar o limiar
+  ✓ corrida liberada ao recuperar o limiar (20.0)
+  ✓ com SHIFT pressionado, volta a CORRER ao recuperar o limiar
+  ✓ set_stamina limita ao máximo
+  ✓ set_stamina limita a zero
+  ✓ set_stamina(0) bloqueia a corrida
+  ✓ set_stamina(cheia) libera a corrida
+[18] Modo ALTERNAR (padrão)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ controlador lê o modo ALTERNAR
+  ✓ começa em pé
+  ✓ um toque em CTRL agacha
+  ✓ estado AGACHADO após o toque (estado: CROUCHING)
+  ✓ câmera desce ao agachar em ALTERNAR (1.02 m)
+  ✓ agachado + SHIFT continua AGACHADO (estado: CROUCHING)
+  ✓ agachado não consome stamina (100.0)
+  ✓ soltar CTRL não levanta em ALTERNAR
+  ✓ não levanta sob obstáculo em ALTERNAR
+  ✓ levanta ao liberar o espaço em ALTERNAR
+  ✓ câmera volta à altura normal (1.61 m)
+  ✓ novo toque agacha de novo
+  ✓ outro toque levanta
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ controlador lê o modo SEGURAR
+  ✓ SEGURAR: agachado com CTRL pressionado
+  ✓ SEGURAR: levanta ao soltar CTRL
+[19] Pausa, stamina e troca de modo em partida
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ correndo antes da pausa (estado: RUNNING)
+  ✓ corrida consumiu stamina (70.0)
+  ✓ pausa não consome nem recupera stamina (70.0)
+  ✓ posição preservada na pausa
+  ✓ yaw preservado na pausa
+  ✓ pitch preservado na pausa
+  ✓ estado preservado na pausa (estado: RUNNING)
+[Black Sight] Configurações abertas durante a pausa
+  ✓ CONFIGURAÇÕES abre durante a partida
+  ✓ mesma tela de configurações da tela inicial
+  ✓ seção CONTROLES disponível na partida
+  ✓ modo atual exibido: SEGURAR
+  ✓ texto do CTRL em SEGURAR
+  ✓ texto do CTRL muda ao escolher ALTERNAR
+  ✓ botão APLICAR presente
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ modo ALTERNAR chega ao controlador
+  ✓ APLICAR não altera a stamina
+  ✓ tela reconstrói com o modo salvo
+  ✓ texto do CTRL continua dinâmico após aplicar
+  ✓ botão VOLTAR presente
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ VOLTAR fecha as configurações
+  ✓ VOLTAR retorna ao menu de pausa
+  ✓ yaw mantido ao voltar
+  ✓ pitch mantido ao voltar
+  ✓ posição mantida ao voltar
+  ✓ stamina mantida ao voltar
+  ✓ botão CONTINUAR presente
+  ✓ CONTINUAR retoma a partida
+  ✓ jogador habilitado de novo
+  ✓ yaw contínuo após CONTINUAR
+  ✓ pitch contínuo após CONTINUAR
+  ✓ posição contínua após CONTINUAR (sem teletransporte)
+  ✓ câmera contínua após CONTINUAR (1.62 m)
+  ✓ stamina continua de onde parou (69.0)
+  ✓ toque em CTRL agacha durante a partida
+  ✓ corrida é interrompida ao agachar (estado: CROUCHING)
+  ✓ agachado com SHIFT pressionado não recupera (69.0)
+  ✓ agachado recupera stamina depois do atraso
+  ✓ SHIFT pressionado volta a bloquear a recuperação
+  ✓ segundo toque levanta
+  ✓ com SHIFT pressionado, volta a CORRER ao levantar (estado: RUNNING)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[20] HUD de stamina
+  ✓ HUD instanciada na partida
+  ✓ HUD visível ao entrar na sala
+  ✓ HUD ligada ao jogador
+  ✓ HUD não captura o mouse
+  ✓ barra de stamina disponível
+  ✓ barra cheia com stamina 100
+  ✓ texto mostra 100%
+  ✓ preenchimento visível
+  ✓ barra diminui ao correr (80%)
+  ✓ barra acompanha a stamina real (0.800 vs 0.800)
+  ✓ texto acompanha o valor (80%)
+  ✓ barra no mínimo com stamina 0
+  ✓ sem preenchimento quando esgotada
+  ✓ texto mostra 0%
+  ✓ barra aumenta durante a recuperação
+  ✓ recuperação sincronizada com o controlador
+  ✓ barra mostra 60% antes da pausa
+  ✓ barra não muda na pausa
+  ✓ texto estável na pausa
+[Black Sight] Configurações abertas durante a pausa
+  ✓ barra não muda com as configurações abertas
+  ✓ texto estável com as configurações abertas
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ partida continua pausada ao fechar as configurações
+  ✓ partida retomada para os testes seguintes
+  ✓ painel discreto da HUD existe
+  ✓ HUD no canto inferior esquerdo (36, 994)
+  ✓ HUD não ocupa a largura da tela
+  ✓ HUD compacta (54 px de altura)
+  ✓ HUD não é cortada na parte inferior
+  ✓ barra dentro do painel da HUD
+  ✓ HUD desenhada sem texturas
+  ✓ HUD cabe em 960×540 (fim em 508)
+  ✓ HUD segue no rodapé em 960×540
+  ✓ painel continua visível após redimensionar
+  ✓ barra continua desenhando após redimensionar
+  ✓ texto continua após redimensionar
+  ✓ HUD volta ao tamanho original
+  ✓ barra limita valores negativos
+  ✓ barra limita acima do máximo
+  ✓ máximo zero não quebra a barra
+  ✓ barra indica estado baixo abaixo do limiar
+  ✓ barra não alerta acima do limiar
+  ✓ barra volta a 100% no fim
+[21] Atraso de recuperação e exaustão (Etapa 6.2)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ atraso de recuperação = 1,0 s
+  ✓ controlador expõe get_recovery_delay_left() e is_sprint_held()
+  ✓ começa com stamina cheia (100.0)
+  ✓ [1] corrida com SHIFT (estado: RUNNING)
+  ✓ [1] 1 s correndo consome ~20 (20.0)
+  ✓ [2] soltar SHIFT → ANDANDO (estado: WALKING)
+  ✓ [2] atraso começa cheio (0.97 s)
+  ✓ [2] nada recupera nos primeiros 0,5 s (80.00)
+  ✓ [2] continua parada a ~0,85 s (80.00)
+  ✓ [2] atraso termina depois de ~1 s
+  ✓ [2] recupera ~15/s depois do atraso (15.0)
+  ✓ [3] stamina chega a 0 correndo
+  ✓ [3] corrida bloqueada ao esgotar
+  ✓ [3] 3 s com SHIFT pressionado mantêm 0% (0.00)
+  ✓ [3] atraso permanece cheio enquanto SHIFT está pressionado
+  ✓ [4] continua 0 ao soltar SHIFT
+  ✓ [4] nada recupera nos primeiros 0,5 s
+  ✓ [4] recupera depois do atraso (15.0)
+  ✓ [4] recuperação ≈ 15/s (15.0)
+  ✓ [5] atraso em andamento
+  ✓ [5] SHIFT no atraso volta a correr (estado: RUNNING)
+  ✓ [5] corrida consome de novo, sem recuperação escondida
+  ✓ [5] SHIFT no atraso não recupera stamina (10.0)
+  ✓ [5] sem stamina suficiente não corre (estado: IDLE)
+  ✓ [5] soltar SHIFT libera a recuperação
+  ✓ [6] recupera até o máximo (100.0)
+  ✓ [6] nunca ultrapassa 100
+  ✓ [6] razão volta a 1,0
+  ✓ [6] corrida liberada novamente
+  ✓ [7] atraso ativo antes da pausa
+  ✓ [7] pausa não recupera stamina (56.0)
+  ✓ [7] pausa não avança o atraso (0.97 s)
+[Black Sight] Configurações abertas durante a pausa
+  ✓ [7] configurações não recuperam stamina
+  ✓ [7] configurações não avançam o atraso
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ [7] retoma do mesmo valor (56.0)
+  ✓ [7] atraso continua de onde parou (0.87 s)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ [8] ALTERNAR agacha
+  ✓ [8] estado AGACHADO (estado: CROUCHING)
+  ✓ [8] agachado não consome e SHIFT não recupera (55.0)
+  ✓ [8] agachado recupera depois do atraso
+  ✓ [8] ALTERNAR levanta
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ [8] SEGURAR agacha
+  ✓ [8] SEGURAR levanta
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ [9] HUD disponível
+  ✓ [9] HUD mostra 75%
+  ✓ [9] barra acompanha a corrida
+  ✓ [9] barra parada durante o atraso
+  ✓ [9] barra acompanha a recuperação
+  ✓ [9] barra nunca passa de 100%
+  ✓ [9] texto acompanha a stamina real (63%)
+[22] Interação (Etapa 7)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ detector de interação existe na câmera do jogador
+  ✓ painel de teste presente na cena da partida
+  ✓ distância máxima = 2,5 m
+  ✓ distância exposta por get_interaction_distance()
+  ✓ ação interact existe no InputMap
+  ✓ E é a tecla padrão de interact
+  ✓ detector usa a ação do InputMap (nenhuma tecla codificada)
+  ✓ detector resolve o foco pelo contrato Interactable
+  ✓ detector não conhece tipos de objeto
+  ✓ objeto interativo dentro do alcance é detectado
+  ✓ indicação aparece com objeto válido
+  ✓ indicação mostra o texto do objeto
+  ✓ indicação mostra a tecla E
+  ✓ indicação não captura o mouse
+  ✓ indicação no terço inferior (960)
+  ✓ indicação centralizada (centro em 960 de 1920)
+  ✓ indicação dentro da tela
+  ✓ indicação compacta (137 px)
+  ✓ E executa interact() do objeto
+  ✓ objeto mostra a confirmação da interação
+  ✓ texto de retorno do objeto (INTERAÇÃO EXECUTADA)
+  ✓ interagir não altera a stamina (100.0)
+  ✓ HUD de stamina continua refletindo o valor real
+  ✓ outras ações não executam a interação
+  ✓ focado antes do teste de movimento
+  ✓ indicação não bloqueia o movimento (1.04 m)
+  ✓ objeto fora do alcance não é detectado
+  ✓ indicação desaparece fora do alcance
+  ✓ try_interact() falha sem alvo no alcance
+  ✓ interação não acontece fora do alcance
+  ✓ volta a detectar ao voltar ao alcance
+  ✓ parede bloqueia a linha de visão
+  ✓ indicação desaparece com obstáculo
+  ✓ interação não acontece através da parede
+  ✓ foco volta quando a parede sai
+  ✓ olhar para o vazio remove o foco
+  ✓ indicação desaparece ao olhar para o vazio
+  ✓ objeto não interativo (parede) não vira foco
+  ✓ painel de teste é reutilizável (segunda instância)
+  ✓ olhar para outro objeto muda o foco
+  ✓ texto acompanha o objeto focado
+  ✓ indicação é o mesmo nó (nada instanciado por frame)
+  ✓ existe uma única indicação na HUD (1)
+  ✓ objeto desativado deixa de ser interativo
+  ✓ indicação some quando o objeto deixa de ser interativo
+  ✓ objeto reativado volta a ser focado
+  ✓ indicação some ao remover o objeto
+  ✓ focado antes da pausa
+  ✓ indicação fica oculta na pausa
+  ✓ foco preservado durante a pausa
+  ✓ E não interage durante a pausa
+  ✓ try_interact() bloqueado na pausa
+[Black Sight] Configurações abertas durante a pausa
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ configurações não executam interação
+  ✓ indicação volta após CONTINUAR
+  ✓ interação funciona de novo após CONTINUAR
+  ✓ indicação tem painel próprio
+  ✓ indicação ancorada no centro horizontal
+  ✓ indicação ancorada no rodapé (acima da stamina)
+  ✓ indicação fica a 84 px do rodapé
+  ✓ HUD ocupa a tela inteira (indicação acompanha a resolução)
+  ✓ indicação compacta (altura 36 px)
+[23] Inventário (Etapa 8)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ ação 'inventory_slot_1' existe
+  ✓ ação 'inventory_slot_1' usa 1
+  ✓ ação 'inventory_slot_2' existe
+  ✓ ação 'inventory_slot_2' usa 2
+  ✓ ação 'inventory_slot_3' existe
+  ✓ ação 'inventory_slot_3' usa 3
+  ✓ ação 'inventory_remove' existe
+  ✓ ação 'inventory_remove' usa R
+  ✓ uma ação de seleção por slot (3)
+  ✓ entrada do inventário usa o InputMap (nenhuma tecla codificada)
+  ✓ inventário tem exatamente 3 slots (constante)
+  ✓ três slots criados (3)
+  ✓ slot 1 selecionado ao começar
+  ✓ slot selecionado começa vazio
+  ✓ inventário começa com slot livre
+  ✓ inventário começa vazio
+  ✓ inventário não processa nada por frame
+  ✓ item tem nome de exibição
+  ✓ item sem id é inválido
+  ✓ item nulo é recusado
+  ✓ adiciona o item A
+  ✓ A vai para o primeiro slot
+  ✓ primeiro slot livre passa a ser o 2
+  ✓ adiciona o item B
+  ✓ B vai para o segundo slot
+  ✓ adiciona o item C
+  ✓ C vai para o terceiro slot
+  ✓ sem slot livre com os três ocupados
+  ✓ sinais de adição emitidos (3)
+  ✓ inventário cheio recusa o item D
+  ✓ sinal item_rejected emitido
+  ✓ inventário cheio não altera nem substitui nenhum item
+  ✓ seleciona o slot 2
+  ✓ slot 2 é o selecionado
+  ✓ item selecionado é o B
+  ✓ índice fora da faixa é recusado
+  ✓ índice negativo é recusado
+  ✓ seleção inválida não muda o slot
+  ✓ remove o item do slot 2
+  ✓ slot removido fica vazio
+  ✓ slot removido devolve null
+  ✓ remover slot já vazio devolve false
+  ✓ dois slots ocupados após a remoção
+  ✓ sinal item_removed emitido
+  ✓ seleciona um slot vazio
+  ✓ slot vazio selecionado devolve null
+  ✓ substitui o item do slot 1
+  ✓ slot 1 passa a ter o item D
+  ✓ item substituído não fica em outro slot
+  ✓ substituir por null é recusado
+  ✓ slot preservado após substituição inválida
+  ✓ sinal item_replaced emitido
+  ✓ get_slot() expõe o slot
+  ✓ slot informa o nome do item
+  ✓ clear() esvazia todos os slots
+  ✓ jogador tem inventário
+  ✓ HUD tem a barra de slots
+  ✓ HUD ligada ao inventário
+  ✓ HUD desenha exatamente 3 slots (3)
+  ✓ slots numerados 1, 2 e 3
+  ✓ slot vazio mostra VAZIO
+  ✓ slot 1 começa selecionado
+  ✓ cena do item de teste carrega
+  ✓ TestItemA presente na cena
+  ✓ TestItemA tem definição de item
+  ✓ TestItemA começa disponível
+  ✓ TestItemA pede [E] Pegar
+  ✓ TestItemB presente na cena
+  ✓ TestItemB tem definição de item
+  ✓ TestItemB começa disponível
+  ✓ TestItemB pede [E] Pegar
+  ✓ TestItemC presente na cena
+  ✓ TestItemC tem definição de item
+  ✓ TestItemC começa disponível
+  ✓ TestItemC pede [E] Pegar
+  ✓ TestItemD presente na cena
+  ✓ TestItemD tem definição de item
+  ✓ TestItemD começa disponível
+  ✓ TestItemD pede [E] Pegar
+  ✓ slots no canto inferior direito (x=1556 de 1920)
+  ✓ slots na parte inferior da tela
+  ✓ slots dentro da tela
+  ✓ slots não se sobrepõem à stamina (1556 ≥ 322)
+  ✓ slots não se sobrepõem à indicação de interação
+  ✓ item A é detectado pelo olhar
+  ✓ indicação mostra Pegar
+  ✓ E coleta o item A
+  ✓ item coletado desaparece da cena
+  ✓ item A vai para o slot 1
+  ✓ slot 1 mostra ITEM A (ITEM A)
+  ✓ item coletado deixa de ser foco
+  ✓ indicação some depois da coleta
+  ✓ coletar não altera a stamina (100.0)
+  ✓ E de novo não duplica o item
+  ✓ coleta o item B
+  ✓ item B vai para o slot 2
+  ✓ coleta o item C
+  ✓ item C vai para o slot 3
+  ✓ os três slots ficam ocupados
+  ✓ slot 3 mostra ITEM C (ITEM C)
+  ✓ item fora do alcance não é detectado
+  ✓ parede bloqueia a coleta
+  ✓ item D é detectado mesmo com o inventário cheio
+  ✓ item D não é coletado com o inventário cheio
+  ✓ item D continua na cena
+  ✓ a tentativa foi registrada
+  ✓ os três itens continuam guardados
+  ✓ HUD avisa INVENTÁRIO CHEIO
+  ✓ texto do aviso: INVENTÁRIO CHEIO
+  ✓ itens existentes continuam visíveis na HUD
+  ✓ inventário continua cheio
+  ✓ tecla 2 seleciona o slot 2
+  ✓ HUD realça o slot 2
+  ✓ slot selecionado tem estilo próprio
+  ✓ tecla 3 seleciona o slot 3
+  ✓ tecla 1 volta ao slot 1
+  ✓ get_selected_item() acompanha a seleção
+  ✓ barra acompanha a seleção
+  ✓ aviso de inventário cheio desaparece sozinho
+  ✓ item D em foco antes da pausa
+  ✓ teclas 1/2/3 não mudam a seleção na pausa
+  ✓ R não remove item na pausa
+  ✓ foco preservado na pausa
+  ✓ E não coleta durante a pausa
+  ✓ item D continua na cena após a pausa
+[Black Sight] Configurações abertas durante a pausa
+  ✓ configurações também bloqueiam a seleção
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ seleção volta a funcionar após CONTINUAR
+  ✓ slot 2 ocupado antes da remoção
+  ✓ R remove o item do slot selecionado
+  ✓ slot removido volta a VAZIO na HUD
+  ✓ remoção não muda a seleção (slot vazio continua selecionado)
+  ✓ R em slot vazio não remove nada
+  ✓ substitui o item do slot 1
+  ✓ slot 1 mostra o item substituto (ITEM D)
+  ✓ substituição não muda a quantidade
+  ✓ item D é coletado com slot livre
+  ✓ slot livre recebeu o item D
+  ✓ slot 2 mostra o item D (ITEM D)
+  ✓ slot preenchido continua selecionado
+  ✓ HUD de stamina continua coerente
+  ✓ movimento continua funcionando
+  ✓ HUD volta a VAZIO ao limpar
+[24] Soltar itens no ambiente (Etapa 9)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ ação 'inventory_drop' existe
+  ✓ ação 'inventory_drop' usa G
+  ✓ remoção de teste continua em R (não reutilizada)
+  ✓ G e R são ações distintas
+  ✓ entrada e drop não leem teclas diretamente
+  ✓ nenhuma tecla codificada no código do drop
+  ✓ jogador tem o componente que solta itens
+  ✓ a sessão expõe o mesmo componente
+  ✓ HUD ligada ao aviso do drop
+  ✓ cena reutilizável do item no mundo carrega
+  ✓ componente com a cena do item configurada
+  ✓ drop não processa nada por frame
+  ✓ item no mundo usa o contrato da Etapa 7
+  ✓ item no mundo tem corpo físico
+  ✓ item no mundo mostra o nome
+  ✓ item A no inventário
+  ✓ item B no inventário
+  ✓ item C no inventário
+  ✓ G solta o item do slot 1
+  ✓ slot 1 fica vazio
+  ✓ slots não selecionados continuam intactos
+  ✓ HUD mostra VAZIO no slot 1 na hora
+  ✓ HUD preserva os outros slots
+  ✓ um item no mundo (1)
+  ✓ o item no mundo é o mesmo que saiu do slot
+  ✓ item no mundo mostra ITEM A
+  ✓ não nasce dentro da cápsula do jogador (1.15 m)
+  ✓ nasce perto do jogador (1.15 m)
+  ✓ nasce à frente da câmera
+  ✓ item assenta no chão (y=-0.007)
+  ✓ item não é arremessado
+  ✓ G solta o item do slot 2
+  ✓ slot 1 continua vazio
+  ✓ dois itens no mundo
+  ✓ G solta o item do slot 3
+  ✓ inventário vazio depois dos três drops
+  ✓ três itens no mundo (3)
+  ✓ nada foi duplicado nem perdido (3 itens)
+  ✓ G em slot vazio não cria item
+  ✓ G em slot vazio não altera o inventário
+  ✓ HUD indica SLOT VAZIO
+  ✓ texto do aviso: SLOT VAZIO
+  ✓ segurar G solta uma única vez (1)
+  ✓ o item segurado saiu do inventário uma vez
+  ✓ o item segurado existe no mundo
+  ✓ item solto é detectado pelo olhar
+  ✓ indicação mostra Pegar
+  ✓ objeto do mundo desaparece depois da coleta
+  ✓ um item a menos no mundo
+  ✓ item voltou ao inventário
+  ✓ item voltou ao primeiro slot vazio
+  ✓ HUD mostra o item recolhido
+  ✓ inventário cheio de novo
+  ✓ inventário cheio não recolhe
+  ✓ objeto continua no mundo
+  ✓ nenhum item do inventário foi removido
+  ✓ HUD avisa INVENTÁRIO CHEIO
+  ✓ texto do aviso cheio: INVENTÁRIO CHEIO
+  ✓ R libera um slot (remoção de teste preservada)
+  ✓ R não muda a seleção
+  ✓ nova tentativa recolhe depois de abrir espaço
+  ✓ inventário volta a ficar cheio
+  ✓ sem coleta duplicada
+[Black Sight] Drop cancelado: sem posição segura (espaço ocupado)
+  ✓ drop sem espaço mantém o item
+  ✓ drop sem espaço não cria objeto
+  ✓ HUD avisa SEM ESPAÇO PARA SOLTAR
+  ✓ texto do aviso: SEM ESPAÇO PARA SOLTAR
+ERROR: ItemDropper: world_item_scene não configurada
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _create_world_item (res://players/scripts/inventory/item_dropper.gd:148)
+       [1] drop_selected_item (res://players/scripts/inventory/item_dropper.gd:75)
+       [2] drop_selected (res://players/scripts/inventory/inventory_input.gd:99)
+       [3] _physics_process (res://players/scripts/inventory/inventory_input.gd:58)
+  ✓ falha de instanciação não conta drop
+  ✓ falha de instanciação mantém o item
+  ✓ texto do aviso de falha: NÃO FOI POSSÍVEL SOLTAR
+  ✓ falha de instanciação não cria objeto
+  ✓ item solto em foco antes da pausa
+  ✓ G não solta item na pausa
+  ✓ pausa não mexe no inventário
+  ✓ 1/2/3 bloqueados na pausa
+  ✓ R bloqueado na pausa
+  ✓ E não recolhe na pausa
+  ✓ nada muda no mundo durante a pausa
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ mundo sem itens soltos ao final
+  ✓ cena do item continua carregando após os testes
+  ✓ grupo [24] executado até o fim
+[25] Soltura do SHIFT e corrida presa (revisão da Etapa 11)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [1] SHIFT pressionado corre (estado: RUNNING)
+  ✓ [1] is_sprint_held() verdadeiro
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [2] evento de soltura desliga a corrida
+  ✓ [2] ação presa não mantém RUNNING (estado: WALKING)
+  ✓ [2] o teste manteve a ação presa de propósito
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [3] tecla SHIFT pressionada corre
+  ✓ [3] estado RUNNING (estado: RUNNING)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [3] soltar SHIFT pelo teclado desliga a corrida
+  ✓ [3] volta a ANDANDO (estado: WALKING)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [4] corrida ativa antes da pausa
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+  ✓ [4] retomar não herda corrida da pausa
+  ✓ [4] estado WALKING ao retomar (estado: WALKING)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+SCRIPT ERROR: Invalid type in function '_set_ui_focus' in base 'Node3D (InteractionDetector)'. The Object-derived class of argument 1 (previously freed) is not a subclass of the expected argument class.
+          at: InteractionDetector._refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+          GDScript backtrace (most recent call first):
+              [0] _refresh_focus (res://players/scripts/interaction/interaction_detector.gd:167)
+              [1] _physics_process (res://players/scripts/interaction/interaction_detector.gd:70)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+
+MOVEMENT TEST OK — 598 verificações aprovadas

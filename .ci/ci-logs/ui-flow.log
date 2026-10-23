@@ -1,0 +1,79 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[Black Sight] Configurações carregadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+=== Black Sight · fluxo de interface ===
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+[Black Sight] Tela inicial carregada — v0.15.1 · Godot 4.7.2-stable (official) · gl_compatibility
+  ✓ tela inicial abre
+  ✓ emblema continua presente
+  ✓ título continua presente
+  ✓ rodapé continua indicando o atalho F11
+  ✓ botão SAIR DO JOGO continua funcional
+  ✓ botão CONFIGURAÇÕES existe na tela inicial
+  ✓ botão CONFIGURAÇÕES abre a tela de configurações
+  ✓ as três abas estão presentes
+  ✓ botões APLICAR, RESTAURAR PADRÕES e VOLTAR presentes
+  ✓ seção CONTROLES aberta por padrão
+  ✓ aba ÁUDIO acessível
+  ✓ quatro controles de volume (geral, efeitos, ambiente, música)
+[Black Sight] Configurações aplicadas: master=37 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ APLICAR guarda o volume alterado (37%%)
+  ✓ volume alterado foi gravado no arquivo
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ RESTAURAR PADRÕES devolve o volume padrão na sessão
+  ✓ RESTAURAR PADRÕES + APLICAR grava o padrão no arquivo
+  ✓ aba VÍDEO acessível
+  ✓ vídeo oferece resolução e modo de janela
+  ✓ lista de resoluções preenchida
+  ✓ janela, maximizada e tela cheia disponíveis
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=fullscreen resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ modo tela cheia é aplicado e guardado
+  ✓ modo tela cheia foi gravado no arquivo
+[Black Sight] Tela inicial carregada — v0.15.1 · Godot 4.7.2-stable (official) · gl_compatibility
+  ✓ VOLTAR retorna à tela inicial
+  ✓ tela de configurações reabre
+  ✓ ao reabrir, a tela mostra o modo de janela salvo
+[Black Sight] Tela inicial carregada — v0.15.1 · Godot 4.7.2-stable (official) · gl_compatibility
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ F11 alterna o modo de janela (2 → 0)
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=fullscreen resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ F11 alterna de volta ao modo anterior
+  ✓ botão TESTAR MOVIMENTAÇÃO presente
+[Black Sight] Cena de teste carregada — controlador FPS ativo
+  ✓ TESTAR MOVIMENTAÇÃO abre a cena de teste
+  ✓ jogador presente na cena de teste
+  ✓ câmera em primeira pessoa ativa
+  ✓ menu de pausa tem CONFIGURAÇÕES
+[Black Sight] Configurações abertas durante a pausa
+  ✓ CONFIGURAÇÕES abre durante a partida (mesma tela)
+  ✓ configurações escondem o menu de pausa
+  ✓ seção CONTROLES disponível na partida
+  ✓ lista real de controles durante a partida (9)
+  ✓ lista inclui E — Interagir (Etapa 7)
+  ✓ lista inclui 1 2 3 — Selecionar slot (Etapa 8)
+  ✓ lista inclui G — Soltar item (Etapa 9)
+  ✓ R provisória continua fora da lista
+  ✓ lista mostra só ações implementadas
+  ✓ texto do Ctrl muda para o modo SEGURAR
+  ✓ APLICAR disponível na partida
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=fullscreen resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ modo SEGURAR é aplicado durante a partida
+  ✓ tela mantém o modo SEGURAR depois de aplicar
+  ✓ texto do Ctrl continua em SEGURAR
+  ✓ configurações têm VOLTAR
+[Black Sight] Configurações fechadas — de volta à pausa
+  ✓ VOLTAR nas configurações retorna ao menu de pausa
+  ✓ CONTINUAR retoma a partida
+  ✓ jogador habilitado após CONTINUAR
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+  ✓ fluxo de pausa com configurações funciona
+  ✓ botão VOLTAR AO MENU presente
+[Black Sight] Tela inicial carregada — v0.15.1 · Godot 4.7.2-stable (official) · gl_compatibility
+  ✓ VOLTAR AO MENU retorna à tela inicial
+[Black Sight] Configurações aplicadas: master=80 sfx=80 ambience=70 music=60 mode=windowed resolution=1600x900 vsync=true sens_x=1.00 sens_y=1.00 invert_y=false
+
+UI FLOW OK — 53 verificações aprovadas
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
